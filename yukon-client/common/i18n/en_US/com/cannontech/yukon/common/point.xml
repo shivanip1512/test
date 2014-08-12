@@ -55,6 +55,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH">kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_A">kVAh Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_B">kVAh Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_C">kVAh Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_D">kVAh Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAR">kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH">kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_A">kVArh Rate A</entry>
@@ -251,6 +255,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH">Sum kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA">Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_COIN">Peak kVA Coincidental</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_A">Peak kVA Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_B">Peak kVA Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_C">Peak kVA Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_D">Peak kVA Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR">Peak kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_RATE_A">Peak kVAr Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_RATE_B">Peak kVAr Rate B</entry>

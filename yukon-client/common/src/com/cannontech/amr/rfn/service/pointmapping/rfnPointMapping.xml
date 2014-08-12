@@ -2290,15 +2290,228 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Avg Power Factor">
+        <point name="Power Factor">
             <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+            </modifiers>
+        </point>
+        
+        <point name="kVAh">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Rate A">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Rate B">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Rate C">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Rate D">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Lagging">
+            <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Avg</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Lagging Rate A">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Lagging Rate B">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Lagging Rate C">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Lagging Rate D">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Rate A">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Rate B">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Rate C">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Rate D">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVA Lagging">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Lagging Rate A">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Lagging Rate B">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Lagging Rate C">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVa Lagging Rate D">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
     </pointGroup>

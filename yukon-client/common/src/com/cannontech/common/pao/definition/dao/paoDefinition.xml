@@ -1,7 +1,17 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=238 @ 2014-07-17W -->
+<!-- RF Devices: highest Analog OFFSET=259 @ 2014-08-10 -->
 <!-- RF Devices: highest Status OFFSET=79 @ 2014-04-30T -->
+
+<!--  Point Name naming convention: 
+    [Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #]
+    Examples:
+        Net kWh OR Net Delivered kWh
+        Received kWh Rate A
+    Note: [Delivered] - can be omitted/assumed where it make sense; Peak kW or kVar for examples
+    Note: Look at BuiltInAttribute as that follows the same convention.
+    -->
+    
 <!-- This file contains default pao and point information for all of the 
     pao's in Yukon. Note: - The type value must match the value in the java code 
     for the javaConstant - The unitofmeasure value is from the unitMeasure table, 
@@ -9196,6 +9206,127 @@
                 <unitofmeasure value="PF" />
                 <decimalplaces value="4" />
             </point>
+            
+            <point type="Analog" offset="240">
+                <name>kVAh</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="241">
+                <name>kVAh Rate A</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="242">
+                <name>kVAh Rate B</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="243">
+                <name>kVAh Rate C</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="244">
+                <name>kVAh Rate D</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="245">
+                <name>kVAh Lagging</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="246">
+                <name>kVAh Lagging Rate A</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="247">
+                <name>kVAh Lagging Rate B</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="248">
+                <name>kVAh Lagging Rate C</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="249">
+                <name>kVAh Lagging Rate D</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAh" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="250">
+                <name>Peak kVA</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="251">
+                <name>Peak kVa Rate A</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="252">
+                <name>Peak kVa Rate B</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="253">
+                <name>Peak kVa Rate C</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="254">
+                <name>Peak kVa Rate D</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="255">
+                <name>Peak kVA Lagging</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="256">
+                <name>Peak kVa Lagging Rate A</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="257">
+                <name>Peak kVa Lagging Rate B</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="258">
+                <name>Peak kVa Lagging Rate C</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="259">
+                <name>Peak kVa Lagging Rate D</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
         </points>
         <attributes>
             <attribute name="RECEIVED_KWH">
@@ -9272,6 +9403,36 @@
             </attribute>
             <attribute name="POWER_FACTOR">
                 <basicLookup point="Avg Power Factor" />
+            </attribute>
+            <attribute name="KVAHA">
+                <basicLookup point="kVAh"/>
+            </attribute>
+            <attribute name="KVAH_RATE_A">
+                <basicLookup point="kVAh Rate A"/>
+            </attribute>
+            <attribute name="KVAH_RATE_B">
+                <basicLookup point="kVAh Rate B"/>
+            </attribute>
+            <attribute name="KVAH_RATE_C">
+                <basicLookup point="kVAh Rate C"/>
+            </attribute>
+            <attribute name="KVAH_RATE_D">
+                <basicLookup point="kVAh Rate D"/>
+            </attribute>
+            <attribute name="PEAK_KVA">
+                <basicLookup point="Peak kVA"/>
+            </attribute>
+            <attribute name="PEAK_KVA_RATE_A">
+                <basicLookup point="Peak kVA Rate A"/>
+            </attribute>
+            <attribute name="PEAK_KVA_RATE_B">
+                <basicLookup point="Peak kVA Rate B"/>
+            </attribute>
+            <attribute name="PEAK_KVA_RATE_C">
+                <basicLookup point="Peak kVA Rate C"/>
+            </attribute>
+            <attribute name="PEAK_KVA_RATE_D">
+                <basicLookup point="Peak kVA Rate D"/>
             </attribute>
         </attributes>
     </pao>
