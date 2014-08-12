@@ -87,7 +87,6 @@ public class ResultsController {
         String label = srchCriteria;
         boolean orphan = true;
         
-        int hitCount = 0;
         List<LiteWrapper> items = Lists.newArrayList();
         List<LiteCapControlObject> ccObjects = null;
         SearchType searchType = null;
@@ -154,7 +153,6 @@ public class ResultsController {
                 results.add(row);
             }
         } else {
-            hitCount = ccObjects.size();
             for (LiteCapControlObject item : ccObjects) {
                 ResultRow row = new ResultRow();
                 row.setName(item.getName());

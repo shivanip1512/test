@@ -44,38 +44,39 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-
 public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
+    
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MeterDao meterDao;
-    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private PlcDeviceAttributeReadService readService;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DisconnectService disconnectService;  
-    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private RfnMeterDisconnectService rfnDisconnectService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private StateDao stateDao;
     
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
 
     @RequestMapping("render")
-    public String render(ModelMap model, YukonUserContext context, Integer deviceId) {
+    public String render(ModelMap model, YukonUserContext userContext, Integer deviceId) {
+        
         YukonMeter meter = meterDao.getForId(deviceId);
-        initModel(model, context, meter);
+        initModel(model, userContext, meter);
         
         return "disconnectMeterWidget/render.jsp";
     }
     
     @RequestMapping("read")
-    public String read(final ModelMap model, final YukonUserContext context, Integer deviceId) {
+    public String read(final ModelMap model, final YukonUserContext userContext, Integer deviceId) {
         // This method will be changed by YUK-12715 Refactor PlcDeviceAttributeReadService
         // It should just call DeviceAttributeReadService.readMeter without checking if the device is PLC or RF
         YukonMeter meter = meterDao.getForId(deviceId);
-        initModel(model, context, meter);
-        if(meter.getPaoType().isRfn()){
-            final MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
-            WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback() {
+        initModel(model, userContext, meter);
+        if(meter.getPaoType().isRfn()) {
+            final MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            WaitableRfnMeterDisconnectCallback callback = new WaitableRfnMeterDisconnectCallback() {
     
                 @Override
                 public void processingExceptionOccured(MessageSourceResolvable message) {
@@ -96,49 +97,50 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
                 
                 private SpecificDeviceErrorDescription getErrorDescription(NetworkManagerError errorType,
                                                                            MessageSourceResolvable message) {
-                    String detail = messageSourceAccessor.getMessage(message);
+                    String detail = accessor.getMessage(message);
                     DeviceErrorDescription errorDescription =
-                        deviceErrorTranslatorDao.translateErrorCode(errorType.getErrorCode(), context);
+                        deviceErrorTranslatorDao.translateErrorCode(errorType.getErrorCode(), userContext);
                     SpecificDeviceErrorDescription deviceErrorDescription =
                         new SpecificDeviceErrorDescription(errorDescription, detail);
+                    
                     return deviceErrorDescription;
                 }
             };
             
             RfnMeter rfnMeter = meterDao.getRfnMeterForId(deviceId);
-            rfnMeterDisconnectService.send(rfnMeter,  RfnMeterDisconnectStatusType.QUERY, waitableCallback);
+            rfnDisconnectService.send(rfnMeter,  RfnMeterDisconnectStatusType.QUERY, callback);
             
             try {
-                waitableCallback.waitForCompletion();
+                callback.waitForCompletion();
             } catch (InterruptedException e) { /* Ignore */ }
-        }else if(meter.getPaoType().isPlc()){
-            CommandResultHolder result =
-                plcDeviceAttributeReadService.readMeter(meter,
-                                                        disconnectAttribute,
-                                                        DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,
-                                                        context.getYukonUser());
-    
+            
+        } else if (meter.getPaoType().isPlc()) {
+            CommandResultHolder result = readService.readMeter(meter,
+                    disconnectAttribute,
+                    DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,
+                    userContext.getYukonUser());
+            
             if (result.getErrors().isEmpty() && StringUtils.isEmpty(result.getExceptionReason())) {
                 String configStr = result.getLastResultString();
                 model.addAttribute("configString", configStr);  
                 model.addAttribute("success", true);
             }
-  
+            
             model.addAttribute("errors", result.getErrors());
             if (StringUtils.isNotEmpty(result.getExceptionReason())) {
                 model.addAttribute("exceptionReason", result.getExceptionReason());
             }
             
-
         }
-
+        
         return "disconnectMeterWidget/render.jsp";
     }
-
+    
     @RequestMapping("helpInfo")
-    public String helpInfo(ModelMap model, YukonUserContext context, Integer deviceId){
+    public String helpInfo(ModelMap model, YukonUserContext userContext, int deviceId) {
+        
         YukonMeter meter = meterDao.getForId(deviceId);
-        initModel(model, context, meter);
+        initModel(model, userContext, meter);
         
         boolean is410Supported =
             paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_410);
@@ -156,58 +158,58 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping("connect")
-    public String connect(ModelMap model, YukonUserContext context, Integer deviceId) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, context.getYukonUser());
-
+    public String connect(ModelMap model, YukonUserContext userContext, int deviceId) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
+        
         YukonMeter meter = meterDao.getForId(deviceId);
-        initModel(model, context, meter);
-        DisconnectMeterResult result =
-            disconnectService.execute(DisconnectCommand.CONNECT,
-                                      DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
-                                      meter,
-                                      context);
+        initModel(model, userContext, meter);
+        DisconnectMeterResult result = disconnectService.execute(
+                DisconnectCommand.CONNECT,
+                DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
+                userContext);
         addDisconnectResultToModel(model, result);
-
+        
         return "disconnectMeterWidget/render.jsp";
     }
 
     @RequestMapping("disconnect")
-    public String disconnect(ModelMap model, YukonUserContext context, Integer deviceId) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, context.getYukonUser());
-
+    public String disconnect(ModelMap model, YukonUserContext userContext, int deviceId) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
+        
         YukonMeter meter = meterDao.getForId(deviceId);
-        initModel(model, context, meter);
-        DisconnectMeterResult result =
-            disconnectService.execute(DisconnectCommand.DISCONNECT,
-                                      DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
-                                      meter,
-                                      context);
+        initModel(model, userContext, meter);
+        DisconnectMeterResult result = disconnectService.execute(
+                DisconnectCommand.DISCONNECT,
+                DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
+                userContext);
         addDisconnectResultToModel(model, result);
-
-        return "disconnectMeterWidget/render.jsp";
-    }
-
-    @RequestMapping("arm")
-    public String arm(ModelMap model, YukonUserContext context, Integer deviceId) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, context.getYukonUser());
-
-        YukonMeter meter = meterDao.getForId(deviceId);
-        initModel(model, context, meter);
-        DisconnectMeterResult result =
-            disconnectService.execute(DisconnectCommand.ARM,
-                                      DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
-                                      meter,
-                                      context);
-        addDisconnectResultToModel(model, result);
-
+        
         return "disconnectMeterWidget/render.jsp";
     }
     
-    private void addDisconnectResultToModel(ModelMap model, DisconnectMeterResult result){
-        if(result.getError() != null){
+    @RequestMapping("arm")
+    public String arm(ModelMap model, YukonUserContext userContext, int deviceId) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
+        
+        YukonMeter meter = meterDao.getForId(deviceId);
+        initModel(model, userContext, meter);
+        DisconnectMeterResult result = disconnectService.execute(
+                DisconnectCommand.ARM,
+                DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
+                userContext);
+        addDisconnectResultToModel(model, result);
+        
+        return "disconnectMeterWidget/render.jsp";
+    }
+    
+    private void addDisconnectResultToModel(ModelMap model, DisconnectMeterResult result) {
+        if (result.getError() != null) {
             model.addAttribute("errors", Lists.newArrayList(result.getError()));
         }
-        if(StringUtils.isNotEmpty(result.getProcessingException())){
+        if (StringUtils.isNotEmpty(result.getProcessingException())) {
             model.addAttribute("exceptionReason", result.getProcessingException());
         }
         
@@ -215,7 +217,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("command", result.getCommand());
     }
     
-    private void initModel(ModelMap model, YukonUserContext context, YukonMeter meter) {
+    private void initModel(ModelMap model, YukonUserContext userContext, YukonMeter meter) {
         try {
             LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
             model.addAttribute("pointId", litePoint.getPointID());
@@ -231,4 +233,5 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("supportsArm", supportsArm);
         model.addAttribute("attribute", BuiltInAttribute.DISCONNECT_STATUS);
     }
+    
 }

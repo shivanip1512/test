@@ -17,7 +17,7 @@
     </tags:nameValue2>
 </tags:nameValueContainer2>
 
-<c:if test="${pointId != null}">        
+<c:if test="${pointId != null}">
     <div id="disconnectInfo" class="dn" title="<cti:msg2 key=".infoLink"/>"></div>
 </c:if>   
 
