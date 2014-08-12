@@ -1,14 +1,13 @@
 package com.cannontech.message.util;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
@@ -16,7 +15,6 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.messaging.connection.Connection;
@@ -26,7 +24,9 @@ import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
 import com.cannontech.messaging.util.ConnectionFactory;
 import com.cannontech.yukon.IServerConnection;
-import com.google.common.base.Objects;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 
 @ManagedResource
@@ -37,8 +37,16 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     // Keep track of all of this connections MessageListeners
     private List<MessageListener> messageListeners = new CopyOnWriteArrayList<MessageListener>();
-    private Map<Integer, Integer> listenerExceptions = new HashMap<>();
-    private final int EXCEPTIONS_BEFORE_EVICTION = 10;
+    private final int EXCEPTIONS_BEFORE_LOG_SNOOZE = 20;
+    private final int LOG_SNOOZE_MINUTES = 5;
+    private LoadingCache<Integer, Integer> listenerExceptions = CacheBuilder.newBuilder()
+            .expireAfterWrite(LOG_SNOOZE_MINUTES, TimeUnit.MINUTES).build(
+                new CacheLoader<Integer, Integer>() {
+                    @Override
+                    public Integer load(Integer key) throws Exception {
+                        return 0;
+                    }
+                });
     private final String connectionName;
     private AtomicLong totalSentMessages = new AtomicLong();
     private AtomicLong totalReceivedMessages = new AtomicLong();
@@ -191,32 +199,38 @@ public abstract class ClientConnection extends Observable implements IServerConn
             // modification problem. That is no longer a problem, but just in case there is some code
             // that relies on the reverse ordering, we'll keep it.
             for (MessageListener messageListener : Lists.reverse(messageListeners)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("sending MessageEvent to " + messageListener);
-            }
-            try {
-                messageListener.messageReceived(messageEvent);
-            } catch (Throwable t) {
-                if (msg != null) {
-                    logger.error("Error while firing a message event to " + messageListener 
-                                 + ". Msg type '" + msg.getClass() +
-                                 "' content :\n" + msg, t);
-                } else {
-                    logger.error("Error while firing a message event to " + messageListener + ". Msg is null");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("sending MessageEvent to " + messageListener);
                 }
+                try {
+                    messageListener.messageReceived(messageEvent);
+                } catch (Throwable t) {
+                    String errorString = "Error while firing a message event to " + messageListener + ". ";
+                    if(msg != null) {
+                        errorString += "Msg type '" + msg.getClass() + "' content :\n" + msg;
+                    }
+                    else {
+                        errorString += "Msg is null";
+                    }
 
-                Integer errorCount = Objects.firstNonNull(listenerExceptions.get(messageListener.hashCode()), 0);
-                if (errorCount >= EXCEPTIONS_BEFORE_EVICTION) {
-                    logger.error("Removing " + messageListener + " after " + EXCEPTIONS_BEFORE_EVICTION + " exceptions");
-                    removeMessageListener(messageListener);
-                    listenerExceptions.remove(messageListener.hashCode());
-                } else {
-                    listenerExceptions.put(messageListener.hashCode(), errorCount++);
+                    Integer errorCount = listenerExceptions.getUnchecked(messageListener.hashCode());
+                    if (errorCount < EXCEPTIONS_BEFORE_LOG_SNOOZE) {
+                        errorCount++;
+                        if (errorCount == EXCEPTIONS_BEFORE_LOG_SNOOZE) {
+                            logger.error("Temporarily muting stack traces for " + messageListener + " because of " 
+                                + EXCEPTIONS_BEFORE_LOG_SNOOZE + " exceptions within "
+                                + LOG_SNOOZE_MINUTES + " minutes of each other");
+                        } 
+                        listenerExceptions.put(messageListener.hashCode(), errorCount);
+                        logger.error(errorString, t);
+                    }
+                    else {
+                        logger.error(errorString + "\n" + t);
+                    }
                 }
+                totalFiredEvents.incrementAndGet();
             }
-            totalFiredEvents.incrementAndGet();
         }
-    }
     }
 
     /**
@@ -257,7 +271,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
     }
 
     public final void setRegistrationMsg(Message newValue) {
-        this.registrationMsg = newValue;
+        registrationMsg = newValue;
     }
 
     @ManagedAttribute
@@ -299,7 +313,9 @@ public abstract class ClientConnection extends Observable implements IServerConn
      */
     @Override
     public final void write(Message o) {
-        LogHelper.debug(logger, "writing msg: %s", o);
+        if(logger.isDebugEnabled()) {
+            logger.debug("writing msg: " + o);
+        }
         Message msg = o;
         if (!isValid()) {
             throw new ConnectionException("Unable to write message (" + msg + "), " + this + " is invalid.");
@@ -356,7 +372,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
     @Override
     @ManagedAttribute
     public final boolean getAutoReconnect() {
-        return this.autoReconnect;
+        return autoReconnect;
     }
 
     @Override
@@ -392,7 +408,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     @Override
     public final void setAutoReconnect(boolean val) {
-        this.autoReconnect = val;
+        autoReconnect = val;
         if (connection != null) {
             connection.setAutoReconnect(val);
         }
