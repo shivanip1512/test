@@ -41,6 +41,12 @@ public class DispatchClientConnection extends com.cannontech.message.util.Client
                 }
             }
         };
+        worker.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                logger.error("Error in thread " + t, e);
+            }
+        });
         worker.start();
     }
 

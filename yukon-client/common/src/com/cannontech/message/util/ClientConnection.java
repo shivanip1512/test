@@ -1,8 +1,10 @@
 package com.cannontech.message.util;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,6 +26,7 @@ import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
 import com.cannontech.messaging.util.ConnectionFactory;
 import com.cannontech.yukon.IServerConnection;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 @ManagedResource
@@ -34,6 +37,8 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     // Keep track of all of this connections MessageListeners
     private List<MessageListener> messageListeners = new CopyOnWriteArrayList<MessageListener>();
+    private Map<Integer, Integer> listenerExceptions = new HashMap<>();
+    private final int EXCEPTIONS_BEFORE_EVICTION = 10;
     private final String connectionName;
     private AtomicLong totalSentMessages = new AtomicLong();
     private AtomicLong totalReceivedMessages = new AtomicLong();
@@ -186,13 +191,32 @@ public abstract class ClientConnection extends Observable implements IServerConn
             // modification problem. That is no longer a problem, but just in case there is some code
             // that relies on the reverse ordering, we'll keep it.
             for (MessageListener messageListener : Lists.reverse(messageListeners)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("sending MessageEvent to " + messageListener);
-                }
-                messageListener.messageReceived(messageEvent);
-                totalFiredEvents.incrementAndGet();
+            if (logger.isDebugEnabled()) {
+                logger.debug("sending MessageEvent to " + messageListener);
             }
+            try {
+                messageListener.messageReceived(messageEvent);
+            } catch (Throwable t) {
+                if (msg != null) {
+                    logger.error("Error while firing a message event to " + messageListener 
+                                 + ". Msg type '" + msg.getClass() +
+                                 "' content :\n" + msg, t);
+                } else {
+                    logger.error("Error while firing a message event to " + messageListener + ". Msg is null");
+                }
+
+                Integer errorCount = Objects.firstNonNull(listenerExceptions.get(messageListener.hashCode()), 0);
+                if (errorCount >= EXCEPTIONS_BEFORE_EVICTION) {
+                    logger.error("Removing " + messageListener + " after " + EXCEPTIONS_BEFORE_EVICTION + " exceptions");
+                    removeMessageListener(messageListener);
+                    listenerExceptions.remove(messageListener.hashCode());
+                } else {
+                    listenerExceptions.put(messageListener.hashCode(), errorCount++);
+                }
+            }
+            totalFiredEvents.incrementAndGet();
         }
+    }
     }
 
     /**
@@ -351,15 +375,15 @@ public abstract class ClientConnection extends Observable implements IServerConn
     public final boolean isMonitorThreadAlive() {
         if (connection != null) {
             switch (connection.getState()) {
-                case New:
-                case Closed:
-                case Error:
-                    return false;
+            case New:
+            case Closed:
+            case Error:
+                return false;
 
-                case Connected:
-                case Connecting:
-                case Disconnected:
-                    return true;
+            case Connected:
+            case Connecting:
+            case Disconnected:
+                return true;
             }
         }
 
@@ -416,42 +440,42 @@ public abstract class ClientConnection extends Observable implements IServerConn
             logger.info("Connection state changed to <" + state + "> for " + conn);
 
             switch (state) {
-                case Connected:
+            case Connected:
 
-                    conn.isValid = true;
+                conn.isValid = true;
 
-                    // Check to see if there is a registration message to be sent
-                    Message reg = conn.getRegistrationMsg();
-                    if (reg != null) {
-                        source.send(reg);
-                    }
+                // Check to see if there is a registration message to be sent
+                Message reg = conn.getRegistrationMsg();
+                if (reg != null) {
+                    source.send(reg);
+                }
 
-                    conn.setChanged();
-                    conn.notifyObservers(conn);
-                    // use this for alerting clients to our connection state change
-                    conn.fireMessageEvent(new ConnStateChange(true));
+                conn.setChanged();
+                conn.notifyObservers(conn);
+                // use this for alerting clients to our connection state change
+                conn.fireMessageEvent(new ConnStateChange(true));
 
-                    synchronized (conn) {
-                        conn.notifyAll();
+                synchronized (conn) {
+                    conn.notifyAll();
 
-                        trySendMessages();
-                    }
-                    break;
+                    trySendMessages();
+                }
+                break;
 
-                case Error:
-                case Disconnected:
-                    logger.debug("Setting " + conn + " invalid");
+            case Error:
+            case Disconnected:
+                logger.debug("Setting " + conn + " invalid");
 
-                    conn.isValid = false;
+                conn.isValid = false;
 
-                    setChanged();
-                    notifyObservers(conn);
-                    // use this for alerting clients to our connection state change
-                    fireMessageEvent(new ConnStateChange(false));
-                    break;
+                setChanged();
+                notifyObservers(conn);
+                // use this for alerting clients to our connection state change
+                fireMessageEvent(new ConnStateChange(false));
+                break;
 
-                default:
-                    break;
+            default:
+                break;
             }
         }
 
