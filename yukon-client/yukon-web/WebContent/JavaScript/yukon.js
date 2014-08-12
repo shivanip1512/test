@@ -120,6 +120,8 @@ var yukon = (function () {
         url : function (url) {
             if (url.startsWith('/')) {
                 return yg.app_context_path + url;
+            } else {
+                return url;
             }
         },
         /** JavaScript side of JsonTag.java */

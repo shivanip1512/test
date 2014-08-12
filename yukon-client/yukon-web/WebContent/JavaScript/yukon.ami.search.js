@@ -16,7 +16,7 @@ yukon.ami.search = (function () {
         var 
         sortColumn = $('.sortable.desc, .sortable.asc'),
         pageSize = $('span[data-page-size]'),
-        url = 'meter/search?',
+        url = '/meter/search?',
         criteria = $('#filter-form').serialize(),
         extras = {};
         
@@ -41,7 +41,7 @@ yukon.ami.search = (function () {
             $('.js-ami-search-clear').click(function (ev) {
                 
                 var sortColumn = $('.sortable.desc, .sortable.asc'),
-                    url = 'meter/search?' + $.param({
+                    url = '/meter/search?' + $.param({
                         itemsPerPage: $('span[data-page-size]').data('pageSize'),
                         sort: sortColumn.data('sort'),
                         dir: sortColumn.is('.desc') ? 'desc' : 'asc'
