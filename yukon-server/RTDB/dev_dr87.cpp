@@ -1379,6 +1379,7 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
 
         // Load all the other stuff that is needed
         populateRemoteOutMessage(*OutMessage);
+        OutMessage->Retry = 3;  //  override
 
         /************************
         * a standalone master has a slave address of -1
