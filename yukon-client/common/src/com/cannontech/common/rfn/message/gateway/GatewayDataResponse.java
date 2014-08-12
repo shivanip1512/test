@@ -32,12 +32,14 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private LastCommStatus lastCommStatus;
     private long lastCommStatusTimestamp;
     private Set<Radio> radios;
+    private short routeColor;
     
     private Authentication authentication;
     
     private String collectionSchedule; // Cron string
     private Set<DataSequence> sequences;
     
+    @Override
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
     }
@@ -182,53 +184,42 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.sequences = sequences;
     }
     
+    public short getRouteColor() {
+        return routeColor;
+    }
+    
+    public void setRouteColor(short routeColor) {
+        this.routeColor = routeColor;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((authentication == null) ? 0 : authentication.hashCode());
-        result = prime
-                * result
-                + ((collectionSchedule == null) ? 0 : collectionSchedule
-                        .hashCode());
-        result = prime
-                * result
-                + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
-        result = prime * result
-                + ((connectionType == null) ? 0 : connectionType.hashCode());
-        result = prime * result
-                + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
-        result = prime * result
-                + ((ipAddress == null) ? 0 : ipAddress.hashCode());
-        result = prime * result
-                + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
-        result = prime
-                * result
-                + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        result = prime * result + ((authentication == null) ? 0 : authentication.hashCode());
+        result =
+            prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
+        result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
+        result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
+        result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
+        result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
+        result =
+            prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
-        result = prime * result
-                + ((radioVersion == null) ? 0 : radioVersion.hashCode());
+        result = prime * result + ((radioVersion == null) ? 0 : radioVersion.hashCode());
         result = prime * result + ((radios == null) ? 0 : radios.hashCode());
-        result = prime * result
-                + ((releaseVersion == null) ? 0 : releaseVersion.hashCode());
-        result = prime * result
-                + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
-        result = prime * result
-                + ((sequences == null) ? 0 : sequences.hashCode());
-        result = prime * result
-                + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
-        result = prime
-                * result
-                + ((upperStackVersion == null) ? 0 : upperStackVersion
-                        .hashCode());
-        result = prime
-                * result
-                + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
+        result = prime * result + ((releaseVersion == null) ? 0 : releaseVersion.hashCode());
+        result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
+        result = prime * result + routeColor;
+        result = prime * result + ((sequences == null) ? 0 : sequences.hashCode());
+        result = prime * result + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
+        result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
+        result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -293,6 +284,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                 return false;
         } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
+        if (routeColor != other.routeColor)
+            return false;
         if (sequences == null) {
             if (other.sequences != null)
                 return false;
@@ -315,17 +308,19 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
             return false;
         return true;
     }
-    
+
     @Override
     public String toString() {
         return String
-                .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, authentication=%s, collectionSchedule=%s, sequences=%s]",
+                .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, authentication=%s, collectionSchedule=%s, sequences=%s]",
                         rfnIdentifier, hardwareVersion, softwareVersion,
                         upperStackVersion, radioVersion, releaseVersion,
                         versionConflicts, mode, connectionType, ipAddress,
                         port, connectionStatus, lastCommStatus,
-                        lastCommStatusTimestamp, radios, authentication,
-                        collectionSchedule, sequences);
+                        lastCommStatusTimestamp, radios, routeColor,
+                        authentication, collectionSchedule, sequences);
     }
+    
+    
     
 }
