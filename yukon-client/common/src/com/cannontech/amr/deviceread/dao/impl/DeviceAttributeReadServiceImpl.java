@@ -77,7 +77,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     private ImmutableMap<StrategyType, DeviceAttributeReadStrategy> strategies = ImmutableMap.of();
     
     @Override
-    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes,
+    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
                               LiteYukonUser user) {
 
         log.debug(String.format("isReadable called for %.3s and %s", devices, attributes));

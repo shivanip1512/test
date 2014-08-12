@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
+<cti:msgScope paths="yukon.web.widgets.disconnectMeterWidget">
 <cti:msg2 var="title" key=".statusMessages"/>
 <tags:sectionContainer title="${title}">
 
@@ -56,8 +57,7 @@
 						<tags:nameValueGap2 gapHeight="6px" />
 				</c:if>
 			</tags:nameValueContainer2>
-		</td>
-	</tr>
 </table>
 </tags:sectionContainer>
 <i:inline key=".disconnectNote"/>
+</cti:msgScope>

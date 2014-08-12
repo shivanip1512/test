@@ -13,7 +13,8 @@ import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectPlcService;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
@@ -97,9 +98,9 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
     }
     
     @Override
-    public void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
-                        CommandRequestExecution execution, DisconnectResult result, YukonUserContext userContext) {
-        disconnectPlcService.execute(command, meters, callback, execution, result, userContext.getYukonUser());
+    public CommandCompletionCallback<CommandRequestDevice> execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, YukonUserContext userContext) {
+        return disconnectPlcService.execute(command, meters, callback, execution, userContext.getYukonUser());
     }
     
     @PostConstruct
@@ -134,7 +135,7 @@ public class DisconnectPlcStrategy implements DisconnectStrategy{
     }
 
     @Override
-    public boolean supportsArm(DeviceCollection deviceCollection) {
+    public boolean supportsArm(Iterable<SimpleDevice> meters) {
         return false;
     }
 }

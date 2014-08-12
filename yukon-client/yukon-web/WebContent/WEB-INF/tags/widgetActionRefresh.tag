@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
@@ -33,26 +34,23 @@
     <c:choose>
         <c:when test="${type == 'button'}">
             <c:if test="${not empty pageScope.icon}">
-                <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon }" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true"/>
+                <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon }" renderMode="${renderMode}" classes="${pageScope.classes}" data-ok-event="yukon_action_confirm"/>
             </c:if>
             <c:if test="${empty icon}">
-                <cti:button nameKey="${nameKey}" id="${buttonId}" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true"/>
+                <cti:button nameKey="${nameKey}" id="${buttonId}" renderMode="${renderMode}" classes="${pageScope.classes}" data-ok-event="yukon_action_confirm"/>
             </c:if>
         </c:when>
         <c:otherwise>
-            <a id="${buttonId}" href="javascript:void(0);" classes="${pageScope.classes}"><i:inline key=".${nameKey}.label"/></a>
+            <a id="${buttonId}" href="javascript:void(0);" classes="${pageScope.classes}" data-ok-event="yukon_action_confirm">
+             <i:inline key=".${nameKey}.label"/>
+            </a>
         </c:otherwise>
     </c:choose>
+    <d:confirm on="#${buttonId}" nameKey="confirmAction" />
     <script type="text/javascript">
-        $('#' + '${buttonId}').on('click', function () {
-            var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}',
-                confirmed = true;
-            if (confirmText !== null && $.trim(confirmText) !== '') {
-                confirmed = window.confirm(confirmText);
-            }
-            if (confirmed) {
-                ${widgetParameters.jsWidget}.doActionRefresh({command: '${method}', key: '${buttonId}'});
-            }
+        $('#' + '${buttonId}').on('yukon_action_confirm', function () {
+            yukon.ui.busy('#' + '${buttonId}');
+            ${widgetParameters.jsWidget}.doActionRefresh({command: '${method}', key: '${buttonId}'});
         });
     </script>
 </c:if>

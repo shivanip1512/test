@@ -135,11 +135,7 @@
                     <c:if test="${disconnectSupported}">
                         <tags:widget bean="disconnectMeterWidget"/>
                     </c:if>
-                    
-                    <c:if test="${rfnDisconnectSupported}">
-                        <tags:widget bean="rfnMeterDisconnectWidget"/>
-                    </c:if>
-                    
+                                        
                     <c:if test="${rfnEventsSupported}">
                         <tags:widget bean="meterEventsWidget"/>
                     </c:if>

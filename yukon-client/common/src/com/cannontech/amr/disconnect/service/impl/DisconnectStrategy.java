@@ -6,7 +6,8 @@ import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.user.YukonUserContext;
@@ -21,8 +22,8 @@ public interface DisconnectStrategy {
     /**
      * Send connect, disconnect or arm command to the given devices.
      */
-    void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
-                        CommandRequestExecution execution, DisconnectResult result, YukonUserContext userContext);
+    public CommandCompletionCallback<CommandRequestDevice> execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, YukonUserContext userContext);
 
     /**
      * Attempt to cancel the command
@@ -32,5 +33,5 @@ public interface DisconnectStrategy {
     /**
      * Returns true if the devices can be armed.
      */
-    boolean supportsArm(DeviceCollection deviceCollection);
+    boolean supportsArm(Iterable<SimpleDevice> meters);
 }

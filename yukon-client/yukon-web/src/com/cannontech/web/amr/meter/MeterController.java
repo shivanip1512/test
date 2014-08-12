@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
@@ -59,6 +60,7 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -81,7 +83,8 @@ public class MeterController {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
+    @Autowired private DisconnectService disconnectService;
+   
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
     
     @RequestMapping("start")
@@ -200,12 +203,9 @@ public class MeterController {
         String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
         model.addAttribute("cisInfoWidgetName", cisInfoWidgetName);
 
-        boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
+        boolean disconnectSupported = disconnectService.supportsDisconnect(Lists.newArrayList(device));
         model.addAttribute("disconnectSupported", disconnectSupported);
-        
-        boolean rfnDisconnectSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_RFN);
-        model.addAttribute("rfnDisconnectSupported", rfnDisconnectSupported);
-
+       
         boolean touSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.TOU);
         model.addAttribute("touSupported", touSupported);
 

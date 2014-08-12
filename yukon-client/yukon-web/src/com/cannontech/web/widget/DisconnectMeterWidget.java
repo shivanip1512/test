@@ -1,300 +1,234 @@
 package com.cannontech.web.widget;
 
-import java.util.Collections;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
+import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
+import com.cannontech.amr.disconnect.service.DisconnectService;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
+import com.cannontech.amr.rfn.service.WaitableRfnMeterDisconnectCallback;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
-import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-/**
- * This is assumed to be for PLC meters. See RfnMeterDisconnectWidget for RFN meter types.
- */
-public class DisconnectMeterWidget extends WidgetControllerBase {
+
+public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MeterDao meterDao;
     @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     @Autowired private AttributeService attributeService;
-    @Autowired private StateDao stateDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private DynamicDataSource dynamicDataSource;
-    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
-    @Autowired private DeviceDao deviceDao;    
+    @Autowired private DisconnectService disconnectService;  
+    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private StateDao stateDao;
     
-    private Set<? extends Attribute> disconnectAttribute = Collections.singleton(BuiltInAttribute.DISCONNECT_STATUS);
-    private enum DisconnectState {
-        CONNECTED, DISCONNECTED, UNKNOWN}; 
+    private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
 
+    @RequestMapping("render")
+    public String render(ModelMap model, YukonUserContext context, Integer deviceId) {
+        YukonMeter meter = meterDao.getForId(deviceId);
+        initModel(model, context, meter);
+        
+        return "disconnectMeterWidget/render.jsp";
+    }
     
-    @Override
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        YukonMeter meter = getMeter(request);
-        ModelAndView mav = new ModelAndView("disconnectMeterWidget/render.jsp");
-        mav.addObject("shortName", getShortName());
-        mav.addObject("device", meter);
-        mav.addObject("attribute", BuiltInAttribute.DISCONNECT_STATUS);
-        mav.addObject("isRead", false);
+    @RequestMapping("read")
+    public String read(final ModelMap model, final YukonUserContext context, Integer deviceId) {
+        // This method will be changed by YUK-12715 Refactor PlcDeviceAttributeReadService
+        // It should just call DeviceAttributeReadService.readMeter without checking if the device is PLC or RF
+        YukonMeter meter = meterDao.getForId(deviceId);
+        initModel(model, context, meter);
+        if(meter.getPaoType().isRfn()){
+            final MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
+            WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback() {
+    
+                @Override
+                public void processingExceptionOccured(MessageSourceResolvable message) {
+                    SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
+                    model.addAttribute("errors", Lists.newArrayList(error));
+                }
+    
+                @Override
+                public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
+                    model.addAttribute("success", true);
+                }
+    
+                @Override
+                public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
+                    SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
+                    model.addAttribute("errors", Lists.newArrayList(error));
+                }
+                
+                private SpecificDeviceErrorDescription getErrorDescription(NetworkManagerError errorType,
+                                                                           MessageSourceResolvable message) {
+                    String detail = messageSourceAccessor.getMessage(message);
+                    DeviceErrorDescription errorDescription =
+                        deviceErrorTranslatorDao.translateErrorCode(errorType.getErrorCode(), context);
+                    SpecificDeviceErrorDescription deviceErrorDescription =
+                        new SpecificDeviceErrorDescription(errorDescription, detail);
+                    return deviceErrorDescription;
+                }
+            };
+            
+            RfnMeter rfnMeter = meterDao.getRfnMeterForId(deviceId);
+            rfnMeterDisconnectService.send(rfnMeter,  RfnMeterDisconnectStatusType.QUERY, waitableCallback);
+            
+            try {
+                waitableCallback.waitForCompletion();
+            } catch (InterruptedException e) { /* Ignore */ }
+        }else if(meter.getPaoType().isPlc()){
+            CommandResultHolder result =
+                plcDeviceAttributeReadService.readMeter(meter,
+                                                        disconnectAttribute,
+                                                        DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,
+                                                        context.getYukonUser());
+    
+            if (result.getErrors().isEmpty() && StringUtils.isEmpty(result.getExceptionReason())) {
+                String configStr = result.getLastResultString();
+                model.addAttribute("configString", configStr);  
+                model.addAttribute("success", true);
+            }
+  
+            model.addAttribute("errors", result.getErrors());
+            if (StringUtils.isNotEmpty(result.getExceptionReason())) {
+                model.addAttribute("exceptionReason", result.getExceptionReason());
+            }
+            
 
-        boolean isConfigured = true;
-        try {
-            LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
-            PointValueHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
-            int stateGroupId = litePoint.getStateGroupID();
-            LiteState liteState = stateDao.findLiteState(stateGroupId, (int) pointValue.getValue());
-            mav.addObject("state", getDisconnectedState(liteState.getStateRawState()));
-            
-            LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
-            mav.addObject("stateGroups",liteStates);
-            
-        } catch(IllegalUseOfAttribute e) {
-            isConfigured = false;
         }
-        
-        mav.addObject("isConfigured", isConfigured);
-        mav.addObject("configString", "");
-        
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean controllable = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
-        mav.addObject("controllable", controllable);
 
-        boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
-        mav.addObject("readable", readable);
-        
-        int pointId = getPointId(request);
-        mav.addObject("pointId", pointId);
-        
-        return mav;
+        return "disconnectMeterWidget/render.jsp";
     }
 
-    public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
-    throws Exception {
-        YukonMeter meter = getMeter(request);
-        ModelAndView mav = getReadModelAndView(meter, true);
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, disconnectAttribute, DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
-        
-        mav.addObject("state", getDisconnectedState(meter, result));
-        String configStr = "";
-        if ( result.getErrors().isEmpty() )
-            configStr = result.getLastResultString().replaceAll("\n", "<BR>");
-        mav.addObject("configString", configStr);
-        
-        mav.addObject("result", result);
-        
-        boolean controllable = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
-        mav.addObject("controllable", controllable);
-
-        boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
-        mav.addObject("readable", readable);
-        
-        int pointId = getPointId(request);
-        mav.addObject("pointId", pointId);
-
-        return mav;
-    }
-
-    public ModelAndView helpInfo(HttpServletRequest request, HttpServletResponse response)
-    throws Exception {
-        ModelAndView mav = new ModelAndView("disconnectMeterWidget/helpInfo.jsp");
-        mav.addObject("shortName", getShortName());
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        mav.addObject("device", device);
-        
-        boolean isConfigured = true;
-        try {
-            LitePoint litePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.DISCONNECT_STATUS);
-            int stateGroupId = litePoint.getStateGroupID();
-            LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
-            mav.addObject("stateGroups",liteStates);
-        } catch(IllegalUseOfAttribute e) {
-            isConfigured = false;
-        }
+    @RequestMapping("helpInfo")
+    public String helpInfo(ModelMap model, YukonUserContext context, Integer deviceId){
+        YukonMeter meter = meterDao.getForId(deviceId);
+        initModel(model, context, meter);
         
         boolean is410Supported =
-            paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_410);
-        mav.addObject("is410Supported", is410Supported);
+            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_410);
+        model.addAttribute("is410Supported", is410Supported);
 
         boolean is310Supported =
-            paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_310);
-        mav.addObject("is310Supported", is310Supported);
+            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_310);
+        model.addAttribute("is310Supported", is310Supported);
         
         boolean is213Supported =
-            paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_213);
-        mav.addObject("is213Supported",is213Supported);
-        
-        mav.addObject("isConfigured", isConfigured);
-        return mav;
+            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_213);
+        model.addAttribute("is213Supported",is213Supported);
+
+        return "disconnectMeterWidget/helpInfo.jsp";
     }
     
-    public ModelAndView connect(HttpServletRequest request, HttpServletResponse response)
-    throws Exception {
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
-        
-    	YukonMeter meter = getMeter(request);
-    	
-        CommandResultHolder result =
-            commandRequestExecutor.execute(meter,
-                                           DisconnectCommand.CONNECT.getPlcCommand(),
-                                           DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
-                                           user);
-        
-        ModelAndView mav = getControlModelAndView(request, result);
-        
-        return mav;
-    }
-    
-    public ModelAndView disconnect(HttpServletRequest request, HttpServletResponse response)
-    throws Exception {
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
-        
-    	YukonMeter meter = getMeter(request);
-    	
-        CommandResultHolder result =
-            commandRequestExecutor.execute(meter,
-                                           DisconnectCommand.DISCONNECT.getPlcCommand(),
-                                           DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
-                                           user);
-        
-        ModelAndView mav = getControlModelAndView(request, result);
-        
-        return mav;
-    }
-    
-    private YukonMeter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+    @RequestMapping("connect")
+    public String connect(ModelMap model, YukonUserContext context, Integer deviceId) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, context.getYukonUser());
+
         YukonMeter meter = meterDao.getForId(deviceId);
-        return meter;
-    }
-    
-    private int getPointId(HttpServletRequest request) throws ServletRequestBindingException {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        LitePoint litePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.DISCONNECT_STATUS);
-        int pointId = litePoint.getLiteID();
-        return pointId;
-    }
-    
-    private ModelAndView getReadModelAndView(YukonMeter meter, boolean isRead){
-        
-        ModelAndView mav = new ModelAndView("disconnectMeterWidget/render.jsp");
-        mav.addObject("device", meter);
-        mav.addObject("attribute", BuiltInAttribute.DISCONNECT_STATUS);
-        mav.addObject("isRead", isRead);
-        mav.addObject("isSupported", true);
-        mav.addObject("isConfigured", true);
-        mav.addObject("shortName", getShortName());
-        
-        return mav;
-    }
-    
-    private ModelAndView getControlModelAndView(HttpServletRequest request, CommandResultHolder result) throws Exception {
-        YukonMeter meter = getMeter(request);
-        
-        ModelAndView mav = getReadModelAndView(meter, true);
-        mav.addObject("shortName", getShortName());
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        
-        mav.addObject("state", getDisconnectedState(meter, result));
-        mav.addObject("configString", "");
-        
-        mav.addObject("result", result);
-        
-        boolean controllable = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
-        mav.addObject("controllable", controllable);
+        initModel(model, context, meter);
+        DisconnectMeterResult result =
+            disconnectService.execute(DisconnectCommand.CONNECT,
+                                      DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
+                                      meter,
+                                      context);
+        addDisconnectResultToModel(model, result);
 
-        boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
-        mav.addObject("readable", readable);
-        
-        int pointId = getPointId(request);
-        mav.addObject("pointId", pointId);
-        
-        return mav;
+        return "disconnectMeterWidget/render.jsp";
+    }
+
+    @RequestMapping("disconnect")
+    public String disconnect(ModelMap model, YukonUserContext context, Integer deviceId) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, context.getYukonUser());
+
+        YukonMeter meter = meterDao.getForId(deviceId);
+        initModel(model, context, meter);
+        DisconnectMeterResult result =
+            disconnectService.execute(DisconnectCommand.DISCONNECT,
+                                      DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
+                                      meter,
+                                      context);
+        addDisconnectResultToModel(model, result);
+
+        return "disconnectMeterWidget/render.jsp";
+    }
+
+    @RequestMapping("arm")
+    public String arm(ModelMap model, YukonUserContext context, Integer deviceId) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, context.getYukonUser());
+
+        YukonMeter meter = meterDao.getForId(deviceId);
+        initModel(model, context, meter);
+        DisconnectMeterResult result =
+            disconnectService.execute(DisconnectCommand.ARM,
+                                      DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET,
+                                      meter,
+                                      context);
+        addDisconnectResultToModel(model, result);
+
+        return "disconnectMeterWidget/render.jsp";
     }
     
-    private DisconnectState getDisconnectedState(YukonMeter meter, CommandResultHolder result) {
-        
-        Double stateValue =  null;
-        LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
-        
-        // result is empty, do lookup on dynamicDataSource
-        if( result.getValues().isEmpty()) {
-            
-            PointValueHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
-            int stateGroupId = litePoint.getStateGroupID();
-            LiteState liteState = stateDao.findLiteState(stateGroupId, (int) pointValue.getValue());
-            
-            stateValue = (double)liteState.getStateRawState();
+    private void addDisconnectResultToModel(ModelMap model, DisconnectMeterResult result){
+        if(result.getError() != null){
+            model.addAttribute("errors", Lists.newArrayList(result.getError()));
+        }
+        if(StringUtils.isNotEmpty(result.getProcessingException())){
+            model.addAttribute("exceptionReason", result.getProcessingException());
         }
         
-        //else grab from result if correct point is found, otherwise unknown
-        else {
-            
-            for (PointValueHolder pvh : result.getValues()) {
-                
-                int pointId = pvh.getId();
-                if (pointId == litePoint.getLiteID()) {
-                    stateValue = pvh.getValue();
-                    break;
-                }
-            }
-            
-            if (stateValue == null) {
-                return DisconnectState.UNKNOWN;
-            }
-        }
-        
-        return getDisconnectedState(stateValue);
+        model.addAttribute("success", result.isSuccess());
+        model.addAttribute("command", result.getCommand());
     }
     
-    /**
-     * Default Disconnect states:
-     * 0 Confirmed Disconnected
-     * 1 Connected
-     * 2 Unconfirmed Disconnected
-     * 3 Connect Armed
-     * @param value
-     * @return true if value is a disconnected state
-     */
-    private DisconnectState getDisconnectedState(double value) {
-
-        if (value == 0 || value == 2) 
-            return DisconnectState.DISCONNECTED;
-        else 
-            return DisconnectState.CONNECTED;
+    private void initModel(ModelMap model, YukonUserContext context, YukonMeter meter) {
+        try {
+            LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
+            model.addAttribute("pointId", litePoint.getPointID());
+            model.addAttribute("isConfigured", true);
+            LiteState[] liteStates = stateDao.getLiteStates(litePoint.getStateGroupID());
+            model.addAttribute("stateGroups", liteStates);
+            model.addAttribute("pointId", litePoint.getLiteID());
+        } catch (IllegalUseOfAttribute e) {
+            model.addAttribute("isConfigured", false);
+        }
+        boolean supportsArm = disconnectService.supportsArm(Lists.newArrayList(new SimpleDevice(meter)));
+        model.addAttribute("device", meter);
+        model.addAttribute("supportsArm", supportsArm);
+        model.addAttribute("attribute", BuiltInAttribute.DISCONNECT_STATUS);
     }
 }
-

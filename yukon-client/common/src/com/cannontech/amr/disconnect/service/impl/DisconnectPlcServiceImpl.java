@@ -61,8 +61,8 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     }
             
     @Override
-    public void execute(final DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
-                        CommandRequestExecution execution, DisconnectResult result, LiteYukonUser user) {
+    public CommandCompletionCallback<CommandRequestDevice> execute(final DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, LiteYukonUser user) {
 
         Function<SimpleDevice, CommandRequestDevice> toCommandRequestDevice =
                 new Function<SimpleDevice, CommandRequestDevice>() {
@@ -81,9 +81,9 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             }
         }
         Callback commandCompletionCallback = new Callback(callback, meters);
-        result.setCommandCompletionCallback(commandCompletionCallback);
         commandRequestDeviceExecutor
             .createTemplateAndExecute(execution, commandCompletionCallback, commands, user);
+        return commandCompletionCallback;
     }
 
     private class Callback implements CommandCompletionCallback<CommandRequestDevice> {

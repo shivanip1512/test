@@ -12,10 +12,11 @@ import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectRfnService;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.config.RfnMeterDisconnectArming;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
@@ -64,9 +65,11 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
     }
 
     @Override
-    public void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
-                        CommandRequestExecution execution, DisconnectResult result, YukonUserContext userContext) {
+    public  CommandCompletionCallback<CommandRequestDevice> execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback callback,
+                        CommandRequestExecution execution, YukonUserContext userContext) {
         disconnectRfnService.execute(command, meters, callback, execution, userContext);
+        //This strategy doesn't need callback to cancel the execution.
+        return null;
     }
     
     @PostConstruct
@@ -83,10 +86,10 @@ public class DisconnectRfnStrategy implements DisconnectStrategy {
     }
 
     @Override
-    public boolean supportsArm(DeviceCollection deviceCollection) {
+    public boolean supportsArm(Iterable<SimpleDevice> meters) {
         if (mode == RfnMeterDisconnectArming.ARM || mode == RfnMeterDisconnectArming.BOTH) {
             Iterable<SimpleDevice> rfnDevices =
-                Iterables.filter(deviceCollection.getDeviceList(), new Predicate<SimpleDevice>() {
+                Iterables.filter(meters, new Predicate<SimpleDevice>() {
                     @Override
                     public boolean apply(SimpleDevice d) {
                         return d.getDeviceType().isRfn();

@@ -28,4 +28,19 @@ public interface DisconnectEventLogService {
                                 @Arg(ArgEnum.failureRequests) Integer failure,
                                 @Arg(ArgEnum.notAttemptedRequests) Integer notAttempted
             );
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
+    public void disconnectInitiated(@Arg(ArgEnum.username) LiteYukonUser user,
+                                    @Arg(ArgEnum.commandRequestString) String command,
+                                    @Arg(ArgEnum.deviceName) String deviceName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
+    public void actionCompleted(@Arg(ArgEnum.username) LiteYukonUser user,
+                                @Arg(ArgEnum.commandRequestString) String command,
+                                String requestType,
+                                @Arg(ArgEnum.totalRequests) Integer total,
+                                @Arg(ArgEnum.successRequests) Integer success,
+                                @Arg(ArgEnum.failureRequests) Integer failure,
+                                @Arg(ArgEnum.notAttemptedRequests) Integer notAttempted
+            );
 }

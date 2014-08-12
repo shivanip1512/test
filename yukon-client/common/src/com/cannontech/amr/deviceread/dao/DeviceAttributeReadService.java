@@ -32,7 +32,7 @@ public interface DeviceAttributeReadService {
      * 
      * This will return false if either the devices or attributes collection is empty.
      */
-    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes, LiteYukonUser user);
+    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, LiteYukonUser user);
         
     
     // The methods below this line represent a distinct part of this service.

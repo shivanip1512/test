@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -13,6 +14,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
+import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
+import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
 import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
@@ -24,6 +27,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
@@ -43,6 +48,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Sets;
 
 public class DisconnectServiceImpl implements DisconnectService {
 
@@ -66,6 +72,7 @@ public class DisconnectServiceImpl implements DisconnectService {
                                     final SimpleCallback<DisconnectResult> callback,
                                     final YukonUserContext userContext) {
         disconnectEventLogService.groupDisconnectAttempted(userContext.getYukonUser(), command.name());
+        
         
         final DisconnectResult result = new DisconnectResult();
         result.setCommand(command);
@@ -152,11 +159,11 @@ public class DisconnectServiceImpl implements DisconnectService {
                         }
                         result.complete();
                         disconnectEventLogService.groupActionCompleted(userContext.getYukonUser(),
-                                                                  command.name(),
-                                                                  result.getTotalCount(),
-                                                                  result.getSuccessCount(),
-                                                                  result.getFailedCount(),
-                                                                  result.getNotAttemptedCount());
+                                                                       command.name(),
+                                                                       result.getTotalCount(),
+                                                                       result.getSuccessCount(),
+                                                                       result.getFailedCount(),
+                                                                       result.getNotAttemptedCount());
                         try {
                             callback.handle(result);
                         } catch (Exception e) {
@@ -239,7 +246,10 @@ public class DisconnectServiceImpl implements DisconnectService {
                 requestCount += meters.size();
                 log(meters, command.name(), userContext.getYukonUser());
                 // send command to the valid devices
-                strategy.execute(command, meters, disconnectCallback, execution, result, userContext);
+                CommandCompletionCallback<CommandRequestDevice> completionCallback =
+                    strategy.execute(command, meters, disconnectCallback, execution, userContext);
+                // this callback is needed for cancellation
+                result.setCommandCompletionCallback(completionCallback);
             }
         }
         
@@ -250,6 +260,131 @@ public class DisconnectServiceImpl implements DisconnectService {
         }
         commandRequestExecutionDao.saveOrUpdate(execution);
         
+        return result;
+    }
+    
+    @Override
+    public DisconnectMeterResult execute(DisconnectCommand command, final DeviceRequestType type, YukonMeter meter,
+                                         final YukonUserContext userContext) {
+        
+        Set<SimpleDevice> allDevices = Sets.newHashSet(new SimpleDevice(meter));
+        if (!supportsDisconnect(allDevices)) {
+            throw new UnsupportedOperationException("Meter:" + meter + " doesn't support connect/disconnect");
+        }
+        disconnectEventLogService.disconnectInitiated(userContext.getYukonUser(),
+                                                      command.name(),
+                                                      type.name());
+        log(allDevices, command.name(), userContext.getYukonUser());
+        
+        final CommandRequestExecution execution =
+            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                              type,
+                                                              0,
+                                                              userContext.getYukonUser());
+        final DisconnectMeterResult result = new DisconnectMeterResult(meter, command);
+        class WaitableCallback implements DisconnectCallback {
+
+            private final CountDownLatch completeLatch = new CountDownLatch(1);
+            private boolean isComplete = false;
+
+            @Override
+            public void connected(SimpleDevice device, Instant timestamp) {
+                result.setState(DisconnectDeviceState.CONNECTED);
+                result.setDisconnectTime(timestamp);
+            }
+            @Override
+            public void armed(SimpleDevice device, Instant timestamp) {
+                result.setState(DisconnectDeviceState.ARMED);
+                result.setDisconnectTime(timestamp);
+            }
+
+            @Override
+            public void disconnected(SimpleDevice device, Instant timestamp) {
+                result.setState(DisconnectDeviceState.DISCONNECTED);
+                result.setDisconnectTime(timestamp);
+            }
+
+            @Override
+            public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
+                result.setState(DisconnectDeviceState.FAILED);
+                result.setError(error);
+            }
+
+            @Override
+            public void canceled(SimpleDevice device) {
+                // not implemented
+            }
+
+            @Override
+            public void complete() {
+                isComplete = true;
+                log.debug("Command Complete");
+                execution.setRequestCount(1);
+                completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
+                log();
+                completeLatch.countDown();
+            }
+
+            @Override
+            public boolean isComplete() {
+                return isComplete;
+            }
+
+            @Override
+            public void processingExceptionOccured(String reason) {
+                if (!isComplete) {
+                    completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.FAILED);
+                    result.setProcessingException(reason);
+                    complete();
+                }
+            }
+
+            @Override
+            public boolean isCanceled() {
+                return false;
+            }
+
+            @Override
+            public void cancel() {
+                // not implemented
+            }
+
+            public void waitForCompletion() throws InterruptedException {
+                log.debug("Starting await completion");
+                completeLatch.await();
+                log.debug("Finished await completion");
+            }
+            
+            private void log(){
+                disconnectEventLogService.actionCompleted(userContext.getYukonUser(),
+                                                          result.getCommand().name(),
+                                                          type.name(),
+                                                          1,
+                                                          result.isSuccess() ? 1 : 0,
+                                                          result.isSuccess() ? 0 : 1,
+                                                          0);
+            }
+        } ;
+
+        if (log.isDebugEnabled()) {
+            log.debug("Device: " + meter);
+            log.debug("Execute: " + command);
+            log.debug("CommandRequestExecutionId=" + execution.getId());
+            log.debug("-----");
+        }
+        
+        WaitableCallback waitableCallback = new WaitableCallback();
+        for (DisconnectStrategy strategy : strategies) {
+            FilteredDevices filteredDevices = strategy.filter(allDevices);
+            if(!filteredDevices.getValid().isEmpty()){
+                log.debug("validMeters =" + filteredDevices.getValid());
+                strategy.execute(command, filteredDevices.getValid(), waitableCallback, execution, userContext);
+            }
+        } 
+        
+        try {
+            waitableCallback.waitForCompletion();
+        } catch (InterruptedException e) { /* Ignore */ }
         return result;
     }
     
@@ -311,9 +446,20 @@ public class DisconnectServiceImpl implements DisconnectService {
     }
     
     @Override
-    public boolean supportsArm(DeviceCollection deviceCollection) {
+    public boolean supportsArm(Iterable<SimpleDevice> meters) {
         for (DisconnectStrategy strategy : strategies) {
-            if(strategy.supportsArm(deviceCollection)){
+            if(strategy.supportsArm(meters)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean supportsDisconnect(Iterable<SimpleDevice> meters) {
+        for (DisconnectStrategy strategy : strategies) {
+            FilteredDevices filteredDevices = strategy.filter(meters);
+            if (!filteredDevices.getValid().isEmpty()) {
                 return true;
             }
         }

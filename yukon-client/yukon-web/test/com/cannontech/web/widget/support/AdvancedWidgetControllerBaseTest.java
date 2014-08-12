@@ -9,7 +9,6 @@ import com.cannontech.web.widget.DeviceDataMonitorsWidget;
 import com.cannontech.web.widget.MeterEventsWidget;
 import com.cannontech.web.widget.PorterResponseMonitorsWidget;
 import com.cannontech.web.widget.RfnDeviceMetadataWidget;
-import com.cannontech.web.widget.RfnMeterDisconnectWidget;
 import com.cannontech.web.widget.RfnOutagesWidget;
 import com.cannontech.web.widget.StatusPointMonitorsWidget;
 import com.cannontech.web.widget.SubscribedMonitorsWidget;
@@ -23,7 +22,6 @@ public class AdvancedWidgetControllerBaseTest {
         assertNoControllerAnnotation(MeterEventsWidget.class);
         assertNoControllerAnnotation(PorterResponseMonitorsWidget.class);
         assertNoControllerAnnotation(RfnDeviceMetadataWidget.class);
-        assertNoControllerAnnotation(RfnMeterDisconnectWidget.class);
         assertNoControllerAnnotation(RfnOutagesWidget.class);
         assertNoControllerAnnotation(StatusPointMonitorsWidget.class);
     }
