@@ -206,9 +206,12 @@ function saveButton () {
         }
     }
     else {
-        $.post(yukon.url('dynamicBilling/save.json'), $('#billingFormatForm').serialize()).done(function(result) {
+        $.post(yukon.url('/dynamicBilling/save.json'), $('#billingFormatForm').serialize()).done(function(result) {
             $('#billing_setup_overview').html(result);
             yukon.ami.billing.reset_setup_tab();
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            debug.log('saveButton: errorThrown:' + errorThrown);
         });
     }
     return false;
