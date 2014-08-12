@@ -28,6 +28,7 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.estimatedload.EstimatedLoadAmount;
 import com.cannontech.dr.estimatedload.EstimatedLoadResult;
+import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
@@ -75,26 +76,40 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     }
 
     private void populatePointData(List<PaoIdentifier> lmPaos) {
+        boolean toArchive = false;
         for (PaoIdentifier paoIdent : lmPaos) {
+            toArchive = false;
             EstimatedLoadResult estimatedLoadResult = null;
+            EstimatedLoadAmount amount = null;
             if (paoIdent.getPaoType().isLmProgram()) {
-                estimatedLoadResult = backingServiceHelper.findProgramValue(paoIdent.getPaoId());
+                estimatedLoadResult = backingServiceHelper.findProgramValue(paoIdent.getPaoId(), true);
             } else if (paoIdent.getPaoType() == PaoType.LM_CONTROL_AREA) {
-                estimatedLoadResult = backingServiceHelper.getControlAreaValue(paoIdent);
+                estimatedLoadResult = backingServiceHelper.getControlAreaValue(paoIdent, true);
             } else if (paoIdent.getPaoType() == PaoType.LM_SCENARIO) {
-                estimatedLoadResult = backingServiceHelper.getScenarioValue(paoIdent);
+                estimatedLoadResult = backingServiceHelper.getScenarioValue(paoIdent, true);
             }
             if (estimatedLoadResult != null && estimatedLoadResult instanceof EstimatedLoadAmount) {
-                EstimatedLoadAmount amount = (EstimatedLoadAmount) estimatedLoadResult;
-                LitePoint diversifiedPoint
-                    = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(PointType.Analog, 1)));
+                amount = (EstimatedLoadAmount) estimatedLoadResult;
+                toArchive = true;
+            } else if (estimatedLoadResult != null && estimatedLoadResult instanceof EstimatedLoadSummary) {
+                EstimatedLoadSummary summary = (EstimatedLoadSummary) estimatedLoadResult;
+                if (summary.getContributing() > 0 || summary.getCalculating() > 0) {
+                    amount = summary.getSummaryAmount();
+                    toArchive = true;
+                } 
+            }
+            
+            if (toArchive) {
+                LitePoint diversifiedPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent,
+                        new PointIdentifier(PointType.Analog, 1)));
+                
+                LitePoint maxKwPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(
+                        PointType.Analog, 2)));
+                
                 pointAccessDao.setPointValue(diversifiedPoint, amount.getDiversifiedLoad());
-
-                LitePoint maxKwPoint
-                    = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(PointType.Analog, 2)));
                 pointAccessDao.setPointValue(maxKwPoint, amount.getMaxKwSavings());
             } else {
-                log.info("Unable to calculate estimated load data for pao: " + paoIdent);
+                log.warn("Unable to archive estimated load data for pao: " + paoIdent);
             }
         }
     }

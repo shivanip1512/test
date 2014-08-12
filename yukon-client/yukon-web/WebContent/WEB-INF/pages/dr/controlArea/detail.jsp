@@ -55,7 +55,6 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:icon icon="icon-spinner" classes="js-spinner"/>
                                 <span class="js-connected-load">
                                     <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                 </span>
@@ -64,7 +63,6 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.diversifiedLoad">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:icon icon="icon-spinner" classes="js-spinner"/>
                                 <span class="js-diversified-load">
                                     <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                 </span>
@@ -73,7 +71,6 @@
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.kwSavings">
                             <div data-pao="${controlAreaId}">
                                 <cti:icon icon="icon-error" classes="dn"/>
-                                <cti:icon icon="icon-spinner" classes="js-spinner"/>
                                 <span class="js-kw-savings">
                                     <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                 </span>

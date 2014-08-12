@@ -31,7 +31,7 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
     public String getValue(int programId, YukonUserContext userContext) {
         EstimatedLoadResult estimatedLoadResult = null;
         
-        estimatedLoadResult = backingServiceHelper.findProgramValue(programId);
+        estimatedLoadResult = backingServiceHelper.findProgramValue(programId, false);
         if (null == estimatedLoadResult) {
             return createCalculatingJson(programId, userContext);
         }

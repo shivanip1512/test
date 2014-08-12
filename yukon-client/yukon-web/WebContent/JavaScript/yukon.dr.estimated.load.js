@@ -5,31 +5,64 @@ yukon.namespace('yukon.dr.estimatedLoad');
 yukon.dr.estimatedLoad = (function() {
    
     mod = {
+
             
             displayProgramValue : function (msg) {
                 var data = $.parseJSON(msg.value);
                 var status = data.status;
                 var row = $('[data-pao=' + data.paoId +']');
                 
+                var connectedSpan = row.find('.js-connected-load');
+                var diversifiedSpan = row.find('.js-diversified-load');
+                var kwSavingsSpan = row.find('.js-kw-savings');
+                
+                var flashOnUpdate = row.data('flash-on-update') === undefined ? false : row.data('flash-on-update');
+                
                 if (status == 'error') {
                     row.attr("title", data.tooltip);
                     row.find('.icon-error').show();
-                    row.find('.icon-spinner').hide();
-                    row.find('.js-connected-load').html(data.value);
-                    row.find('.js-diversified-load').html(data.value);
-                    row.find('.js-kw-savings').html(data.value);
-                } else if (status == 'calc') {
-                    row.attr("title", data.tooltip);
-                    row.find('.icon-error').hide();
-                    row.find('.icon-spinner').show();
+
+                    if (connectedSpan.length > 0 && connectedSpan.html() != data.value) {
+                        connectedSpan.html(data.value).flashYellow(1.5);
+                    }
+                    if (diversifiedSpan.length > 0 && diversifiedSpan.html() != data.value) {
+                        diversifiedSpan.html(data.value).flashYellow(1.5);
+                    }
+                    if (kwSavingsSpan.length > 0 && kwSavingsSpan.html() != data.value) {
+                        kwSavingsSpan.html(data.value).flashYellow(1.5);
+                    }
+                    flashOnUpdate = true;
+                    row.data('in-error', true);
                 } else if (status == 'success') {
                     row.removeAttr("title");
-                    row.find('.icon-error').hide();
-                    row.find('.icon-spinner').hide();
-                    row.find('.js-connected-load').html(data.connected);
-                    row.find('.js-diversified-load').html(data.diversified);
-                    row.find('.js-kw-savings').html(data.kwSavings);
+
+                    var inError = row.data('in-error');
+                    if (inError) {
+                        row.find('.icon-error').hide();
+                        row.data('in-error', false);
+                    }
+
+                    if (connectedSpan.length > 0 && connectedSpan.html() != data.connected) {
+                        connectedSpan.html(data.connected);
+                        if (flashOnUpdate) {
+                            connectedSpan.flashYellow(1.5);
+                        }
+                    }
+                    if (diversifiedSpan.length > 0 && diversifiedSpan.html() != data.diversified) {
+                        diversifiedSpan.html(data.diversified);
+                        if (flashOnUpdate) {
+                            diversifiedSpan.flashYellow(1.5);
+                        }
+                    }
+                    if (kwSavingsSpan.length > 0 && kwSavingsSpan.html() != data.kwSavings) {
+                        kwSavingsSpan.html(data.kwSavings);
+                        if (flashOnUpdate) {
+                            kwSavingsSpan.flashYellow(1.5);
+                        }
+                    }
+                    flashOnUpdate = true;
                 }
+                row.data('flash-on-update', flashOnUpdate);
             },
     
             displaySummaryValue : function (msg) {
@@ -37,26 +70,46 @@ yukon.dr.estimatedLoad = (function() {
                 var status = data.status;
                 var row = $('[data-pao=' + data.paoId +']');
                 
-                row.find('.js-connected-load').html(data.connected);
-                row.find('.js-diversified-load').html(data.diversified);
-                row.find('.js-kw-savings').html(data.kwSavings);
-                if (status == 'error') {
+                var connectedSpan = row.find('.js-connected-load');
+                var diversifiedSpan = row.find('.js-diversified-load');
+                var kwSavingsSpan = row.find('.js-kw-savings');
+                
+                var flashOnUpdate = row.data('flash-on-update') === undefined ? false : row.data('flash-on-update');
+                
+                // Display/hide icons and tooltips based on status.
+                if (status == 'error' || status == 'errorAndCalc') {
                     row.attr("title", data.tooltip);
                     row.find('.icon-error').show();
-                    row.find('.icon-spinner').hide();
                 } else if (status == 'calc') {
                     row.attr("title", data.tooltip);
-                    row.find('.icon-error').hide();
-                    row.find('.icon-spinner').show();
-                } else if (status == 'errorAndCalc') {
-                    row.attr("title", data.tooltip);
-                    row.find('.icon-error').show();
-                    row.find('.icon-spinner').show();
                 } else if (status == 'success') {
                     row.removeAttr("title");
                     row.find('.icon-error').hide();
-                    row.find('.icon-spinner').hide();
-                } 
+                }
+                
+                // Update and flash amount fields only when in error or success states. 
+                if (status == 'error' || status == 'success') {
+                    if (connectedSpan.length > 0 && connectedSpan.html() != data.connected) {
+                        connectedSpan.html(data.connected);
+                        if (flashOnUpdate) {
+                            connectedSpan.flashYellow(1.5);
+                        }
+                    }
+                    if (diversifiedSpan.length > 0 && diversifiedSpan.html() != data.diversified) {
+                        diversifiedSpan.html(data.diversified);
+                        if (flashOnUpdate) {
+                            diversifiedSpan.flashYellow(1.5);
+                        }
+                    }
+                    if (kwSavingsSpan.length > 0 && kwSavingsSpan.html() != data.kwSavings) {
+                        kwSavingsSpan.html(data.kwSavings);
+                        if (flashOnUpdate) {
+                            kwSavingsSpan.flashYellow(1.5);
+                        }
+                    }
+                }
+                flashOnUpdate = true;
+                row.data('flash-on-update', flashOnUpdate);
             }
     };
     

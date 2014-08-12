@@ -24,14 +24,12 @@ import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.estimatedload.service.FormulaService;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 
 public class EstimatedLoadServiceImpl implements EstimatedLoadService {
     private final Logger log = YukonLogManager.getLogger(EstimatedLoadServiceImpl.class);
     
-    @Autowired private LoadControlClientConnection clientConnection;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private EstimatedLoadDao estimatedLoadDao;

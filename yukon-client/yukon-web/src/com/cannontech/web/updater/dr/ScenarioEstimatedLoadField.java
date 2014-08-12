@@ -24,7 +24,7 @@ public class ScenarioEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         EstimatedLoadSummary summary;
         PaoIdentifier scenario = new PaoIdentifier(paoId, PaoType.LM_SCENARIO);
         
-        summary = backingServiceHelper.getScenarioValue(scenario);
+        summary = backingServiceHelper.getScenarioValue(scenario, false);
         
         return createSummaryJson(scenario, summary, userContext);
     }

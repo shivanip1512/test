@@ -144,7 +144,6 @@
                                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                         <td data-pao="${controlAreaId}">
                                             <cti:icon icon="icon-error" classes="dn"/>
-                                            <cti:icon icon="icon-spinner"/>
                                             <span class="js-kw-savings">
                                                 <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                             </span>

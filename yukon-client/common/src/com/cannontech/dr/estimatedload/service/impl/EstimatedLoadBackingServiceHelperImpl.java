@@ -63,81 +63,103 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
             .expireAfterWrite(CACHE_SECONDS_TO_LIVE, TimeUnit.SECONDS).build();
 
     @Override
-    public EstimatedLoadResult findProgramValue(final int programId) {
+    public EstimatedLoadResult findProgramValue(final int programId, boolean blocking) {
         int currentGearId;
         try {
             currentGearId = findCurrentGearId(programId);
         } catch (EstimatedLoadException e) {
             return e;
         }
-        return getProgramValue(programId, currentGearId);
+        return getProgramValue(programId, currentGearId, blocking);
     }
-
+    
     /**
-     * This method takes a program id and gear id and attempts to calculate the estimated load amounts for that
-     * program/gear combination. It first checks to see if the cache holds a recently computed value. If it does,
-     * that value is returned. If not, a new Runnable is created and executed which will insert the result into
-     * the cache once calculation is complete.  The cache key is based on both program id and gear id, so a
-     * single program may have multiple cache entries for multiple gears which is useful when considering
-     * scenarios that have multiple start gears for the same program.
+     * Takes a program id and gear id and attempts to calculate the estimated load amounts for that
+     * program/gear combination. First checks to see if the cache holds a recently computed value. If so,
+     * that value is returned. If not, a new Runnable is created and executed that will insert the value into cache.  
      */
-    private EstimatedLoadResult getProgramValue(final int programId, final Integer gearId) {
-
+    private EstimatedLoadResult getProgramValue(final int programId, final Integer gearId, boolean blocking) {
         final EstimatedLoadResultKey resultKey = new EstimatedLoadResultKey(programId, gearId);
-        EstimatedLoadResult amount = cache.getIfPresent(resultKey);
+        EstimatedLoadResult amount = null;
         
-        if (null == amount) {
+        if (blocking) {
+            // Block by waiting for the calculation result before continuing.
             if (log.isDebugEnabled()) {
-                log.debug("Recalculating value for program id: " + programId + "\t gear id: " + gearId);
+                log.debug("Calculating estimated load value for program id: " + programId + "\t gear id: " + gearId);
             }
-            executor.execute(new Runnable() {
+            amount = getProgramValueBlocking(programId, gearId);
+        } else {
+            // If not blocking, first check cache.  
+            amount = cache.getIfPresent(resultKey);
+            if (amount != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Estimated load cache hit for program id: " + programId + "\t gear id: " + gearId);
+                }
+            } else {
+                // If not found, spawn new thread to calculate and insert into cache.
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Calculating estimated load value for program id: " + programId + "\t gear id: " + gearId);
+                        }
+                        getProgramValueBlocking(programId, gearId);
+                    }
+                });
+            }
+        }
+        return amount;
+    }
+    /** 
+     * Inserts computed program load reduction amounts into a Guava cache.
+     * The cache key is based on both program id and gear id, so a single program may have multiple cache entries
+     * for multiple gears which is useful for scenarios that use multiple gears for the same program.
+     * Multiple calls to get() with an identical resultKey do not spawn multiple Callable objects.  Instead, each
+     * duplicate caller will block until the first thread's calculation is complete.  
+     * Then the value will be returned to all waiting callers and placed in the cache.
+    **/
+    private EstimatedLoadResult getProgramValueBlocking(final int programId, final int gearId) {
+        final EstimatedLoadResultKey resultKey = new EstimatedLoadResultKey(programId, gearId);
+        EstimatedLoadResult result = null;
+        try {
+            result = cache.get(resultKey, new Callable<EstimatedLoadResult>() {
                 @Override
-                public void run() {
+                public EstimatedLoadResult call() {
                     try {
-                        cache.get(resultKey, new Callable<EstimatedLoadResult>() {
-                            @Override
-                            public EstimatedLoadResult call() {
-                                try {
-                                    LMProgramBase programBase = getLmProgramBase(programId);
-                                    return estimatedLoadService.calculateProgramLoadReductionAmounts(
-                                            programBase.getPaoIdentifier(), gearId);
-                                } catch (EstimatedLoadException e) {
-                                    return e;
-                                }
-                            }
-                        });
-                    } catch (ExecutionException e) {
-                        log.error("Unknown exception in estimated load calculation.", e);
+                        LMProgramBase programBase = getLmProgramBase(programId);
+                        return estimatedLoadService.calculateProgramLoadReductionAmounts(
+                                programBase.getPaoIdentifier(), gearId);
+                    } catch (EstimatedLoadException e) {
+                        return e;
                     }
                 }
             });
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Cache hit for program id: " + programId + "\t gear id: " + gearId);
-            }
+        } catch (ExecutionException e) {
+            log.error("Unknown exception in estimated load calculation.", e);
         }
-        
-        return amount;
+        return result;
     }
 
-    public EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId) {
+    @Override
+    public EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId, boolean blocking) {
         Set<Integer> programIdsForControlArea = controlAreaDao.getProgramIdsForControlArea(paoId.getPaoId());
         Set<EstimatedLoadResult> programResults = new HashSet<>();
         
         for (Integer programId : programIdsForControlArea) {
-            programResults.add(findProgramValue(programId));
+            programResults.add(findProgramValue(programId, blocking));
         }
         return sumEstimatedLoadAmounts(paoId, programResults);
     }
 
-    public EstimatedLoadSummary getScenarioValue(PaoIdentifier paoId) {
+    @Override
+    public EstimatedLoadSummary getScenarioValue(PaoIdentifier paoId, boolean blocking) {
         Map<Integer, ScenarioProgram> programsForScenario = scenarioDao.findScenarioProgramsForScenario(
                 paoId.getPaoId());
         Set<EstimatedLoadResult> programAmounts = new HashSet<>();
         
         for (Integer programId : programsForScenario.keySet()) {
             int startGearId = programsForScenario.get(programId).getStartGear();
-            programAmounts.add(getProgramValue(programId, startGearId)); 
+            programAmounts.add(getProgramValue(programId, startGearId, blocking)); 
         }
         return sumEstimatedLoadAmounts(paoId, programAmounts);
     }

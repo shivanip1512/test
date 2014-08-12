@@ -24,7 +24,7 @@ public class ControlAreaEstimatedLoadField extends EstimatedLoadBackingFieldBase
         PaoIdentifier controlArea = null;
         controlArea = new PaoIdentifier(paoId, PaoType.LM_CONTROL_AREA);
         
-        summary = backingServiceHelper.getControlAreaValue(controlArea);
+        summary = backingServiceHelper.getControlAreaValue(controlArea, false);
         
         return createSummaryJson(controlArea, summary, userContext);
     }

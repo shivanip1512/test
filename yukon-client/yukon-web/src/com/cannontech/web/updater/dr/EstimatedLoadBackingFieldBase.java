@@ -28,13 +28,13 @@ public abstract class EstimatedLoadBackingFieldBase implements EstimatedLoadBack
 
         Map<String, Object> summaryNode = new HashMap<>();
         summaryNode.put("paoId", pao.getPaoId());
-        if (summary.getContributing() == 0) {
+        if (summary.getContributing() == 0 && summary.getCalculating() == 0) {
             summaryNode.put("status", "error");
             summaryNode.put("tooltip", "No contributing programs.");
             summaryNode.put("connected", accessor.getMessage(blankFieldResolvable));
             summaryNode.put("diversified", accessor.getMessage(blankFieldResolvable));
             summaryNode.put("kwSavings", accessor.getMessage(blankFieldResolvable));
-        } else if (summary.getContributing() > 0) {
+        } else {
             EstimatedLoadAmount summaryAmount = summary.getSummaryAmount();
             MessageSourceResolvable connectedLoad = new YukonMessageSourceResolvable(
                     "yukon.web.modules.dr.estimatedLoad.loadInKw", summaryAmount.getConnectedLoad());

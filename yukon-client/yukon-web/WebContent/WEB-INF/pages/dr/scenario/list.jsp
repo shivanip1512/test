@@ -47,7 +47,6 @@
                                         identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
                                     <td data-pao="${scenarioId}">
                                         <cti:icon icon="icon-error" classes="dn"/>
-                                        <cti:icon icon="icon-spinner"/>
                                         <span class="js-kw-savings">
                                             <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                         </span>

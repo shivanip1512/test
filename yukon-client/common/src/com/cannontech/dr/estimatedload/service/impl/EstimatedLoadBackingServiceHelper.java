@@ -17,21 +17,21 @@ public interface EstimatedLoadBackingServiceHelper {
      * If the requested program isn't in the cache, this returns null and the requested program's calculation begins.
      * If the calculation results in an error, an EstimatedLoadException will be returned.
      */
-    public EstimatedLoadResult findProgramValue(final int paoId);
+    EstimatedLoadResult findProgramValue(final int paoId, boolean blocking);
 
     /** Retrieves an EstimatedLoadSummary object for a given LM control area.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
      * The summary object also includes the following information: # of programs in error, # of programs currently
      * being calculated.
      */
-    public EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId);
+    EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId, boolean blocking);
 
     /** Retrieves the EstimatedLoadSummary object for a given LM scenario.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
      * The summary object also includes the following information: # of programs in error, # of programs currently
      * being calculated.
      */
-    public EstimatedLoadSummary getScenarioValue(PaoIdentifier paoId);
+    EstimatedLoadSummary getScenarioValue(PaoIdentifier paoId, boolean blocking);
     
     /**
      * Looks for the current gear id on an LM program as supplied by the load management client.  
@@ -39,7 +39,7 @@ public interface EstimatedLoadBackingServiceHelper {
      * @throws EstimatedLoadException If the load management server can't be reached, or if it can't supply the current
      * gear number used by the requested lm program pao id.
      */
-    public int findCurrentGearId(int programId) throws EstimatedLoadException;
+    int findCurrentGearId(int programId) throws EstimatedLoadException;
 
     /**
      * This method attempts to look up an LM program by its programId by querying the load control client connection.
@@ -49,7 +49,7 @@ public interface EstimatedLoadBackingServiceHelper {
      * @throws EstimatedLoadException If the load management server can't be reached, or if it doesn't have information
      * for a requested lm program pao id.
      */
-    public LMProgramBase getLmProgramBase(int programId) throws EstimatedLoadException;
+    LMProgramBase getLmProgramBase(int programId) throws EstimatedLoadException;
 
     /**
      * This method receives an EstimatedLoadException and determines which type of estimated load exception it is.
@@ -58,6 +58,6 @@ public interface EstimatedLoadBackingServiceHelper {
      * @param userContext The user context of the user viewing the page
      * @return A message describing the problem that caused the exception.
      */
-    public MessageSourceResolvable resolveException(EstimatedLoadException e, YukonUserContext userContext);
+    MessageSourceResolvable resolveException(EstimatedLoadException e, YukonUserContext userContext);
 
 }

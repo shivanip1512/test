@@ -69,21 +69,18 @@
                             <tags:nameValue2 nameKey=".info.connectedLoad">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:icon icon="icon-spinner"/>
                                     <span class="js-connected-load"><i:inline key=".calculating"/></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".info.diversifiedLoad">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:icon icon="icon-spinner"/>
                                     <span class="js-diversified-load"><i:inline key=".calculating"/></span>
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".info.kwSavings">
                                 <div data-pao="${programId}">
                                     <cti:icon icon="icon-error" classes="dn"/>
-                                    <cti:icon icon="icon-spinner"/>
                                     <span class="js-kw-savings"><i:inline key=".calculating"/></span>
                                 </div>
                             </tags:nameValue2>
