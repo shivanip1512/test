@@ -2,7 +2,7 @@ package com.cannontech.web.spring;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;

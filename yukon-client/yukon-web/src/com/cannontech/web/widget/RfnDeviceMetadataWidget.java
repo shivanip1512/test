@@ -87,8 +87,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         Collections.sort(metadataTypes, new Comparator<RfnMetadata>() {
             @Override
             public int compare(RfnMetadata o1, RfnMetadata o2) {
-                String name1 = accessor.getMessage(o1);
-                String name2 = accessor.getMessage(o2);
+                String name1 = accessor.getMessage(o1.getFormatKey());
+                String name2 = accessor.getMessage(o2.getFormatKey());
                 return collator.compare(name1, name2);
             }
         });

@@ -1,4 +1,4 @@
-<cti:msg2 key="${pair.first}" var="label"/>
+<cti:msg2 key="${pair.first.formatKey}" var="label"/>
 <tags:nameValue name="${label}">
     <c:if test="${not empty pair.second}">
         <c:choose>

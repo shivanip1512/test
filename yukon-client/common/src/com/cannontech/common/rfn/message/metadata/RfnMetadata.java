@@ -2,9 +2,7 @@ package com.cannontech.common.rfn.message.metadata;
 
 import java.io.Serializable;
 
-import com.cannontech.common.i18n.DisplayableEnum;
-
-public enum RfnMetadata implements Serializable, DisplayableEnum {
+public enum RfnMetadata implements Serializable {
     /** Network Manager name in comments */
     COMM_STATUS(CommStatusType.class), // Communication Status
     COMM_STATUS_TIMESTAMP(Long.class), // Communication Status obtained at
@@ -35,7 +33,6 @@ public enum RfnMetadata implements Serializable, DisplayableEnum {
         return parseType;
     }
     
-    @Override
     public String getFormatKey() {
         return "yukon.web.widgets.RfnDeviceMetadataWidget." + name();
     }
