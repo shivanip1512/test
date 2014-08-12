@@ -2,12 +2,15 @@ package com.cannontech.common.rfn.service.impl;
 
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 
 public class RfnGatewayServiceImpl implements RfnGatewayService {
-    //TODO: Gateway data cache
+    @Autowired RfnGatewayDataCache dataCache;
     
     @Override
     public Set<RfnGateway> getAllGateways() {

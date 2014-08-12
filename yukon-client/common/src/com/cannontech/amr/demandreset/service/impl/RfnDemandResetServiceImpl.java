@@ -46,7 +46,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
-import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -77,7 +77,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 
     private ScheduledExecutorService executor = null;
-    private RequestReplyTemplate<RfnMeterDemandResetReply> qrTemplate;
+    private RequestReplyTemplateImpl<RfnMeterDemandResetReply> qrTemplate;
     private Duration verificationTimeout;
 
     class DeviceVerificationInfo {
@@ -213,7 +213,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
 
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplate<RfnMeterDemandResetReply>(
+        qrTemplate = new RequestReplyTemplateImpl<RfnMeterDemandResetReply>(
                 configurationName, configurationSource, connectionFactory, queueName, false);
         verificationTimeout = configurationSource.getDuration(configurationName
             + "_VALIDATION_TIMEOUT", Duration.standardMinutes(1));

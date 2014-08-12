@@ -18,14 +18,14 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.DataCallback;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.util.jms.JmsReplyHandler;
-import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceMetadataServiceImpl.class);
 
-    private RequestReplyTemplate<RfnMetadataResponse> qrTemplate;
+    private RequestReplyTemplateImpl<RfnMetadataResponse> qrTemplate;
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
@@ -90,7 +90,7 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
     
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplate<RfnMetadataResponse>(
+        qrTemplate = new RequestReplyTemplateImpl<RfnMetadataResponse>(
                 "RFN_METADATA", configurationSource, connectionFactory,
                 "yukon.qr.obj.common.rfn.MetadataRequest", false);
     }

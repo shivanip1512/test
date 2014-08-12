@@ -18,7 +18,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
-import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReply;
@@ -46,7 +46,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     
     private JmsTemplate jmsTemplate;
     private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastWithDataTemplate;
-    private RequestReplyTemplate<RfnExpressComUnicastReply> unicastTemplate;
+    private RequestReplyTemplateImpl<RfnExpressComUnicastReply> unicastTemplate;
     private Random random = new Random(System.currentTimeMillis());
     
     @Override
@@ -174,7 +174,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
                 "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
                 "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
         
-        unicastTemplate = new RequestReplyTemplate<RfnExpressComUnicastReply>(
+        unicastTemplate = new RequestReplyTemplateImpl<RfnExpressComUnicastReply>(
                 "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
                 "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
     }
