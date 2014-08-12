@@ -1,11 +1,8 @@
 package com.cannontech.web.updater.point;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -32,16 +30,14 @@ import com.google.common.collect.ListMultimap;
 public class PointUpdateBackingService implements BulkUpdateBackingService, AllPointDataListener {
     private final static Logger log = YukonLogManager.getLogger(PointUpdateBackingService.class);
 
-    private final static int maxCacheSize = 1000;
-    private final static int maxOverSize = 100;
+    private final static int maxCacheSize = 5000;
 
     private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
     @Autowired private AsyncDynamicDataSource asyncDataSource;
     @Autowired private PointFormattingService pointFormattingService;
 
-    private Map<Integer, DatedPointValue> cache = 
-        Collections.synchronizedMap(new LinkedHashMap<Integer, DatedPointValue>(maxCacheSize, .75f, true));
+    private Map<Integer, DatedPointValue> cache = new LeastRecentlyUsedCacheMap<>(maxCacheSize);
 
     @Override
     public Map<UpdateIdentifier, String> getLatestValues(List<UpdateIdentifier> updateIdentifiers, long afterDate,
@@ -109,27 +105,13 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
         }
         return formattedValues;
     }
-	   
-    private void trimCache() {
-        int toTrim = cache.size() - maxCacheSize;
-        if (toTrim > maxOverSize) {
-            Set<Integer> removedPointIds = new HashSet<Integer>(toTrim);
-            Iterator<DatedPointValue> iter = cache.values().iterator();
-            while (toTrim-- > 0) {
-                DatedPointValue value = iter.next();
-                removedPointIds.add(value.value.getId());
-                iter.remove();
-            }
-            asyncDataSource.unRegisterForPointData(this, removedPointIds);
-        }
-    }
-    
+
     private class DatedPointValue {
     	PointValueQualityHolder value;
     	long receivedTime;
         DatedPointValue(PointValueQualityHolder pointData) {
-            this.receivedTime = System.currentTimeMillis();
-            this.value = pointData;
+            receivedTime = System.currentTimeMillis();
+            value = pointData;
         }
     }
 
@@ -144,9 +126,9 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
             }
             String idStr = m.group(1);
             String format = m.group(2);
-            this.pointId = Integer.parseInt(idStr);
+            pointId = Integer.parseInt(idStr);
             this.format = format;
-            this.updateIdentifier = identifier;
+            updateIdentifier = identifier;
         }
     }
 
@@ -174,7 +156,6 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
     }
     
     private void usePointData(PointValueQualityHolder pointData) {
-        trimCache();
         DatedPointValue value = new DatedPointValue(pointData);
         cache.put(pointData.getId(), value);
     }
