@@ -28,8 +28,8 @@ public class PointUpdateBackingServiceTest {
     }
 
     @Test
-    public void aTest() throws InterruptedException {
-        for(int i=0; i<10000000; i++) {
+    public void test_pointDataReceived_concurrency() throws InterruptedException {
+        for(int i=0; i<15000; i++) {
             PointData pointData = new PointData();
             pointData.setId(i);
             impl.pointDataReceived(pointData);
