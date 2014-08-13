@@ -2411,7 +2411,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Rate A">
+        <point name="Peak kVA Rate A">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2422,7 +2422,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Rate B">
+        <point name="Peak kVA Rate B">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2433,7 +2433,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Rate C">
+        <point name="Peak kVA Rate C">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2444,7 +2444,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Rate D">
+        <point name="Peak kVA Rate D">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2466,7 +2466,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Lagging Rate A">
+        <point name="Peak kVA Lagging Rate A">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2478,7 +2478,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Lagging Rate B">
+        <point name="Peak kVA Lagging Rate B">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2490,7 +2490,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Lagging Rate C">
+        <point name="Peak kVA Lagging Rate C">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2502,7 +2502,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVa Lagging Rate D">
+        <point name="Peak kVA Lagging Rate D">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

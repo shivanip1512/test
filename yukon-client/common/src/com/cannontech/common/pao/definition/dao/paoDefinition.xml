@@ -9201,7 +9201,7 @@
             </point>
 
             <point type="Analog" offset="133">
-                <name>Avg Power Factor</name>
+                <name>Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
                 <decimalplaces value="4" />
@@ -9274,25 +9274,25 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="251">
-                <name>Peak kVa Rate A</name>
+                <name>Peak kVA Rate A</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="252">
-                <name>Peak kVa Rate B</name>
+                <name>Peak kVA Rate B</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="253">
-                <name>Peak kVa Rate C</name>
+                <name>Peak kVA Rate C</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="254">
-                <name>Peak kVa Rate D</name>
+                <name>Peak kVA Rate D</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
@@ -9304,25 +9304,25 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="256">
-                <name>Peak kVa Lagging Rate A</name>
+                <name>Peak kVA Lagging Rate A</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="257">
-                <name>Peak kVa Lagging Rate B</name>
+                <name>Peak kVA Lagging Rate B</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="258">
-                <name>Peak kVa Lagging Rate C</name>
+                <name>Peak kVA Lagging Rate C</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="259">
-                <name>Peak kVa Lagging Rate D</name>
+                <name>Peak kVA Lagging Rate D</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
@@ -9402,7 +9402,7 @@
                 <basicLookup point="Amps Phase C" />
             </attribute>
             <attribute name="POWER_FACTOR">
-                <basicLookup point="Avg Power Factor" />
+                <basicLookup point="Power Factor" />
             </attribute>
             <attribute name="KVAHA">
                 <basicLookup point="kVAh"/>
