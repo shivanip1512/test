@@ -1,14 +1,19 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ page trimDirectiveWhitespaces="false" %>
 
-<tags:nameValueContainer2>
-    <tags:nameValue2 label="${attribute}">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:includeScript link="/JavaScript/yukon.widget.disconnect.js" />
+
+<tags:nameValueContainer2 naturalWidth="false">
+    <tags:nameValue2 label="${attribute}" valueClass="full-width">
         <c:choose>
             <c:when test="${isConfigured}">
-                <tags:attributeValue pao="${device}" attribute="${attribute}"
-                    showHistoricalReadings="${device.getPaoType().isMct()}" />
+                <cti:pointStatus pointId="${pointId}" classes="vatt"/>
+                <cti:pointValue pointId="${pointId}" format="VALUE"/>&nbsp;
+                <tags:historicalValue pointId="${pointId}" pao="${device}" classes="wsnw"/>
             </c:when>
             <c:otherwise>
                 <cti:msg2 key=".notConfigured" />
@@ -17,31 +22,10 @@
     </tags:nameValue2>
 </tags:nameValueContainer2>
 
-<c:if test="${pointId != null}">
-    <div id="disconnectInfo" class="dn" title="<cti:msg2 key=".infoLink"/>"></div>
-</c:if>   
-
-<div class="action-area">
-    <a href="javascript:void(0);" class="js-show-disconnect-info fl"
-       data-device-id="${device.deviceId}" data-name="${shortName}"><i:inline key=".infoLink"/></a>
-    <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read"/>
-    
-    <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
-        <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true" classes="connect-btn"/>
-        <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true" classes="disconnect-btn"/>
-        <c:if test="${supportsArm}">
-            <tags:widgetActionRefresh method="arm" nameKey="arm" showConfirm="true" classes="connect-btn"/>
-        </c:if>
-    </cti:checkRolesAndProperties>
-</div>
-
 <c:if test="${configString != null}">
-    <div class="scroll-md">
-        <cti:msg2 var="disconnectConfigSettings" key=".disconnectConfigSettings" />
-        <tags:hideReveal title="${disconnectConfigSettings}" showInitially="false">
-            <pre>${configString}</pre>
-        </tags:hideReveal>
-    </div>
+    <tags:hideReveal2 titleKey=".disconnectConfigSettings" showInitially="false">
+        <div class="scroll-md monospace">${configString}</div>
+    </tags:hideReveal2>
 </c:if>
 
 <c:if test="${errors != null || exceptionReason != null}">
@@ -57,19 +41,30 @@
         </c:if>
     </div>
 </c:if>
-<c:if test="${success}">
-    <c:choose>
-        <c:when test="${command != null}">
-            <span class="success"><i:inline key=".${command}.success" /></span>
-        </c:when>
-        <c:otherwise>
-            <span class="success"><i:inline key=".read.success" /></span>
-        </c:otherwise>
-    </c:choose>
-</c:if>
 
-<cti:includeScript link="/JavaScript/yukon.tools.disconnect.js" />
+<div class="action-area">
+    <c:if test="${success}">
+        <c:choose>
+            <c:when test="${command != null}">
+                <span class="success fl"><i:inline key=".${command}.success" /></span>
+            </c:when>
+            <c:otherwise>
+                <span class="success fl"><i:inline key=".read.success" /></span>
+            </c:otherwise>
+        </c:choose>
+    </c:if>
+    
+    <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="right M0"/>
+    <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
+        <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true" classes="connect-btn middle"/>
+        <c:if test="${supportsArm}">
+            <tags:widgetActionRefresh method="arm" nameKey="arm" showConfirm="true" classes="connect-btn middle"/>
+        </c:if>
+        <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true" classes="disconnect-btn left"/>
+    </cti:checkRolesAndProperties>
+</div>
+
 <%-- UPDATER WILL TOGGLE WHICH BUTTON IS DISPLAYED IF REMOTELY CONTROLED --%>
 <c:if test="${pointId != null}">
-    <cti:dataUpdaterCallback function="yukon.tools.disconnect.toggleButtons" initialize="true" rawValue="POINT/${pointId}/RAWVALUE" />
+    <cti:dataUpdaterCallback function="yukon.widget.disconnect.toggleButtons" initialize="true" rawValue="POINT/${pointId}/RAWVALUE" />
 </c:if>

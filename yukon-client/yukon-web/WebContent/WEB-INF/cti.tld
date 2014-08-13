@@ -491,11 +491,17 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-        <attribute>
+    <attribute>
       <name>rawState</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Only for status points. State to be used instead of current state. Useful for historical data.</description>
+    </attribute>
+    <attribute>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>CSS class names applied to state box element.</description>
     </attribute>
   </tag>
   

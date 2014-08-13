@@ -34,6 +34,7 @@
 <c:if test="${supportsPing}">
     <div class="action-area">
         <div class="dib fl" id="${widgetParameters.widgetId}_results"></div>
-        <tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" icon="icon-ping"/>
+        <tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" 
+                icon="icon-ping" classes="M0"/>
     </div>
 </c:if>

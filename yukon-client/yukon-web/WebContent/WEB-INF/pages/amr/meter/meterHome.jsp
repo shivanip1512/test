@@ -8,10 +8,11 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="amr" page="meterDetail.electric">
+    
     <dt:pickerIncludes/>
-
+    
     <cti:includeCss link="/resources/js/lib/dynatree/skin/device.group.css"/>
-
+    
     <c:if test="${not hasActions}">
         <div id="page-buttons">
             <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
@@ -21,7 +22,7 @@
             <cti:button icon="icon-cog" href="${collectionActionsUrl}" nameKey="otherActions"/> 
         </div>
     </c:if>
-
+    
     <c:if test="${hasActions}">
         <div id="page-actions" class="dn">
             <c:if test="${moveSupported}">
@@ -34,7 +35,7 @@
                 <cm:dropdownOption key=".moveIn" href="${moveInUrl}"/>
                 <cm:dropdownOption key=".moveOut" href="${moveOutUrl}"/>
             </c:if>
-
+            
             <!-- Actions: High Bill Complaint -->
             <cti:checkRolesAndProperties value="HIGH_BILL_COMPLAINT">
                 <c:if test="${highBillSupported}">
@@ -92,38 +93,38 @@
     </c:if>
 
     <tags:widgetContainer deviceId="${deviceId}" identify="false">
-
+        
         <div class="column-12-12 clear">
             <div class="one column">
                 
-                    <tags:widget bean="meterInformationWidget"/>
-
-                    <c:choose>
-                        <c:when test="${threePhaseVoltageOrCurrentSupported}">
-                           <tags:widget bean="polyphaseMeterReadingsWidget"/>
-                        </c:when>
-                        <c:otherwise>
-                           <tags:widget bean="meterReadingsWidget"/>
-                        </c:otherwise>
-                    </c:choose>
-
-                    <c:if test="${showRfMetadata}">
-                        <tags:widget bean="rfnDeviceMetadataWidget"/>
-                    </c:if>
-
-                    <c:if test="${cisInfoWidgetName != null}">
-                        <tags:widget bean="${cisInfoWidgetName}"/>
-                    </c:if>
-    
-                    <!-- Including deviceGroupWidget's resources here since this particular
-                         widget is being added to the page via ajax  -->
-                    <cti:includeScript link="JQUERY_COOKIE"/>
-                    <cti:includeScript link="JQUERY_SCROLLTO"/>
-                    <cti:includeScript link="JQUERY_TREE"/>
-                    <cti:includeScript link="JQUERY_TREE_HELPERS"/>
-                    <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
-                    <tags:widget bean="deviceGroupWidget"/>
-
+                <tags:widget bean="meterInformationWidget"/>
+                
+                <c:choose>
+                    <c:when test="${threePhaseVoltageOrCurrentSupported}">
+                       <tags:widget bean="polyphaseMeterReadingsWidget"/>
+                    </c:when>
+                    <c:otherwise>
+                       <tags:widget bean="meterReadingsWidget"/>
+                    </c:otherwise>
+                </c:choose>
+                
+                <c:if test="${showRfMetadata}">
+                    <tags:widget bean="rfnDeviceMetadataWidget"/>
+                </c:if>
+                
+                <c:if test="${cisInfoWidgetName != null}">
+                    <tags:widget bean="${cisInfoWidgetName}"/>
+                </c:if>
+                
+                <!-- Including deviceGroupWidget's resources here since this particular
+                     widget is being added to the page via ajax  -->
+                <cti:includeScript link="JQUERY_COOKIE"/>
+                <cti:includeScript link="JQUERY_SCROLLTO"/>
+                <cti:includeScript link="JQUERY_TREE"/>
+                <cti:includeScript link="JQUERY_TREE_HELPERS"/>
+                <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
+                <tags:widget bean="deviceGroupWidget"/>
+                
             </div>
             
             <div class="column two nogutter">
@@ -133,13 +134,17 @@
                     </div>
                     
                     <c:if test="${disconnectSupported}">
-                        <tags:widget bean="disconnectMeterWidget"/>
+                        <cti:url var="disconnectHelpUrl" value="/widget/disconnectMeterWidget/helpInfo">
+                            <cti:param name="deviceId" value="${deviceId}"/>
+                            <cti:param name="shortName" value="disconnectMeterWidget"/>
+                        </cti:url>
+                        <tags:widget bean="disconnectMeterWidget" helpUrl="${disconnectHelpUrl}"/>
                     </c:if>
-                                        
+                    
                     <c:if test="${rfnEventsSupported}">
                         <tags:widget bean="meterEventsWidget"/>
                     </c:if>
-    
+                    
                     <c:if test="${outageSupported}">
                         <tags:widget bean="meterOutagesWidget"/>
                     </c:if>
@@ -147,7 +152,7 @@
                     <c:if test="${rfnOutageSupported}">
                         <tags:widget bean="rfnOutagesWidget"/>
                     </c:if>
-    
+                    
                     <c:if test="${touSupported}">
                         <tags:widget bean="touWidget"/>
                     </c:if>

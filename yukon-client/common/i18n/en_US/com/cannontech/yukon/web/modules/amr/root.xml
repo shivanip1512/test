@@ -195,7 +195,7 @@
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle.voltage">Voltage</entry>
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle.current">Current</entry>
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.touSimpleAttributeWidgetTitle.voltageAndCurrent">Voltage &amp; Current</entry>
-    <entry key="yukon.web.widgets.simpleAttributesWidget.read.label">Read Now</entry>
+    <entry key="yukon.web.widgets.simpleAttributesWidget.read.label">Read</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.errorReading">There was an error reading the meter:</entry>
     <entry key="yukon.web.widgets.simpleAttributesWidget.successReading">Successful Read</entry>

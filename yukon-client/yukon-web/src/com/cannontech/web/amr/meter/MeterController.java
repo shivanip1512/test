@@ -130,7 +130,8 @@ public class MeterController {
             
             String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(meter);
             if (!StringUtils.isBlank(urlForPaoDetailPage)) {
-                return request.getContextPath() + urlForPaoDetailPage;
+                String meterUrl = "redirect:" + urlForPaoDetailPage;
+                return meterUrl;
             }
         }
         

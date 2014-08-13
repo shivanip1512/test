@@ -105,7 +105,7 @@
                                         <td><cti:pointValue pointId="${row.pointId}" format="{quality}" /></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TIME_STAMP')}">
-                                        <td><tags:historicalValue device="${row.device}" pointId="${row.pointId}" /></td>
+                                        <td><tags:historicalValue pao="${row.device}" pointId="${row.pointId}" /></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TIME_STAMP')}">
                                         <td><cti:formatDate value="${row.date}" type="BOTH" /></td>

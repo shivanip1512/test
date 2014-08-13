@@ -60,7 +60,7 @@
                                              submitButton="components.button.save.label"
                                              submitEvent="yukon.ui.widget.DeviceGroupWidget.save"/>
             <div class="action-area">
-                <cti:button nameKey="edit" icon="icon-pencil" id="showPopupButton" />
+                <cti:button nameKey="edit" icon="icon-pencil" id="showPopupButton" classes="M0"/>
             </div>
         </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>

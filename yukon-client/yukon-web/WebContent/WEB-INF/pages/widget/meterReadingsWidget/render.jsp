@@ -114,7 +114,8 @@ function ${widgetParameters.widgetId}_updateDifference() {
 <div class="action-area">
     <a href="${meterPointsUrl}" class="fl"><i:inline key="yukon.web.defaults.showAll"/></a>
     <a href="javascript:void(0);" class="fl" style="margin-left: 10px;" id="readings_quick_view"><i:inline key="yukon.web.defaults.quickView"/></a>
-    <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results" icon="icon-read"/>
+    <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" 
+            container="${widgetParameters.widgetId}_results" icon="icon-read" classes="M0"/>
 </div>
 
 <%--TODO make this into a tag --%>
@@ -135,11 +136,11 @@ function ${widgetParameters.widgetId}_updateDifference() {
                  <td>${fn:escapeXml(pointResultRow.pointName)}</td>
                  <td class="state-indicator tar">
                     <c:if test="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType.status}">
-                        <cti:pointStatus pointId="${pointResultRow.pointId}" />
+                        <cti:pointStatus pointId="${pointResultRow.pointId}"/>
                     </c:if>
                  </td>
                  <td><cti:pointValue pointId="${pointResultRow.pointId}" format="SHORT"/></td>
-                 <td><tags:historicalValue device="${device}" pointId="${pointResultRow.pointId}"/></td>
+                 <td><tags:historicalValue pao="${device}" pointId="${pointResultRow.pointId}"/></td>
              </tr>
          </c:forEach>
         </tbody>

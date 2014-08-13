@@ -122,7 +122,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             
             if (result.getErrors().isEmpty() && StringUtils.isEmpty(result.getExceptionReason())) {
                 String configStr = result.getLastResultString();
-                model.addAttribute("configString", configStr);  
+                model.addAttribute("configString", configStr);
                 model.addAttribute("success", true);
             }
             

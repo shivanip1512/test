@@ -1,18 +1,19 @@
 <%@ tag trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="escapeTitle" type="java.lang.Boolean" %>
-<%@ attribute name="helpText" %>
-<%@ attribute name="id" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<%@ attribute name="escapeTitle" type="java.lang.Boolean" description="If true, html escapes the title text." %>
+<%@ attribute name="helpText" description="The text to put inside of a help popup." %>
+<%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
+<%@ attribute name="id" description="The id of the outer container element. If not provided, the id is generated." %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="showInitially" type="java.lang.Boolean" %>
-<%@ attribute name="styleClass" %>
+<%@ attribute name="styleClass" description="CSS class names applied to the outer container element." %>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="titleLinkHtml" %>
-
-<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/yukon.cookies.js"/>
 <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
@@ -32,8 +33,8 @@
                 <c:otherwise>${pageScope.title}</c:otherwise>
             </c:choose>
         </h3>
-        <c:if test="${not empty pageScope.helpText}">
-            <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp show-on-hover"/>
+        <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+            <cti:icon icon="icon-help" classes="cp" data-popup="#box-container-info-popup-${thisId}"/>
         </c:if>
         <c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
             <div class="controls" id="${thisId}_control">
@@ -57,6 +58,10 @@
     </script>
 </c:if>
 
-<c:if test="${not empty pageScope.helpText}">
-    <tags:simplePopup title="${pageScope.title}" id="box-container-info-popup-${thisId}" on="#help_icon_${thisId}" options="{width: 600}">${helpText}</tags:simplePopup>
+<c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+    <div id="box-container-info-popup-${thisId}" 
+            class="dn" 
+            data-title="${pageScope.title}"
+            <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if> 
+            data-width="600">${helpText}</div>
 </c:if>

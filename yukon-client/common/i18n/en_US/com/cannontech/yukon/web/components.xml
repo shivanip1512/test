@@ -103,7 +103,7 @@
     <entry key="yukon.web.components.button.profile.label">Profile</entry>
     <entry key="yukon.web.components.button.read.label">Read</entry>
     <entry key="yukon.web.components.button.read.labelBusy">Reading</entry>
-    <entry key="yukon.web.components.button.readNow.label">Read Now</entry>
+    <entry key="yukon.web.components.button.readNow.label">Read</entry>
     <entry key="yukon.web.components.button.readNow.labelBusy">Sending</entry>
     <entry key="yukon.web.components.button.refresh.label">Refresh</entry>
     <entry key="yukon.web.components.button.reload.label">Reload</entry>

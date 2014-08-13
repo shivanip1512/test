@@ -5,27 +5,23 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="device" required="true" type="com.cannontech.common.pao.YukonDevice" %>
-<%@ attribute name="pointId" required="true" type="java.lang.Integer" %>
-<%@ attribute name="showHistoricalReadings" type="java.lang.Boolean" %>
+<%@ attribute name="pao" required="true" type="com.cannontech.common.pao.YukonPao" %>
+<%@ attribute name="pointId" type="java.lang.Integer" %>
+<%@ attribute name="classes" description="CSS class names applied to the anchor element." %>
 
 <c:choose>
     <c:when test="${pointId == 0}">
         <span class="error"><i:inline key="yukon.common.attributes.pointNotFound"/></span>
     </c:when>
     <c:otherwise>
-        <span class="wsnw">
-            <c:if test="${empty pageScope.showHistoricalReadings || pageScope.showHistoricalReadings}">
-                <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
-                <cti:url var="historyUrl" value="/meter/historicalReadings/view">
-                    <cti:param name="pointId" value="${pointId}"/>
-                    <cti:param name="deviceId" value="${deviceId}"/>
-                </cti:url>
-                <a href="javascript:void(0);" data-popup="#${popupId}">
-                    <cti:pointValue pointId="${pointId}" format="DATE" cssClass="fl"/>
-                </a>
-                <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}"></div>
-            </c:if>
-        </span>
+        <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
+        <cti:url var="historyUrl" value="/meter/historicalReadings/view">
+            <cti:param name="pointId" value="${pointId}"/>
+            <cti:param name="deviceId" value="${pao.paoIdentifier.paoId}"/>
+        </cti:url>
+        <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
+            <cti:pointValue pointId="${pointId}" format="DATE"/>
+        </a>
+        <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
     </c:otherwise>
 </c:choose>

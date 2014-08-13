@@ -184,7 +184,7 @@
                         <tr>
                             <td>${fn:escapeXml(point.pointName)}:&nbsp;</td>
                             <td>
-                                <cti:pointStatus pointId="${point.liteID}" />
+                                <cti:pointStatus pointId="${point.liteID}"/>
                                 <cti:pointValue pointId="${point.liteID}" format="VALUE"/>
                             </td>
                         </tr>

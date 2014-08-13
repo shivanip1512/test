@@ -52,5 +52,7 @@
     </div>
 </c:if>
 <div class="action-area">
-    <tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read" icon="icon-read"/>
+    <c:if test="${readable}">
+        <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="M0"/>
+    </c:if>
 </div>

@@ -1,15 +1,16 @@
-<%@ tag  dynamic-attributes="widgetAttributes" %>
+<%@ tag dynamic-attributes="widgetAttributes" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="bean" required="true" %>
 <%@ attribute name="paramMap" type="java.util.Map" %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="title" %>
-<%@ attribute name="helpText" %>
+<%@ attribute name="helpText" description="The text to put inside of a help popup." %>
+<%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
 <%@ attribute name="container" description="container type: 'box' or 'section'. Default:'box'" %>
-
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 <cti:includeScript link="/JavaScript/yukon.widget.js"/>
@@ -53,8 +54,14 @@
         <c:set var="containerTitle" value="${pageScope.title}"/>
     </c:if>
 
-    <c:if test="${empty container or container eq 'box' }">
-        <tags:boxContainer title="${containerTitle}" id="widget-titled-container-${widgetParameters.widgetId}" styleClass="widget-container" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
+    <c:if test="${empty container or container eq 'box'}">
+        <tags:boxContainer title="${containerTitle}" 
+                id="widget-titled-container-${widgetParameters.widgetId}" 
+                styleClass="widget-container" 
+                showInitially="true" 
+                hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" 
+                helpText="${pageScope.helpText}"
+                helpUrl="${pageScope.helpUrl}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                 <c:when test="${beanInst.lazyLoad}">
@@ -68,7 +75,11 @@
         </tags:boxContainer>
     </c:if>
     <c:if test="${container eq 'section'}">
-        <tags:sectionContainer title="${containerTitle}" id="widget-titled-container-${widgetParameters.widgetId}" styleClass="widget-container" helpText="${pageScope.helpText}">
+        <tags:sectionContainer title="${containerTitle}" 
+                id="widget-titled-container-${widgetParameters.widgetId}" 
+                styleClass="widget-container" 
+                helpText="${pageScope.helpText}"
+                helpUrl="${pageScope.helpUrl}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                 <c:when test="${beanInst.lazyLoad}">

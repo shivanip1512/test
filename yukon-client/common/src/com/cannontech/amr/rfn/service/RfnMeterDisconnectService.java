@@ -30,6 +30,14 @@ import com.cannontech.message.dispatch.message.PointData;
 public class RfnMeterDisconnectService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectService.class);
+    
+    private static final String queue = "yukon.qr.obj.amr.rfn.MeterDisconnectRequest";
+    private static final String cparm = "RFN_METER_DISCONNECT";
+    
+    private static final String firstReplyTimeout = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.firstReplyTimeout";
+    private static final String secondReplyTimeout = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.secondReplyTimeout";
+    private static final String error = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.error";
+    private static final String confirmError = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError";
 
     private RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> rrrTemplate;
     
@@ -60,8 +68,12 @@ public class RfnMeterDisconnectService {
      * @param meter The meter to disconnect.
      * @param callback The callback to use for updating status, errors and disconnect result.
      */
-    public void send(final RfnMeter meter, final RfnMeterDisconnectStatusType action, final RfnMeterDisconnectCallback callback) {
-        JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> handler = new JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>() {
+    public void send(final RfnMeter meter, 
+                     final RfnMeterDisconnectStatusType action, 
+                     final RfnMeterDisconnectCallback callback) {
+        
+        JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> handler 
+                = new JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>() {
 
             @Override
             public void complete() {
@@ -81,7 +93,7 @@ public class RfnMeterDisconnectService {
             @Override
             public void handleException(Exception e) {
                 MessageSourceResolvable message = 
-                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.error", e.toString());
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(error, e.toString());
                 callback.processingExceptionOccured(message);
             }
 
@@ -90,7 +102,7 @@ public class RfnMeterDisconnectService {
                 if (!initialReply.isSuccess()) {
                     /* Request failed */
                     MessageSourceResolvable message = 
-                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.error", initialReply);
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments(error, initialReply);
                     callback.receivedError(message, null);
                     return false;
                 } else {
@@ -104,7 +116,7 @@ public class RfnMeterDisconnectService {
                 if (!confirmationReplyMessage.isSuccess()) {
                     /* Request failed */
                     MessageSourceResolvable message = 
-                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", confirmationReplyMessage);
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments(confirmError, confirmationReplyMessage);
                     callback.receivedError(message, confirmationReplyMessage.getState());
                 } else {
                     PointValueQualityHolder pointData = publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
@@ -116,14 +128,14 @@ public class RfnMeterDisconnectService {
             @Override
             public void handleTimeout1() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
-                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.error", "T1");
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(firstReplyTimeout);
                 callback.receivedError(createSingleCodeWithArguments, null);
             }
 
             @Override
             public void handleTimeout2() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
-                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", "T2");
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(secondReplyTimeout);
                 callback.receivedError(createSingleCodeWithArguments, null);
             }
         };
@@ -143,14 +155,14 @@ public class RfnMeterDisconnectService {
         dynamicDataSource.putValue(pointData);
         
         log.debug("PointData generated for RfnMeterDisconnectRequest");
+        
         return pointData;
     }
     
     @PostConstruct
     public void initialize() {
         rrrTemplate = new RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>(
-                "RFN_METER_DISCONNECT", configurationSource, connectionFactory,
-                "yukon.qr.obj.amr.rfn.MeterDisconnectRequest", false);
+                cparm, configurationSource, connectionFactory, queue, false);
     }
     
 }

@@ -26,9 +26,9 @@
     <!-- meterReadingsWidget/render.jsp -->
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.unsupported">Unsupported</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.notConfigured">Not Configured</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.previousUsage">Previous Usage Reading</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.previousUsage">Previous</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.label">Read Now</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.label">Read</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.labelBusy">Reading</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.argumentStub">{0}</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.threePhaseVoltage">Phase A Voltage</entry>
@@ -98,7 +98,7 @@
    <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.noOutages">No Outages</entry>
-    <entry key="yukon.web.widgets.meterOutagesWidget.read.label">Read Now</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.read.label">Read</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.outagesLastRetrieved">Outages Last Retrieved</entry>
     <entry key="yukon.web.widgets.meterOutagesWidget.outageLogPointNotConfigured">Outage Log Analog Point is not configured.</entry>
@@ -139,7 +139,7 @@
     <entry key="yukon.web.widgets.touWidget.rateC">Rate C</entry>
     <entry key="yukon.web.widgets.touWidget.rateD">Rate D</entry>
     <entry key="yukon.web.widgets.touWidget.rateE">Rate E</entry>
-    <entry key="yukon.web.widgets.touWidget.read.label">Read Now</entry>
+    <entry key="yukon.web.widgets.touWidget.read.label">Read</entry>
     <entry key="yukon.web.widgets.touWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.touWidget.errorReading">There was an error reading the meter:</entry>
     <entry key="yukon.web.widgets.touWidget.successReading">Successful Read</entry>

@@ -36,7 +36,7 @@
                    </c:if>
                 </td>
                 <td><cti:pointValue pointId="${pointResultRow.pointId}" format="VALUE_UNIT"/></td> 
-                <td><tags:historicalValue device="${device}" pointId="${pointResultRow.pointId}"/></td> 
+                <td><tags:historicalValue pao="${device}" pointId="${pointResultRow.pointId}"/></td> 
                 <td><cti:pointValue pointId="${pointResultRow.pointId}" format="{quality}"/></td> 
                 <td><i:inline key="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType}"/></td>
                 <td>${fn:escapeXml(pointResultRow.paoPointIdentifier.pointIdentifier.offset)}</td> 

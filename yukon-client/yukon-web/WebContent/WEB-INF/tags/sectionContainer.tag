@@ -6,12 +6,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="controls" %>
-<%@ attribute name="escapeTitle" type="java.lang.Boolean" %>
-<%@ attribute name="helpText" %>
+<%@ attribute name="escapeTitle" type="java.lang.Boolean" description="If true, html escapes the title text." %>
+<%@ attribute name="helpText" description="The text to put inside of a help popup." %>
+<%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="hideInitially" type="java.lang.Boolean" %>
-<%@ attribute name="id" %>
-<%@ attribute name="styleClass" %>
+<%@ attribute name="id" description="The id of the outer container element. If not provided, the id is generated." %>
+<%@ attribute name="styleClass" description="CSS class names applied to the outer container element." %>
 <%@ attribute name="title" %>
 
 <c:if test="${hideEnabled}">
@@ -21,7 +22,6 @@
         <c:set var="hideMe" value="dn"/>
     </c:if>
 </c:if>
-
 
 <cti:uniqueIdentifier prefix="section-container-" var="thisId"/>
 <c:if test="${!empty pageScope.id}">
@@ -41,8 +41,8 @@
           </c:otherwise>
         </c:choose>
         
-        <c:if test="${not empty pageScope.helpText}">
-            <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp show-on-hover"/>
+        <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+            <cti:icon icon="icon-help" classes="cp" data-popup="#section-container-info-popup-${thisId}"/>
     	</c:if>
     	<div class="controls">${controls}</div>
     </div>
@@ -54,6 +54,10 @@
 
 </div>
 
-<c:if test="${not empty pageScope.helpText}">
-    <tags:simplePopup id="section-container-info-popup-${thisId}" title="${pageScope.title}" on="#help_icon_${thisId}" options="{width:600}">${helpText}</tags:simplePopup>	
+<c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+    <div id="section-container-info-popup-${thisId}"
+            class="dn" 
+            data-title="${pageScope.title}" 
+            <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if>
+            data-width="600">${helpText}</div>	
 </c:if>

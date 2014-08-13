@@ -47,7 +47,8 @@ $(function() {
         <div id="${widgetParameters.widgetId}_results"></div>
         <div class="action-area clearfix full-width">
             <a id="touPopupLink" href="javascript:void(0)" class="fl"><cti:msg2 key=".previousReadingsLink"/></a>
-            <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="read" container="${widgetParameters.widgetId}_results" icon="icon-read"/>
+            <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="read" 
+                    container="${widgetParameters.widgetId}_results" icon="icon-read" classes="M0"/>
         </div>
     </c:when>
     <c:otherwise><i:inline key=".notConfigured"/></c:otherwise>

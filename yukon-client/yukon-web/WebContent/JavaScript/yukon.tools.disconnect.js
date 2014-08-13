@@ -35,21 +35,8 @@ yukon.tools.disconnect = (function() {
                 });
             });
             
-            $(document).on('click', '.js-show-disconnect-info', function(event) {
-                var link = $(this),
-                    params = {'deviceId': link.data('deviceId'),
-                              'shortName': link.data('name')};
-                $('#disconnectInfo').load(yukon.url('/widget/disconnectMeterWidget/helpInfo'), params, function() {
-                    $('#disconnectInfo').dialog({width: 600});
-                });
-            });
-            
-            $('.connect-btn, .disconnect-btn').prop('disabled', true);
-            $('.js-show-disconnect-info').hide();
-            
             _canceled = false;
             _initialized = true;
-            
             
         },
         
@@ -70,21 +57,6 @@ yukon.tools.disconnect = (function() {
                 });
                 
                 $('.js-progress .js-action').show();
-            }
-        },
-        
-        toggleButtons: function (data) {
-            var rawState = data.rawValue;
-            
-            $('.connect-btn, .disconnect-btn').prop('disabled', false);
-            $('.js-show-disconnect-info').show();
-            
-            if (rawState === '0.0' || rawState === '2.0') {
-                $('.connect-btn').show();
-                $('.disconnect-btn').hide();
-            } else {
-                $('.connect-btn').hide();
-                $('.disconnect-btn').show();
             }
         }
     };
