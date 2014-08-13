@@ -26,14 +26,14 @@
 
     <target name="createDatabaseSnapshots" depends="init">
         <ant dir="${yukon-database}" target="sqlServerCreationScriptXMLFile">
-            <property name="yukon.major" value="${yukon.major}"/> 
-            <property name="yukon.minor" value="${yukon.minor}"/> 
-            <property name="yukon.revision" value="${yukon.revision}"/> 
+            <property name="version.major" value="${version.major}"/> 
+            <property name="version.minor" value="${version.minor}"/> 
+            <property name="version.revision" value="${version.revision}"/> 
         </ant>
         <ant dir="${yukon-database}" target="oracleCreationScriptXMLFile">
-            <property name="yukon.major" value="${yukon.major}"/> 
-            <property name="yukon.minor" value="${yukon.minor}"/> 
-            <property name="yukon.revision" value="${yukon.revision}"/> 
+            <property name="version.major" value="${version.major}"/> 
+            <property name="version.minor" value="${version.minor}"/> 
+            <property name="version.revision" value="${version.revision}"/> 
         </ant>
     </target>
 

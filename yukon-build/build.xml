@@ -40,13 +40,13 @@
         </exec>
     </target>
 
-    <target name="init" depends="check-setupcustomtasks,setupcustomtasks,loadpropertiesfile,cleanlabels">
+    <target name="init" depends="check-setupcustomtasks,setupcustomtasks,loadpropertiesfile">
 	
-	    <condition property="internal.label" value="${internal}-${label}" else="${internal}">
+	    <condition property="internal.label" value="${version.internal}-${label}" else="${version.internal}">
     	    <isset property="label"/>
 	    </condition>
     
-    	<property name="yukon.build.label" value="${external}"/>
+    	<property name="yukon.build.label" value="${version.internal}"/>
     	<property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME}"/>
 		
 		<exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe">
@@ -86,28 +86,6 @@
     
     <target name="loadpropertiesfile">
         <property file="yukon-build/build_version.properties" />
-    </target>
-        
-    <target name="cleanlabels">
-        <taskdef name="regexprop"
-                 classname="com.cannontech.customtasks.RegexReplaceProperty">
-            <classpath>
-                <fileset dir="yukon-build/lib">
-                    <include name="**/*.jar"/>
-                </fileset>
-                <fileset file="yukon-build/build/dist/customtasks.jar"/>
-            </classpath>
-        </taskdef>
-
-        <regexprop name="cleaninternal"
-                   value="${internal}"
-                   match = "[^a-zA-Z0-9]"
-                   replace="_"/>
-
-        <regexprop name="cleanexternal"
-                   value="${external}"
-                   match="[^a-zA-Z0-9]"
-                   replace="_"/>
     </target>
     
     <!-- build-release is now the only way to store symbols -->
@@ -341,7 +319,7 @@
         <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
             <arg line="-p '${isfile}'" />
             <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
-            <env key="YukonBuildVersion" value="${internal}" />
+            <env key="YukonBuildVersion" value="${version.internal}" />
         </exec>
 
         <condition property="out" value="${erroroutput}" else="">
@@ -431,7 +409,7 @@
         
         <mkdir dir="${dist.dir}" />
         
-        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${cleanexternal}.zip">
+        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}.zip">
             <fileset dir="${temp.dir}" />
         </zip>
 
@@ -466,19 +444,14 @@
     </target>
         
     <target name="updatedbscripts">
-    	<taskdef name="createdbversions" 
-                 classname="com.cannontech.customtasks.CreateDBVersions"
-                 classpath="yukon-build/build/dist/customtasks.jar"/>
-        
-        <createdbversions buildlabel="${internal}"/>
-        
+        <echo message="version: ${version.major}.${version.minor}.${version.revision}" />
         <ant dir="${basedir}/yukon-database"
              target="build"
              inheritAll="false"
              inheritRefs="false">
-        	<property name="yukon.major" value="${yukon.major}"/>
-        	<property name="yukon.minor" value="${yukon.minor}"/>
-        	<property name="yukon.revision" value="${yukon.revision}"/>
+            <property name="version.major" value="${version.major}"/>
+            <property name="version.minor" value="${version.minor}"/>
+            <property name="version.revision" value="${version.revision}"/>
         </ant>
         
     </target>

@@ -16,10 +16,10 @@
     <target name="version_db_files" depends="init">
         
         <!-- set up some local variables -->
-        <property name="sql.sqlserver.insert" value="insert into CTIDatabase values('${yukon.major}.${yukon.minor}', '${today}', 'Latest Update', ${yukon.revision}, GETDATE() );"/>
-        <property name="sql.oracle.insert" value="insert into CTIDatabase values('${yukon.major}.${yukon.minor}', '${today}', 'Latest Update', ${yukon.revision}, SYSDATE );"/>
+        <property name="sql.sqlserver.insert" value="insert into CTIDatabase values('${version.major}.${version.minor}', '${today}', 'Latest Update', ${version.revision}, GETDATE() );"/>
+        <property name="sql.oracle.insert" value="insert into CTIDatabase values('${version.major}.${version.minor}', '${today}', 'Latest Update', ${version.revision}, SYSDATE );"/>
 
-        <property name="sql.filename" value="${yukon.major}.${yukon.minor}_${yukon.revision}.sql"/>
+        <property name="sql.filename" value="${version.major}.${version.minor}_${version.revision}.sql"/>
 
         <!-- DBUpdates are no longer doing automated updates
         <replace file="DBUpdates/sqlserver/${sql.filename}" token="/* __YUKON_VERSION__ */" value="${sql.sqlserver.insert}"/>
@@ -31,7 +31,7 @@
     </target>
     
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
-        <property name="databaseName" value="TempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
+        <property name="databaseName" value="TempDBCreation_${version.major}_${version.minor}_${version.revision}" />
         <property environment="env" />
         
     	<copy file="Custom Scripts/SQL Server/CreateDatabase.sql" tofile="tempCreateDatabase.sql" overwrite="true" />
@@ -138,7 +138,7 @@
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
-        <property name="databaseName" value="tempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
+        <property name="databaseName" value="tempDBCreation_${version.major}_${version.minor}_${version.revision}" />
         <property environment="env" />
     	
         <copy file="Custom Scripts/Oracle/CreateDatabase.sql" tofile="tempCreateDatabase.sql" overwrite="true" />
