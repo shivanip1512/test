@@ -640,7 +640,7 @@ INT CtiPort::disconnect(CtiDeviceSPtr Device, INT trace)
 {
     if(Device)
     {
-        Device->setLogOnNeeded(TRUE);
+        Device->setLogOnNeeded(true);
     }
 
     setConnectedDevice(0L);
@@ -855,7 +855,7 @@ pair< bool, INT > CtiPort::checkCommStatus(CtiDeviceSPtr Device, INT trace)
 
         if(Device)
         {
-            Device->setLogOnNeeded(TRUE); // Make sure this guy forgets about it.  He must reconnect himself.
+            Device->setLogOnNeeded(true); // Make sure this guy forgets about it.  He must reconnect himself.
         }
     }
 

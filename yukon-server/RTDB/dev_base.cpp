@@ -397,7 +397,7 @@ _attemptFailCount(0),
 _attemptRetryCount(0),
 _attemptSuccessCount(0),
 _pointMgr(NULL),
-_logOnNeeded(TRUE),
+_logOnNeeded(true),
 _singleDevice(false),
 _routeMgr(NULL),
 _responsesOnTrxID(0),
@@ -523,14 +523,13 @@ INT CtiDeviceBase::ErrorDecode(const INMESS & InMessage, const CtiTime TimeNow, 
 }
 
 
-BOOL              CtiDeviceBase::getLogOnNeeded() const
+bool CtiDeviceBase::getLogOnNeeded() const
 {
     return _logOnNeeded;
 }
-CtiDeviceBase&    CtiDeviceBase::setLogOnNeeded(BOOL b)
+void CtiDeviceBase::setLogOnNeeded(bool b)
 {
     _logOnNeeded = b;
-    return *this;
 }
 
 

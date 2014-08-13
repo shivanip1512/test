@@ -1273,7 +1273,7 @@ CtiDeviceIED& CtiDeviceWctpTerminal::setInitialState (const LONG oldid)
             dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
         }
         setCurrentState(StateHandshakeComplete);     // TAP is already connected on this port
-        setLogOnNeeded(FALSE);                       // We will skip the logon, and proceed to <STX>
+        setLogOnNeeded(false);                       // We will skip the logon, and proceed to <STX>
     }
     else if( getLogOnNeeded() )
     {

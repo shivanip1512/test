@@ -77,24 +77,17 @@ protected:
     mutable CtiMutex _classMutex;
     CtiDeviceExclusion  _exclusion;
 
-    INT                  _commFailCount;          //  Consecutive failures to this device.
-    INT                  _attemptCount;           //  Cumulative. Attempts to communicate with the device
-    INT                  _attemptFailCount;       //  Cumulative. Failed with no retries
-    INT                  _attemptRetryCount;      //  Cumulative. Failed, but retries remain
-    INT                  _attemptSuccessCount;    //  Cumulative. Comms successful.
+    INT  _commFailCount;          //  Consecutive failures to this device.
+    INT  _attemptCount;           //  Cumulative. Attempts to communicate with the device
+    INT  _attemptFailCount;       //  Cumulative. Failed with no retries
+    INT  _attemptRetryCount;      //  Cumulative. Failed, but retries remain
+    INT  _attemptSuccessCount;    //  Cumulative. Comms successful.
 
 
     CtiPointManager *_pointMgr;    //  Porter or Scanner's point manager, assigned by attachPointManagerToDevices()
     CtiRouteManager *_routeMgr;    //  Porter's route manager, assigned by attachRouteManagerToDevices()
 
-    union
-    {
-        UINT     _clear;
-        struct
-        {
-            UINT  _logOnNeeded : 1;
-        };
-    };
+    bool _logOnNeeded;
 
     bool _singleDevice;                           //  This should be one for any device not a group.
     CtiTableDeviceBase _deviceBase;               //  This guy used to give us a LOT of members by being our parent!
@@ -196,8 +189,8 @@ public:
     void propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq );
     virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList& retList);
 
-    BOOL              getLogOnNeeded() const;
-    CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);
+    bool getLogOnNeeded() const;
+    void setLogOnNeeded(bool b);
 
     virtual void getDevicePoints(std::vector<CtiPointSPtr> &points) const;
     virtual CtiPointSPtr getDevicePointByID(INT id);
@@ -289,7 +282,7 @@ public:
     void setOutMessageLMGID( LONG &omlmgid );
     void setOutMessageTargetID( LONG &omtid );
 
-    CtiMutex& getMux()  { return _classMutex; }
+    CtiMutex& getMux() const  { return _classMutex; }
 
     Cti::Config::DeviceConfigSPtr getDeviceConfig();//Configs are now thread safe!
     virtual Cti::DeviceQueueInterface* getDeviceQueueHandler();

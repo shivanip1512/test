@@ -56,7 +56,7 @@ INT CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, IN
         else if( _superPort->connectedTo(DeviceCRC) && _superPort->getConnectedDevice() != Device->getID() )
         {
             LastDeviceId = _superPort->getConnectedDevice();    // This is a device swap...
-            Device->setLogOnNeeded(FALSE);
+            Device->setLogOnNeeded(false);
         }
     }
 

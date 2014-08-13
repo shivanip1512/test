@@ -426,7 +426,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     xfer.getInBuffer()[2] == CHAR_CR  )
                 {
                     setCurrentState(StateHandshakeComplete);   // This is the only place we go here (so retries is not reset)
-                    setLogOnNeeded(FALSE);                     // We are connected to the tap terminal.
+                    setLogOnNeeded(false);                     // We are connected to the tap terminal.
                     if(xfer.doTrace(commReturnValue))
                     {
                         traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
@@ -1156,7 +1156,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                             }
                             else if(_inStr.find("<EOT>")!=string::npos)
                             {
-                                setLogOnNeeded(TRUE);
+                                setLogOnNeeded(true);
                             }
                         }
 
@@ -1187,7 +1187,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                 }
                 else
                 {
-                    setLogOnNeeded(TRUE);
+                    setLogOnNeeded(true);
                     status = ErrorPageNoResponse;
                     setCurrentState( StateAbort );
                     if(xfer.doTrace(commReturnValue))
@@ -1210,7 +1210,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                     dout << "  Failed at state " << getCurrentState() << endl;
                 }
 
-                setLogOnNeeded(TRUE);
+                setLogOnNeeded(true);
                 setCurrentState(StateAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
@@ -1243,7 +1243,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list<
 
     if(gConfigParms.isTrue("TAPTERM_FORCE_EOT"))
     {
-        setLogOnNeeded(TRUE);
+        setLogOnNeeded(true);
     }
 
     if( getLogOnNeeded() == TRUE )
@@ -1341,7 +1341,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list<
                     dout << " " << getName() << "  Failed at state " << getCurrentState() << endl;
                 }
 
-                setLogOnNeeded(TRUE);
+                setLogOnNeeded(true);
                 setCurrentState(StateAbort);
 
                 break;
@@ -1438,7 +1438,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
                     dout << " " << getName() << "  Failed at state " << getCurrentState() << endl;
                 }
 
-                setLogOnNeeded(TRUE);
+                setLogOnNeeded(true);
                 setCurrentState(StateAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
@@ -1469,7 +1469,7 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
             dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
         }
         setCurrentState(StateHandshakeComplete);    // TAP is already connected on this port
-        setLogOnNeeded(FALSE);                      // We will skip the logon, and proceed to <STX>
+        setLogOnNeeded(false);                      // We will skip the logon, and proceed to <STX>
     }
     else if( getLogOnNeeded() )                     // If this is forced on a Glenaire input, the device <NAK>s us.
     {

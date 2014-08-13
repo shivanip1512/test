@@ -711,7 +711,7 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
         CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getDeviceByID(LastConnectedDevice);
         if(pOldConnectedDevice)
         {
-            pOldConnectedDevice->setLogOnNeeded(TRUE);
+            pOldConnectedDevice->setLogOnNeeded(true);
         }
     }
 
@@ -730,7 +730,7 @@ struct TAPNeedsLogon
     {
         if( Dev->getType() == TYPE_TAPTERM )
         {
-            Dev->setLogOnNeeded( TRUE );
+            Dev->setLogOnNeeded(true);
         }
     }
 };
@@ -741,7 +741,7 @@ struct TAPLoggedOn
     {
         if( Dev->getType() == TYPE_TAPTERM )
         {
-            Dev->setLogOnNeeded( FALSE );
+            Dev->setLogOnNeeded(false);
         }
     }
 };
@@ -1542,7 +1542,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         ::memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
 
                         IED->allocateDataBins(OutMessage);
-                        IED->setLogOnNeeded(TRUE);
+                        IED->setLogOnNeeded(true);
                         IED->setInitialState(0);
 
                         if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
@@ -1573,7 +1573,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                             CtiDeviceIED *IED = (CtiDeviceIED*)Device.get();
 
-                            IED->setLogOnNeeded(FALSE);
+                            IED->setLogOnNeeded(false);
                             IED->setInitialState(0);
                             IED->allocateDataBins(OutMessage);
 
@@ -1632,23 +1632,23 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                             if( status != NORMAL && !(status == ErrorPageRS || status == ErrorPageNAK || status == ErrorPageNoResponse) )
                             {
-                                IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
+                                IED->setLogOnNeeded(true);      // We did not come through it cleanly, let's kill this connection.
                                 Port->setConnectedDevice(0);
                             }
                             else
                             {
                                 if( ((CtiDeviceTapPagingTerminal*)IED)->blockedByPageRate() )
                                 {
-                                    IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
+                                    IED->setLogOnNeeded(true);      // We have zero queue entries!
                                 }
                                 else if( SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID) == 0 )
                                 {
-                                    IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
+                                    IED->setLogOnNeeded(true);      // We have zero queue entries!
                                 }
                                 else
                                 {
                                     // We have queue entries!  This is what gets us through the terminate routine without a hangup!
-                                    IED->setLogOnNeeded(FALSE);
+                                    IED->setLogOnNeeded(false);
                                 }
                             }
 
@@ -1661,7 +1661,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                         {
                             if( IED->getHandshakesRemaining() <= 0 )
                             {
-                                IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
+                                IED->setLogOnNeeded(true);      // We did not come through it cleanly, let's kill this connection.
                                 Port->setShouldDisconnect();
                                 IED->resetHandshakesRemaining();
                             }
