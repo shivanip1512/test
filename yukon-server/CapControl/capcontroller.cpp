@@ -1536,19 +1536,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     {
-        CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
         std::set<long> registrationIds;
-
-
-        //register for each point specifically
-        regMsg = new CtiPointRegistrationMsg();
-
-
-        long i=0;
-
-        CtiCCSubstationBus_vec subStationBusChanges;
-        CtiCCSubstation_vec stationChanges;
-        CtiCCArea_vec areaChanges;
 
         PaoIdToAreaMap::iterator areaIter = store->getPAOAreaMap()->begin();
         for ( ; areaIter != store->getPAOAreaMap()->end() ; areaIter++)
@@ -1558,32 +1546,26 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             if( currentArea->getVoltReductionControlPointId() > 0 )
             {
                 registrationIds.insert(currentArea->getVoltReductionControlPointId());
-                regMsg->insert(currentArea->getVoltReductionControlPointId());
             }
             if( currentArea->getDisabledStatePointId() > 0 )
             {
                 registrationIds.insert(currentArea->getDisabledStatePointId());
-                regMsg->insert(currentArea->getDisabledStatePointId());
             }
             if (currentArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentArea->getOperationStats().getUserDefOpSuccessPercentId());
-                regMsg->insert(currentArea->getOperationStats().getUserDefOpSuccessPercentId());
             }
             if (currentArea->getOperationStats().getDailyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentArea->getOperationStats().getDailyOpSuccessPercentId());
-                regMsg->insert(currentArea->getOperationStats().getDailyOpSuccessPercentId());
             }
             if (currentArea->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentArea->getOperationStats().getWeeklyOpSuccessPercentId());
-                regMsg->insert(currentArea->getOperationStats().getWeeklyOpSuccessPercentId());
             }
             if (currentArea->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
-                regMsg->insert(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
             }
         }
         PaoIdToSpecialAreaMap::iterator spAreaIter = store->getPAOSpecialAreaMap()->begin();
@@ -1593,32 +1575,26 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             if( currentSpArea->getVoltReductionControlPointId() > 0 )
             {
                 registrationIds.insert(currentSpArea->getVoltReductionControlPointId());
-                regMsg->insert(currentSpArea->getVoltReductionControlPointId());
             }
             if( currentSpArea->getDisabledStatePointId() > 0 )
             {
                 registrationIds.insert(currentSpArea->getDisabledStatePointId());
-                regMsg->insert(currentSpArea->getDisabledStatePointId());
             }
             if (currentSpArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSpArea->getOperationStats().getUserDefOpSuccessPercentId());
-                regMsg->insert(currentSpArea->getOperationStats().getUserDefOpSuccessPercentId());
             }
             if (currentSpArea->getOperationStats().getDailyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSpArea->getOperationStats().getDailyOpSuccessPercentId());
-                regMsg->insert(currentSpArea->getOperationStats().getDailyOpSuccessPercentId());
             }
             if (currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId());
-                regMsg->insert(currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId());
             }
             if (currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId());
-                regMsg->insert(currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId());
             }
 
         }
@@ -1630,32 +1606,26 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             if( currentStation->getVoltReductionControlId() > 0 )
             {
                 registrationIds.insert(currentStation->getVoltReductionControlId());
-                regMsg->insert(currentStation->getVoltReductionControlId());
             }
             if( currentStation->getDisabledStatePointId() > 0 )
             {
                 registrationIds.insert(currentStation->getDisabledStatePointId());
-                regMsg->insert(currentStation->getDisabledStatePointId());
             }
             if ( currentStation->getOperationStats().getUserDefOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentStation->getOperationStats().getUserDefOpSuccessPercentId());
-                regMsg->insert( currentStation->getOperationStats().getUserDefOpSuccessPercentId());
             }
             if ( currentStation->getOperationStats().getDailyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentStation->getOperationStats().getDailyOpSuccessPercentId());
-                regMsg->insert( currentStation->getOperationStats().getDailyOpSuccessPercentId());
             }
             if ( currentStation->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentStation->getOperationStats().getWeeklyOpSuccessPercentId());
-                regMsg->insert( currentStation->getOperationStats().getWeeklyOpSuccessPercentId());
             }
             if ( currentStation->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentStation->getOperationStats().getMonthlyOpSuccessPercentId());
-                regMsg->insert( currentStation->getOperationStats().getMonthlyOpSuccessPercentId());
             }
 
         }
@@ -1667,98 +1637,79 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
             {
                 registrationIds.insert(currentSubstationBus->getCurrentVarLoadPointId());
-                regMsg->insert(currentSubstationBus->getCurrentVarLoadPointId());
             }
             if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
             {
                 registrationIds.insert(currentSubstationBus->getCurrentWattLoadPointId());
-                regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
             }
             if (currentSubstationBus->getCurrentVoltLoadPointId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getCurrentVoltLoadPointId());
-                regMsg->insert(currentSubstationBus->getCurrentVoltLoadPointId());
             }
             if (currentSubstationBus->getEstimatedVarLoadPointId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getEstimatedVarLoadPointId());
-                regMsg->insert(currentSubstationBus->getEstimatedVarLoadPointId());
             }
             if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getDailyOperationsAnalogPointId());
-                regMsg->insert(currentSubstationBus->getDailyOperationsAnalogPointId());
             }
             if (currentSubstationBus->getPowerFactorPointId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getPowerFactorPointId());
-                regMsg->insert(currentSubstationBus->getPowerFactorPointId());
             }
             if (currentSubstationBus->getEstimatedPowerFactorPointId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getEstimatedPowerFactorPointId());
-                regMsg->insert(currentSubstationBus->getEstimatedPowerFactorPointId());
             }
             if (currentSubstationBus->getSwitchOverPointId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getSwitchOverPointId());
-                regMsg->insert(currentSubstationBus->getSwitchOverPointId());
             }
             if (currentSubstationBus->getPhaseBId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getPhaseBId());
-                regMsg->insert(currentSubstationBus->getPhaseBId());
             }
             if (currentSubstationBus->getPhaseCId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getPhaseCId());
-                regMsg->insert(currentSubstationBus->getPhaseCId());
             }
             if (currentSubstationBus->getVoltReductionControlId() > 0 )
             {
                 registrationIds.insert(currentSubstationBus->getVoltReductionControlId());
-                regMsg->insert(currentSubstationBus->getVoltReductionControlId());
             }
             if (currentSubstationBus->getDisableBusPointId() > 0 )
             {
                 registrationIds.insert(currentSubstationBus->getDisableBusPointId());
-                regMsg->insert(currentSubstationBus->getDisableBusPointId());
             }
             if (currentSubstationBus->getCommsStatePointId() > 0 )
             {
                 registrationIds.insert(currentSubstationBus->getCommsStatePointId());
-                regMsg->insert(currentSubstationBus->getCommsStatePointId());
             }
             if( currentSubstationBus->getDisabledStatePointId() > 0 )
             {
                 registrationIds.insert(currentSubstationBus->getDisabledStatePointId());
-                regMsg->insert(currentSubstationBus->getDisabledStatePointId());
             }
             if ( currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
-                regMsg->insert( currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
             }
             if ( currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId());
-                regMsg->insert( currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId());
             }
             if ( currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId());
-                regMsg->insert( currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId());
             }
             if ( currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
             {
                 registrationIds.insert(currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId());
-                regMsg->insert( currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId());
             }
 
             for each (long pointId in currentSubstationBus->getAllMonitorPointIds())
             {
                 registrationIds.insert(pointId);
-                regMsg->insert(pointId);
             }
 
 
@@ -1771,73 +1722,59 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                 {
                     registrationIds.insert(currentFeeder->getCurrentVarLoadPointId());
-                    regMsg->insert(currentFeeder->getCurrentVarLoadPointId());
                 }
                 if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                 {
                     registrationIds.insert(currentFeeder->getCurrentWattLoadPointId());
-                    regMsg->insert(currentFeeder->getCurrentWattLoadPointId());
                 }
                 if ( currentFeeder->getCurrentVoltLoadPointId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getCurrentVoltLoadPointId());
-                    regMsg->insert(currentFeeder->getCurrentVoltLoadPointId());
                 }
                 if (currentFeeder->getEstimatedVarLoadPointId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getEstimatedVarLoadPointId());
-                    regMsg->insert(currentFeeder->getEstimatedVarLoadPointId());
                 }
                 if (currentFeeder->getDailyOperationsAnalogPointId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getDailyOperationsAnalogPointId());
-                    regMsg->insert(currentFeeder->getDailyOperationsAnalogPointId());
                 }
                 if (currentFeeder->getPowerFactorPointId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getPowerFactorPointId());
-                    regMsg->insert(currentFeeder->getPowerFactorPointId());
                 }
                 if (currentFeeder->getEstimatedPowerFactorPointId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getEstimatedPowerFactorPointId());
-                    regMsg->insert(currentFeeder->getEstimatedPowerFactorPointId());
                 }
 
                 if (currentFeeder->getPhaseBId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getPhaseBId());
-                    regMsg->insert(currentFeeder->getPhaseBId());
                 }
                 if (currentFeeder->getPhaseCId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getPhaseCId());
-                    regMsg->insert(currentFeeder->getPhaseCId());
                 }
                 if( currentFeeder->getDisabledStatePointId() > 0 )
                 {
                     registrationIds.insert(currentFeeder->getDisabledStatePointId());
-                    regMsg->insert(currentFeeder->getDisabledStatePointId());
                 }
                 if ( currentFeeder->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getOperationStats().getUserDefOpSuccessPercentId());
-                    regMsg->insert( currentFeeder->getOperationStats().getUserDefOpSuccessPercentId());
                 }
                 if ( currentFeeder->getOperationStats().getDailyOpSuccessPercentId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getOperationStats().getDailyOpSuccessPercentId());
-                    regMsg->insert( currentFeeder->getOperationStats().getDailyOpSuccessPercentId());
                 }
                 if ( currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId());
-                    regMsg->insert( currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId());
                 }
                 if ( currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                 {
                     registrationIds.insert(currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId());
-                    regMsg->insert( currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
 
                 CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
@@ -1849,44 +1786,35 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
                         registrationIds.insert(currentCapBank->getStatusPointId());
-                        regMsg->insert(currentCapBank->getStatusPointId());
                     }
                     if( currentCapBank->getOperationAnalogPointId() > 0 )
                     {
                         registrationIds.insert(currentCapBank->getOperationAnalogPointId());
-                        regMsg->insert(currentCapBank->getOperationAnalogPointId());
                     }
                     if( currentCapBank->getDisabledStatePointId() > 0 )
                     {
                         registrationIds.insert(currentCapBank->getDisabledStatePointId());
-                        regMsg->insert(currentCapBank->getDisabledStatePointId());
                     }
                     if ( currentCapBank->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                     {
                         registrationIds.insert(currentCapBank->getOperationStats().getUserDefOpSuccessPercentId());
-                        regMsg->insert( currentCapBank->getOperationStats().getUserDefOpSuccessPercentId());
                     }
                     if ( currentCapBank->getOperationStats().getDailyOpSuccessPercentId() > 0)
                     {
                         registrationIds.insert(currentCapBank->getOperationStats().getDailyOpSuccessPercentId());
-                        regMsg->insert( currentCapBank->getOperationStats().getDailyOpSuccessPercentId());
                     }
                     if ( currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                     {
                         registrationIds.insert(currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId());
-                        regMsg->insert(currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId());
                     }
                     if ( currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                     {
                         registrationIds.insert(currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
-                        regMsg->insert( currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
                     }
                     if ( currentCapBank->isControlDeviceTwoWay() )
                     {
                         CtiCCTwoWayPointsPtr twoWayPts = currentCapBank->getTwoWayPoints();
-                        //registrationIds.push_back();//pass this down the chain.
                         twoWayPts->addAllCBCPointsToRegMsg(registrationIds);
-                        //twoWayPts->addAllCBCPointsToRegMsg(regMsg);
                     }
 
                 }
@@ -1896,13 +1824,11 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0)
             {
                 registrationIds.insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
-                regMsg->insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
             }
 
             if (_VOLT_REDUCTION_SYSTEM_POINTID > 0)
             {
                 registrationIds.insert(_VOLT_REDUCTION_SYSTEM_POINTID);
-                regMsg->insert(_VOLT_REDUCTION_SYSTEM_POINTID);
             }
 
         }
@@ -1921,7 +1847,6 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        regMsg = NULL;
     }
 }
 
@@ -3641,6 +3566,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 if (currentCapBank->getOvUvDisabledFlag())
                                 {
                                     currentCapBank->setOvUvDisabledFlag(false);
+                                    currentSubstationBus->setBusUpdatedFlag(true);
                                 }
                             }
                             else
@@ -3648,6 +3574,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 if (!currentCapBank->getOvUvDisabledFlag())
                                 {
                                     currentCapBank->setOvUvDisabledFlag(true);
+                                    currentSubstationBus->setBusUpdatedFlag(true);
                                 }
                             }
                             if (twoWayPts->getPointValueByAttribute(PointAttribute::LastControlOvUv) > 0)

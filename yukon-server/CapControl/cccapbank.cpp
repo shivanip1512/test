@@ -104,8 +104,8 @@ _parentId(0)
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 {
+    _twoWayPoints = NULL;
     operator=(cap);
-    //_twoWayPoints = NULL;
 }
 
 /*---------------------------------------------------------------------------
@@ -1884,13 +1884,17 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _originalParent = rightObj._originalParent;
 
         _operationStats = rightObj._operationStats;
-        if (rightObj._twoWayPoints != NULL)
+
+        if ( _twoWayPoints != NULL )
+        {
+            delete _twoWayPoints;
+            _twoWayPoints = NULL;
+        }
+        if (rightObj._twoWayPoints != NULL) 
         {
             _twoWayPoints = new CtiCCTwoWayPoints(*rightObj._twoWayPoints);
 
         }
-        else
-            _twoWayPoints = NULL;
 
         _insertDynamicDataFlag = rightObj._insertDynamicDataFlag;
         _dirty = rightObj._dirty;
@@ -2242,7 +2246,8 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
     }
     try
     {
-        if (stringContainsIgnoreCase(getControlDeviceType(), "CBC 702") )
+        if (stringContainsIgnoreCase(getControlDeviceType(), "CBC 702") ||
+            stringContainsIgnoreCase(getControlDeviceType(), "CBC 802"))
         {
             CtiCCTwoWayPointsPtr twoWayPts = getTwoWayPoints();
             twoWayPts->dumpDynamicData(conn,currentDateTime);

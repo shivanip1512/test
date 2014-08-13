@@ -217,7 +217,7 @@ void Cbc8020Device::initOffsetAttributeMaps( std::map <int, PointAttribute> &ana
     statusOffsetAttribute.insert( std::make_pair( 84, PointAttribute::ReCloseBlocked) );
     statusOffsetAttribute.insert( std::make_pair( 86,  PointAttribute::ControlMode) ); //Manual Mode
     //statusOffsetAttribute.insert( std::make_pair( 87,  PointAttribute::RemoteControlMode) );
-    //statusOffsetAttribute.insert( std::make_pair( 88,  PointAttribute::AutoControlMode) );
+    statusOffsetAttribute.insert( std::make_pair( 89,  PointAttribute::AutoVoltControl) );
 
     accumulatorOffsetAttribute.insert( std::make_pair( 1, PointAttribute::TotalOpCount) );
     accumulatorOffsetAttribute.insert( std::make_pair( 3, PointAttribute::UvCount) );
