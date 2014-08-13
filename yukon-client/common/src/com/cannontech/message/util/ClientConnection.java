@@ -39,11 +39,11 @@ public abstract class ClientConnection extends Observable implements IServerConn
     private List<MessageListener> messageListeners = new CopyOnWriteArrayList<MessageListener>();
     private final int EXCEPTIONS_BEFORE_LOG_SNOOZE = 20;
     private final int LOG_SNOOZE_MINUTES = 5;
-    private LoadingCache<Integer, Integer> listenerExceptions = CacheBuilder.newBuilder()
+    private LoadingCache<MessageListener, Integer> listenerExceptions = CacheBuilder.newBuilder()
             .expireAfterWrite(LOG_SNOOZE_MINUTES, TimeUnit.MINUTES).build(
-                new CacheLoader<Integer, Integer>() {
+                new CacheLoader<MessageListener, Integer>() {
                     @Override
-                    public Integer load(Integer key) throws Exception {
+                    public Integer load(MessageListener key) throws Exception {
                         return 0;
                     }
                 });
@@ -213,7 +213,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
                         errorString += "Msg is null";
                     }
 
-                    Integer errorCount = listenerExceptions.getUnchecked(messageListener.hashCode());
+                    Integer errorCount = listenerExceptions.getUnchecked(messageListener);
                     if (errorCount < EXCEPTIONS_BEFORE_LOG_SNOOZE) {
                         errorCount++;
                         if (errorCount == EXCEPTIONS_BEFORE_LOG_SNOOZE) {
@@ -221,7 +221,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
                                 + EXCEPTIONS_BEFORE_LOG_SNOOZE + " exceptions within "
                                 + LOG_SNOOZE_MINUTES + " minutes of each other");
                         } 
-                        listenerExceptions.put(messageListener.hashCode(), errorCount);
+                        listenerExceptions.put(messageListener, errorCount);
                         logger.error(errorString, t);
                     }
                     else {
