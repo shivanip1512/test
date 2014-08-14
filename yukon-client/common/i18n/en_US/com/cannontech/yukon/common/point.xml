@@ -305,6 +305,14 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_C">Net Received kVArh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
 
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION">Firmware Version</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.IP_ADDRESS">IP Address</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT_SENSOR">Neutral Current Sensor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SERIAL_NUMBER">Serial Number</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UDP_PORT">UDP Port</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON">Last Control Reason</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.IGNORED_CONTROL_REASON">Last Control Reason</entry>
+
     <entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool Set Temperature</entry>

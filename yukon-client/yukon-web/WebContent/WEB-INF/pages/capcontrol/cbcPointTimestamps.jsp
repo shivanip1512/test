@@ -1,11 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.capcontrol.cbcPoints">
 
@@ -21,34 +18,16 @@
             </thead>
             <tfoot></tfoot>
             <tbody>
-                <c:forEach var="point" items="${pointMap.ANALOG}">
+                <c:forEach var="formatForAnalogPoint" items="${formatForAnalogPoints}">
+                    <c:set var="point" value="${formatForAnalogPoint.key}" />
+                    <c:set var="format" value="${formatForAnalogPoint.value}" />
                     <tr>
-                        <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
+                        <td>${fn:escapeXml(point.pointName)}</td>
                         <td>
-                            <c:choose>
-                                <c:when test="${point.pointName == 'Firmware Version'}">
-                                   <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToFirmwareVersion}"/>
-                                </c:when>
-                                <c:when test="${point.pointName == 'IP Address'}">
-                                    <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToOctalIp}"/>
-                                </c:when>
-                                <c:when test="${point.pointName == 'Neutral Current Sensor'}">
-                                    <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertNeutralCurrent}"/>
-                                </c:when>
-                                <c:when test="${point.pointName == 'Serial Number'}">
-                                    <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertSerialNumber}"/>
-                                </c:when>
-                                <c:when test="${point.pointName == 'UDP Port'}">
-                                    <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertSerialNumber}"/>
-                                </c:when>
-                                <c:when test="${point.stateGroupID != 0}">
-                                    <cti:pointStatus pointId="${point.pointID}" />
-                                    <cti:pointValue pointId="${point.pointID}" format="{state}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:pointValue pointId="${point.pointID}" format="SHORT"/>
-                                </c:otherwise>
-                            </c:choose>
+                            <c:if test="${point.stateGroupID != 0}">
+                              <cti:pointStatus pointId="${point.pointID}" />
+                            </c:if>
+                            <cti:pointValue pointId="${point.pointID}" format="${format}"/>
                         </td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>
@@ -68,7 +47,7 @@
             <tbody>
                 <c:forEach var="point" items="${pointMap.ACCUMULATOR}">
                     <tr>
-                        <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
+                        <td>${fn:escapeXml(point.pointName)}</td>
                         <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>
@@ -88,7 +67,7 @@
             <tbody>
                 <c:forEach var="point" items="${pointMap.STATUS}">
                     <tr>
-                        <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
+                        <td>${point.pointName}</td>
                         <td class="b">
                             <cti:pointStatus pointId="${point.pointID}" />
                             <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
@@ -111,7 +90,7 @@
             <tbody>
                 <c:forEach var="point" items="${pointMap.CONFIGURABLE_PARAMETERS}">
                     <tr>
-                        <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
+                        <td>${fn:escapeXml(point.pointName)}</td>
                         <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>
@@ -132,7 +111,7 @@
                 <tbody>
                     <c:forEach var="point" items="${pointMap.MISC}">
                         <tr>
-                            <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
+                            <td>${fn:escapeXml(point.pointName)}</td>
                             <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                             <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                         </tr>
