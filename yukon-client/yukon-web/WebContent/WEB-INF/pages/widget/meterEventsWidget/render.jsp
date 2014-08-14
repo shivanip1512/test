@@ -1,9 +1,8 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <div id="${widgetParameters.widgetId}_events">
     <c:choose>
@@ -24,10 +23,11 @@
                 <tbody>
                     <c:forEach items="${valueMap}" var="entry">
                         <tr>
-                            <td><cti:formatDate type="BOTH" value="${entry.pointValueHolder.pointDataTimeStamp}"/></td>
-                            <td><spring:escapeBody>${entry.pointName}</spring:escapeBody></td>
-                            <td>
-                                <cti:pointStatus pointId="${entry.pointValueHolder.id}" rawState="${entry.pointValueHolder.value}"/>
+                            <td class="wsnw"><cti:formatDate type="BOTH" value="${entry.pointValueHolder.pointDataTimeStamp}"/></td>
+                            <td>${fn:escapeXml(entry.pointName)}</td>
+                            <td class="wsnw">
+                                <cti:pointStatus pointId="${entry.pointValueHolder.id}" 
+                                        rawState="${entry.pointValueHolder.value}"/>
                                 <cti:pointValueFormatter format="VALUE" value="${entry.pointValueHolder}" />
                             </td>
                         </tr>

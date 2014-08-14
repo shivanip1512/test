@@ -139,8 +139,8 @@ function ${widgetParameters.widgetId}_updateDifference() {
                         <cti:pointStatus pointId="${pointResultRow.pointId}"/>
                     </c:if>
                  </td>
-                 <td><cti:pointValue pointId="${pointResultRow.pointId}" format="SHORT"/></td>
-                 <td><tags:historicalValue pao="${device}" pointId="${pointResultRow.pointId}"/></td>
+                 <td class="wsnw"><cti:pointValue pointId="${pointResultRow.pointId}" format="SHORT"/></td>
+                 <td class="wsnw"><tags:historicalValue pao="${device}" pointId="${pointResultRow.pointId}"/></td>
              </tr>
          </c:forEach>
         </tbody>

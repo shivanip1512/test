@@ -36,12 +36,16 @@ $(function() {
     <c:forEach var="entry" items="${points}">
         <c:if test="${fn:length(entry.value) > 0}">
             <span><i:inline key="${entry.key}" /></span>
-            <div class="scroll-sm lite-container stacked dashed">
+            <div class="scroll-lg lite-container stacked dashed">
                 <table class="compact-results-table">
                     <c:forEach var="point" items="${entry.value}">
                         <tr>
-                            <td>${fn:escapeXml(point.pointName)}</td>
-                            <td class="last"><cti:pointValue pointId="${point.liteID}" colorForStatus="true"/></td>
+                            <td class="wsnw"><cti:pointValue pointId="${point.liteID}" format="DATE"/></td>
+                            <td class="full-width">${fn:escapeXml(point.pointName)}</td>
+                            <td class="wsnw">
+                                <cti:pointValue pointId="${point.liteID}" colorForStatus="true" format="VALUE"/>
+                                <cti:pointValue pointId="${point.liteID}" format="UNIT"/>
+                            </td>
                         </tr>
                     </c:forEach>
                 </table>
