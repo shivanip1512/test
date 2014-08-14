@@ -228,7 +228,7 @@ public class RfnGatewayDataCacheTest {
                     return new PaoIdentifier(1, PaoType.RFN_GATEWAY);
                 }
             };
-            RfnIdentifier rfnId = new RfnIdentifier("10000", "CPS", "RFN_GATEWAY");
+            RfnIdentifier rfnId = new RfnIdentifier("10000", "CPS", "RF_GATEWAY");
             return new RfnDevice(pao, rfnId);
         }
 

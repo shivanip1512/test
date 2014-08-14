@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -14,7 +15,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public Set<RfnGateway> getAllGateways() {
-        //TODO: Get all base RfnDevices
+        //TODO: Get all base RfnDevices - new method RfnDeviceDao.getDevicesByPaoType
         //TODO: Get RfnGatewayData from cache
         //TODO: Get PaoLocation from PaoLocationDao
         return null;
@@ -22,17 +23,18 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     @Override
     public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier) {
-        //TODO: Get base RfnDevices
+        //TODO: Get base RfnDevice via RfnDeviceDao.getDeviceForId
         //TODO: Get RfnGatewayData from cache
         //TODO: Get PaoLocation from PaoLocationDao
         return null;
     }
     
     @Override
-    public boolean createGateway(String name, String ipAddress, String username, String password) {
+    public boolean createGateway(String name, String ipAddress, String username, String password, PaoLocation location) {
         //TODO: Send GatewayCreateRequest on yukon.qr.common.rfn.GatewayUpdateRequest queue
         //TODO: Parse GatewayUpdateResponse on temp queue
-        //TODO: Create pao in Yukon DB, (optionally) add location info w/ PaoLocationDao
+        //TODO: Use received rfnIdentifier to create rfndevice in Yukon DB, via RfnDeviceCreationService.createGateway
+        //TODO: (optionally) add location info w/ PaoLocationDao
         return false;
     }
     
@@ -49,7 +51,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public boolean deleteGateway(PaoIdentifier paoIdentifier) {
         //TODO: Send GatewayDeleteRequest on yukon.qr.common.rfn.GatewayUpdateRequest queue
         //TODO: Parse GatewayUpdateResponse on temp queue
-        //TODO: Delete from yukon database, cache
+        //TODO: Delete from yukon database, cache - DeviceDao.removeDevice()
         return false;
     }
 

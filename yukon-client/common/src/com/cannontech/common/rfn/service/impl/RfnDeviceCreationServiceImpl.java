@@ -24,9 +24,11 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -180,6 +182,18 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         return result;
     }
     
+    @Override
+    public RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier) {
+        SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RFN_GATEWAY, name, 
+                                                                                rfnIdentifier.getSensorModel(), 
+                                                                                rfnIdentifier.getSensorManufacturer(), 
+                                                                                rfnIdentifier.getSensorSerialNumber(), 
+                                                                                true);
+        RfnDevice rfnDevice = new RfnDevice(device.getPaoIdentifier(), rfnIdentifier);
+        rfnDeviceDao.updateDevice(rfnDevice);
+        return rfnDevice;
+    }
+    
     private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
         if (hardware == null) {
             /** Attempt to stub out a stars devices for lcr archive messages */ 
@@ -225,7 +239,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     
     @Override
     @ManagedAttribute
-    public String getUnkownTempaltes() {
+    public String getUnknownTemplates() {
         return unknownTemplatesEncountered.entrySet().toString();
     }
     

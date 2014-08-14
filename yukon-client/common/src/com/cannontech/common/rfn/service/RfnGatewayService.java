@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.service;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 
@@ -12,16 +13,14 @@ import com.cannontech.common.rfn.model.RfnGateway;
  * Yukon only stores a simple device & rfnIdentifier for gateways (and optionally, latitude and longitude). The rest of 
  * the gateway data is stored in Network Manager and only cached by Yukon.
  * 
- * @see {@link GatewayArchiveRequestListenerBase} Handles incoming <code>GatewayArchiveRequest</code>s.
- * @see {@link RfnDeviceCreationService#create(RfnIdentifier)} Used to create new gateways.
+ * @see {@link GatewayArchiveRequestListener} Handles incoming <code>GatewayArchiveRequest</code>s.
+ * @see {@link RfnDeviceCreationService#createGateway(RfnIdentifier)} Used to create new gateways.
  */
 public interface RfnGatewayService {
     
     /**
      * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not cached, a request will be
      * sent to Network Manager.
-     * 
-     * TODO: Determine behavior when unable or partly unable to retrieve gateway data from NM
      */
     public Set<RfnGateway> getAllGateways();
     
@@ -36,10 +35,12 @@ public interface RfnGatewayService {
     /**
      * Creates a new gateway in Yukon and Network Manager.
      * 
+     * @param location if null, no location information will be saved. Otherwise, this should contain latitude and
+     * longitude (any paoidentifier will be overwritten with the newly created pao's id).
      * @return true if the creation succeeded.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean createGateway(String name, String ipAddress, String username, String password);
+    public boolean createGateway(String name, String ipAddress, String username, String password, PaoLocation location);
     
     /**
      * Update the gateway. If the name or location are updated, they will be stored in the Yukon database, but changes

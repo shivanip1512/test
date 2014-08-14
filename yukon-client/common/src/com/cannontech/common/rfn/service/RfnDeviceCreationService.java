@@ -24,12 +24,14 @@ public interface RfnDeviceCreationService {
      */
     public RfnDevice create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user);
     
+    public RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier);
+    
     public void incrementDeviceLookupAttempt();
     
     public void incrementNewDeviceCreated();
     
     @ManagedAttribute
-    public String getUnkownTempaltes();
+    public String getUnknownTemplates();
     
     @ManagedAttribute
     public int getDeviceLookupAttempt();
