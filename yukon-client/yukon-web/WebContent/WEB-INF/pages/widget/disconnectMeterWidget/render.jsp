@@ -5,8 +5,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/yukon.widget.disconnect.js" />
-
 <tags:nameValueContainer2 naturalWidth="false">
     <tags:nameValue2 label="${attribute}" valueClass="full-width">
         <c:choose>
