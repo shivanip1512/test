@@ -9404,7 +9404,7 @@
             <attribute name="POWER_FACTOR">
                 <basicLookup point="Power Factor" />
             </attribute>
-            <attribute name="KVAHA">
+            <attribute name="KVAH">
                 <basicLookup point="kVAh"/>
             </attribute>
             <attribute name="KVAH_RATE_A">
