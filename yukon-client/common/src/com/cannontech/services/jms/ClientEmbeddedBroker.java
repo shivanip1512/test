@@ -57,8 +57,9 @@ public class ClientEmbeddedBroker {
             NetworkConnector networkConnector = broker.addNetworkConnector(discoveryAddress);
             networkConnector.setDuplex(true);
             
-            //our largest hop is 3 eg. network manager -> service manager -> web
-            networkConnector.setNetworkTTL(3);
+            //our largest hop is currently 5:
+            //  network manager -> remote proxy -> local proxy -> service manager -> web
+            networkConnector.setNetworkTTL(5);
             broker.setUseJmx(true);
             
             broker.start();
