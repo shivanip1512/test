@@ -54,10 +54,10 @@
     
     <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="right M0"/>
     <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
-        <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true" classes="connect-btn middle"/>
+        <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true" classes="middle"/>
         <c:if test="${supportsArm}">
-            <tags:widgetActionRefresh method="arm" nameKey="arm" showConfirm="true" classes="connect-btn middle"/>
+            <tags:widgetActionRefresh method="arm" nameKey="arm" showConfirm="true" classes="middle"/>
         </c:if>
-        <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true" classes="disconnect-btn left"/>
+        <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true" classes="left"/>
     </cti:checkRolesAndProperties>
 </div>
