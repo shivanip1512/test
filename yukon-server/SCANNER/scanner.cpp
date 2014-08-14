@@ -39,8 +39,8 @@
 #include "ThreadStatusKeeper.h"
 #include "database_connection.h"
 #include "database_transaction.h"
-
 #include "millisecond_timer.h"
+#include "win_helper.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/assign/list_of.hpp>
@@ -57,6 +57,9 @@
 
 using namespace std;
 using Cti::ThreadStatusKeeper;
+using Cti::Timing::Chrono;
+using Cti::StreamConnectionException;
+using Cti::StreamSocketConnection;
 
 static INT      ScannerReloadRate = 60 * 60 * 24; // 24 hours
 static CtiTime  LastPorterOutTime;
@@ -607,12 +610,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         }
 
         /* Check if we need to reopen the port pipe */
-        if(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
+        if( ! PorterNexus.isValid() && ! ScannerQuit )
         {
             TimeNow = TimeNow.now();
             invcnt = TimeNow.second() - TimeNow.second() % 30;
 
-            while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
+            while( ! PorterNexus.isValid() && ! ScannerQuit )
             {
 
                 if(!(invcnt++ % 30) )     // Only gripe every 30 seconds.
@@ -720,7 +723,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             LastPorterOutTime = PASTDATE;  // Make sure we don't repeat this forever!
 
             // I haven't heard from porter in a long long time...  Let's make sure he's init ok.
-            PorterNexus.CTINexusClose();
+            PorterNexus.close();
         }
 
         DWORD loop_elapsed_time = loop_timer.elapsed();
@@ -944,17 +947,34 @@ void ResultThread (void *Arg)
     } /* End of for */
 }
 
+namespace {
+
+void waitForScannerQuitEvent(const unsigned long millis)
+{
+    const DWORD waitResult = WaitForSingleObject(&hScannerSyncs[S_QUIT_EVENT], millis);
+    if( waitResult == WAIT_FAILED )
+    {
+        const int error = GetLastError();
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR **** " << error << " -> " << Cti::getSystemErrorMessage(error) << " "
+                 <<  __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        Sleep(millis); // avoid run-away loops
+    }
+}
+
+} // namespace anonymous
+
 void NexusThread (void *Arg)
 {
     /* Define the return Pipe handle */
-    IM_EX_CTIBASE extern CTINEXUS PorterNexus;
+    IM_EX_CTIBASE extern StreamSocketConnection PorterNexus;
 
     /* Misc. definitions */
     ULONG       i = 0;
-
-    /* Define the pipe variables */
-    ULONG       BytesRead;
-    INMESS      *InMessage = NULL;
 
     // I want an attitude!
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
@@ -963,7 +983,7 @@ void NexusThread (void *Arg)
     for(;!ScannerQuit;)
     {
         /* Wait for the Nexus to come (?back?) up */
-        while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
+        while( ! PorterNexus.isValid() && ! ScannerQuit )
         {
             if(!(i++ % 30))
             {
@@ -972,50 +992,48 @@ void NexusThread (void *Arg)
                 dout << CtiTime() << " NexusThread: Waiting for reconnection to Port Control" << endl;
             }
 
-            CTISleep (1000L);
+            waitForScannerQuitEvent(1000);
         }
 
-        if(ScannerQuit)
+        if( ScannerQuit )
         {
             continue; // get us out of here!
         }
 
-        BytesRead = 0;
-        InMessage = CTIDBG_new INMESS;
-        ::memset(InMessage, 0, sizeof(*InMessage));
+        auto_ptr<INMESS> InMessage(new INMESS); // Note: INMESS has a memset zero in its constructor
 
-        /* get a result off the port pipe */
-        if(PorterNexus.CTINexusRead(InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))     // Make sure we have an InMessage worth!
+        int bytesRead = 0;
+        try
         {
-            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
-            {
-                PorterNexus.CTINexusClose();
-            }
-
-            Sleep(500);
-
-            delete InMessage;
-            InMessage = 0;
-            continue;
+            /* get a result off the port pipe */
+            bytesRead = PorterNexus.read(InMessage.get(), sizeof(INMESS), Chrono::infinite, &hScannerSyncs[S_QUIT_EVENT]);
+        }
+        catch( const StreamConnectionException &ex )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " NexusThread: Error while reading porterNexus: " << ex.what() << endl;
         }
 
-        if(!ScannerQuit)
+        if( bytesRead != sizeof(INMESS) )    // Make sure we have an InMessage worth!
+        {
+            if( ! ScannerQuit )
+            {
+                waitForScannerQuitEvent(500);
+            }
+
+            continue; // skip queuing the message
+        }
+
+        if( ! ScannerQuit )
         {
             LastPorterInTime = LastPorterInTime.now();
 
-            if(InMessage != 0)
             {
                 CtiLockGuard< CtiMutex > inguard( inmessMux );
-                inmessList.push_back( InMessage );
-                InMessage = 0;
+                inmessList.push_back(InMessage.release());
             }
         }
     } /* End of for */
-
-    if(InMessage != NULL)
-    {
-        delete InMessage;
-    }
 }
 
 
@@ -1573,14 +1591,13 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
 {
     INT   i, j = 0;
     INT   status = NORMAL;
-    ULONG BytesWritten;
 
     OUTMESS *OutMessage = NULL;
 
-    IM_EX_CTIBASE extern CTINEXUS PorterNexus;
+    IM_EX_CTIBASE extern StreamSocketConnection PorterNexus;
 
     /* if pipe shut down return the error */
-    if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
+    if( ! PorterNexus.isValid() )
     {
         status = PIPEWASBROKEN;
     }
@@ -1597,7 +1614,7 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
             OutMessage->ExpirationTime = CtiTime().seconds() + exptime;
         }
 
-        while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
+        while( ! PorterNexus.isValid() && ! ScannerQuit )
         {
             if(!(j++ % 30))
             {
@@ -1621,7 +1638,7 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
         }
 
         /* And send them to porter */
-        if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
+        if( PorterNexus.isValid() )
         {
             if(ScannerDebugLevel & SCANNER_DEBUG_OUTREQUESTS)
             {
@@ -1642,16 +1659,32 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
                 }
             }
 
-            if(PorterNexus.CTINexusWrite (OutMessage, sizeof(OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
+            int bytesWritten = 0;
+            boost::optional<std::string> errorReason;
+
+            try
             {
-                PorterNexus.CTINexusClose();
+                bytesWritten = PorterNexus.write(OutMessage, sizeof(OUTMESS), Chrono::seconds(30));
             }
-            else
+            catch( const StreamConnectionException &ex )
             {
-                if(BytesWritten != sizeof(OUTMESS))
+                errorReason = ex.what();
+            }
+
+            if( ! bytesWritten )
+            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** ERROR ERROR ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** ERROR **** while writing to porter, closing connection " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
+                }
+                PorterNexus.close();
+            }
+            if( bytesWritten != sizeof(OUTMESS) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** ERROR ERROR ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Porter has been shorted by a few bytes!" << endl;
                     dout << " Scannable ID " << OutMessage->DeviceID << " may be out-of-sync \n\tuntil 5 minutes past the next legitimate scan time" << endl;
                 }

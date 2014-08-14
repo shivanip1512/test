@@ -12,7 +12,7 @@
 #include "c_port_interface.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
-#include "CtiLocalConnect.h"
+#include "streamLocalConnection.h"
 
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
@@ -21,9 +21,14 @@
 
 using namespace std;
 using Cti::Porter::PorterStatisticsManager;
+using Cti::Timing::Chrono;
+using Cti::StreamConnection;
+using Cti::StreamLocalConnection;
+using Cti::StreamSocketConnection;
+using Cti::StreamConnectionException;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
-extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
+extern StreamLocalConnection<INMESS, OUTMESS> PorterToPil;
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
@@ -38,8 +43,8 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutTemplate);
 
 INT ValidateOutMessage(OUTMESS *&OutMessage);
-void ConnectionThread(CtiConnect *Nexus);
-INT realignNexus(OUTMESS *&OutMessage);
+void ConnectionThread(StreamConnection *Nexus);
+bool realignNexus(OUTMESS *&OutMessage);
 
 /* Threads to field incoming messages from the pipes */
 void PorterConnectionThread (void *Arg)
@@ -51,7 +56,7 @@ void PorterConnectionThread (void *Arg)
 
     SetThreadName(-1, "PrtrConn ");
 
-    ::strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
+    PorterListenNexus.Name = "PorterConnectionThread: Listener";
 
     //Initiate a thread for the porter pil connection
     boost::thread porterToPilConnection(ConnectionThread, &PorterToPil);
@@ -66,7 +71,7 @@ void PorterConnectionThread (void *Arg)
      *             sockets don't care for new listener sockets.
      */
 
-    while(!PorterQuit && PorterListenNexus.CTINexusCreate(PORTCONTROLNEXUS))
+    while( ! PorterQuit && ! PorterListenNexus.create(PORTCONTROLNEXUS) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -80,24 +85,21 @@ void PorterConnectionThread (void *Arg)
 
     for(; !PorterQuit ;)
     {
-        auto_ptr<CTINEXUS> NewNexus(new CTINEXUS);
-
-        ::sprintf(NewNexus->Name, "PortControl Nexus %d", iNexus++);
-
         /*
          *  Blocking wait on the listening nexus.
          */
-
-        int nRet = PorterListenNexus.CTINexusConnect(NewNexus.get(), &hPorterEvents[P_QUIT_EVENT]);
+        auto_ptr<StreamSocketConnection> newNexus = PorterListenNexus.accept(StreamSocketConnection::ReadExacly, Chrono::infinite, &hPorterEvents[P_QUIT_EVENT]);
 
         if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
         {
             break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
         }
-        else if(!nRet)
+        else if( newNexus.get() )
         {
+            newNexus->Name = "PortControl Nexus " + CtiNumStr(iNexus++);
+
             /* Someone has connected to us.. */
-            boost::thread newConnection(ConnectionThread, NewNexus.release());
+            boost::thread newConnection(ConnectionThread, newNexus.release());
         }
         else
         {
@@ -112,13 +114,10 @@ void PorterConnectionThread (void *Arg)
 /*
  *  This is the guy who deals with incoming data from any one else in the system.
  */
-void ConnectionThread(CtiConnect *MyNexus)
+void ConnectionThread(StreamConnection *MyNexus)
 {
-    INT            i;
-    OUTMESS        *OutMessage = NULL;
-
-    ULONG                   BytesRead;
-    list< OUTMESS* >  outList;
+    OUTMESS *OutMessage = NULL;
+    list< OUTMESS* > outList;
 
     /* make it clear who is the boss */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
@@ -141,7 +140,6 @@ void ConnectionThread(CtiConnect *MyNexus)
 
 
         OutMessage = NULL;
-        BytesRead = 0;
 
         if( outList.size() )
         {
@@ -178,35 +176,31 @@ void ConnectionThread(CtiConnect *MyNexus)
             CTISleep(5000L);
             continue;
         }
-        else if((i = MyNexus->CTINexusRead (OutMessage, sizeof(OUTMESS), &BytesRead, CTINEXUS_INFINITE_TIMEOUT))  || BytesRead != sizeof(OUTMESS))  /* read whatever comes in */
+        else /* read whatever comes in */
         {
+            int bytesRead = 0;
+
+            try
+            {
+                // MyNexus is expected to be in ReadExacly mode
+                // read() can only end if either:
+                // - an abort event is signaled, in which case bytesReads will be zero
+                // - a full message is received
+                // - and exception is thrown
+                bytesRead = MyNexus->read(OutMessage, sizeof(OUTMESS), Chrono::infinite, &hPorterEvents[P_QUIT_EVENT]);
+            }
+            catch( const StreamConnectionException &ex )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** WARNING: Error on Nexus Read **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Failed to receive a full OUTMESS, will try to correct!" << endl;
-                dout << " OUTMESS lost, client and porter may be unstable!" << endl;
+                dout << "**** WARNING **** : Error on Nexus Read **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  Reason: " << ex.what() << endl;
             }
 
-            // Clean out any residue
-            if(BytesRead != sizeof(OUTMESS))
+            if( bytesRead != sizeof(OUTMESS) )
             {
-                if( BytesRead > 0 )
-                {
-                    MyNexus->CTINexusRead (reinterpret_cast<BYTE *>(OutMessage) + BytesRead, sizeof(*OutMessage) - BytesRead, &BytesRead, CTINEXUS_INFINITE_TIMEOUT);
-                }
-                else if(BytesRead < 0)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-                else
-                {
-                    MyNexus->CTINexusClose();
-                    break;   // The for and exit this thread
-                }
+                break; // The for and exit this thread
             }
+
         }
 
         if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
@@ -314,10 +308,9 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
  *----------------------------------------------------------------------------*/
 INT ValidateOutMessage(OUTMESS *&OutMessage)
 {
-    INT     nRet = NoError;
-
     if(OutMessage != NULL)
     {
+
         if(OutMessage->HeadFrame[0] != 0x02 ||
            OutMessage->HeadFrame[1] != 0xe0 ||
            OutMessage->TailFrame[0] != 0xea ||
@@ -330,32 +323,40 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
                 dout << " Tail bytes " << hex << (int)OutMessage->TailFrame[0] << " " << hex << (int)OutMessage->TailFrame[1] << dec << endl;
             }
 
-            realignNexus(OutMessage);
+            if( ! realignNexus(OutMessage) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Unable to realign OutMessage " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                delete(OutMessage);
+                OutMessage = NULL;
+
+                return ErrorInvalidRequest;
+            }
         }
 
-        if((OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0))
+        if( OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << CtiTime() << " Bad OUTMESS received TrxID = " << OutMessage->Request.GrpMsgID << endl;
-            dout << CtiTime() << "   Command " << OutMessage->Request.CommandStr << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Bad OUTMESS received TrxID = " << OutMessage->Request.GrpMsgID << endl;
+                dout << CtiTime() << "   Command " << OutMessage->Request.CommandStr << endl;
+            }
 
             delete(OutMessage);
             OutMessage = NULL;
 
-            nRet = ErrorInvalidRequest;
-        }
-        else
-        {
-            nRet = NoError;      // This is A-OK.
+            return ErrorInvalidRequest;
         }
     }
     else
     {
-        nRet = MemoryError;
+        return MemoryError;
     }
 
-    return nRet;
+    return NoError; // This is A-OK.
 }
 
 /*----------------------------------------------------------------------------*
@@ -491,10 +492,7 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
 INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
-    INT            i;
-    INT            status = NORMAL;
-
-    OUTMESS        PeekMessage;
+    INT status = NORMAL;
 
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
@@ -502,7 +500,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
     if(OutMessage->EventCode & BWORD)
     {
         //  we're saving the nexus for use after we've called WriteQueue, which consumes the OutMessage
-        CtiConnect *Nexus = OutMessage->ReturnNexus;
+        StreamConnection *Nexus = OutMessage->ReturnNexus;
 
         /* this is queing so check if this CCU queue is open */
         if(p711Info->QueueHandle == (HCTIQUEUE) NULL)
@@ -533,31 +531,32 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         }
         else
         {
-            ULONG Bread = 0;
-
-            for(i = 0; i < 20; i++)
+            if( ! Nexus )
             {
-                Bread = 0;
-
-                if(Nexus != NULL)
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            else
+            {
+                try
                 {
-                    Nexus->CTINexusPeek(&PeekMessage, sizeof(OUTMESS), &Bread);
+                    OUTMESS PeekMessage;
 
-                    if(Bread > 0)
+                    for(int i = 0; i < 20; i++)
                     {
-                        break;
+                        if( Nexus->peek(&PeekMessage, sizeof(OUTMESS)) )
+                        {
+                            break;
+                        }
+
+                        CTISleep(250);
                     }
                 }
-                else
+                catch( const StreamConnectionException &ex )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    break;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** ERROR **** " << ex.what() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-
-                CTISleep(250);
             }
 
             SetEvent(hPorterEvents[P_QUEUE_EVENT]);
@@ -829,49 +828,51 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
 }
 
 
-INT realignNexus(OUTMESS *&OutMessage)
+bool realignNexus(OUTMESS *&OutMessage)
 {
-    INT loops = sizeof(OUTMESS);
-    INT status = NORMAL;
-
     BYTE nextByte;
-    ULONG BytesRead = 1;
+    int bytesRead = 1;
 
-    for(loops = sizeof(OUTMESS); loops > 0 && BytesRead > 0; loops--)
+    try
     {
-        OutMessage->ReturnNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
-
-        if(BytesRead == 1 && nextByte == 0x02)
+        for( int loops = sizeof(OUTMESS); loops > 0 && bytesRead > 0; loops-- )
         {
-            OutMessage->ReturnNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
+            bytesRead = OutMessage->ReturnNexus->read(&nextByte, 1, Chrono::seconds(60), &hPorterEvents[P_QUIT_EVENT]);
 
-            if(BytesRead == 1 && nextByte == 0xe0)
+            if( bytesRead == 1 && nextByte == 0x02 )
             {
-                OutMessage->ReturnNexus->CTINexusRead (OutMessage + 2, sizeof(OUTMESS) - 2, &BytesRead, 60);
+                bytesRead = OutMessage->ReturnNexus->read(&nextByte, 1, Chrono::seconds(60), &hPorterEvents[P_QUIT_EVENT]);
 
-                if(BytesRead == (sizeof(OUTMESS) - 2) && (OutMessage->TailFrame[0] != 0xea && OutMessage->TailFrame[1] == 0x03))
+                if( bytesRead == 1 && nextByte == 0xe0 )
                 {
-                    OutMessage->HeadFrame[0] = 0x02;
-                    OutMessage->HeadFrame[1] = 0xe0;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Inbound Nexus has been successfully realigned " << endl;
-                    }
+                    bytesRead = OutMessage->ReturnNexus->read(OutMessage + 2, sizeof(OUTMESS) - 2, Chrono::seconds(60), &hPorterEvents[P_QUIT_EVENT]);
 
-                    break;
+                    if( bytesRead == (sizeof(OUTMESS) - 2) && OutMessage->TailFrame[0] != 0xea && OutMessage->TailFrame[1] == 0x03 )
+                    {
+                        OutMessage->HeadFrame[0] = 0x02;
+                        OutMessage->HeadFrame[1] = 0xe0;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Inbound Nexus has been successfully realigned " << endl;
+                        }
+
+                        return true;
+                    }
                 }
             }
         }
     }
-
-    if(loops <= 0)
+    catch( const StreamConnectionException &ex )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to realign inbound Nexus " << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Error while reading from inbound Nexus: " << ex.what() << endl;
     }
 
-    return status;
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Unable to realign inbound Nexus " << endl;
+    }
+
+    return false;
 }
 

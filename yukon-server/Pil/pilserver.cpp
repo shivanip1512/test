@@ -8,8 +8,8 @@
 #include "dev_mct.h"
 #include "dev_rfn.h"
 #include "dsm2.h"
-#include "ctinexus.h"
-#include "CtiLocalConnect.h"
+#include "streamSocketConnection.h"
+#include "streamLocalConnection.h"
 #include "porter.h"
 
 #include "cparms.h"
@@ -46,6 +46,7 @@
 #include "millisecond_timer.h"
 
 #include "connection_client.h"
+#include "win_helper.h"
 
 #include <rw/toolpro/winsock.h>
 #include <rw/thr/thrfunc.h>
@@ -73,8 +74,10 @@ CtiClientConnection   VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispat
 CtiPILExecutorFactory ExecFactory;
 
 /* Define the return nexus handle */
-DLLEXPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
-DLLEXPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
+DLLEXPORT Cti::StreamLocalConnection<OUTMESS, INMESS> PilToPorter; //Pil handles this one
+DLLEXPORT CtiFIFOQueue< CtiMessage >                  PorterSystemMessageQueue;
+
+using Cti::Timing::Chrono;
 
 namespace Cti {
 namespace Pil {
@@ -101,6 +104,34 @@ bool NonViableConnection(CtiServer::ptr_type &CM, void* d)
 }
 
 } // anonymous namespace
+
+PilServer::PilServer(CtiDeviceManager *DM, CtiPointManager *PM, CtiRouteManager *RM) :
+   DeviceManager(DM),
+   PointManager (PM),
+   RouteManager (RM),
+   bServerClosing(FALSE),
+   _currentParse(""),
+   _currentUserMessageId(0),
+   _listenerConnection( Cti::Messaging::ActiveMQ::Queue::pil ),
+   _rfnRequestId(0)
+{
+    serverClosingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if( serverClosingEvent == (HANDLE)NULL )
+    {
+        cout << "Couldn't create serverClosingEvent event!" << endl;
+        exit(-1);
+    }
+}
+
+PilServer::~PilServer()
+{
+   while( !_inQueue.isEmpty() )
+   {
+      delete _inQueue.getQueue();
+   }
+
+   CloseHandle(serverClosingEvent);
+}
 
 int PilServer::execute()
 {
@@ -984,18 +1015,8 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
     }
 }
 
-
 void PilServer::nexusThread()
 {
-    INT i = 0;
-    INT status = NORMAL;
-    int err;
-    /* Time variable for decode */
-    CtiTime      TimeNow;
-
-    ULONG       BytesRead;
-    INMESS      *InMessage = 0;
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " NexusThread    : Started as TID " << rwThreadId() << endl;
@@ -1009,32 +1030,24 @@ void PilServer::nexusThread()
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
-        /* Wait for the next result to come back from the RTU */
-        while(!PilToPorter.CTINexusValid() && !bServerClosing)
+        std::auto_ptr<INMESS> InMessage(new INMESS); // INMESS set to zero in the constructor
+
+        try
         {
-            if(!(++i % 60))
+            if( PilToPorter.read(InMessage.get(), sizeof(INMESS), Chrono::infinite, &serverClosingEvent) == sizeof(INMESS) )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PIL connection to Port Control is inactive" << endl;
-                }
-
-                PilToPorter.CtiLocalConnectOpen();
+                // Enqueue the INMESS into the appropriate list
+                _inQueue.putQueue(InMessage.release());
             }
-
-            CTISleep (500L);
-
-            try
-            {
-                rwServiceCancellation();
-            }
-            catch(const RWCancellation& cMsg)
+        }
+        catch( const StreamConnectionException &ex )
+        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
-                bServerClosing = TRUE;
-                //throw;
+                dout << CtiTime() << " **** ERROR **** NexusThread : " << rwThreadId() << " just failed to read a full InMessage : " << ex.what() << endl;
             }
+
+            Sleep(500); // prevent run-away loop
         }
 
         try
@@ -1046,49 +1059,10 @@ void PilServer::nexusThread()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
             bServerClosing = TRUE;
-
-            continue;
             // throw;
         }
 
-        if(bServerClosing)
-        {
-            continue;
-        }
-
-        InMessage = CTIDBG_new INMESS;
-        ::memset(InMessage, 0, sizeof(*InMessage));
-
-        /* get a result off the port pipe */
-        err = PilToPorter.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, 5);
-        if(err || BytesRead < sizeof(*InMessage))
-        {
-            if(err != ERR_CTINEXUS_READTIMEOUT)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " NexusThread : " << rwThreadId() << " just failed to read a full InMessage." << endl;
-            }
-
-            Sleep(500); // No runnaway loops allowed.
-
-            delete InMessage;
-            InMessage = 0;
-            continue;
-        }
-
-        // Enqueue the INMESS into the appropriate list
-        if(InMessage)
-        {
-            _inQueue.putQueue(InMessage);
-
-            InMessage = 0;
-        }
     } /* End of for */
-
-    if(InMessage)
-    {
-        delete InMessage;
-    }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1100,14 +1074,7 @@ void PilServer::nexusThread()
 
 void PilServer::nexusWriteThread()
 {
-    INT i = 0;
-    INT status = NORMAL;
     /* Time variable for decode */
-    CtiTime      TimeNow;
-    ULONG       BytesWritten;
-
-    CtiOutMessage *OutMessage;
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " NexusWriteThread    : Started as TID " << rwThreadId() << endl;
@@ -1119,68 +1086,26 @@ void PilServer::nexusWriteThread()
     CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_HIGHEST);
 
     /* perform the wait loop forever */
-    for( ; !bServerClosing ; )
+    for( ; ! bServerClosing ; )
     {
-        /* Check if we need to reopen the port pipe */
-        if(PilToPorter.CtiGetNexusState() == CTINEXUS_STATE_NULL)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow.now() << " PIL lost connection to Port Control " << endl;
-            }
+        boost::scoped_ptr<OUTMESS> OutMessage(_porterOMQueue.getQueue(1000));
 
-            if(!(PilToPorter.CtiLocalConnectOpen()))
+        if( OutMessage )
+        {
+            try
+            {
+                PilToPorter.write(OutMessage.get(), sizeof(OUTMESS), Chrono::milliseconds(0));
+            }
+            catch( const StreamConnectionException &ex )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << TimeNow.now() << " PIL connected to Port Control" << endl;
+                    dout << CtiTime() << " **** ERROR **** NexusWriteThread : " << rwThreadId() << " just failed to write OutMessage : " << ex.what() << endl;
                 }
+                DumpOutMessage(OutMessage.get());
+
+                Sleep(500); // prevent run-away loop
             }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow.now() << " PIL IS NOT connected to Port Control" << endl;
-                dout << TimeNow << " This is mostly bad... " << endl;
-            }
-        }
-
-        OutMessage = _porterOMQueue.getQueue(1000);
-
-        /* if pipe shut down return the error */
-        if(PilToPorter.CtiGetNexusState() == CTINEXUS_STATE_NULL)
-        {
-            if(PilToPorter.CtiLocalConnectOpen())
-            {
-                status = PIPEWASBROKEN;
-            }
-        }
-
-        if(OutMessage)
-        {
-            if(PilToPorter.CtiGetNexusState() != CTINEXUS_STATE_NULL) /* And send them to porter */
-            {
-                if(PilToPorter.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    DumpOutMessage(OutMessage);
-
-                    if(PilToPorter.CtiGetNexusState() != CTINEXUS_STATE_NULL)
-                    {
-                        PilToPorter.CTINexusClose();
-                    }
-                }
-            }
-
-            // Message is re-built on the other side, so clean it up!
-            delete OutMessage;
-        }
-
-        if(bServerClosing)
-        {
-            continue;
         }
 
         try
@@ -1190,10 +1115,8 @@ void PilServer::nexusWriteThread()
         catch(const RWCancellation& cMsg)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+            dout << CtiTime() << " NexusWriteThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
             bServerClosing = TRUE;
-
-            continue;
             // throw;
         }
     } /* End of for */
@@ -1601,7 +1524,7 @@ void PilServer::clientShutdown(CtiServer::ptr_type CM)
 void PilServer::shutdown()
 {
     bServerClosing = TRUE;
-
+    SetEvent(serverClosingEvent);
     MainThread_.requestCancellation(5000);
 }
 

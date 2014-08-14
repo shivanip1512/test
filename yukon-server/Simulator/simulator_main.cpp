@@ -26,8 +26,17 @@ LPTSTR szServiceName = "CCUSIMULATOR";
 LPTSTR szDisplayName = "Yukon CCU Simulator Service";
 LPTSTR szDesc = "Simulates the actions of CCU devices";
 
+extern HANDLE gQuitEvent;
+
 int main(int argc, char* argv[] )
 {
+    gQuitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if( gQuitEvent == (HANDLE)NULL )
+    {
+       cout << "Couldn't create hQuitEvent!!!" << endl;
+       exit(-1);
+    }
+
     if( SetConsoleTitle("CCU Simulator") ) // We are a console application
     {
           //Process command line

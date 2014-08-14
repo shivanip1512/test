@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ctinexus.h"
+#include "streamSocketConnection.h"
 #include "types.h"
 #include "BehaviorCollection.h"
 #include "CommsBehavior.h"
@@ -44,7 +44,7 @@ private:
 class SocketComms : public Comms
 {
 private:
-    CTINEXUS &_nexus;
+    StreamSocketConnection &_nexus;
     unsigned  _baud;
 
     void commDelay(unsigned chars);
@@ -52,7 +52,7 @@ private:
     enum { SocketTimeout = 5 };
 
 public:
-    SocketComms(CTINEXUS &nexus, unsigned baud);
+    SocketComms(StreamSocketConnection &nexus, unsigned baud);
 
     virtual bool read(byte_appender &destination, unsigned expected);
     virtual bool peek(byte_appender &destination, unsigned expected);

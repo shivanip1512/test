@@ -31,6 +31,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "ctitime.h"
 #include "ctidate.h"
 #include "socket_helper.h"
+#include "timing_util.h"
 
 using std::pair;
 using std::multimap;
@@ -143,6 +144,8 @@ BOOL CtiFDRSocketServer::run( void )
 
 BOOL CtiFDRSocketServer::stop( void )
 {
+    SetEvent(_shutdownEvent);
+
     {
         CtiLockGuard<CtiMutex> guard(_socketMutex);
         _socketShutdown = true;
@@ -151,8 +154,6 @@ BOOL CtiFDRSocketServer::stop( void )
             itr->second->shutdownAndClose();
         }
     }
-
-    SetEvent(_shutdownEvent);
 
     if(_singleListeningPort)
     {
@@ -364,6 +365,8 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
 
 void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort, int startupDelaySeconds )
 {
+    using Cti::Timing::Chrono;
+
     RWRunnableSelf  pSelf = rwRunnable( );
 
     try {
@@ -432,7 +435,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                     Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
 
                     // new socket
-                    SOCKET tmpConnection = listeningSockets->accept(addr);
+                    SOCKET tmpConnection = listeningSockets->accept(addr, Chrono::infinite, &_shutdownEvent);
 
                     // when this thread is to be shutdown, requestCancellation()
                     // will be called, then the listener socket will be shutdown
@@ -502,7 +505,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
  */
 bool CtiFDRSocketServer::createBoundListener(unsigned short listeningPort, Cti::ServerSockets &listeningSockets)
 {
-    Cti::AddrInfo ai = Cti::makeTcpServerSocketAddress(NULL, CtiNumStr(listeningPort).toString().c_str());
+    Cti::AddrInfo ai = Cti::makeTcpServerSocketAddress(listeningPort);
     if( !ai )
     {
         {

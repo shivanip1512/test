@@ -5,7 +5,7 @@
 #include <rw/toolpro/socket.h>
 
 #include "dlldefs.h"
-#include "ctinexus.h"
+#include "streamSocketConnection.h"
 #include "port_shr.h"
 
 class IM_EX_PORTGLOB CtiPortShareIP : public CtiPortShare
@@ -16,7 +16,7 @@ protected:
    bool _reconnect;
    bool _broadcast;
 
-   CTINEXUS _scadaNexus;
+   Cti::StreamSocketConnection _scadaNexus;
 
    int _ipPort;                                 // IP port to expose.
 

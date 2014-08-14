@@ -562,6 +562,8 @@ string CtiFDRSingleSocket::decodeClientName(CHAR * aBuffer)
 */
 void CtiFDRSingleSocket::threadFunctionConnection( void )
 {
+    using Cti::Timing::Chrono;
+
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0;
     CtiFDRServerConnection   *serverConnection;
@@ -604,7 +606,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
             // see if we've died
             if (continueFlag)
             {
-                Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(NULL, CtiNumStr(getPortNumber()).toString().c_str());
+                Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(getPortNumber());
                 if( !pAddrInfo )
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -675,7 +677,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 Cti::SocketAddress returnAddr( Cti::SocketAddress::STORAGE_SIZE );
 
                 // new socket
-                tmpConnection = _listenerSockets.accept( returnAddr );
+                tmpConnection = _listenerSockets.accept(returnAddr, Chrono::infinite, &_listenerShutdownEvent);
 
                 if( tmpConnection == INVALID_SOCKET )
                 {

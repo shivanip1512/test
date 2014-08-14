@@ -7,7 +7,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "connection_client.h"
 #include "amq_constants.h"
-#include "ctinexus.h"
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"

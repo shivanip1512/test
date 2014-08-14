@@ -31,8 +31,7 @@
 #include "trx_info.h"
 #include "trx_711.h"
 
-#include "ctilocalconnect.h"
-
+#include "streamLocalConnection.h"
 #include "portfield.h"
 #include "dev_dlcbase.h"
 #include "connection_client.h"
@@ -44,7 +43,7 @@ using Cti::Devices::DlcBaseDevice;
 
 extern CtiPorterVerification PorterVerificationThread;
 extern CtiRouteManager RouteManager;
-extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
+extern Cti::StreamLocalConnection<INMESS, OUTMESS> PorterToPil;
 
 #define INF_LOOP_COUNT 1000
 
@@ -56,6 +55,7 @@ extern HCTIQUEUE* QueueHandle(LONG pid);
 extern void commFail(const CtiDeviceSPtr &Device);
 extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
+using Cti::Timing::Chrono;
 using namespace Cti;
 
 
@@ -2875,8 +2875,8 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
-    extern void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus);
-    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
+    extern void blitzNexusFromQueue(HCTIQUEUE q, StreamConnection *&Nexus);
+    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, StreamConnection *&Nexus);
 
     INT            status = NORMAL;
     ULONG          j;
@@ -2967,7 +2967,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         InMessage->InLength = j;
                     }
 
-                    if( status && CTINEXUS::CTINexusIsFatalSocketError(status))
+                    if( status ) // any error received from CCUResponseDecode() is fatal
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3319,8 +3319,7 @@ void SnipeDynamicInfo(const INMESS &ResultMessage)
 
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
 {
-    INT         status = NORMAL;
-    ULONG       BytesWritten;
+    INT status = NORMAL;
 
     if( InMessage && OutMessage )
     {
@@ -3343,12 +3342,25 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
                         SnipeDynamicInfo(*InMessage);
                     }
 
-                    if(OutMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 15L))
+                    int bytesWritten = 0;
+                    boost::optional<std::string> errorReason;
+
+                    try
+                    {
+                        bytesWritten = OutMessage->ReturnNexus->write(InMessage, sizeof(INMESS), Chrono::seconds(15));
+                    }
+                    catch( const StreamConnectionException &ex )
+                    {
+                        errorReason = ex.what();
+                    }
+
+                    if( bytesWritten != sizeof(INMESS) )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr << endl;
+                            dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                         }
                         status = SOCKWRITE;
                     }
@@ -3614,10 +3626,8 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
 
 INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage,  list< CtiMessage* > &traceList)
 {
-    INT         status = NORMAL;
-
-    INMESS      MyInMessage;
-    ULONG       bytesWritten;
+    INT status = NORMAL;
+    INMESS MyInMessage;
 
     CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
 
@@ -3630,16 +3640,28 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *
     aIED->copyLoadProfileData ((BYTE*)&MyInMessage.Buffer.DUPSt.DUPRep.Message, MyInMessage.InLength);
 
     /* send message back to originating process */
-    if(aOutMessage->ReturnNexus->CtiGetNexusState() != CTINEXUS_STATE_NULL)
+    if( aOutMessage->ReturnNexus->isValid() )
     {
-        if(aOutMessage->ReturnNexus->CTINexusWrite(&MyInMessage, sizeof (INMESS), &bytesWritten, 15L))
+        int bytesWritten = 0;
+        boost::optional<std::string> errorReason;
+
+        try
+        {
+            bytesWritten = aOutMessage->ReturnNexus->write(&MyInMessage, sizeof(INMESS), Chrono::seconds(15));
+        }
+        catch( const StreamConnectionException &ex )
+        {
+            errorReason = ex.what();
+        }
+
+        if( bytesWritten != sizeof(INMESS) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error Writing to Return Nexus " << endl;
+                dout << CtiTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
             }
             aIED->setCurrentState(CtiDeviceIED::StateScanAbort);
-
             status = SOCKWRITE;
         }
         else

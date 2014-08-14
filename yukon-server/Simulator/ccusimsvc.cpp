@@ -20,6 +20,7 @@ extern int SimulatorMainFunction(int argc, char** argv);
 }
 
 extern bool gQuit;
+extern HANDLE gQuitEvent;
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
 {
@@ -29,9 +30,9 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
     case CTRL_BREAK_EVENT:
-
         {
             gQuit = true;
+            SetEvent(gQuitEvent);
             return TRUE;
         }
     case CTRL_LOGOFF_EVENT:

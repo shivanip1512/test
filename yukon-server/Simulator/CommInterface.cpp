@@ -4,7 +4,10 @@
 
 #include <boost/scoped_array.hpp>
 
+using Cti::Timing::Chrono;
 using namespace std;
+
+extern HANDLE gQuitEvent;
 
 namespace Cti {
 namespace Simulator {
@@ -23,7 +26,7 @@ bool Comms::ProcessMessage(bytes &buf, Logger &logger)
     return _behaviorCollection.processMessage(buf, logger);
 }
 
-SocketComms::SocketComms(CTINEXUS &nexus, unsigned baud) :
+SocketComms::SocketComms(StreamSocketConnection &nexus, unsigned baud) :
     _nexus(nexus)
 {
     _baud = std::max(baud / 1200, 1U) * 1200;
@@ -42,31 +45,27 @@ bool SocketComms::read(byte_appender &destination, unsigned expected)
 {
     boost::scoped_array<unsigned char> temp(new unsigned char[expected]);
 
-    unsigned long bytes_read = 0;
+    const unsigned bytesRead = _nexus.read(temp.get(), expected, Chrono::seconds(SocketTimeout), &gQuitEvent);
 
-    _nexus.CTINexusRead(temp.get(), expected, &bytes_read, SocketTimeout);
-
-    copy(temp.get(), temp.get() + bytes_read, destination);
+    copy(temp.get(), temp.get() + bytesRead, destination);
 
     commDelay(expected);
 
-    return bytes_read == expected;
+    return bytesRead == expected;
 }
 
 bool SocketComms::peek(byte_appender &destination, unsigned expected)
 {
     boost::scoped_array<unsigned char> temp(new unsigned char[expected]);
 
-    unsigned long bytes_read = 0;
+    const unsigned bytesRead = _nexus.peek(temp.get(), expected);
 
-    _nexus.CTINexusPeek(temp.get(), expected, &bytes_read);
-
-    if( bytes_read != expected )
+    if( bytesRead != expected )
     {
         return false;
     }
 
-    copy(temp.get(), temp.get() + bytes_read, destination);
+    copy(temp.get(), temp.get() + bytesRead, destination);
 
     return true;
 }
@@ -75,11 +74,9 @@ bool SocketComms::available(unsigned aCount)
 {
     boost::scoped_array<unsigned char> temp(new unsigned char[aCount]);
 
-    unsigned long bytes_read = 0;
+    const unsigned bytesRead = _nexus.peek(temp.get(), aCount);
 
-    _nexus.CTINexusPeek(temp.get(), aCount, &bytes_read);
-
-    return bytes_read == aCount;
+    return bytesRead == aCount;
 }
 
 bool SocketComms::writeMessage(const bytes &buf)
@@ -88,13 +85,11 @@ bool SocketComms::writeMessage(const bytes &buf)
 
     copy(buf.begin(), buf.end(), temp.get());
 
-    unsigned long bytes_written = 0;
+    const unsigned bytesWritten = _nexus.write(temp.get(), buf.size(), Chrono::seconds(SocketTimeout));
+    
+    commDelay(bytesWritten);
 
-    _nexus.CTINexusWrite(temp.get(), buf.size(), &bytes_written, SocketTimeout);
-
-    commDelay(bytes_written);
-
-    return bytes_written == buf.size();
+    return bytesWritten == buf.size();
 }
 
 void SocketComms::setBehavior(std::auto_ptr<CommsBehavior> behavior)
@@ -104,7 +99,7 @@ void SocketComms::setBehavior(std::auto_ptr<CommsBehavior> behavior)
 
 void SocketComms::clear()
 {
-    _nexus.CTINexusFlushInput();
+    _nexus.flushInput();
 }
 
 

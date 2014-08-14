@@ -64,8 +64,6 @@ BOOL APIENTRY DllMain(HANDLE hModule,
         {
             identifyProject(CompileInfo);
 
-            PorterListenNexus.NexusState = CTINEXUS_STATE_NULL;
-
             if((hPorterEvents[ P_QUIT_EVENT ] = OpenEvent(EVENT_ALL_ACCESS, FALSE, PorterSyncs[P_QUIT_EVENT].syncObjName))!= NULL)
             {
                 // Oh no, porter is running on this machine already.

@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <boost/ptr_container/ptr_set.hpp>
 
 #include "utility.h"
 
@@ -113,26 +114,38 @@ struct priority_t
     int Priority;
 };
 
-BOOST_AUTO_TEST_CASE(test_ptr_priority_sort)
+BOOST_AUTO_TEST_CASE(test_priority_sort)
 {
-    std::multiset<priority_t *, ptr_priority_sort<priority_t> > priority_test;
+    boost::ptr_multiset<priority_t, priority_sort<priority_t> > priority_test;
 
-    priority_t a, b;
+    std::auto_ptr<priority_t> a, b, c;
 
-    a.value    = 0;
-    a.Priority = 15;  //  high priority, should come off first
+    a.reset(new priority_t);
+    a->value    = 1;
+    a->Priority = 15;  //  high priority, should come off first
 
-    b.value    = 1;
-    b.Priority = 7;   //  low priority, should come off second
+    b.reset(new priority_t);
+    b->value    = 2;
+    b->Priority = 7;   //  low priority, should come off second
 
-    priority_test.insert(&b);
-    priority_test.insert(&a);
+    c.reset(new priority_t);
+    c->value    = 3;
+    c->Priority = 7;   //  same priority as b, if inserted before it should come off before b
 
-    std::multiset<priority_t *, ptr_priority_sort<priority_t> >::iterator itr = priority_test.begin();
+    priority_test.insert(c.release());
+    priority_test.insert(b.release());
+    priority_test.insert(a.release());
 
-    BOOST_CHECK_EQUAL(*itr, &a);
+    boost::ptr_multiset<priority_t, priority_sort<priority_t> >::iterator itr = priority_test.begin();
+
+    BOOST_CHECK_EQUAL(itr->value,    1); // a
+    BOOST_CHECK_EQUAL(itr->Priority, 15);
     itr++;
-    BOOST_CHECK_EQUAL(*itr, &b);
+    BOOST_CHECK_EQUAL(itr->value,    3); // c
+    BOOST_CHECK_EQUAL(itr->Priority, 7);
+    itr++;
+    BOOST_CHECK_EQUAL(itr->value,    2); // b
+    BOOST_CHECK_EQUAL(itr->Priority, 7);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

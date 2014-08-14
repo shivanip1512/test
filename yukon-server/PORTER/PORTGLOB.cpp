@@ -1,20 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   PORTGLOB
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.16.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <process.h>
-
 #include <stdlib.h>
 
 #include "os2_2w32.h"
@@ -25,6 +11,7 @@
 #include "dsm2err.h"
 #include "porter.h"
 #include "portglob.h"
+#include "streamSocketListener.h"
 
 using std::string;
 
@@ -43,8 +30,8 @@ IM_EX_PORTGLOB LONG            TracePort   = 0L;
 IM_EX_PORTGLOB LONG            TraceRemote = 0L;
 
 /* Porter only globals... */
-IM_EX_PORTGLOB CTINEXUS       PorterListenNexus;
-IM_EX_PORTGLOB INT            PorterRefreshRate = 86400;
+IM_EX_PORTGLOB Cti::StreamSocketListener PorterListenNexus;
+IM_EX_PORTGLOB INT                       PorterRefreshRate = 86400;
 
 IM_EX_PORTGLOB BOOL           cParmPorterServiceLog = FALSE;
 

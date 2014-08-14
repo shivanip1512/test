@@ -1,6 +1,6 @@
 #include "dlldefs.h"
 #include "types.h"
-#include "ctinexus.h"
+#include "streamSocketListener.h"
 #include "porter.h"
 #include "logger.h"
 
@@ -49,7 +49,7 @@ extern IM_EX_PORTGLOB bool          gIgnoreTCU5X00QueFull;
 
 
 extern CtiSyncDefStruct             PorterSyncs[];
-extern IM_EX_PORTGLOB CTINEXUS      PorterListenNexus;
+extern IM_EX_PORTGLOB Cti::StreamSocketListener PorterListenNexus;
 
 extern IM_EX_PORTGLOB std::string        gDelayDatFile;
 

@@ -27,18 +27,18 @@ CtiFDRSocketInterface::CtiFDRSocketInterface(string & interfaceType, int aPortNu
     iLinkTimeout(60),
     _listenerShutdown(false)
 {
+    _listenerShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
 
 CtiFDRSocketInterface::~CtiFDRSocketInterface()
 {
-    shutdownListener();
+    CloseHandle(_listenerShutdownEvent);
 }
 
 void CtiFDRSocketInterface::shutdownListener()
 {
-    CtiLockGuard<CtiMutex> lock(_listenerMux);
     _listenerShutdown = true;
-    _listenerSockets.shutdownAndClose();
+    SetEvent(_listenerShutdownEvent);
 }
 
 bool CtiFDRSocketInterface::isListenerShutdown()

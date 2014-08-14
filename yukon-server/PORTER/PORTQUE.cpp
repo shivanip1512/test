@@ -29,7 +29,7 @@
 #include "mgr_device.h"
 #include "mgr_port.h"
 #include "port_shr.h"
-#include "ctilocalconnect.h"
+#include "streamLocalConnection.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -42,11 +42,16 @@ using namespace std;
 using Cti::ThreadStatusKeeper;
 using Cti::Porter::PorterStatisticsManager;
 using Cti::MacroOffset;
+using Cti::Timing::Chrono;
+using Cti::StreamConnection;
+using Cti::StreamConnectionException;
+using Cti::StreamLocalConnection;
+using Cti::StreamSocketConnection;
 
 extern CtiPortManager            PortManager;
 extern map<long, CtiPortShare *> PortShareManager;
 
-extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
+extern StreamLocalConnection<INMESS, OUTMESS> PorterToPil;
 
 extern HCTIQUEUE *QueueHandle(LONG pid);
 extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
@@ -64,7 +69,7 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d);
 void cancelOutMessages(void *doSendError, void* om);
 int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
 
-void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
+void blitzNexusFromQueue(HCTIQUEUE q, StreamConnection *&Nexus)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -73,7 +78,7 @@ void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
     CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
 }
 
-void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
+void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, StreamConnection *&Nexus)
 {
     if(Device && !isForeignCcuPort(Device->getPortID()) && Device->getType() == TYPE_CCU711)
     {
@@ -278,12 +283,10 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
     CtiDeviceCCU *ccu = (CtiDeviceCCU *)Dev.get();
 
     INT status = NORMAL;
-    INT SocketError = NORMAL;
     ULONG i;
     INMESS ResultMessage;
     USHORT QueTabEnt;
     USHORT setL;
-    ULONG  BytesWritten;
     USHORT Offset;
     ULONG ActinQueueCount, QueueCount;
     USHORT AlgStatus[8];
@@ -1056,19 +1059,28 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                         SnipeDynamicInfo(ResultMessage);
                     }
 
-                    /* this is a completed result so send it to originating process */
-                    if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)) != NORMAL)
+                    int bytesWritten = 0;
+                    boost::optional<std::string> errorReason;
+
+                    try
+                    {
+                        /* this is a completed result so send it to originating process */
+                        bytesWritten = ResultMessage.ReturnNexus->write(&ResultMessage, sizeof(ResultMessage), Chrono::seconds(60));
+                    }
+                    catch( const StreamConnectionException &ex )
+                    {
+                        errorReason = ex.what();
+                    }
+
+                    if( bytesWritten != sizeof(ResultMessage) )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Error writing to nexus. CCUResponseDecode() on device \"" << Dev->getName() << "\".  "
-                                 << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                                 << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
+                            dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                         }
-
-                        if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
-                        {
-                            status = SocketError;
-                        }
+                        status = NOTNORMAL;
                     }
 
                     //We had a comm error and need to report it.
@@ -1809,11 +1821,9 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 INT DeQueue (INMESS *InMessage)
 {
     INT status = NORMAL;
-    INT SocketError = NORMAL;
     struct timeb TimeB;
     ULONG i;
     INMESS ResultMessage;
-    ULONG BytesWritten;
 
     /* set the time */
     UCTFTime (&TimeB);
@@ -1865,19 +1875,29 @@ INT DeQueue (INMESS *InMessage)
                         addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
 
                         PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
+
                         /* Now send it back */
-                        if((SocketError = ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)))
+                        int bytesWritten = 0;
+                        boost::optional<std::string> errorReason;
+
+                        try
+                        {
+                            bytesWritten = ResultMessage.ReturnNexus->write(&ResultMessage, sizeof(ResultMessage), Chrono::seconds(60));
+                        }
+                        catch( const StreamConnectionException &ex )
+                        {
+                            errorReason = ex.what();
+                        }
+
+                        if( bytesWritten != sizeof(ResultMessage) )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " Error writing to return nexus.  DeQueue().  "
-                                << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes.  Error: " << SocketError << endl;
+                                     << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
+                                dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                             }
-
-                            if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
-                            {
-                                status = SocketError;
-                            }
+                            status = NOTNORMAL;
                         }
                     }
                     /* Now free up the table entry */
@@ -1901,7 +1921,7 @@ INT DeQueue (INMESS *InMessage)
 
 bool findReturnNexusMatch(void *nid, void *d)
 {
-    CTINEXUS *rnid = (CTINEXUS *)nid;
+    StreamSocketConnection *rnid = (StreamSocketConnection *)nid;
     OUTMESS *OutMessage = (OUTMESS *)d;
 
     return(OutMessage->ReturnNexus == rnid);
@@ -1959,7 +1979,6 @@ void cancelOutMessages(void *doSendError, void* om)
 int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt)
 {
     INMESS InMessage;
-    ULONG BytesWritten;
 
     try
     {
@@ -1994,13 +2013,32 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
             }
 
             /* send message back to originating process */
-            if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
+            int bytesWritten = 0;
+            boost::optional<std::string> errorReason;
+
+            try
+            {
+                bytesWritten = InMessage.ReturnNexus->write(&InMessage, sizeof(InMessage), Chrono::seconds(60));
+            }
+            catch( const StreamConnectionException &ex )
+            {
+                errorReason = ex.what();
+            }
+
+            if( bytesWritten != sizeof(InMessage) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                 }
-                InMessage.ReturnNexus->CTINexusClose();
+
+                // if it is StreamSocketConnection and the error was caused by a timeout, which is not consider an error.
+                // close the connection
+                if( StreamSocketConnection *pConn = dynamic_cast<StreamSocketConnection*>(InMessage.ReturnNexus) )
+                {
+                    pConn->close();
+                }
             }
         }
         catch(...)

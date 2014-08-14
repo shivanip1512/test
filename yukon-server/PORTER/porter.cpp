@@ -29,7 +29,7 @@
 #include "master.h"
 #include "elogger.h"
 #include "thread_monitor.h"
-#include "CtiLocalConnect.h"
+#include "streamLocalConnection.h"
 #include "systemmsgthread.h"
 
 #include "logger.h"
@@ -83,6 +83,7 @@
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
+using Cti::StreamLocalConnection;
 
 ULONG TimeSyncRate = 3600L;
 
@@ -125,8 +126,8 @@ map< long, CtiPortShare * > PortShareManager;
 void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RteMgr);
 
 //These form the connection between Pil and Porter
-extern DLLIMPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
-CtiLocalConnect<INMESS, OUTMESS> PorterToPil; //Porter handles this one
+extern DLLIMPORT StreamLocalConnection<OUTMESS, INMESS> PilToPorter; //Pil handles this one
+StreamLocalConnection<INMESS, OUTMESS> PorterToPil;                  //Porter handles this one
 extern DLLIMPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
 Cti::Porter::SystemMsgThread _sysMsgThread(PorterSystemMessageQueue, DeviceManager, PortManager, PilToPorter);
@@ -1045,7 +1046,7 @@ void APIENTRY PorterCleanUp (ULONG Reason)
 {
     PorterQuit = TRUE;
     SetEvent( hPorterEvents[P_QUIT_EVENT] );
-    PorterListenNexus.CTINexusClose();
+    PorterListenNexus.close();
 
     //  delete/stop the shared ports
     map<long, CtiPortShare *>::iterator itr;

@@ -37,6 +37,7 @@ class RfnDeviceResult;
 class IM_EX_CTIPIL PilServer : public CtiServer
 {
    BOOL                 bServerClosing;
+   HANDLE               serverClosingEvent;
 
    CtiListenerConnection _listenerConnection;
 
@@ -68,6 +69,8 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
+   CtiCriticalSection _pilToPorterMux;
+
    static void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
 
    void handleInMessageResult(const INMESS *InMessage);
@@ -85,24 +88,8 @@ public:
 
    typedef CtiServer Inherited;
 
-   PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL) :
-      DeviceManager(DM),
-      PointManager (PM),
-      RouteManager (RM),
-      bServerClosing(FALSE),
-      _currentParse(""),
-      _currentUserMessageId(0),
-      _listenerConnection( Cti::Messaging::ActiveMQ::Queue::pil ),
-      _rfnRequestId(0)
-   {}
-
-   virtual ~PilServer()
-   {
-      while( !_inQueue.isEmpty() )
-      {
-         delete _inQueue.getQueue();
-      }
-   }
+   PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL);
+   virtual ~PilServer();
 
    virtual void  clientShutdown(CtiServer::ptr_type CM);
    virtual void  shutdown();

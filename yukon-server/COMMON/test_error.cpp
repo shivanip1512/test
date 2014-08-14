@@ -152,7 +152,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Point is control disabled")
     ("Control Completed")
     ("Requested operation expired due to time")
-    ("Error Reading Nexus")
+    ("Unknown Error")
     //  230
     ("CtiConnection: InThread Terminated")
     ("CtiConnection: OutThread Terminated")

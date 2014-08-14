@@ -1210,6 +1210,8 @@ bool  CtiFDR_Inet::findAndInitializeClients( void )
 
 void CtiFDR_Inet::threadFunctionServerConnection( void )
 {
+    using Cti::Timing::Chrono;
+
     RWRunnableSelf pSelf = rwRunnable( );
     string desc, action;
 
@@ -1222,7 +1224,7 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
         }
 
         // retrieve socket addrinfo for listener sockets
-        Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(NULL,CtiNumStr(getPortNumber()).toString().c_str());
+        Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(getPortNumber());
         if( ! pAddrInfo )
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -1282,7 +1284,7 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
             Cti::SocketAddress returnAddr( Cti::SocketAddress::STORAGE_SIZE );
 
             // accept a new socket connection
-            SOCKET tmpConnection = _listenerSockets.accept( returnAddr );
+            SOCKET tmpConnection = _listenerSockets.accept(returnAddr, Chrono::infinite, &_listenerShutdownEvent);
 
             if( tmpConnection == INVALID_SOCKET )
             {

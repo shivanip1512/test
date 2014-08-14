@@ -7,7 +7,6 @@
 #include "msg_pdata.h"
 #include "pointtypes.h"
 #include "pointdefs.h"
-#include "ctinexus.h"
 
 using std::string;
 using std::endl;

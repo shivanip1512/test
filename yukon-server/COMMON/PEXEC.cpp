@@ -2,74 +2,57 @@
 
 #include "porter.h"
 #include "logger.h"
-#include "ctinexus.h"
+#include "streamSocketConnection.h"
 
-extern CTINEXUS   PorterNexus;            // declared in dllmain.cpp
+extern Cti::StreamSocketConnection PorterNexus; // declared in dllmain.cpp
 
 using namespace std;
 
 /* Routine to initialize pipe to porter */
 IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
 {
-   ULONG i = NOTNORMAL, j = 0;
-   PCHAR ServerName = NULL;
-   PSZ EnvServerName;
-   CHAR Name[100];
+    PSZ EnvServerName;
 
+    /* Check if we need to close the pipe */
+    PorterNexus.close();     // Close it if it is open.
 
-   /* Check if we need to close the pipe */
-   PorterNexus.CTINexusClose();     // Close it if it is open.
+    /*
+     *  OK, this is the client side of a Nexus to Port Control.
+     */
 
-   /*
-    *  OK, this is the client side of a Nexus to Port Control.
-    */
+    const PCHAR ServerName = CTIScanEnv("PORTSERVER", &EnvServerName)
+            ? NULL
+            : (PCHAR)EnvServerName;
 
-   if(CTIScanEnv ("PORTSERVER", &EnvServerName))
+    const string Name = ServerName
+            ? ServerName
+            : "localhost"; // ME ME ME in gethostbyname call.
+
+   PorterNexus.Name = "pexec nexus from client to " + Name + " port control";
+
+   unsigned waitCount = 0;
+   while( ! PorterNexus.open(Name, PORTCONTROLNEXUS, Cti::StreamSocketConnection::ReadExacly) )
    {
-      ServerName = NULL;
-   }
-   else
-   {
-      ServerName = (PCHAR) EnvServerName;
-   }
-
-   if(ServerName == NULL)
-   {
-      strcpy (Name, "127.0.0.1");   // ME ME ME in gethostbyname call.
-   }
-   else
-   {
-      strcpy (Name, ServerName);
-   }
-
-   sprintf(PorterNexus.Name, "pexec nexus from client to %s port control", Name);
-
-   while((i = PorterNexus.CTINexusOpen(Name, PORTCONTROLNEXUS, CTINEXUS_FLAG_READEXACTLY)) != NORMAL)
-   {
-      if(Wait != WAIT)
+      if( Wait != WAIT )
       {
-         PorterNexus.CTINexusClose();
-         i = PIPEOPEN;
-         break;      // the while loop
+         return PIPEOPEN;
       }
-      else
-      {
-         if(!(++j % 60))
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could not connect to Port Control " << i << "   " << __FILE__ << " (" << __LINE__ << ")" << endl;
-         }
 
-         CTISleep(1000L);
+      if( ! (waitCount++ % 60) )
+      {
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << CtiTime() << " Could not connect to Port Control " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
+
+      Sleep(1000);
    }
 
-   return(i);
+   return NORMAL;
 }
 
 /* Routine that gets run when we go tits up */
 IM_EX_CTIBASE void PortPipeCleanup (ULONG Reason)
 {
-   PorterNexus.CTINexusClose();     // Close it if it is open.
+    PorterNexus.close();     // Close it if it is open.
 }
 

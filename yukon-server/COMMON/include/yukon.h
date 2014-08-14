@@ -272,11 +272,8 @@ enum YukonError_t
     ControlRequestComplete,
     ErrRequestExpired,
 
-    // Nexus Errors
-    ErrorNexusRead,
-
     // CtiConnection Errors
-    InThreadTerminated,
+    InThreadTerminated = 230,
     OutThreadTerminated,
     InboundSocketBad,
     OutboundSocketBad,

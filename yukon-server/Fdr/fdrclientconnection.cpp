@@ -389,7 +389,7 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
     const string hostIp = getParent()->getIpMask();
     if( hostIp != "" )
     {
-        Cti::AddrInfo ai = Cti::makeTcpClientSocketAddress( hostIp.c_str(), CtiNumStr(getParent()->getConnectPortNumber()).toString().c_str() );
+        Cti::AddrInfo ai = Cti::makeTcpClientSocketAddress(hostIp, getParent()->getConnectPortNumber());
         if( !ai )
         {
             {

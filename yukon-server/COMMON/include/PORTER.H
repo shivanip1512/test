@@ -146,7 +146,7 @@ struct QUEENT
 {
     USHORT InUse;
     ULONG TimeSent;
-    CtiConnect *ReturnNexus;
+    Cti::StreamConnection *ReturnNexus;
     USHORT OriginalOutMessageSequence;
     USHORT QueueEntrySequence;
     USHORT EventCode;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "connection.h"
-#include "ctilocalconnect.h"
+#include "streamLocalConnection.h"
 #include "queue.h"
 #include "mgr_device.h"
 #include "mgr_port.h"
@@ -19,7 +19,7 @@ class SystemMsgThread : public CtiThread
 {
     CtiDeviceManager     &_devManager;
     CtiPortManager       &_portManager;
-    CtiLocalConnect<OUTMESS, INMESS> &_pilToPorter;
+    StreamLocalConnection<OUTMESS, INMESS> &_pilToPorter;
 
     //  the input queue
     CtiFIFOQueue< CtiMessage > &_input;
@@ -34,7 +34,7 @@ public:
     SystemMsgThread(CtiFIFOQueue< CtiMessage > &inputQueue,
                     CtiDeviceManager &devMgr,
                     CtiPortManager &portMgr,
-                    CtiLocalConnect<OUTMESS, INMESS> &pilToPorter);
+                    StreamLocalConnection<OUTMESS, INMESS> &pilToPorter);
 
     void push(CtiRequestMsg *e);
     void run();

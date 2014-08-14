@@ -356,13 +356,11 @@ struct padded_output_iterator : public std::iterator<std::output_iterator_tag, v
     }
 };
 
-
 template <class T>
-struct ptr_priority_sort : public std::binary_function<T *, T *, bool>
+struct priority_sort : public std::binary_function<T, T, bool>
 {
-    bool operator()(const T *lhs, const T *rhs)
+    bool operator()(const T &lhs, const T &rhs) const
     {
-        return (lhs && rhs)?(lhs->Priority > rhs->Priority):(rhs);
+        return lhs.Priority > rhs.Priority;
     }
 };
-

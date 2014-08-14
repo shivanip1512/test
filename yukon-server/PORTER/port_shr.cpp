@@ -1,48 +1,43 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_shr
-*
-* Date:   8/6/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.16.14.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <string.h>
 
-#include "ctinexus.h"
 #include "types.h"
 #include "dsm2.h"
 #include "port_shr.h"
 #include "CTICALLS.H"
 #include "cparms.h"
 #include "numstr.h"
+#include "streamSocketListener.h"
 
 using std::string;
 using std::endl;
+using Cti::Timing::Chrono;
+using Cti::StreamSocketConnection;
+using Cti::StreamSocketListener;
 
 CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _sequenceFailReported(false),
    _port(myPort),
    _internalPort(listenPort)
 {
-   _returnNexus.NexusState = CTINEXUS_STATE_NULL;
-   _returnNexus.sockt = INVALID_SOCKET;
    _requestCount = 0;
 
+   _shutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+   if( _shutdownEvent == (HANDLE)NULL )
+   {
+       {
+           CtiLockGuard<CtiLogger> doubt_guard(dout);
+           dout << CtiTime() << "Couldn't create _shutdownEvent event!" << endl;
+       }
+       exit(-1);
+   }
 }
 
 
 CtiPortShare::~CtiPortShare()
 {
-   interruptBlockingAPI();
+    CloseHandle(_shutdownEvent);
 }
 
 
@@ -137,12 +132,10 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
  *  This nexus has NOTHING to do with the SCADA side of the system.  It is used to get results out from the internals of porter.
  *
  */
-void CtiPortShare::createNexus(string nexusName)
+void CtiPortShare::createNexus(const string &nexusName)
 {
-   INT nRet;
-   CTINEXUS ListenNexus;
-   CTINEXUS newNexus;
-
+    StreamSocketListener ListenNexus;
+   
    /*
     *  4/8/99 This is the server side of a new Nexus
     *  This thread listens only once and is shutdown as the listener.
@@ -150,81 +143,58 @@ void CtiPortShare::createNexus(string nexusName)
     *  The socket connection created here is then used to communicate to porter from port_shr.
     */
 
-   strcpy(ListenNexus.Name, nexusName.data());
+   ListenNexus.Name = nexusName;
 
    if( isDebugLudicrous() )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      dout << "  Presenting port " << _internalPort << " for connection " << endl;
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       dout << "  Presenting port " << _internalPort << " for connection " << endl;
    }
 
-   if(ListenNexus.CTINexusCreate(_internalPort))
+   if( ! ListenNexus.create(_internalPort) )
    {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could not create a NEXUS for " << nexusName << endl;
-      }
-      return;
+       {
+           CtiLockGuard<CtiLogger> doubt_guard(dout);
+           dout << CtiTime() << " Could not create a NEXUS for " << nexusName << endl;
+       }
+       return;
    }
 
-   /*
-    *  Blocking wait on the listening nexus.  Will return a new nexus for the connection
-    */
-   nRet = ListenNexus.CTINexusConnect(&newNexus);
+   // Blocking wait on the listening nexus.  Will return a new nexus for the connection
+   std::auto_ptr<StreamSocketConnection> newNexus = ListenNexus.accept(StreamSocketConnection::ReadExacly, Chrono::infinite, &_shutdownEvent);
 
-   if(nRet)
+   if( ! newNexus.get() )
    {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Error establishing Nexus to InThread for " << nexusName << endl;
-      }
-      return;
+       if( ! isSet(SHUTDOWN) )
+       {
+           CtiLockGuard<CtiLogger> doubt_guard(dout);
+           dout << CtiTime() << " Error establishing Nexus to InThread for " << nexusName << endl;
+       }
+       return;
    }
 
-   /* Someone has connected to us.. */
+   // Someone has connected to us.. or there was an error
    if( isDebugLudicrous() )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " closing listener nexus for in/outthread connection " << nexusName << endl;
    }
 
-   ListenNexus.CTINexusClose();  // Don't need this anymore.
+   ListenNexus.close();  // Don't need this anymore.
 
-   if( isDebugLudicrous() )
+   // Someone has connected to us..
+   if( _internalNexus.isValid() )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " closed " << nexusName << endl;
-   }
-
-   if(_internalNexus.CTINexusValid())
-   {
-        _internalNexus.CTINexusClose();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Closing the internal port_shr nexus.  Will recreate." << endl;
+            dout << CtiTime() << " Closing the internal port_shr nexus. Will recreate." << endl;
         }
+        _internalNexus.close();
    }
 
-   _internalNexus = newNexus;
-   strcpy(_internalNexus.Name, nexusName.data());
-
-   return;
-}
-
-void CtiPortShare::interruptBlockingAPI()
-{
-   // OK, need to sweep the nexus here.
-
-   if(_internalNexus.NexusState != CTINEXUS_STATE_NULL)
-   {
-      _internalNexus.CTINexusClose(); // Kick it good.
-   }
-
-   if(_returnNexus.NexusState != CTINEXUS_STATE_NULL)
-   {
-      _returnNexus.CTINexusClose(); // Kick it good.
-   }
+   newNexus->Name = nexusName;
+   _internalNexus.swap(*newNexus);
 }
 
 /*
@@ -233,24 +203,24 @@ void CtiPortShare::interruptBlockingAPI()
  */
 void CtiPortShare::connectNexus()
 {
-   INT i, j = 0;
+    unsigned attempt = 0;
 
-   if( isDebugLudicrous() )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      dout << "  Attempting connection on port " << _internalPort << endl;
-   }
+    if( isDebugLudicrous() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "  Attempting connection on port " << _internalPort << endl;
+    }
 
-   while((i = _returnNexus.CTINexusOpen("127.0.0.1", _internalPort, CTINEXUS_FLAG_READANY)) != NORMAL)
-   {
-      if(!(++j % 15))
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Port Sharing IP interface is having issues " << i << "   " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
+    while( ! isSet(CtiThread::SHUTDOWN) && ! _returnNexus.open("localhost", _internalPort, Cti::StreamSocketConnection::ReadAny) )
+    {
+        if( ! (attempt++ % 15) ) // print every 15 seconds
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Port Sharing IP interface is having issues " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-      CTISleep(1000L);
+        CTISleep(1000L);
    }
 }
 

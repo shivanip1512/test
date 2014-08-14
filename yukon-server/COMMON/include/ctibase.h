@@ -3,7 +3,7 @@
 #include <rw\thr\mutex.h>
 #include <rw/thr/guard.h>
 
-#include "ctinexus.h"
+#include "streamSocketConnection.h"
 #include "dllbase.h"
 
 #define DEFAULT_YUKON_USER       ".\\yukon"

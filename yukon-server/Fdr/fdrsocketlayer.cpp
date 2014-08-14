@@ -307,7 +307,7 @@ int CtiFDRSocketLayer::init ()
 
     if (iConnectionType == Client_Multiple)
     {
-        Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(iName.c_str(), CtiNumStr(getPortNumber()).toString().c_str());
+        Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(iName, getPortNumber());
         if( !pAddrInfo )
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)

@@ -23,7 +23,7 @@ namespace Porter {
 SystemMsgThread::SystemMsgThread(CtiFIFOQueue< CtiMessage > &inputQueue,
                                  CtiDeviceManager &devMgr,
                                  CtiPortManager &portMgr,
-                                 CtiLocalConnect<OUTMESS, INMESS> &pilToPorter) :
+                                 StreamLocalConnection<OUTMESS, INMESS> &pilToPorter) :
     _input(inputQueue),
     _devManager(devMgr),
     _portManager(portMgr),

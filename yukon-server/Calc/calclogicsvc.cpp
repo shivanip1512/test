@@ -13,7 +13,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "id_calc.h"
 #include "dbaccess.h"
-#include "ctinexus.h"
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"

@@ -4,7 +4,6 @@
 
 #include "cparms.h"
 #include "dbaccess.h"
-#include "ctinexus.h"
 #include "resolvers.h"
 #include "msg_multi.h"
 #include "msg_ptreg.h"

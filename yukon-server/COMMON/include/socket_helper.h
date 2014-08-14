@@ -6,11 +6,15 @@
 #include <windows.h>
 #include <string>
 
+#include <boost/ptr_container/ptr_list.hpp>
 #include <boost/asio/ip/address.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "numstr.h"
 #include "critical_section.h"
 #include "guard.h"
+#include "timing_util.h"
+#include "win_helper.h"
 
 namespace Cti {
 
@@ -20,10 +24,18 @@ namespace Cti {
 class SocketException : public std::exception
 {
     const std::string _desc;
+    const int         _errorCode;
 
 public:
-    SocketException( const std::string& desc ) :
-        _desc( desc )
+    SocketException(const std::string& desc) :
+        _desc(desc),
+        _errorCode(0)
+    {
+    }
+
+    SocketException(const std::string& desc, int errorCode) :
+        _desc(desc + ": " + boost::lexical_cast<std::string>(errorCode) + " -> " + getSystemErrorMessage(_errorCode)),
+        _errorCode(errorCode)
     {
     }
 
@@ -31,6 +43,18 @@ public:
     {
         return _desc.c_str();
     }
+
+    int getErrorCode() const
+    {
+        return _errorCode;
+    }
+};
+
+class SocketAbortException : public SocketException
+{
+public:
+    SocketAbortException() : SocketException("WaitForSocketEvent has aborted")
+    {}
 };
 
 //-----------------------------------------------------------------------------
@@ -92,6 +116,191 @@ inline std::string formatHostAndPort(const std::string& host, u_short port)
 
     return ostr.str();
 }
+
+namespace Detail {
+
+/**
+ * Helper class that contains sockets events associated with the network events.
+ * This class is called by SocketsEventsManager::waitForEvent()
+ */
+class SocketsEvent : private boost::noncopyable
+{
+    const std::vector<SOCKET> _sockets;
+    const WSAEVENT            _hEvent;
+    const long                _lNetworkEvents;
+
+public:
+
+    SocketsEvent(const std::vector<SOCKET> &sockets, const long lNetworkEvents)
+        :   _sockets(sockets), _lNetworkEvents(lNetworkEvents), _hEvent(WSACreateEvent())
+    {
+        if( _hEvent == WSA_INVALID_EVENT )
+        {
+            throw SocketException("WSACreateEvent has failed", WSAGetLastError());
+        }
+
+        for each( SOCKET s in _sockets )
+        {
+            // The WSAEventSelect function automatically sets socket s to nonblocking mode, regardless of the value of
+            // lNetworkEvents.
+            if( WSAEventSelect(s, _hEvent, _lNetworkEvents) )
+            {
+                throw SocketException("WSAEventSelect has failed", WSAGetLastError());
+            }
+        }
+    }
+
+    ~SocketsEvent()
+    {
+        // clear the event record associated with each socket via a call to WSAEventSelect with lNetworkEvents set to
+        // zero and the hEventObject parameter set to NULL.
+        for each( SOCKET s in _sockets )
+        {
+            WSAEventSelect(s, NULL, 0);
+        }
+
+        // close the handles
+        WSACloseEvent(_hEvent);
+    }
+
+    void triggerEvent()
+    {
+        if( ! WSASetEvent(_hEvent) )
+        {
+            throw SocketException("WSASetEvent has failed", WSAGetLastError());
+        }
+    }
+
+    WSAEVENT getEvent() const
+    {
+        return _hEvent;
+    }
+
+    SOCKET verifySocketEvents() const
+    {
+        WSANETWORKEVENTS NetworkEvents;
+
+        for each( SOCKET s in _sockets )
+        {
+            if( WSAEnumNetworkEvents(s, _hEvent, &NetworkEvents) )
+            {
+                throw SocketException("WSAEnumNetworkEvents has failed", WSAGetLastError());
+            }
+
+            if( NetworkEvents.lNetworkEvents & _lNetworkEvents )
+            {
+                return s;
+            }
+        }
+
+        return INVALID_SOCKET;
+    }
+};
+
+} // namespace Detail
+
+
+class SocketsEventsManager : private boost::noncopyable
+{
+    typedef Detail::SocketsEvent          SocketsEvent;
+    typedef boost::ptr_list<SocketsEvent> SocketsEventList;
+
+    SocketsEventList           _socketsEventList;
+    mutable CtiCriticalSection _mux;
+
+    /**
+     * Manages the life cycle of a temporary event created inside waitForEvent()
+     */
+    class TemporaryEvent
+    {
+        SocketsEventsManager       &_managerRef;
+        SocketsEventList::iterator  _eventItr;
+
+    public:
+        TemporaryEvent(SocketsEventsManager &managerRef, SocketsEvent *newEvent) : _managerRef(managerRef)
+        {
+            CtiLockGuard<CtiCriticalSection> guard(_managerRef._mux);
+            _eventItr = _managerRef._socketsEventList.insert(_managerRef._socketsEventList.end(), newEvent);
+        }
+
+        ~TemporaryEvent()
+        {
+            try
+            {
+                CtiLockGuard<CtiCriticalSection> guard(_managerRef._mux);
+                _managerRef._socketsEventList.erase(_eventItr);
+            }
+            catch(...)
+            {
+            }
+        }
+
+        SocketsEvent* operator->()
+        {
+            return &*_eventItr;
+        }
+    };
+
+public:
+
+    SOCKET waitForEvent(const std::vector<SOCKET> &sockets, long lNetworkEvents, const Timing::Chrono &timeout, const HANDLE *hAbort)
+    {
+        std::vector<HANDLE> waitEvents;
+
+        if( hAbort )
+        {
+            waitEvents.push_back(*hAbort);
+        }
+
+        // The TemporaryEvent will self destruct and remove itself from the event list when it goes out-of-scope
+        TemporaryEvent socketsEvent(*this, new SocketsEvent(sockets, lNetworkEvents));
+
+        waitEvents.push_back(socketsEvent->getEvent());
+
+        const DWORD nCount     = waitEvents.size();
+        const DWORD waitMillis = timeout ? timeout.milliseconds() : INFINITE;
+        const DWORD waitResult = WaitForMultipleObjects(nCount, &waitEvents[0], false, waitMillis);
+
+        if( waitResult >= WAIT_OBJECT_0 && waitResult < (WAIT_OBJECT_0 + nCount) )
+        {
+            const unsigned offset = waitResult - WAIT_OBJECT_0;
+            if( hAbort && ! offset )
+            {
+                throw SocketAbortException();
+            }
+
+            SOCKET sock = socketsEvent->verifySocketEvents();
+            if( sock == INVALID_SOCKET )
+            {
+                throw SocketException("WaitForMultipleObjects was interrupted");
+            }
+
+            return sock;
+        }
+
+        if( waitResult == WAIT_FAILED )
+        {
+            throw SocketException("WaitForMultipleObjects has failed", GetLastError());
+        }
+
+        return INVALID_SOCKET; // timeout
+    }
+
+    bool waitForEvent(SOCKET socket, long lNetworkEvents, const Timing::Chrono &timeout, const HANDLE *hAbort)
+    {
+        return waitForEvent(std::vector<SOCKET>(1, socket), lNetworkEvents, timeout, hAbort) != INVALID_SOCKET;
+    }
+
+    void interruptBlockingWait()
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_mux);
+        SocketsEventList::iterator itr = _socketsEventList.begin();
+        for( ; itr != _socketsEventList.end(); ++itr)
+        {
+            itr->triggerEvent();
+        }
+    }
+};
 
 //-----------------------------------------------------------------------------
 //  Manages a socket address of IPv4 and IPv6 family
@@ -325,33 +534,53 @@ inline AddrInfo makeSocketAddress(const char *nodename, const char* servname, co
 //-----------------------------------------------------------------------------
 //  Returns AddrInfo struct for TCP client
 //-----------------------------------------------------------------------------
-inline AddrInfo makeTcpClientSocketAddress(const char *nodename, const char *servname)
+inline AddrInfo makeTcpClientSocketAddress(const std::string &nodename, const std::string &servname)
 {
-    return makeSocketAddress(nodename, servname, SOCK_STREAM, IPPROTO_TCP);
+    return makeSocketAddress(nodename.c_str(), servname.c_str(), SOCK_STREAM, IPPROTO_TCP);
 };
 
-//-----------------------------------------------------------------------------
-//  Returns AddrInfo struct for UDP client
-//-----------------------------------------------------------------------------
-inline AddrInfo makeUdpClientSocketAddress(const char *nodename, const char *servname)
+inline AddrInfo makeTcpClientSocketAddress(const std::string &nodename, const unsigned short nport)
 {
-    return makeSocketAddress(nodename, servname, SOCK_DGRAM, IPPROTO_UDP);
+    return makeTcpClientSocketAddress(nodename, boost::lexical_cast<std::string>(nport));
 };
 
 //-----------------------------------------------------------------------------
 //  Returns AddrInfo struct for TCP server
 //-----------------------------------------------------------------------------
-inline AddrInfo makeTcpServerSocketAddress(const char *nodename, const char *servname)
+inline AddrInfo makeTcpServerSocketAddress(const std::string &servname)
 {
-    return makeSocketAddress(nodename, servname, SOCK_STREAM, IPPROTO_TCP, AI_PASSIVE);
+    return makeSocketAddress(NULL, servname.c_str(), SOCK_STREAM, IPPROTO_TCP, AI_PASSIVE);
+};
+
+inline AddrInfo makeTcpServerSocketAddress(const unsigned short nport)
+{
+    return makeTcpServerSocketAddress(boost::lexical_cast<std::string>(nport));
+};
+
+//-----------------------------------------------------------------------------
+//  Returns AddrInfo struct for UDP client
+//-----------------------------------------------------------------------------
+inline AddrInfo makeUdpClientSocketAddress(const std::string &nodename, const std::string &servname)
+{
+    return makeSocketAddress(nodename.c_str(), servname.c_str(), SOCK_DGRAM, IPPROTO_UDP);
+};
+
+inline AddrInfo makeUdpClientSocketAddress(const std::string &nodename, const unsigned short nport)
+{
+    return makeUdpClientSocketAddress(nodename, boost::lexical_cast<std::string>(nport));
 };
 
 //-----------------------------------------------------------------------------
 //  Returns AddrInfo struct for UDP server
 //-----------------------------------------------------------------------------
-inline AddrInfo makeUdpServerSocketAddress(const char *nodename, const char *servname)
+inline AddrInfo makeUdpServerSocketAddress(const std::string &servname)
 {
-    return makeSocketAddress(nodename, servname, SOCK_DGRAM, IPPROTO_UDP, AI_PASSIVE);
+    return makeSocketAddress(NULL, servname.c_str(), SOCK_DGRAM, IPPROTO_UDP, AI_PASSIVE);
+};
+
+inline AddrInfo makeUdpServerSocketAddress(const unsigned short nport)
+{
+    return makeUdpServerSocketAddress(boost::lexical_cast<std::string>(nport));
 };
 
 //-----------------------------------------------------------------------------
@@ -366,7 +595,8 @@ class ServerSockets
     mutable CtiCriticalSection _socketsMux;
 
     int  _lastError;
-    bool _nonBlocking;
+
+    SocketsEventsManager _socketsEventsManager;
 
     // Shutdown and close a vector sockets
     void shutdownAndClose( SocketsVec &sockets )
@@ -385,8 +615,7 @@ class ServerSockets
 public:
 
     ServerSockets() :
-        _lastError(0),
-        _nonBlocking(false) // blocking by default
+        _lastError(0)
     {}
 
     // Shutdown and close all sockets
@@ -395,11 +624,18 @@ public:
     {
         CtiLockGuard<CtiCriticalSection> guard(_socketsMux);
         shutdownAndClose(_sockets);
+        _socketsEventsManager.interruptBlockingWait();
     }
 
     ~ServerSockets()
     {
-        shutdownAndClose();
+        try
+        {
+            shutdownAndClose();
+        }
+        catch(...)
+        {
+        }
     }
 
     int getLastError() const
@@ -434,7 +670,7 @@ public:
             {
                 _lastError = WSAGetLastError();
                 shutdownAndClose( sockets );
-                throw SocketException("socket creation failed with error code: " + CtiNumStr(_lastError));
+                throw SocketException("socket creation has failed", _lastError);
             }
             sockets.push_back(s_new);
             p_ai = p_ai->ai_next;
@@ -461,7 +697,7 @@ public:
             {
                 _lastError = WSAGetLastError();
                 shutdownAndClose();
-                throw SocketException("setsockopt has fail with error code: " + CtiNumStr(_lastError));
+                throw SocketException("setsockopt has failed: ", _lastError);
             }
         }
     }
@@ -481,13 +717,8 @@ public:
             {
                 _lastError = WSAGetLastError();
                 shutdownAndClose();
-                throw SocketException("ioctlsocket has fail with error code: " + CtiNumStr(_lastError));
+                throw SocketException("ioctlsocket has failed", _lastError);
             }
-        }
-
-        if( cmd == FIONBIO )
-        {
-            _nonBlocking = (*argp != 0);
         }
     }
 
@@ -516,7 +747,7 @@ public:
             {
                 _lastError = WSAGetLastError();
                 shutdownAndClose();
-                throw SocketException("bind has fail with error code: " + CtiNumStr(_lastError));
+                throw SocketException("bind has failed", _lastError);
             }
         }
     }
@@ -536,13 +767,13 @@ public:
             {
                 _lastError = WSAGetLastError();
                 shutdownAndClose();
-                throw SocketException("listen has fail with error code: " + CtiNumStr(_lastError));
+                throw SocketException("listen has failed", _lastError);
             }
         }
     }
 
     // Accept first socket connection in blocking or non-blocking mode
-    SOCKET accept(SOCKADDR *addr, int *addrlen)
+    SOCKET accept(SOCKADDR *addr, int *addrlen, const Timing::Chrono &timeout, const HANDLE *hAbort)
     {
         SocketsVec sockets = getSockets(); // get a copy of the sockets
         if( sockets.empty() )
@@ -551,79 +782,52 @@ public:
             return INVALID_SOCKET;
         }
 
-        SOCKET s_out = INVALID_SOCKET;
+        SOCKET listenSocket = INVALID_SOCKET;
 
-        if( _nonBlocking )
+        try
         {
-            const int addrlen_init = (addrlen) ? *addrlen : 0;
-
-            for each( SOCKET s in sockets )
-            {
-                if(( s_out = ::accept( s, addr, addrlen )) != INVALID_SOCKET )
-                {
-                    return s_out;
-                }
-
-                if(( _lastError = WSAGetLastError()) != WSAEWOULDBLOCK )
-                {
-                    shutdownAndClose();
-                    return INVALID_SOCKET;
-                }
-
-                if( addrlen )
-                {
-                    // if addrlen is not null restore its initial value
-                    *addrlen = addrlen_init;
-                }
-            }
+            listenSocket = _socketsEventsManager.waitForEvent(sockets, FD_ACCEPT|FD_CLOSE, timeout, hAbort);
         }
-        else // blocking mode
+        catch( const SocketAbortException& )
         {
-            fd_set SockSet;
-            FD_ZERO(&SockSet);
+            return INVALID_SOCKET;
+        }
+        catch( const SocketException& ex )
+        {
+            _lastError = ex.getErrorCode();
+            shutdownAndClose();
+            return INVALID_SOCKET;
+        }
 
-            for each( SOCKET s in sockets )
-            {
-                FD_SET(s, &SockSet);
-            }
+        if( listenSocket == INVALID_SOCKET )
+        {
+            return INVALID_SOCKET; // timeout
+        }
 
-            // we should block here until one of the socket is ready to accept a connection
-            if( ::select(0, &SockSet, NULL, NULL, NULL) == SOCKET_ERROR )
+        SOCKET s_out = ::accept(listenSocket, addr, addrlen);
+        if( s_out == INVALID_SOCKET )
+        {
+            _lastError = WSAGetLastError();
+            if( _lastError != WSAEWOULDBLOCK )
             {
-                _lastError = WSAGetLastError();
                 shutdownAndClose();
-                return INVALID_SOCKET;
-            }
-
-            for each( SOCKET s in sockets )
-            {
-                if( FD_ISSET(s, &SockSet) )
-                {
-                    if(( s_out = ::accept( s, addr, addrlen )) == INVALID_SOCKET )
-                    {
-                        _lastError = WSAGetLastError();
-                        shutdownAndClose();
-                    }
-
-                    return s_out;
-                }
             }
         }
 
-        return INVALID_SOCKET;
+        return s_out;
     }
 
     // wrapper for when return address is unused
-    SOCKET accept()
+    SOCKET accept(const Timing::Chrono &timeout, const HANDLE *hAbort)
     {
-        return accept( NULL, NULL );
+        return accept( NULL, NULL, timeout, hAbort);
     }
 
     // wrapper using a socket address storage
     // note : available storage length shall be set prior by the user
-    SOCKET accept( SocketAddress& addr )
+    SOCKET accept( SocketAddress& addr, const Timing::Chrono &timeout, const HANDLE *hAbort)
     {
-        return accept( &addr._addr.sa, &addr._addrlen );
+        return accept( &addr._addr.sa, &addr._addrlen, timeout, hAbort);
     }
 
     // Return first socket corresponding to the family given in argument

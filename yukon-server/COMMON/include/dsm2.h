@@ -3,7 +3,7 @@
 #include <time.h>
 #include <set>
 
-#include "cticonnect.h"
+#include "streamConnection.h"
 #include "mutex.h"
 #include "guard.h"
 #include "dlldefs.h"
@@ -13,7 +13,9 @@
 #include "constants.h"
 
 
-class CTINEXUS;
+namespace Cti {
+class StreamSocketConnection;
+}
 
 extern LONG gOutMessageCounter;
 
@@ -315,8 +317,8 @@ public:
 
    PIL_ECHO           Request;
 
-   CtiConnect         *ReturnNexus;   // Connection back to requestor.
-   CtiConnect         *SaveNexus;
+   Cti::StreamConnection  *ReturnNexus;   // Connection back to requestor.
+   Cti::StreamConnection  *SaveNexus;
    union _outmess_buf
    {
       BYTE            OutMessage[300];
@@ -475,7 +477,7 @@ public:
 
    PIL_ECHO    Return;
 
-   CtiConnect  *ReturnNexus;   // Connection back to requestor.
+   Cti::StreamConnection  *ReturnNexus;   // Connection back to requestor.
 
    LONG        DeviceIDofLMGroup;           // 091300 CGP Helps us track lm command's success
    UINT        TrxID;                       // 091300 CGP Helps us track lm command's success

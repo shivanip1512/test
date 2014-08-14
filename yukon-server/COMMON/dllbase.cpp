@@ -27,7 +27,7 @@
 #include "os2_2w32.h"
 #include "cticalls.h"
 #include "dbaccess.h"
-#include "ctinexus.h"
+#include "streamSocketConnection.h"
 #include "logger.h"
 #include "utility.h"
 #include "shlwapi.h"
@@ -42,9 +42,9 @@ extern void PortPipeCleanup (ULONG Reason);
 extern void freeUCTMemory(void);
 
 // Global Exports....
-IM_EX_CTIBASE CTINEXUS           PorterNexus;
-IM_EX_CTIBASE RWMutexLock        coutMux;
-IM_EX_CTIBASE CtiThreadMonitor   ThreadMonitor;
+IM_EX_CTIBASE Cti::StreamSocketConnection PorterNexus;
+IM_EX_CTIBASE RWMutexLock                 coutMux;
+IM_EX_CTIBASE CtiThreadMonitor            ThreadMonitor;
 
 /*
  *  These are the Configuration Parameters for the Real Time Database
@@ -97,8 +97,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
             gConfigParms.setYukonBase(getYukonBase());
             gConfigParms.RefreshConfigParameters();
 
-            PorterNexus.NexusState  = CTINEXUS_STATE_NULL;     // Make sure no one thinks we are connected
-            InitYukonBaseGlobals();                            // Load up the config file.
+            InitYukonBaseGlobals(); // Load up the config file.
 
             // Set default database connection params
             setDatabaseParams(dbType, dbName, dbUser, dbPassword);

@@ -70,7 +70,8 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
 
         Cti::ServerSockets _listenerSockets;
         CtiMutex           _listenerMux;
-
+        HANDLE             _listenerShutdownEvent;
+        
         bool isListenerShutdown();
 
     private:

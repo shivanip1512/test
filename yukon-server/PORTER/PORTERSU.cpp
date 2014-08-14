@@ -51,6 +51,9 @@
 using namespace std;
 
 using Cti::Porter::PorterStatisticsManager;
+using Cti::Timing::Chrono;
+using Cti::StreamConnection;
+using Cti::StreamConnectionException;
 
 extern CtiDeviceManager DeviceManager;
 
@@ -119,27 +122,34 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         }
 
         /* send message back to originating process */
-        if(InMessage->ReturnNexus != NULL)
+        if( InMessage->ReturnNexus != NULL )
         {
-            ULONG BytesWritten;
+            int bytesWritten = 0;
+            boost::optional<std::string> errorReason;
 
-            INT writeResult = InMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 30L);
-
-            if(writeResult || BytesWritten == 0)
+            try
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime()  << " TID: " << GetCurrentThreadId() << " Error \"" << writeResult << "\" returning error condition to client " << endl;
-                    dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr  << endl;
-                }
+                bytesWritten = InMessage->ReturnNexus->write(InMessage, sizeof(INMESS), Chrono::seconds(30));
+            }
+            catch( const StreamConnectionException &ex )
+            {
+                errorReason = ex.what();
+            }
 
-                if(writeResult == BADSOCK)
+            if( bytesWritten != sizeof(INMESS) )
+            {
+                if( ! InMessage->ReturnNexus->isValid() )
                 {
-                    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
+                    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, StreamConnection *&Nexus);
                     CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->DeviceID);
                     blitzNexusFromCCUQueue( tempDev, InMessage->ReturnNexus );
                 }
-                // 111901 CGP.  You better not close this.. It is the OutMessage's! // InMessage.ReturnNexus->CTINexusClose();
+                // 111901 CGP.  You better not close this.. It is the OutMessage's!
+
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime()  << " TID: " << GetCurrentThreadId() << " Error - returning error condition to client " << endl;
+                dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr  << endl;
+                dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
             }
         }
     }

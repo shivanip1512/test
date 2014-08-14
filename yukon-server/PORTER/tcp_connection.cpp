@@ -16,7 +16,8 @@ using std::string;
 using std::endl;
 
 TcpSocketStream::TcpSocketStream(const SocketStream &other) :
-    SocketStream(other)
+    SocketStream(other),
+    s(INVALID_SOCKET)
 {
 }
 
@@ -26,7 +27,6 @@ TcpSocketStream::TcpSocketStream(TcpSocketStream &other) :
 {
     other.s = INVALID_SOCKET;  //  transfer of ownership
 }
-
 
 TcpSocketStream::~TcpSocketStream()
 {
@@ -88,7 +88,7 @@ PendingTcpConnection::PendingTcpConnection(const InactiveSocketStream &inactive)
     TcpSocketStream(inactive),
     timeout(CtiTime::now() + gConfigParms.getValueAsULong("PORTER_TCP_CONNECT_TIMEOUT", 15))
 {
-    Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(address.ip.c_str(), CtiNumStr(address.port).toString().c_str());
+    Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(address.ip, address.port);
     if( ! pAddrInfo )
     {
         {

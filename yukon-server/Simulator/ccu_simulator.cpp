@@ -9,18 +9,21 @@
 #include "DelayBehavior.h"
 #include "BchBehavior.h"
 #include "cparms.h"
+#include "StreamSocketListener.h"
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 
 PROJECT_ID("CCU Simulator");
 
 bool gQuit = false;
+HANDLE gQuitEvent = NULL;
 
 using namespace std;
 using namespace boost;
 
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
+using Cti::Timing::Chrono;
 
 DLLIMPORT extern CtiLogger dout;
 
@@ -33,7 +36,7 @@ bool confirmCcu710(int ccu_address, int portNumber, Logger &logger);
 bool getPorts(vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
-void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logger &logger);
+void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int portNumber, Logger &logger);
 void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, Logger &logger);
 template<class CcuType>
 bool validRequest(SocketComms &socket_interface);
@@ -241,13 +244,11 @@ void CcuPortMaintainer(int portNumber, int strategy)
 
 void CcuPort(int portNumber, int strategy)
 {
-    CTINEXUS listenSocket, newSocket;
-
-    int loops;
+    StreamSocketListener listenSocket;
 
     PortLogger logger(dout, portNumber);
 
-    for( loops = 0; listenSocket.CTINexusCreate(portNumber) && !gQuit; ++loops )
+    for( int loops = 0; ! listenSocket.create(portNumber) && ! gQuit; loops++ )
     {
         //  print every 10 seconds
         if( !(loops % 10) )
@@ -259,73 +260,74 @@ void CcuPort(int portNumber, int strategy)
         Sleep(1000);
     }
 
-    for( loops = 0; !newSocket.CTINexusValid() && !gQuit; ++loops )
+    std::auto_ptr<StreamSocketConnection> newSocket;
+
+    for( int loops = 0; ! newSocket.get() && ! gQuit; loops++ )
     {
         //  print every 10 seconds
-        if( !(loops % 10) )
-        {
-            logger.log("Listening for connection");
-        }
+        logger.log("Listening for connection");
 
-        //  wait to connect for 1 second
-        listenSocket.CTINexusConnect(&newSocket, NULL, 1000);
+        //  wait to connect for 10 second
+        newSocket = listenSocket.accept(StreamSocketConnection::ReadExacly, Chrono::seconds(10), &gQuitEvent);
     }
 
     //  done with the listener
-    listenSocket.CTINexusClose();
+    listenSocket.close();
 
-    if( newSocket.CTINexusValid() )
+    if( newSocket.get() && ! gQuit )
     {
         logger.log("Accepted connection");
 
-        startRequestHandler(newSocket, strategy, portNumber, logger);
+        startRequestHandler(*newSocket, strategy, portNumber, logger);
     }
 
     logger.log("Thread exiting");
-
-    newSocket.CTINexusClose();
 }
 
-void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logger &logger)
+void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int portNumber, Logger &logger)
 {
-    CtiTime now;
-
-    srand(now.seconds());
-
-    // First rand is apparently linear. To avoid undesired predictability while running
-    // the simulator, we should dump the first call here.
-    rand();
-
-    SocketComms socket_interface(mySocket, 1200);
-
-    // Check for behaviors that may be used during the simulator runtime.
-    if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_COMMS_DELAY_PROBABILITY") )
+    try
     {
-        logger.log("Delay Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
-        std::auto_ptr<CommsBehavior> d(new DelayBehavior());
-        d->setChance(chance);
-        socket_interface.setBehavior(d);
-    }
+        CtiTime now;
 
-    //  both the CCU-710 and CCU-711 have their address info in the first two bytes
-    bytes peek_buf;
+        srand(now.seconds());
 
-    //  Peek at the first bytes to determine which CCU type this port will handle.
-    while( !gQuit && !socket_interface.peek(byte_appender(peek_buf), 2) )
-    {
-        Sleep(1000);
-    }
+        // First rand is apparently linear. To avoid undesired predictability while running
+        // the simulator, we should dump the first call here.
+        rand();
 
-    if( !gQuit && !peek_buf.empty() )
-    {
-        try
+        SocketComms socket_interface(mySocket, 1200);
+
+        // Check for behaviors that may be used during the simulator runtime.
+        if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_COMMS_DELAY_PROBABILITY") )
+        {
+            logger.log("Delay Behavior Enabled - Probability " + CtiNumStr(chance, 2) + "%");
+            std::auto_ptr<CommsBehavior> d(new DelayBehavior());
+            d->setChance(chance);
+            socket_interface.setBehavior(d);
+        }
+
+        //  both the CCU-710 and CCU-711 have their address info in the first two bytes
+        bytes peek_buf;
+
+        //  Peek at the first bytes to determine which CCU type this port will handle.
+        while( !gQuit && !socket_interface.peek(byte_appender(peek_buf), 2) )
+        {
+            Sleep(1000);
+        }
+
+        if( !gQuit && !peek_buf.empty() )
         {
             handleRequests(socket_interface, strategy, portNumber, logger);
         }
-        catch(...)
-        {
-            logger.log("Uncaught exception");
-        }
+    }
+    catch( const StreamConnectionException &ex )
+    {
+        logger.log( string("Caught StreamConnectionException: ") + ex.what() );
+    }
+    catch(...)
+    {
+        logger.log("Caught unhandled exception");
     }
 }
 

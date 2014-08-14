@@ -87,7 +87,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     BYTE      ABuf[ABUFSIZE];
     ULONG     BytesWritten;
 
-    IM_EX_CTIBASE extern CTINEXUS PorterNexus;
+    IM_EX_CTIBASE extern Cti::StreamSocketConnection PorterNexus;
 
     /*
      *  Wow, I have versacom data and I know what to do with it....

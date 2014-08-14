@@ -159,7 +159,6 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of<int, error_info>
     (ControlInhibitedOnPoint,       error_info(ERRTYPESYSTEM,   "Point is control disabled"))
     (ControlRequestComplete,        error_info(ERRTYPESYSTEM,   "Control Completed"))
     (ErrRequestExpired,             error_info(ERRTYPESYSTEM,   "Requested operation expired due to time"))
-    (ErrorNexusRead,                error_info(ERRTYPESYSTEM,   "Error Reading Nexus"))
     (InThreadTerminated,            error_info(ERRTYPESYSTEM,   "CtiConnection: InThread Terminated"))
     (OutThreadTerminated,           error_info(ERRTYPESYSTEM,   "CtiConnection: OutThread Terminated"))
     (InboundSocketBad,              error_info(ERRTYPESYSTEM,   "CtiConnection: Inbound Socket Bad"))

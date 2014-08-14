@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ctinexus.h"
+#include "streamSocketConnection.h"
 #include "dlldefs.h"
 #include "thread.h"
 #include "logger.h"
@@ -32,11 +32,13 @@ protected:
    UINT _requestCount;                          // counts outstanding requests.  > 1 indicates a problem.
    boost::shared_ptr< CtiPort > _port;                 // The port on which this share exists.
 
-   CTINEXUS _returnNexus;                       // returnNexus is formed as the "client" side of a socket to internalNexus (server side)
+   Cti::StreamSocketConnection _returnNexus;    // returnNexus is formed as the "client" side of a socket to internalNexus (server side)
                                                 // both are formed in this class.  returnNexus is passed into porter via the outmessage through queues,
                                                 // so data is returned outbound only via the nexus.
-   CTINEXUS _internalNexus;                     // internalNexus is the "server" side of the internal nexus from port_shr and porter proper.
+   Cti::StreamSocketConnection _internalNexus;  // internalNexus is the "server" side of the internal nexus from port_shr and porter proper.
    INT      _internalPort;                      // internal port for porter to share communicaitons.  Used to return IMs from port control.  It's number does not matter.
+
+   HANDLE   _shutdownEvent;
 
    std::map<unsigned char, unsigned char> _ccuError;
 
@@ -75,16 +77,14 @@ public:
    CtiPortShare& incRequestCount();
    CtiPortShare& decRequestCount();
 
-   virtual void interruptBlockingAPI();
-
    boost::shared_ptr< CtiPort > getPort();
 
    static USHORT ProcessEventCode(USHORT EventCode);
 
-   void createNexus(std::string nexusName);
+   void createNexus(const std::string &nexusName);
    void connectNexus();
 
-   CTINEXUS* getReturnNexus() { return &_returnNexus; }
+   Cti::StreamSocketConnection* getReturnNexus() { return &_returnNexus; }
 
    CtiPortShare& setListenPort(INT prt);
 

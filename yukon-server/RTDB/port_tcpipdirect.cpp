@@ -86,7 +86,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         return NORMAL;
     }
 
-    Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(getIPAddress().c_str(), CtiNumStr(getIPPort()).toString().c_str());
+    Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(getIPAddress(), getIPPort());
     if( !pAddrInfo )
     {
         {

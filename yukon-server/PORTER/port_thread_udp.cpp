@@ -335,7 +335,7 @@ void UdpPortHandler::teardownSocket()
 
 bool UdpPortHandler::tryBindSocket( void )
 {
-    Cti::AddrInfo pAddrInfo = Cti::makeUdpServerSocketAddress(NULL, CtiNumStr(_udp_port->getIPPort()).toString().c_str());
+    Cti::AddrInfo pAddrInfo = Cti::makeUdpServerSocketAddress(_udp_port->getIPPort());
     if( !pAddrInfo )
     {
         {
@@ -507,7 +507,7 @@ int UdpPortHandler::sendOutbound( device_record &dr )
         dout << endl;
     }
 
-    Cti::AddrInfo pAddrInfo = Cti::makeUdpClientSocketAddress(device_ip.c_str(), CtiNumStr(device_port).toString().c_str());
+    Cti::AddrInfo pAddrInfo = Cti::makeUdpClientSocketAddress(device_ip, device_port);
     if( !pAddrInfo )
     {
         {
