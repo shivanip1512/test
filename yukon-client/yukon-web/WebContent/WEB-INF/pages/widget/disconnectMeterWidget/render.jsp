@@ -61,8 +61,3 @@
         <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true" classes="disconnect-btn left"/>
     </cti:checkRolesAndProperties>
 </div>
-
-<%-- UPDATER WILL TOGGLE WHICH BUTTON IS DISPLAYED IF REMOTELY CONTROLED --%>
-<c:if test="${pointId != null}">
-    <cti:dataUpdaterCallback function="yukon.widget.disconnect.toggleButtons" initialize="true" rawValue="POINT/${pointId}/RAWVALUE" />
-</c:if>
