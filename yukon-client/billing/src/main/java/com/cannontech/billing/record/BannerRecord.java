@@ -24,87 +24,66 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
  */
 public class BannerRecord implements BillingRecordBase {
     
-    private BannerData bannerData;
-    private BuiltInAttribute attribute;
-    private String reading;
-    private String readDate;     //yymmdd
-    private String readTime;     //hhmmss
+    private final BannerData bannerData;
+    private final BuiltInAttribute attribute;
+    private final Double reading; 
+    private final Date readDate;
     
     private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("yyMMdd");
     private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HHmmss");
-    private static java.text.DecimalFormat KW_FORMAT_5v3 = new java.text.DecimalFormat("00000.000");
+    private static java.text.DecimalFormat KW_FORMAT_6v3 = new java.text.DecimalFormat("000000.000");
     private static java.text.DecimalFormat KWH_FORMAT_9 = new java.text.DecimalFormat("000000000");
     
-    public BannerRecord(BannerData bannerData, BuiltInAttribute attribute) {
+    public BannerRecord(BannerData bannerData, BuiltInAttribute attribute, Double reading, Date readDate) {
         this.bannerData = bannerData;
         this.attribute = attribute;
+        this.reading = reading;
+        this.readDate = readDate;
     }
 
     @Override
     public String dataToString() {
-        
-        StringBuffer writeToFile = new StringBuffer();
+        StringBuilder writeToFile = new StringBuilder();
         writeToFile.append(StringUtils.leftPad(getBannerData().getPremiseNumber(),  5)); // length 5, pad spaces
         writeToFile.append(StringUtils.leftPad(getBannerData().getServiceNumber(),  3, '0'));    //length 3, pad 0
         writeToFile.append(StringUtils.leftPad("", 21));    // length 21, blanks
-        writeToFile.append(StringUtils.leftPad(getBannerData().getMeterNumber(),  21));    //length 3, pad spaces
-        writeToFile.append(getReading());
+        writeToFile.append(StringUtils.rightPad(getBannerData().getMeterNumber(),  21));    //length 3, pad spaces
+        writeToFile.append(getFormattedReading());
         writeToFile.append("00");
-        writeToFile.append(getReadDate());
-        writeToFile.append(getReadTime());
+        writeToFile.append(getFormattedReadDate());
+        writeToFile.append(getFormattedReadTime());
         writeToFile.append(StringUtils.leftPad("", 4));    // length 4, blanks
         writeToFile.append(StringUtils.leftPad(getBannerData().getRouteNumber(),  6, '0'));    //length 6, pad 0
-        writeToFile.append(StringUtils.leftPad(getScatNumber(),  2, '0'));    //length 2, pad 0
-        writeToFile.append(StringUtils.leftPad("", 47));    // length 47, blanks
-        writeToFile.append("\r\n");
+        writeToFile.append(StringUtils.leftPad(String.valueOf(getBannerData().getScatNumber()),  2, '0'));    //length 2, pad 0
+        writeToFile.append(StringUtils.leftPad("", 46));    // length 47, blanks // NOTE: Using 46 as length because the \r\n line separator is adding one to the total length
+        writeToFile.append(System.getProperty("line.separator"));
         return writeToFile.toString();
     }
 
     public BannerData getBannerData() {
         return bannerData;
     }
-
-    private String getReading() {
-        return reading;
-    }
-
-    public void setReading(Double reading) {
-        switch (attribute) {
-        case USAGE: {
-            this.reading = KWH_FORMAT_9.format(reading);
-            break;
-        }
-        case PEAK_DEMAND: {
-            this.reading = KW_FORMAT_5v3.format(reading);
-            break;
-        }
-        default:
-            this.reading = KW_FORMAT_5v3.format(reading);
-        }
-    }
-
-    public void setTimestamp(Date readDate) {
-        this.readDate = DATE_FORMAT.format(readDate);
-        this.readTime = TIME_FORMAT.format(readDate);
-    }
-
-    private String getReadDate() {
-        return readDate;
-    }
-
-    private String getReadTime() {
-        return readTime;
-    }
-
-    private String getScatNumber() {
+    
+    public String getFormattedReading() {
+        String formattedReading;
         switch (attribute) {
         case USAGE:
-            return "1";
+        case USAGE_WATER:
+            formattedReading = KWH_FORMAT_9.format(reading);
+            break;
         case PEAK_DEMAND:
-            return "2";
         default:
-            return "0";
+            formattedReading = StringUtils.remove(KW_FORMAT_6v3.format(reading), ".");
+            break;
         }
+        return formattedReading;
     }
 
+    private String getFormattedReadDate() {
+        return DATE_FORMAT.format(readDate);
+    }
+
+    private String getFormattedReadTime() {
+        return TIME_FORMAT.format(readDate);
+    }
 }
