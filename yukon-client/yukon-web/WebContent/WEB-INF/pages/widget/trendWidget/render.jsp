@@ -34,7 +34,7 @@ $(function () {
         
             <%-- ATTRIBUTES GRAPH TYPES --%>
             <tr>
-                <td><i:inline key=".graphType"/></td>
+                <td class="wsnw"><i:inline key=".graphType"/></td>
                 
                 <td>
                     <c:forEach var="agt" items="${availableAttributeGraphs}" varStatus="status">
@@ -47,7 +47,7 @@ $(function () {
         
             <%-- PERIOD --%>
             <tr>
-                <td><i:inline key=".timePeriod"/></td>
+                <td class="wsnw"><i:inline key=".timePeriod"/></td>
                 <cti:msg2 var="prev24Hours" key=".prev24HourData"/>
                 <cti:msg2 var="prevWeeksData" key=".prevWeeksData"/>
                 <cti:msg2 var="prevMonthsData" key=".prevMonthsData"/>
@@ -101,7 +101,7 @@ $(function () {
         
             <%-- CHART STYLE --%>
             <tr>
-                <td><i:inline key=".chartStyle"/></td>
+                <td class="wsnw"><i:inline key=".chartStyle"/></td>
             
                 <td class="last">
                     <cti:msg2 var="lineGraph" key=".lineGraph"/>
@@ -116,7 +116,7 @@ $(function () {
         
             <%-- TABULAR DATA REPROTS --%>
             <tr>
-                <td>
+                <td class="wsnw">
                     <c:choose>
                         <c:when test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER'}">
                             <i:inline key=".archivedUsageData"/>
@@ -137,7 +137,7 @@ $(function () {
             
             <c:if test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER'}">
                 <tr>
-                    <td><b><i:inline key=".normalizedUsageData"/></b></td>
+                    <td class="wsnw"><b><i:inline key=".normalizedUsageData"/></b></td>
                     
                     <td>
                         <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDate.time}&stopDate=${stopDateAdjusted.time}&attribute=${attributeGraphType.attribute}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
