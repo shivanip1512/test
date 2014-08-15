@@ -1,6 +1,7 @@
 package com.cannontech.web.updater.point;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -24,20 +24,31 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.BulkUpdateBackingService;
 import com.cannontech.web.updater.UpdateIdentifier;
 import com.google.common.base.Joiner;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 public class PointUpdateBackingService implements BulkUpdateBackingService, AllPointDataListener {
     private final static Logger log = YukonLogManager.getLogger(PointUpdateBackingService.class);
 
-    private final static int maxCacheSize = 5000;
-
-    private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
-
     @Autowired private AsyncDynamicDataSource asyncDataSource;
     @Autowired private PointFormattingService pointFormattingService;
 
-    private Map<Integer, DatedPointValue> cache = new LeastRecentlyUsedCacheMap<>(maxCacheSize);
+    private final static int maxCacheSize = 5000;
+    private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
+    private final PointUpdateBackingService thisInstance = this;
+    private Cache<Integer, DatedPointValue> cache =
+        CacheBuilder.newBuilder().maximumSize(maxCacheSize).removalListener(
+            new RemovalListener<Integer, DatedPointValue>() {
+                @Override
+                public void onRemoval(RemovalNotification<Integer, DatedPointValue> notification) {
+                    asyncDataSource.unRegisterForPointData(thisInstance,
+                        Collections.singleton(notification.getKey()));
+                }
+        }).build();
 
     @Override
     public Map<UpdateIdentifier, String> getLatestValues(List<UpdateIdentifier> updateIdentifiers, long afterDate,
@@ -60,7 +71,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
         Set<Integer> pointsToRegister = new HashSet<>();
         List<DatedPointValue> values = new ArrayList<>();
         for (Integer pointId : pointIds) {
-            DatedPointValue value = cache.get(pointId);
+            DatedPointValue value = cache.getIfPresent(pointId);
             if (value == null) {
                 if (canWait) {
                     pointsToRegister.add(pointId);
@@ -124,17 +135,15 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
             if (!m.matches() || m.groupCount() != 2) {
                 throw new RuntimeException("identifier string isn't well formed: " + identifier);
             }
-            String idStr = m.group(1);
-            String format = m.group(2);
-            pointId = Integer.parseInt(idStr);
-            this.format = format;
+            pointId = Integer.parseInt(m.group(1));
+            format = m.group(2);
             updateIdentifier = identifier;
         }
     }
 
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
-        DatedPointValue old = cache.get(pointData.getId());
+        DatedPointValue old = cache.getIfPresent(pointData.getId());
         if (old == null) {
             usePointData(pointData);
         } else {
