@@ -163,7 +163,7 @@ public:
         WSACloseEvent(_hEvent);
     }
 
-    void triggerEvent()
+    void triggerEvent() const
     {
         if( ! WSASetEvent(_hEvent) )
         {
@@ -171,12 +171,12 @@ public:
         }
     }
 
-    WSAEVENT getEvent() const
+    WSAEVENT getHandle() const
     {
         return _hEvent;
     }
 
-    SOCKET verifySocketEvents() const
+    SOCKET verifySockets() const
     {
         WSANETWORKEVENTS NetworkEvents;
 
@@ -199,43 +199,46 @@ public:
 
 } // namespace Detail
 
-
+/**
+ *  Manages sockets events and provides waitForEvent() and interruptBlockingWait()
+ *  used by StreamSocketConnection
+ */
 class SocketsEventsManager : private boost::noncopyable
 {
     typedef Detail::SocketsEvent          SocketsEvent;
     typedef boost::ptr_list<SocketsEvent> SocketsEventList;
 
-    SocketsEventList           _socketsEventList;
+    SocketsEventList           _eventList;
     mutable CtiCriticalSection _mux;
 
     /**
      * Manages the life cycle of a temporary event created inside waitForEvent()
      */
-    class TemporaryEvent
+    class ScopedEvent : private boost::noncopyable
     {
-        SocketsEventsManager       &_managerRef;
+        SocketsEventsManager&       _manager;
         SocketsEventList::iterator  _eventItr;
 
     public:
-        TemporaryEvent(SocketsEventsManager &managerRef, SocketsEvent *newEvent) : _managerRef(managerRef)
+        ScopedEvent(SocketsEventsManager &manager, SocketsEvent *newEvent) : _manager(manager)
         {
-            CtiLockGuard<CtiCriticalSection> guard(_managerRef._mux);
-            _eventItr = _managerRef._socketsEventList.insert(_managerRef._socketsEventList.end(), newEvent);
+            CtiLockGuard<CtiCriticalSection> guard(_manager._mux);
+            _eventItr = _manager._eventList.insert(_manager._eventList.end(), newEvent);
         }
 
-        ~TemporaryEvent()
+        ~ScopedEvent()
         {
             try
             {
-                CtiLockGuard<CtiCriticalSection> guard(_managerRef._mux);
-                _managerRef._socketsEventList.erase(_eventItr);
+                CtiLockGuard<CtiCriticalSection> guard(_manager._mux);
+                _manager._eventList.erase(_eventItr);
             }
             catch(...)
             {
             }
         }
 
-        SocketsEvent* operator->()
+        const SocketsEvent* operator->() const
         {
             return &*_eventItr;
         }
@@ -252,38 +255,46 @@ public:
             waitEvents.push_back(*hAbort);
         }
 
-        // The TemporaryEvent will self destruct and remove itself from the event list when it goes out-of-scope
-        TemporaryEvent socketsEvent(*this, new SocketsEvent(sockets, lNetworkEvents));
-
-        waitEvents.push_back(socketsEvent->getEvent());
+        // The ScopedEvent will remove itself from the event list and self destruct when it goes out-of-scope
+        const ScopedEvent event(*this, new SocketsEvent(sockets, lNetworkEvents));
+        waitEvents.push_back(event->getHandle());
 
         const DWORD nCount     = waitEvents.size();
         const DWORD waitMillis = timeout ? timeout.milliseconds() : INFINITE;
         const DWORD waitResult = WaitForMultipleObjects(nCount, &waitEvents[0], false, waitMillis);
 
-        if( waitResult >= WAIT_OBJECT_0 && waitResult < (WAIT_OBJECT_0 + nCount) )
+        switch(waitResult)
         {
-            const unsigned offset = waitResult - WAIT_OBJECT_0;
-            if( hAbort && ! offset )
+        case WAIT_OBJECT_0:
             {
-                throw SocketAbortException();
+                if( hAbort )
+                {
+                    throw SocketAbortException(); // aborted !
+                }
             }
-
-            SOCKET sock = socketsEvent->verifySocketEvents();
-            if( sock == INVALID_SOCKET )
+        case WAIT_OBJECT_0 + 1:
             {
-                throw SocketException("WaitForMultipleObjects was interrupted");
+                SOCKET sock = event->verifySockets();
+                if( sock == INVALID_SOCKET )
+                {
+                    throw SocketException("WaitForMultipleObjects was interrupted");
+                }
+
+                return sock;
             }
-
-            return sock;
+        case WAIT_TIMEOUT:
+            {
+                return INVALID_SOCKET; // timeout !
+            }
+        case WAIT_FAILED:
+            {
+                throw SocketException("WaitForMultipleObjects has failed", GetLastError());
+            }
+        default:
+            {
+                throw SocketException("WaitForMultipleObjects returned an unexpected value");
+            }
         }
-
-        if( waitResult == WAIT_FAILED )
-        {
-            throw SocketException("WaitForMultipleObjects has failed", GetLastError());
-        }
-
-        return INVALID_SOCKET; // timeout
     }
 
     bool waitForEvent(SOCKET socket, long lNetworkEvents, const Timing::Chrono &timeout, const HANDLE *hAbort)
@@ -294,10 +305,9 @@ public:
     void interruptBlockingWait()
     {
         CtiLockGuard<CtiCriticalSection> guard(_mux);
-        SocketsEventList::iterator itr = _socketsEventList.begin();
-        for( ; itr != _socketsEventList.end(); ++itr)
+        for each( const SocketsEvent& event in _eventList )
         {
-            itr->triggerEvent();
+            event.triggerEvent();
         }
     }
 };

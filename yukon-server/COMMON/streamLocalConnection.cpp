@@ -132,66 +132,80 @@ int StreamLocalConnection<Outbound, Inbound>::readFromOutQueue(void *buf, int le
 
     hEvents.push_back(_dataAvailableEvent);
 
-    DWORD waitMillis = timeout ? timeout.milliseconds() : INFINITE;
+    const DWORD nCount = hEvents.size();
+    DWORD waitMillis   = timeout ? timeout.milliseconds() : INFINITE;
 
     Timing::MillisecondTimer timer;
 
     for(;;)
     {
-        const DWORD waitResult = WaitForMultipleObjects(hEvents.size(), &hEvents[0], false, waitMillis);
+        const DWORD waitResult = WaitForMultipleObjects(nCount, &hEvents[0], false, waitMillis);
 
-        if( hAbort && waitResult == WAIT_OBJECT_0 )
+        switch(waitResult)
         {
-            return 0; // aborted
-        }
-
-        if( waitResult == WAIT_FAILED )
-        {
-            logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
-        }
-
-        try
-        {
-            CtiLockGuard<CtiCriticalSection> g(_outQueueMux);
-
-            queue_t::iterator itr = _outQueue.begin();
-
-            if( itr != _outQueue.end() )
+        case WAIT_OBJECT_0:
             {
-                memcpy(buf, &(*itr), len);
-
-                if( option == MessageRead )
+                if( hAbort )
                 {
-                    _outQueue.erase(itr);
-
-                    // reset event if outQueue is empty
-                    if( _outQueue.empty() && ! ResetEvent(_dataAvailableEvent) )
-                    {
-                        logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
-                    }
+                    return 0; // aborted !
                 }
-
-                return len; // data found
             }
-        }
-        catch( const StreamConnectionException & )
-        {
-            throw;
-        }
-        catch(...)
-        {
-            logErrorAndThrowException(__FILE__, __LINE__, "Unhandled exception caught");
-        }
+        case WAIT_OBJECT_0 + 1:
+            {
+                try
+                {
+                    CtiLockGuard<CtiCriticalSection> g(_outQueueMux);
 
-        // update the remaining time
-        if( timeout )
-        {
-            const unsigned long elapsed = timer.elapsed();
-            waitMillis = elapsed < timeout.milliseconds() ? timeout.milliseconds() - elapsed : 0;
-            if( ! waitMillis )
+                    queue_t::iterator itr = _outQueue.begin();
+
+                    if( itr != _outQueue.end() )
+                    {
+                        memcpy(buf, &(*itr), len);
+
+                        if( option == MessageRead )
+                        {
+                            _outQueue.erase(itr);
+
+                            // reset event if outQueue is empty
+                            if( _outQueue.empty() && ! ResetEvent(_dataAvailableEvent) )
+                            {
+                                logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
+                            }
+                        }
+
+                        return len; // data found
+                    }
+
+                    break; // break-away from the switch
+                }
+                catch( const StreamConnectionException & )
+                {
+                    throw;
+                }
+                catch(...)
+                {
+                    logErrorAndThrowException(__FILE__, __LINE__, "Unhandled exception caught");
+                }
+            }
+        case WAIT_TIMEOUT:
             {
                 return 0; // timeout !
             }
+        case WAIT_FAILED:
+            {
+                logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
+            }
+        default:
+            {
+                logErrorAndThrowException(__FILE__, __LINE__, "WaitForMultipleObjects returned an unexpected value");
+            }
+        }
+
+        if( timeout )
+        {
+            // update the remaining time
+            const unsigned long elapsed = timer.elapsed();
+            waitMillis = elapsed < timeout.milliseconds() ? timeout.milliseconds() - elapsed : 0;
         }
     }
 }
