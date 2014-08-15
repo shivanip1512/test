@@ -235,11 +235,11 @@ public class RfPerformanceController {
         model.addAttribute("totalSuccess", totalSuccess);
         model.addAttribute("totalFailed", totalFailed);
         model.addAttribute("totalUnknown", totalUnknown);
-        boolean hasNonZeroStatValues = true;
+        boolean hasStats = true;
         if (totalSuccess == 0 && totalFailed == 0 && totalUnknown == 0) {
-            hasNonZeroStatValues = false;
+            hasStats = false;
         }
-        model.addAttribute("nonZeroStatValues", hasNonZeroStatValues);
+        model.addAttribute("hasStats", hasStats);
     }
     
     @RequestMapping(value="/rf/details/{type}/{test}/page", method=RequestMethod.GET)
