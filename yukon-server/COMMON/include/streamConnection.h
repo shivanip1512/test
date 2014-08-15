@@ -35,6 +35,7 @@ protected:
     typedef Timing::Chrono Chrono;
 
 public:
+    StreamConnection() : Name("") {};
     virtual ~StreamConnection() {};
 
     // The pure virtuals below make this an abstract class

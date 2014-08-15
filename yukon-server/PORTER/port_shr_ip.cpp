@@ -182,7 +182,7 @@ void CtiPortShareIP::inThread()
                         
                         _scadaNexus.close();      //  make sure the old/invalid socket is closed
 
-                        newNexus->Name.swap(getIDString()); // getIDString() returns a copy so we can swap it
+                        newNexus->Name = getIDString();
                         _scadaNexus.swap(*newNexus);
 
                         setRequestCount(0);             // Reconnect zeros the busy value.

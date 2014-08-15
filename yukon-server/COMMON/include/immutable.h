@@ -1,64 +1,101 @@
 #pragma once
 
+#include "boost/shared_ptr.hpp"
 #include "readers_writer_lock.h"
 
 namespace Cti {
 
-template <typename T>
+template <class T>
 class Immutable
 {
-    T _obj;
-    mutable readers_writer_lock_t _lock;
+    typedef boost::shared_ptr<const T> PointerType;
+    
+    PointerType _ptr;
+    
+    typedef readers_writer_lock_t::reader_lock_guard_t  ReaderGuard;
+    typedef readers_writer_lock_t::writer_lock_guard_t  WriterGuard;
+
+    mutable readers_writer_lock_t _mux;
 
 public:
     Immutable()
     {}
 
-    Immutable(const T& obj)
+    Immutable(T* obj) :
+        _ptr(obj)
+    {}
+
+    Immutable(const T& obj) :
+        _ptr(new T(obj))
+    {}
+
+    Immutable(const Immutable<T>& other) :
+        _ptr(other.get())
+    {}
+
+    void reset()
     {
-        *this = obj;
+        WriterGuard guard(_mux);
+        _ptr.reset();
     }
 
-    Immutable(const Immutable<T>& other)
+    void reset(T* obj)
     {
-        *this = other;
+        WriterGuard guard(_mux);
+        _ptr.reset(obj);
     }
 
-    T get() const
+    PointerType get() const
     {
-        readers_writer_lock_t::reader_lock_guard_t guard(_lock);
-        return _obj;
+        ReaderGuard guard(_mux);
+        return _ptr;
     }
 
-    operator T() const
+    Immutable& operator=(const T& rhs)
     {
-        readers_writer_lock_t::reader_lock_guard_t guard(_lock);
-        return _obj;
-    }
-
-    Immutable& operator=(const T& obj)
-    {
-        readers_writer_lock_t::writer_lock_guard_t guard(_lock);
-        _obj = obj;
+        this->reset(new T(rhs));
         return *this;
     }
 
     Immutable& operator=(const Immutable<T>& other)
     {
-        T& tmp = other.get();
-        readers_writer_lock_t::writer_lock_guard_t guard(_lock);
-        std::swap(_obj, tmp);
+        PointerType &other_ptr = other.get();
+
+        {
+            WriterGuard guard(_mux);
+            _ptr = other_ptr;
+        }
+
         return *this;
     }
-
-    void swap(T& obj)
+    
+    void swap(Immutable<T>& other)
     {
-        readers_writer_lock_t::writer_lock_guard_t guard(_lock);
-        std::swap(_obj, obj);
+        // check the pointers addresses to make sure we always
+        // acquire locks in the same order and avoid deadlocks
+        if(this < &other)
+        {
+            WriterGuard guard1(_mux);
+            WriterGuard guard2(other._mux);
+            _ptr.swap(other._ptr);
+        }
+        else
+        {
+            WriterGuard guard1(other._mux);
+            WriterGuard guard2(_mux);
+            _ptr.swap(other._ptr);
+        }
     }
-
-    // this would probably require to use both locks, for now std::swap() can be use if needed
-    // void swap(Immutable<T>& other)
 };
 
 } // namespace Cti
+
+namespace std {
+
+template <class T>
+void swap(Cti::Immutable<T>& rhs, Cti::Immutable<T>& lhs)
+{
+    rhs.swap(lhs);
+}
+    
+} // namespace std

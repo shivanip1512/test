@@ -243,7 +243,7 @@ int StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
                 if( remainingMillis )
                 {
                     std::string desc;
-                    desc += "Outbound socket stream connection to " + Name.get() + " is full, will wait "
+                    desc += "Outbound socket stream connection to " + *Name.get() + " is full, will wait "
                          + (timeout ? string("up to ") + millisToStr(remainingMillis) : string("forever")) + " to retry";
 
                     logWarning(__FILE__, __LINE__, desc);
@@ -284,7 +284,7 @@ int StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
         if( bytesToSend )
         {
             std::string desc;
-            desc += " Outbound socket stream connection to " + Name.get() + " could not be written. " + bytesToStr(bytesToSend) + " unwritten.";
+            desc += " Outbound socket stream connection to " + *Name.get() + " could not be written. " + bytesToStr(bytesToSend) + " unwritten.";
             logError(__FILE__, __LINE__, desc);
         }
 
@@ -500,7 +500,8 @@ void StreamSocketConnection::swap(StreamSocketConnection& other)
     std::swap(_socket,         other._socket);
     std::swap(_connectionMode, other._connectionMode);
     std::swap(_readBuffer,     other._readBuffer);
-    std::swap(Name,            other.Name);
+
+    Name.swap(other.Name);
 }
 
 } // namespace Cti
