@@ -33,7 +33,7 @@ yukon.da = (function () {
 
         // these two functions exist to work around the inability of IE to show/hide option elements
         _hideOption = function (opt) {
-            if (navigator.appName === 'Microsoft Internet Explorer') {
+            if ($('html').is('.ie')) {
                 $(opt).wrap('<span>').hide();
             } else {
                 $(opt).hide();
@@ -42,7 +42,7 @@ yukon.da = (function () {
         
         _showOption = function (opt) {
             var span;
-            if (navigator.appName === 'Microsoft Internet Explorer') {
+            if ($('html').is('.ie')) {
                 span = $(opt).parent();
                 if ($(opt).parent().is('span')) {
                     $(opt).show();
