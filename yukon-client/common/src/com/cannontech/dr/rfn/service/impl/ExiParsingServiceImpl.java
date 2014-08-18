@@ -101,6 +101,10 @@ public class ExiParsingServiceImpl implements ExiParsingService {
             reader.parse(new InputSource(bis));
         } catch (IOException | SAXException | ArrayIndexOutOfBoundsException e) {
             throw new ParseExiException("Error while parsing the RF LCR payload.", e);
+        } catch (OutOfMemoryError e) {
+            // While not normally done, we catch OOM here since the error can't be handled at a lower level, it isn't
+            // affecting application stability, and the memory footprint does not grow when this is reached.
+            throw new ParseExiException("Out of heap memory when parsing EXI payload, likely due to malformed EXI encoded data.", e);
         }
        
         if (log.isTraceEnabled()) {
