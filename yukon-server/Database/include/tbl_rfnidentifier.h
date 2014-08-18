@@ -12,9 +12,6 @@ namespace Tables {
 struct IM_EX_CTIYUKONDB RfnIdentifierTable
 {
    static RfnIdentifier DecodeDatabaseReader(RowReader &rdr);
-
-private:
-   RfnIdentifierTable();
 };
 
 }
