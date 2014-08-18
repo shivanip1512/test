@@ -4,6 +4,8 @@
 #include "dllbase.h"
 #include "logger.h"
 
+#include "critical_section.h"
+
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/foreach.hpp>
 
@@ -31,7 +33,7 @@ std::string dbPassword;
 std::vector<DBConnectionHolder> connectionList;
 
 // This lock serializes access to the database,connection
-RWRecursiveLock<RWMutexLock> DbMutex;
+CtiCriticalSection DbMutex;
 
 }
 
@@ -44,7 +46,7 @@ DLLEXPORT
 void setDatabaseParams(const std::string& type, const std::string& name,
                        const std::string& user, const std::string& password )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
+    CtiLockGuard<CtiCriticalSection> guard( DbMutex);
 
     dbType     = type;
     dbServer   = name;
@@ -164,7 +166,7 @@ SAConnection* createDBConnection()
 DLLEXPORT
 SAConnection* getNewConnection()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
+    CtiLockGuard<CtiCriticalSection> guard( DbMutex);
 
     BOOST_FOREACH(DBConnectionHolder &connHolder, connectionList)
     {
@@ -206,7 +208,7 @@ SAConnection* getNewConnection()
 DLLEXPORT
 void releaseDBConnection(SAConnection *connection)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
+    CtiLockGuard<CtiCriticalSection> guard( DbMutex);
 
     BOOST_FOREACH(DBConnectionHolder &connHolder, connectionList)
     {
