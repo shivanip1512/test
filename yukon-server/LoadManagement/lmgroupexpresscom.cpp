@@ -585,6 +585,26 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
                                     priority);
 }
 
+// Sends a message that tells device to finish out it's current cycle then end. A "soft" stop.
+// To work around FW differences between LCR's made in or after 2013 and previous LCR's this now sends a period to match the current gear period
+CtiRequestMsg* CtiLMGroupExpresscom::createStopCycleMsg(LONG period, CtiTime &currentTime)
+{
+    const int priority = 11;
+    char tempchar[64];
+    string controlString("control xcom cycle 0 count 1 period ");
+    controlString += buildPeriodString(period);
+    
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Sending terminate to LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+
+    setLastControlString(controlString);
+    setLastControlSent(currentTime);
+
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString, 0, 0, 0, 0, 0, 0, priority);;
+}
+
 /*-------------------------------------------------------------------------
     createRotationRequestMsg
 

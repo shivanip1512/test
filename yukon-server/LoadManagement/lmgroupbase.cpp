@@ -976,6 +976,24 @@ CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(const CtiLMProgramThermos
     return NULL;
 }
 
+// Sends a message that tells device to finish out it's current cycle then end. A "soft" stop.
+// In some protocols this may do different things, this is primarily for Expresscom.
+CtiRequestMsg* CtiLMGroupBase::createStopCycleMsg(LONG period, CtiTime &currentTime)
+{
+    const int priority = 11;
+    string controlString = "control terminate";
+    
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Sending terminate to LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+
+    setLastControlString(controlString);
+    setLastControlSent(currentTime);
+
+    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString, 0, 0, 0, 0, 0, 0, priority);;
+}
+
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/

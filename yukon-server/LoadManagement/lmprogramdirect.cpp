@@ -3102,7 +3102,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                 for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *i;
-                    terminateGroup(currentTime, currentLMGroup,  multiPilMsg);
+                    stopCycleGroup(currentTime, currentLMGroup,  multiPilMsg, currentGearObject->getMethodPeriod());
                 }
             }
 
@@ -3405,7 +3405,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                                  ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
                                  ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                         {
-                            terminateGroup(currentTime, currentLMGroup, multiPilMsg);
+                            stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod());
                         }
                         else
                         {
@@ -3559,7 +3559,7 @@ BOOL CtiLMProgramDirect::stopOverControlledGroup(CtiLMProgramDirectGear* current
              ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
              ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
     {
-        terminateGroup(currentTime, currentLMGroup, multiPilMsg);
+        stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod());
     }
     else
     {
@@ -4521,7 +4521,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                              ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
                              ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                     {
-                        terminateGroup(currentTime, currentLMGroup, multiPilMsg);
+                        stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod());
                     }
                     else
                     {
@@ -5700,7 +5700,13 @@ bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_gro
     }
 }
 
-bool CtiLMProgramDirect::terminateGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg)
+/*----------------------------------------------------------------------------
+  stopCycleGroup
+
+  Sends messages to stop the current cycling gradually. Actual behavior depends on
+  the individual group and it's protocols.
+  ----------------------------------------------------------------------------*/
+bool CtiLMProgramDirect::stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period)
 {
     CtiLMGroupConstraintChecker con_checker(*this, lm_group, currentTime);
     if( !(getConstraintOverride() || con_checker.checkTerminate()) )
@@ -5710,29 +5716,8 @@ bool CtiLMProgramDirect::terminateGroup(CtiTime currentTime, CtiLMGroupPtr& lm_g
     }
     else
     {
-        int priority = 11;
-        string controlString = "control terminate";
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Sending terminate to LM Group: " << lm_group->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
-        }
-
-        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(),
-                                                             controlString,
-                                                             0,
-                                                             0,
-                                                             0,
-                                                             MacroOffset::none,
-                                                             0,
-                                                             0,
-                                                             priority);
-
-        lm_group->setLastControlString(requestMsg->CommandString());
-        multiPilMsg->insert( requestMsg );
-        CtiTime now;
-        setLastControlSent(now);
-        lm_group->setLastControlSent(now);
+        multiPilMsg->insert(lm_group->createStopCycleMsg(period, currentTime));
+        setLastControlSent(currentTime);
         return true;
     }
 }

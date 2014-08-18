@@ -112,6 +112,7 @@ public:
     virtual CtiRequestMsg* createSetPointRequestMsg(const CtiLMProgramThermostatGear & gear, int priority, std::string & logMessage) const;// in CtiLMGroupExpresscom
     virtual CtiRequestMsg* createSetPointSimpleMsg(const CtiLMProgramThermostatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority, std::string & logMessage) const;// CtiLMGroupExpresscom
 
+    virtual CtiRequestMsg* createStopCycleMsg(LONG period, CtiTime &currentTime);
     virtual bool doesStopRequireCommandAt(const CtiTime &currentTime) const; //Currently only used by lmGroupDigiSep
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;

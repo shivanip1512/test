@@ -23,6 +23,7 @@ DECLARE_COLLECTABLE( CtiLMGroupExpresscom );
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
+    virtual CtiRequestMsg* createStopCycleMsg(LONG period, CtiTime &currentTime);
 
     virtual CtiRequestMsg* createSetPointRequestMsg(const CtiLMProgramThermostatGear & gear, int priority, std::string & logMessage) const;
     virtual CtiRequestMsg* createSetPointSimpleMsg(const CtiLMProgramThermostatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority, std::string & logMessage) const;
