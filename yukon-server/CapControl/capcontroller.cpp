@@ -1813,10 +1813,8 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     }
                     if ( currentCapBank->isControlDeviceTwoWay() )
                     {
-                        CtiCCTwoWayPointsPtr twoWayPts = currentCapBank->getTwoWayPoints();
-                        twoWayPts->addAllCBCPointsToRegMsg(registrationIds);
+                        currentCapBank->getTwoWayPoints().addAllCBCPointsToRegMsg(registrationIds);
                     }
-
                 }
             }
 
@@ -3483,19 +3481,19 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                     }
                     else if (currentCapBank->isControlDeviceTwoWay() )
                     {
-                        CtiCCTwoWayPointsPtr twoWayPts = currentCapBank->getTwoWayPoints();
+                        CtiCCTwoWayPoints & twoWayPts = currentCapBank->getTwoWayPoints();
                         //NEED to check this value for a toggle, before setting status points.
                         if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredIndicator) == pointID)
                         {
 
-                            if (twoWayPts->getPointValueByAttribute(PointAttribute::IgnoredIndicator)!= value &&
+                            if (twoWayPts.getPointValueByAttribute(PointAttribute::IgnoredIndicator)!= value &&
                                 timestamp >= currentCapBank->getIgnoreIndicatorTimeUpdated() )
                             {
                                 currentCapBank->setIgnoreIndicatorTimeUpdated(timestamp);
                                 store->insertRejectedCapBankList(currentCapBank);
                             }
                         }
-                        if (twoWayPts->setTwoWayStatusPointValue(pointID, value, timestamp))
+                        if (twoWayPts.setTwoWayStatusPointValue(pointID, value, timestamp))
                         {
                             if (currentCapBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) == pointID )
                             {
@@ -3552,7 +3550,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     currentCapBank->setControlRecentlySentFlag(false);
                                 }
-                                currentCapBank->setReportedCBCState(twoWayPts->getPointValueByAttribute(PointAttribute::CapacitorBankState));
+                                currentCapBank->setReportedCBCState(twoWayPts.getPointValueByAttribute(PointAttribute::CapacitorBankState));
                                 store->set2wayFlagUpdate(true);
 
                             }
@@ -3561,7 +3559,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Set a cbc 2 way status point... pointID ("<<pointID<<") = "<<value<< endl;
                             }
-                            if (twoWayPts->getPointValueByAttribute(PointAttribute::AutoVoltControl))
+                            if (twoWayPts.getPointValueByAttribute(PointAttribute::AutoVoltControl))
                             {
                                 if (currentCapBank->getOvUvDisabledFlag())
                                 {
@@ -3577,7 +3575,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentSubstationBus->setBusUpdatedFlag(true);
                                 }
                             }
-                            if (twoWayPts->getPointValueByAttribute(PointAttribute::LastControlOvUv) > 0)
+                            if (twoWayPts.getPointValueByAttribute(PointAttribute::LastControlOvUv) > 0)
                             {
                                 if (!currentCapBank->getOvUvSituationFlag())
                                 {
@@ -3595,7 +3593,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 
                             }
 
-                            if (twoWayPts->getPointValueByAttribute(PointAttribute::ControlMode) == 0 )
+                            if (twoWayPts.getPointValueByAttribute(PointAttribute::ControlMode) == 0 )
                             {
                                 if (currentCapBank->getLocalControlFlag())
                                 {
@@ -3614,15 +3612,15 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             }
 
                         }
-                        else if (twoWayPts->setTwoWayAnalogPointValue(pointID, value, timestamp))
+                        else if (twoWayPts.setTwoWayAnalogPointValue(pointID, value, timestamp))
                         {
                             if (currentCapBank->getPointIdByAttribute(PointAttribute::UDPIpAddress) == pointID)
                             {
-                                currentCapBank->setIpAddress(twoWayPts->getPointValueByAttribute(PointAttribute::UDPIpAddress));
+                                currentCapBank->setIpAddress(twoWayPts.getPointValueByAttribute(PointAttribute::UDPIpAddress));
                             }
                             else if (currentCapBank->getPointIdByAttribute(PointAttribute::UDPPortNumber) == pointID)
                             {
-                                currentCapBank->setUDPPort(twoWayPts->getPointValueByAttribute(PointAttribute::UDPPortNumber));
+                                currentCapBank->setUDPPort(twoWayPts.getPointValueByAttribute(PointAttribute::UDPPortNumber));
                             }
                             else if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredReason) == pointID)
                             {
@@ -3637,7 +3635,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 dout << CtiTime() << " - Set a cbc 2 way Analog point... pointID ("<<pointID<<") = "<<value<< endl;
                             }
                         }
-                        else if (twoWayPts->setTwoWayPulseAccumulatorPointValue(pointID, value, timestamp))
+                        else if (twoWayPts.setTwoWayPulseAccumulatorPointValue(pointID, value, timestamp))
                         {
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
@@ -3898,7 +3896,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
 
 
 void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
-                                                CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts)
+                                                CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints & twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -3932,14 +3930,14 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
 
     text1 += " command-";
     text1 += currentCapBank->getIgnoreReasonText();
-    if (twoWayPts->getPointValueByAttribute(PointAttribute::IgnoredReason) == 4) //voltage
+    if (twoWayPts.getPointValueByAttribute(PointAttribute::IgnoredReason) == 4) //voltage
     {
         if ( ((currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to close, through sendAll command
-             (twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) + twoWayPts->getPointValueByAttribute(PointAttribute::DeltaVoltage)) > twoWayPts->getPointValueByAttribute(PointAttribute::OvThreshold)) ||
+             (twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) + twoWayPts.getPointValueByAttribute(PointAttribute::DeltaVoltage)) > twoWayPts.getPointValueByAttribute(PointAttribute::OvThreshold)) ||
              ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
-             (twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) - twoWayPts->getPointValueByAttribute(PointAttribute::DeltaVoltage)) < twoWayPts->getPointValueByAttribute(PointAttribute::UvThreshold)) )
+             (twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) - twoWayPts.getPointValueByAttribute(PointAttribute::DeltaVoltage)) < twoWayPts.getPointValueByAttribute(PointAttribute::UvThreshold)) )
         {
             currentCapBank->setPercentChangeString(" Rejection by Delta Voltage ");
             text1 += " delta";
@@ -3947,11 +3945,11 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
 
         else if ( ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to open, through sendAll command
-              twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) >= twoWayPts->getPointValueByAttribute(PointAttribute::OvThreshold))  ||
+              twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) >= twoWayPts.getPointValueByAttribute(PointAttribute::OvThreshold))  ||
              ( (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
               currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
-              twoWayPts->getPointValueByAttribute(PointAttribute::CbcVoltage) <= twoWayPts->getPointValueByAttribute(PointAttribute::UvThreshold) ) ||
-             twoWayPts->getPointValueByAttribute(PointAttribute::OvCondition) || twoWayPts->getPointValueByAttribute(PointAttribute::UvCondition) )
+              twoWayPts.getPointValueByAttribute(PointAttribute::CbcVoltage) <= twoWayPts.getPointValueByAttribute(PointAttribute::UvThreshold) ) ||
+             twoWayPts.getPointValueByAttribute(PointAttribute::OvCondition) || twoWayPts.getPointValueByAttribute(PointAttribute::UvCondition) )
         {
             currentCapBank->setPercentChangeString(" Rejection by OVUV ");
             text1 += " ovuv";
@@ -3959,8 +3957,8 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
     }
 
     text1 += "! Adjusting state, ";
-    currentCapBank->setControlStatus(twoWayPts->getPointValueByAttribute(PointAttribute::CapacitorBankState));
-    currentCapBank->setReportedCBCState(twoWayPts->getPointValueByAttribute(PointAttribute::CapacitorBankState));
+    currentCapBank->setControlStatus(twoWayPts.getPointValueByAttribute(PointAttribute::CapacitorBankState));
+    currentCapBank->setReportedCBCState(twoWayPts.getPointValueByAttribute(PointAttribute::CapacitorBankState));
     text1 += currentCapBank->getControlStatusText();
     currentCapBank->setControlStatusQuality(CC_NoControl);
 
@@ -4022,7 +4020,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
     currentCapBank->setControlRecentlySentFlag(false);
 }
 void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
-                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts)
+                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints & twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -4035,10 +4033,10 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
     beforeVarsString += currentCapBank->getControlStatusText();
 
     text1 += beforeVarsString;
-    text1 += "-"+twoWayPts->getLastControlText();
+    text1 += "-"+twoWayPts.getLastControlText();
 
     currentCapBank->setBeforeVarsString(beforeVarsString);
-    currentCapBank->setAfterVarsString(twoWayPts->getLastControlText());
+    currentCapBank->setAfterVarsString(twoWayPts.getLastControlText());
     currentCapBank->setPercentChangeString(" --- ");
 
     text1 += "! Adjusting CapBank state,  ";
@@ -4083,14 +4081,14 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
 
 
 void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
-                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts)
+                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints & twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     currentSubstationBus->setBusUpdatedFlag(true);
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts->getPointValueByAttribute(PointAttribute::CapacitorBankState) <<" CAPBANK: "<<
+        dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts.getPointValueByAttribute(PointAttribute::CapacitorBankState) <<" CAPBANK: "<<
         currentCapBank->getPaoName() << " is "<< currentCapBank->getControlStatusText() <<
         " waiting for VAR change." << endl;
     }
@@ -4098,13 +4096,13 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
     string text = string("CBC Unsolicited Event!");
     string text1 = string("CBC State Change. ");
     string beforeVarsString = string("CBC Unsolicited-Unexpected ");
-    beforeVarsString += (twoWayPts->getPointValueByAttribute(PointAttribute::CapacitorBankState) == 0 ? "Open" : "Close");
+    beforeVarsString += (twoWayPts.getPointValueByAttribute(PointAttribute::CapacitorBankState) == 0 ? "Open" : "Close");
 
     text1 += beforeVarsString;
-    text1 += ", "+ twoWayPts->getLastControlText() + "! Mismatch Likely.";
+    text1 += ", "+ twoWayPts.getLastControlText() + "! Mismatch Likely.";
 
     currentCapBank->setBeforeVarsString(beforeVarsString);
-    currentCapBank->setAfterVarsString(twoWayPts->getLastControlText());
+    currentCapBank->setAfterVarsString(twoWayPts.getLastControlText());
     currentCapBank->setPercentChangeString(" --- ");
 
 

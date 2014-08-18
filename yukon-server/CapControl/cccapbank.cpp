@@ -86,7 +86,6 @@ _actionId(0),
 _insertDynamicDataFlag(true),
 _dirty(true)
 {
-    _twoWayPoints = NULL;
     _ovuvSituationFlag = false;
 }
 
@@ -95,7 +94,6 @@ _parentId(0)
 {
     restore(rdr);
      _monitorPoint.clear();
-     _twoWayPoints = NULL;
      _ovuvSituationFlag = false;
      _operationStats.setPAOId(getPaoId());
      _confirmationStats.setPAOId(getPaoId());
@@ -104,7 +102,6 @@ _parentId(0)
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 {
-    _twoWayPoints = NULL;
     operator=(cap);
 }
 
@@ -113,28 +110,16 @@ CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank::~CtiCCCapBank()
 {
-    try
-    {
-        if (_twoWayPoints != NULL)
-        {
-            delete _twoWayPoints;
-            _twoWayPoints = NULL;
-        }
-    }
-    catch (...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-
 }
-CtiCCTwoWayPointsPtr CtiCCCapBank::getTwoWayPoints()
+
+CtiCCTwoWayPoints & CtiCCCapBank::getTwoWayPoints()
 {
-    if ( _twoWayPoints == NULL )
-          _twoWayPoints = new CtiCCTwoWayPoints(_controldeviceid, _controlDeviceType);
+    if ( ! _twoWayPoints )
+    {
+        _twoWayPoints.reset( new CtiCCTwoWayPoints(_controldeviceid, _controlDeviceType) );
+    }
 
-    return _twoWayPoints;
-
+    return *_twoWayPoints;
 }
 
 CtiCCOperationStats& CtiCCCapBank::getOperationStats()
@@ -1885,15 +1870,13 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 
         _operationStats = rightObj._operationStats;
 
-        if ( _twoWayPoints != NULL )
+        if ( rightObj._twoWayPoints ) 
         {
-            delete _twoWayPoints;
-            _twoWayPoints = NULL;
+            _twoWayPoints.reset( new CtiCCTwoWayPoints(*rightObj._twoWayPoints) );
         }
-        if (rightObj._twoWayPoints != NULL) 
+        else
         {
-            _twoWayPoints = new CtiCCTwoWayPoints(*rightObj._twoWayPoints);
-
+            _twoWayPoints.reset();
         }
 
         _insertDynamicDataFlag = rightObj._insertDynamicDataFlag;
@@ -2246,11 +2229,9 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
     }
     try
     {
-        if (stringContainsIgnoreCase(getControlDeviceType(), "CBC 702") ||
-            stringContainsIgnoreCase(getControlDeviceType(), "CBC 802"))
+        if ( isControlDeviceTwoWay() )
         {
-            CtiCCTwoWayPointsPtr twoWayPts = getTwoWayPoints();
-            twoWayPts->dumpDynamicData(conn,currentDateTime);
+            getTwoWayPoints().dumpDynamicData(conn,currentDateTime);
         }
     }
     catch(...)
@@ -2324,21 +2305,14 @@ const string& CtiCCCapBank::convertOperationalState( int num )
 
 bool CtiCCCapBank::isControlDeviceTwoWay()
 {
-    if (stringContainsIgnoreCase( getControlDeviceType(),"CBC 702") ||
-        stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") ||
-        stringContainsIgnoreCase( getControlDeviceType(),"CBC 802") )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return ( stringContainsIgnoreCase( getControlDeviceType(),"CBC 702") ||
+             stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") ||
+             stringContainsIgnoreCase( getControlDeviceType(),"CBC 802") );
 }
 
 int CtiCCCapBank::getPointIdByAttribute(const PointAttribute & attribute)
 {
-    return getTwoWayPoints()->getPointIdByAttribute(attribute);
+    return getTwoWayPoints().getPointIdByAttribute(attribute);
 }
 
 

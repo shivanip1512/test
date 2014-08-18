@@ -6837,14 +6837,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             rdr["pointoffset"] >> tempPointOffset;
                             rdr["pointtype"] >> tempPointType;
 
-                            CtiCCTwoWayPointsPtr twoWayPts = currentCCCapBank->getTwoWayPoints();
-
                             CtiPointType_t pointType = resolvePointType(tempPointType);
                             if (pointType == StatusPointType ||
                                 pointType == AnalogPointType ||
                                 pointType == PulseAccumulatorPointType)
                             {
-                                if (twoWayPts->setTwoWayPointId(pointType, tempPointOffset, tempPointId) )
+                                if (currentCCCapBank->getTwoWayPoints().setTwoWayPointId(pointType, tempPointOffset, tempPointId) )
                                 {
                                     currentCCCapBank->addPointId(tempPointId);
                                     pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
@@ -6912,11 +6910,10 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                     currentCapBankId = cbc_capbank_map->find(currentCbcId)->second;
                 if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCapBankId, paobject_capbank_map))
                 {
-                    if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702") ||
-                        stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 802"))
+                    if ( currentCCCapBank->isControlDeviceTwoWay() )
                     {
-                        currentCCCapBank->getTwoWayPoints()->setPAOId(currentCbcId);
-                        currentCCCapBank->getTwoWayPoints()->setDynamicData(rdr, currentCCCapBank->getReportedCBCState(), currentCCCapBank->getReportedCBCStateTime());
+                        currentCCCapBank->getTwoWayPoints().setPAOId(currentCbcId);
+                        currentCCCapBank->getTwoWayPoints().setDynamicData(rdr, currentCCCapBank->getReportedCBCState(), currentCCCapBank->getReportedCBCStateTime());
                     }
                 }
             }
@@ -8575,8 +8572,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(PaoIdSet &modifiedBusI
                    cap->addAllCapBankPointsToMsg(pointList);
                    if ( cap->isControlDeviceTwoWay() )
                    {
-                       CtiCCTwoWayPointsPtr twoWayPts = cap->getTwoWayPoints();
-                       twoWayPts->addAllCBCPointsToRegMsg(pointList);
+                       cap->getTwoWayPoints().addAllCBCPointsToRegMsg(pointList);
                    }
                }
            }

@@ -47,11 +47,11 @@ class CtiCapController : public MessageListener
         CtiPCPtrQueue< CtiMessage > &getOutClientMsgQueueHandle();
 
         void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints & twoWayPts);
         void handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints & twoWayPts);
         void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints & twoWayPts);
 
         void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                                 CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,

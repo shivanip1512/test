@@ -1638,20 +1638,15 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
 
-    if  (capBank->getTwoWayPoints() != NULL)
+    if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
     {
-        if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
-        {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
-                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
-                                                                               capBank->getControlStatus(),
-                                                                               CtiTime(), -1, 100 );
-            hist->setMessagePriority( hist->getMessagePriority() + 2 );
-            pointChanges.push_back( hist );
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
-
-
-        }
+        CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
+                                                                           capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
+                                                                           capBank->getControlStatus(),
+                                                                           CtiTime(), -1, 100 );
+        hist->setMessagePriority( hist->getMessagePriority() + 2 );
+        pointChanges.push_back( hist );
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
     std::auto_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*capBank);
@@ -1952,20 +1947,15 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
 
-    if  (capBank->getTwoWayPoints() != NULL)
+    if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
     {
-        if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
-        {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
-                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
-                                                                               capBank->getControlStatus(),
-                                                                               CtiTime(), -1, 100 );
-            hist->setMessagePriority( hist->getMessagePriority() + 2 );
-            pointChanges.push_back( hist );
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
-
-
-        }
+        CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
+                                                                           capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
+                                                                           capBank->getControlStatus(),
+                                                                           CtiTime(), -1, 100 );
+        hist->setMessagePriority( hist->getMessagePriority() + 2 );
+        pointChanges.push_back( hist );
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
     std::auto_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*capBank);
@@ -2073,18 +2063,15 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
 
-    if  (capBank->getTwoWayPoints() != NULL)
+    if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
     {
-        if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
-        {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
-                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
-                                                                               capBank->getControlStatus(),
-                                                                               CtiTime(), -1, 100 );
-            hist->setMessagePriority( hist->getMessagePriority() + 2 );
-            pointChanges.push_back( hist );
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
-        }
+        CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(),
+                                                                           capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState),
+                                                                           capBank->getControlStatus(),
+                                                                           CtiTime(), -1, 100 );
+        hist->setMessagePriority( hist->getMessagePriority() + 2 );
+        pointChanges.push_back( hist );
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
     std::auto_ptr<CtiRequestMsg> reqMsg;

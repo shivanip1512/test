@@ -1,25 +1,18 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
-#include "msg_cmd.h"
-#include "msg_pdata.h"
 #include "ccmonitorpoint.h"
 #include "cctwowaycbcpoints.h"
 #include "ccoperationstats.h"
 #include "ccConfirmationStats.h"
 #include "ccoriginalparent.h"
-#include "dbaccess.h"
-#include "observe.h"
 #include "cctypes.h"
 #include "ctitime.h"
 #include "ctidate.h"
 #include "CapControlPao.h"
-
 #include "PointResponse.h"
 #include "PointResponseManager.h"
+
+#include <boost/scoped_ptr.hpp>
 
 namespace Cti {
 namespace Database {
@@ -252,7 +245,7 @@ public:
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const CtiCCCapBank* right) const;
 
-    CtiCCTwoWayPointsPtr getTwoWayPoints();
+    CtiCCTwoWayPoints & getTwoWayPoints();
 
     bool isDirty() const;
     void setDirty(const bool flag);
@@ -364,7 +357,8 @@ private:
     bool _porterRetFailFlag;
     bool _unsolicitedPendingFlag;
 
-    CtiCCTwoWayPointsPtr _twoWayPoints;
+    boost::scoped_ptr<CtiCCTwoWayPoints>    _twoWayPoints;
+
     std::string _ipAddress;
     long _udpPortNumber;
     long _reportedCBCLastControlReason;
