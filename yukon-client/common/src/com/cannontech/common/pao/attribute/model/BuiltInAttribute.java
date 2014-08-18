@@ -492,7 +492,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 OUTDOOR_TEMPERATURE,
                 COOL_SET_TEMPERATURE,
                 HEAT_SET_TEMPERATURE,
-                HUMIDITY);
+                HUMIDITY,
+                FIRMWARE_VERSION,
+                IP_ADDRESS,
+                NEUTRAL_CURRENT_SENSOR,
+                SERIAL_NUMBER,
+                UDP_PORT,
+                LAST_CONTROL_REASON,
+                IGNORED_CONTROL_REASON);
 
         demandAttributes = ImmutableSet.of(
                 DEMAND,
