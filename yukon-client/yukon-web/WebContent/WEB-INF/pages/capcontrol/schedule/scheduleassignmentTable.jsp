@@ -62,17 +62,20 @@
                                 </c:otherwise>
                             </c:choose>
                             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                <form id="removeAssignmentForm" action="<cti:url value="/capcontrol/schedule/removePao"/>" method="post">
-                                    <cti:csrfToken/>
-                                    <input type="hidden" name="eventId" value="${item.eventId}">
-                                    <input type="hidden" name="paoId" value="${item.paoId}">
-                                    <cm:dropdownOption id="removeAssignment" key="yukon.web.modules.capcontrol.substation.remove.label" icon="icon-cross"></cm:dropdownOption>
-                                </form>
-                                <cti:list var="argument">
-                                    <cti:item value="${item.scheduleName}" />
-                                    <cti:item value="${item.deviceName}" />
-                                </cti:list>
-                                <d:confirm on=".deleteAssignment" nameKey="confirmDelete" argument="${argument}" />
+                                <li>
+                                    <cti:csrfToken var="csrfToken"/>
+                                    <a class="deleteAssignment" data-ok-event="yukon_da_schedules_remove" 
+                                       data-csrf-token="${csrfToken}" data-pao-id="${item.paoId}" data-event-id="${item.eventId}">
+                                        <cti:icon icon="icon-cross"/>
+                                        <i:inline key=".substation.remove.label"/>
+                                    </a>
+                                    <cti:list var="confirmArgument">
+                                        <cti:item value="${item.scheduleName}" />
+                                        <cti:item value="${item.deviceName}" />
+                                    </cti:list>
+                                    <d:confirm on='[data-event-id="${item.eventId}"][data-pao-id="${item.paoId}"]' 
+                                               nameKey="confirmDelete" argument="${confirmArgument}" />
+                                </li>
                             </cti:checkRolesAndProperties>
                             <!-- Disable OvUv -->
                             <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">

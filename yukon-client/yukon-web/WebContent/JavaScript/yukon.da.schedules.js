@@ -58,9 +58,20 @@ yukon.da.schedules = (function () {
                 });
                 
             });
-            /** Click detection to submit remove assignment form. */
-            $(document).on('click', '#removeAssignment', function (ev) {
-                $('#removeAssignmentForm').submit();
+
+            $(document).on('yukon_da_schedules_remove', '.deleteAssignment', function () {
+                var btn = $(this),
+                    removeUrl = yukon.url('/capcontrol/schedule/removePao'),
+                    data = {'eventId': btn.data('eventId'),
+                            'paoId': btn.data('paoId'),
+                            'com.cannontech.yukon.request.csrf.token': btn.data('csrfToken')
+                    };
+                $.post(removeUrl, data).success(function () {
+                    var dropdownMenu = btn.closest('.dropdown-menu'),
+                        dropdownTrigger = dropdownMenu.data('trigger'),
+                        row = dropdownTrigger.closest('tr');
+                    row.fadeOut();
+                });
             });
             
             /** Click detection to submit add assignment form. */
