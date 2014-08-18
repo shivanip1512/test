@@ -2786,6 +2786,40 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( req->getMessagePriority(), 6 );
         }
     }
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume_missing_dynamicpaoinfo)
+    {
+        test_Mct410IconDevice mct410;
+
+        Cti::Test::Override_CtiTime_Now overrideNow(CtiTime(CtiDate(21, 3, 2014), 12, 34, 56));
+
+        CtiCommandParser parse("getvalue lp resume");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+
+        {
+            const CtiMessage *msg = *retList_itr++;
+
+            const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(msg);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(),
+                                    123456 );
+            BOOST_CHECK_EQUAL( ret->Status(),
+                                    MISPARAM );
+            BOOST_CHECK_EQUAL( ret->ResultString(),
+                                    "Test MCT-410iL / Missing one of the following:"
+                                    "\nKey_MCT_LLPInterest_Channel"
+                                    "\nKey_MCT_LLPInterest_RequestBegin"
+                                    "\nKey_MCT_LLPInterest_RequestEnd" );
+        }
+    }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

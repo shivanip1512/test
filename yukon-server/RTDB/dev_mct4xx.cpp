@@ -486,9 +486,9 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
         {
             bool hasRequiredInfo = true;
 
-            hasRequiredInfo |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
-            hasRequiredInfo |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
-            hasRequiredInfo |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
+            hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel);
+            hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
+            hasRequiredInfo &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
 
             if( ! hasRequiredInfo )
             {
@@ -497,6 +497,9 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                    "\nKey_MCT_LLPInterest_Channel"
                                    "\nKey_MCT_LLPInterest_RequestBegin"
                                    "\nKey_MCT_LLPInterest_RequestEnd");
+
+                delete OutMessage;
+                OutMessage = 0;
 
                 return ExecutionComplete;
             }
