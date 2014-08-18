@@ -12,7 +12,9 @@ public class GatewaySaveData implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private String ipAddress;
-    private Authentication authentication;
+    private Authentication superAdmin;
+    private Authentication admin;
+    private Authentication user;
     
     public String getIpAddress() {
         return ipAddress;
@@ -22,22 +24,40 @@ public class GatewaySaveData implements Serializable {
         this.ipAddress = ipAddress;
     }
     
-    public Authentication getAuthentication() {
-        return authentication;
+    public Authentication getSuperAdmin() {
+        return superAdmin;
     }
     
-    public void setAuthentication(Authentication authentication) {
-        this.authentication = authentication;
+    public void setSuperAdmin(Authentication superAdmin) {
+        this.superAdmin = superAdmin;
+    }
+    
+    public Authentication getAdmin() {
+        return admin;
+    }
+    
+    public void setAdmin(Authentication admin) {
+        this.admin = admin;
+    }
+    
+    public Authentication getUser() {
+        return user;
+    }
+    
+    public void setUser(Authentication user) {
+        this.user = user;
     }
     
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((authentication == null) ? 0 : authentication.hashCode());
+        result = prime * result + ((admin == null) ? 0 : admin.hashCode());
         result = prime * result
                 + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result
+                + ((superAdmin == null) ? 0 : superAdmin.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
         return result;
     }
     
@@ -50,22 +70,33 @@ public class GatewaySaveData implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         GatewaySaveData other = (GatewaySaveData) obj;
-        if (authentication == null) {
-            if (other.authentication != null)
+        if (admin == null) {
+            if (other.admin != null)
                 return false;
-        } else if (!authentication.equals(other.authentication))
+        } else if (!admin.equals(other.admin))
             return false;
         if (ipAddress == null) {
             if (other.ipAddress != null)
                 return false;
         } else if (!ipAddress.equals(other.ipAddress))
             return false;
+        if (superAdmin == null) {
+            if (other.superAdmin != null)
+                return false;
+        } else if (!superAdmin.equals(other.superAdmin))
+            return false;
+        if (user == null) {
+            if (other.user != null)
+                return false;
+        } else if (!user.equals(other.user))
+            return false;
         return true;
     }
     
     @Override
     public String toString() {
-        return String.format("GatewaySaveData [ipAddress=%s, authentication=%s]", ipAddress, authentication);
+        return String.format("GatewaySaveData [ipAddress=%s, superAdmin=%s, admin=%s, user=%s]",
+                        ipAddress, superAdmin, admin, user);
     }
     
 }
