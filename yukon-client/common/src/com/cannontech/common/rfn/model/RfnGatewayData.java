@@ -14,7 +14,7 @@ import com.cannontech.common.rfn.message.gateway.Radio;
 
 public final class RfnGatewayData {
     //Based on paoName
-    private String name;
+    private final String name;
     
     //Based on GatewayDataResponse
     private final String hardwareVersion;
@@ -31,7 +31,9 @@ public final class RfnGatewayData {
     private final LastCommStatus lastCommStatus;
     private final long lastCommStatusTimestamp;
     private final Set<Radio> radios;
-    private final Authentication authentication;
+    private final Authentication user;
+    private final Authentication admin;
+    private final Authentication superAdmin;
     private final String collectionSchedule; // Cron string
     private final Set<DataSequence> sequences;
     private final short routeColor;
@@ -53,7 +55,9 @@ public final class RfnGatewayData {
         this.lastCommStatus = dataResponse.getLastCommStatus();
         this.lastCommStatusTimestamp = dataResponse.getLastCommStatusTimestamp();
         this.radios = dataResponse.getRadios(); //copy?
-        this.authentication = dataResponse.getAuthentication();
+        this.user = dataResponse.getUser();
+        this.admin = dataResponse.getAdmin();
+        this.superAdmin = dataResponse.getSuperAdmin();
         this.collectionSchedule = dataResponse.getCollectionSchedule();
         this.sequences = dataResponse.getSequences(); //copy?
         this.routeColor = dataResponse.getRouteColor();
@@ -64,8 +68,9 @@ public final class RfnGatewayData {
                            String radioVersion, String releaseVersion, Set<ConflictType> versionConflicts, 
                            AppMode mode, ConnectionType connectionType, String ipAddress, String port, 
                            ConnectionStatus connectionStatus, LastCommStatus lastCommStatus, 
-                           long lastCommStatusTimestamp, Set<Radio> radios, Authentication authentication, 
-                           String collectionSchedule,Set<DataSequence> sequences, short routeColor) {
+                           long lastCommStatusTimestamp, Set<Radio> radios, Authentication user, Authentication admin,
+                           Authentication superAdmin, String collectionSchedule, Set<DataSequence> sequences, 
+                           short routeColor) {
         this.name = name;
         this.hardwareVersion = hardwareVersion;
         this.softwareVersion = softwareVersion;
@@ -81,7 +86,9 @@ public final class RfnGatewayData {
         this.lastCommStatus = lastCommStatus;
         this.lastCommStatusTimestamp = lastCommStatusTimestamp;
         this.radios = radios;
-        this.authentication = authentication;
+        this.user = user;
+        this.admin = admin;
+        this.superAdmin = superAdmin;
         this.collectionSchedule = collectionSchedule;
         this.sequences = sequences;
         this.routeColor = routeColor;
@@ -147,8 +154,16 @@ public final class RfnGatewayData {
         return radios;
     }
 
-    public Authentication getAuthentication() {
-        return authentication;
+    public Authentication getUser() {
+        return user;
+    }
+
+    public Authentication getAdmin() {
+        return admin;
+    }
+
+    public Authentication getSuperAdmin() {
+        return superAdmin;
     }
 
     public String getCollectionSchedule() {
@@ -179,7 +194,9 @@ public final class RfnGatewayData {
         private LastCommStatus lastCommStatus;
         private long lastCommStatusTimestamp;
         private Set<Radio> radios;
-        private Authentication authentication;
+        private Authentication user;
+        private Authentication admin;
+        private Authentication superAdmin;
         private String collectionSchedule;
         private Set<DataSequence> sequences;
         private short routeColor;
@@ -187,8 +204,8 @@ public final class RfnGatewayData {
         public RfnGatewayData build() {
             return new RfnGatewayData(name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, 
                                       releaseVersion, versionConflicts, mode, connectionType, ipAddress, port, 
-                                      connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, 
-                                      authentication, collectionSchedule, sequences, routeColor);
+                                      connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, user, admin,
+                                      superAdmin, collectionSchedule, sequences, routeColor);
             
         }
         
@@ -208,7 +225,9 @@ public final class RfnGatewayData {
             this.lastCommStatus = oldData.getLastCommStatus();
             this.lastCommStatusTimestamp = oldData.getLastCommStatusTimestamp();
             this.radios = oldData.getRadios();
-            this.authentication = oldData.getAuthentication();
+            this.user = oldData.getUser();
+            this.admin = oldData.getAdmin();
+            this.superAdmin = oldData.getSuperAdmin();
             this.collectionSchedule = oldData.getCollectionSchedule();
             this.sequences = oldData.getSequences();
             this.routeColor = oldData.getRouteColor();
@@ -289,9 +308,19 @@ public final class RfnGatewayData {
             this.radios = radios;
             return this;
         }
+        
+        public Builder user(Authentication user) {
+            this.user = user;
+            return this;
+        }
+        
+        public Builder admin(Authentication admin) {
+            this.admin = admin;
+            return this;
+        }
 
-        public Builder authentication(Authentication authentication) {
-            this.authentication = authentication;
+        public Builder superAdmin(Authentication superAdmin) {
+            this.superAdmin = superAdmin;
             return this;
         }
 

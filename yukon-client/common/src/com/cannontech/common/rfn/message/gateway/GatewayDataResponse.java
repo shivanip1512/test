@@ -34,7 +34,9 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private Set<Radio> radios;
     private short routeColor;
     
-    private Authentication authentication;
+    private Authentication superAdmin;
+    private Authentication admin;
+    private Authentication user;
     
     private String collectionSchedule; // Cron string
     private Set<DataSequence> sequences;
@@ -160,14 +162,30 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.radios = radios;
     }
     
-    public Authentication getAuthentication() {
-        return authentication;
+    public Authentication getSuperAdmin() {
+        return superAdmin;
     }
-    
-    public void setAuthentication(Authentication authentication) {
-        this.authentication = authentication;
+
+    public void setSuperAdmin(Authentication superAdmin) {
+        this.superAdmin = superAdmin;
     }
-    
+
+    public Authentication getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Authentication admin) {
+        this.admin = admin;
+    }
+
+    public Authentication getUser() {
+        return user;
+    }
+
+    public void setUser(Authentication user) {
+        this.user = user;
+    }
+
     public String getCollectionSchedule() {
         return collectionSchedule;
     }
@@ -196,7 +214,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((authentication == null) ? 0 : authentication.hashCode());
+        result = prime * result + ((admin == null) ? 0 : admin.hashCode());
         result =
             prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
@@ -215,7 +233,9 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + routeColor;
         result = prime * result + ((sequences == null) ? 0 : sequences.hashCode());
         result = prime * result + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
+        result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
         return result;
     }
@@ -229,10 +249,10 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         if (getClass() != obj.getClass())
             return false;
         GatewayDataResponse other = (GatewayDataResponse) obj;
-        if (authentication == null) {
-            if (other.authentication != null)
+        if (admin == null) {
+            if (other.admin != null)
                 return false;
-        } else if (!authentication.equals(other.authentication))
+        } else if (!admin.equals(other.admin))
             return false;
         if (collectionSchedule == null) {
             if (other.collectionSchedule != null)
@@ -296,10 +316,20 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                 return false;
         } else if (!softwareVersion.equals(other.softwareVersion))
             return false;
+        if (superAdmin == null) {
+            if (other.superAdmin != null)
+                return false;
+        } else if (!superAdmin.equals(other.superAdmin))
+            return false;
         if (upperStackVersion == null) {
             if (other.upperStackVersion != null)
                 return false;
         } else if (!upperStackVersion.equals(other.upperStackVersion))
+            return false;
+        if (user == null) {
+            if (other.user != null)
+                return false;
+        } else if (!user.equals(other.user))
             return false;
         if (versionConflicts == null) {
             if (other.versionConflicts != null)
@@ -312,15 +342,27 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     @Override
     public String toString() {
         return String
-                .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, authentication=%s, collectionSchedule=%s, sequences=%s]",
-                        rfnIdentifier, hardwareVersion, softwareVersion,
-                        upperStackVersion, radioVersion, releaseVersion,
-                        versionConflicts, mode, connectionType, ipAddress,
-                        port, connectionStatus, lastCommStatus,
-                        lastCommStatusTimestamp, radios, routeColor,
-                        authentication, collectionSchedule, sequences);
+            .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, superAdmin=%s, admin=%s, user=%s, collectionSchedule=%s, sequences=%s]",
+                    rfnIdentifier,
+                    hardwareVersion,
+                    softwareVersion,
+                    upperStackVersion,
+                    radioVersion,
+                    releaseVersion,
+                    versionConflicts,
+                    mode,
+                    connectionType,
+                    ipAddress,
+                    port,
+                    connectionStatus,
+                    lastCommStatus,
+                    lastCommStatusTimestamp,
+                    radios,
+                    routeColor,
+                    superAdmin,
+                    admin,
+                    user,
+                    collectionSchedule,
+                    sequences);
     }
-    
-    
-    
 }

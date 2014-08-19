@@ -108,9 +108,15 @@ public class RfnGatewayDataCacheTest {
     private RfnGatewayData buildTestData(String gatewayName) {
         RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
         
-        Authentication authentication = new Authentication();
-        authentication.setPassword("password");
-        authentication.setUsername("admin");
+        Authentication userAuth = new Authentication();
+        userAuth.setPassword("userPass");
+        userAuth.setUsername("user");
+        Authentication adminAuth = new Authentication();
+        adminAuth.setPassword("adminPass");
+        adminAuth.setUsername("admin");
+        Authentication superAdminAuth = new Authentication();
+        superAdminAuth.setPassword("superAdminPass");
+        superAdminAuth.setUsername("superAdmin");
         
         Radio radio1 = new Radio();
         radio1.setType(RadioType.EKANET_915);
@@ -139,7 +145,9 @@ public class RfnGatewayDataCacheTest {
         Set<ConflictType> versionConflicts = new HashSet<>();
         versionConflicts.add(ConflictType.APPLICATION);
         
-        builder.authentication(authentication)
+        builder.user(userAuth)
+               .admin(adminAuth)
+               .superAdmin(superAdminAuth)
                .collectionSchedule("1 0 * * *")
                .connectionStatus(ConnectionStatus.CONNECTED)
                .connectionType(ConnectionType.TCP_IP)
