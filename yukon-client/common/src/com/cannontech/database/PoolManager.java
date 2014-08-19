@@ -57,6 +57,11 @@ public class PoolManager {
         String connectionUrl;
         DatabaseVendor type;
     }
+    
+    private enum UrlStyle {
+        COLON,
+        SLASH
+    };
 
     static private PoolManager instance;
 
@@ -117,9 +122,9 @@ public class PoolManager {
         } else if (dbType == DatabaseVendor.ORACLE_DATABASE) {
             try {
                 // Configure using SID, which is used by Oracle 9, 10, and 11. 
-                // Note: As of Oracle version 12c, use of SID has been deprecated in favor of using service name.
                 // format: jdbc:oracle:thin:@<host>:<port>:<SID>
-                StringBuilder url = buildOracleJdbcUrl(false);
+                // Note: As of Oracle version 12c, use of SID has been deprecated in favor of using service name.
+                StringBuilder url = buildOracleJdbcUrl(UrlStyle.COLON);
                 
                 log.debug("Found Oracle");
                 return new ConnectionDescription(url.toString(), dbType);
@@ -130,7 +135,7 @@ public class PoolManager {
             try {
                 // Configure using service name, not SID.  Required by Oracle 12c and later.
                 // format: jdbc:oracle:thin:@<host>:<port>/<serviceName>
-                StringBuilder url = buildOracleJdbcUrl(true);
+                StringBuilder url = buildOracleJdbcUrl(UrlStyle.SLASH);
                 
                 log.debug("Found Oracle 12C");
                 return new ConnectionDescription(url.toString(), dbType);
@@ -143,13 +148,13 @@ public class PoolManager {
         throw new BadConfigurationException("Unable to generate connection URL");
     }
 
-    private StringBuilder buildOracleJdbcUrl(boolean is12c) {
+    private StringBuilder buildOracleJdbcUrl(UrlStyle style) {
         StringBuilder url = new StringBuilder();
         url.append("jdbc:oracle:thin:@");
         String host = configSource.getRequiredString(DB_SQLSERVER_HOST);
         url.append(host);
         url.append(":1521");
-        if (is12c) {
+        if (style == UrlStyle.SLASH) {
             url.append("/");
         } else {
             url.append(":");
