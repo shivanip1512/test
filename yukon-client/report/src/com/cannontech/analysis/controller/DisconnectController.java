@@ -82,7 +82,7 @@ public class DisconnectController extends ReportControllerBase {
         sb.append("}" + LINE_SEPARATOR);
 
         //Run this method on load, it's NOT in a function!
-        sb.append("enableDates(false);" + LINE_SEPARATOR);
+        sb.append("$(function () {enableDates(false)});" + LINE_SEPARATOR);
         sb.append("</script>" + LINE_SEPARATOR);
 
         sb.append("<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);

@@ -200,21 +200,8 @@ function loadTarget (form) {
 }
 
 function enableDates (value) {
-    var dateFieldNames = ['startCal', 'stopCal'],
-        dateElem;
-
-    // do the following after the DOM is loaded
-    $ ( function() {
-        $.each( dateFieldNames, function (key, dateField) {
-            dateElem = $('#' + dateField);
-            if (dateElem.length > 0) {
-                dateElem.prop('disabled', !value);
-            }
-        });
-        if (false === value) {
-            $('.datetimeEntry_wrap').hide();
-        }
-    });
+    var dateFields = $('#startCal,#stopCal');
+    dateFields.prop('disabled', !value);
 }
 
 function checkDates () {
