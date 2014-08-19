@@ -494,7 +494,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         try (IndexWriter indexWriter = new IndexWriter(indexLocation, getIndexWriterConfig())) {
             processSingleInfoWithWriter(indexWriter, indexUpdateInfo);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to index immediately.");
+            throw new RuntimeException("Failed to index immediately.", e);
         }
     }
 
