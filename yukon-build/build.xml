@@ -3,8 +3,8 @@
     
     <property environment="env" />
     <tstamp/>
-	<tstamp>
-	    <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
+    <tstamp>
+        <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
     </tstamp>
     <property name="module.name" value="yukon" />
     <property name="log.dir" value="../logs" />
@@ -27,7 +27,6 @@
         <echo message=" jsdoctoolkit    - generates documentation from commented JavaScript source code" />
    </target>
 
-
     <target name="svn-info-build">
         <mkdir dir="${log.dir}"/>
         <exec failonerror="false"
@@ -40,54 +39,21 @@
         </exec>
     </target>
 
-    <target name="init" depends="check-setupcustomtasks,setupcustomtasks,loadpropertiesfile">
-	
-	    <condition property="internal.label" value="${version.internal}-${label}" else="${version.internal}">
-    	    <isset property="label"/>
-	    </condition>
+    <target name="init">
+        <property file="yukon-build/build_version.properties" />
+
+        <condition property="internal.label" value="${version.internal}-${label}" else="${version.internal}">
+            <isset property="label"/>
+        </condition>
     
-    	<property name="yukon.build.label" value="${version.internal}"/>
-    	<property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME}"/>
-		
-		<exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe">
+        <property name="yukon.build.label" value="${version.internal}"/>
+        <property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME}"/>
+        
+        <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe">
             <arg line="/c set" />
         </exec>
+    </target>
 
-	</target>
-    
-    <target name="setupcustomtasks" unless="setupExists">
-        <delete dir="yukon-build/build"/>
-        
-        <mkdir dir="yukon-build/build"/>
-        
-        <mkdir dir="yukon-build/build/classes"/>
-    	<javac srcdir="yukon-build/src"
-        	   destdir="yukon-build/build/classes"
-               fork="true"
-        	   debug="on">
-    	    <classpath>
-    	    	<fileset dir="yukon-build/lib">
-    	        	<include name="**/*.jar"/>
-    	        </fileset>
-    	    </classpath> 
-    	</javac>
-        
-        <mkdir dir="yukon-build/build/dist"/>
-        <jar destfile="yukon-build/build/dist/customtasks.jar"
-        	 basedir="yukon-build/build/classes"
-        	 includes="**/*.class"/>
-    </target>
-    
-    <target name="check-setupcustomtasks">
-        <condition property="setupExists">
-            <available file="yukon-build/build/dist/customtasks.jar"/>
-        </condition>
-    </target>
-    
-    <target name="loadpropertiesfile">
-        <property file="yukon-build/build_version.properties" />
-    </target>
-    
     <!-- build-release is now the only way to store symbols -->
     <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist" />
     <target name="build-release" depends="init,clean,svn-info-build,buildTarget,symstore,build-dist" />
@@ -97,7 +63,7 @@
     <target name="build-dbSnapshots" depends="init, updatedbscripts">
         <echo message="Creating database snapshot" />
 
-    	<ant dir="${basedir}/yukon-client/build" >
+        <ant dir="${basedir}/yukon-client/build" >
             <target name="createDatabaseSnapshots"/>
         </ant>
     </target>
@@ -105,22 +71,19 @@
     <target name="build-client" depends="init,clean,svn-info-build">
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
-		
-		<ant dir="${basedir}/yukon-client/build" >
-			<target name="clean"/>
-			<target name="build"/>
-			<property name="yukon.build.version" value="${yukon.build.label}"/>
-			<property name="yukon.build.details" value="${yukon.build.details}"/>
-		</ant>
-		
+        
+        <ant dir="${basedir}/yukon-client/build" >
+            <target name="clean"/>
+            <target name="build"/>
+            <property name="yukon.build.version" value="${yukon.build.label}"/>
+            <property name="yukon.build.details" value="${yukon.build.details}"/>
+        </ant>
+        
         <!-- yukon-help.jar -->
         <ant dir="${basedir}/yukon-client/build"
-        	 target="help"
-        	 inheritAll="true"/>
-        
+             target="help"
+             inheritAll="true"/>
         <antcall target="runUnitTests" />
-
-
     </target>
     
     <target name="build-server" depends="init,clean,svn-info-build">
@@ -151,25 +114,10 @@
         <!-- <antcall target="server-unit-tests"/>  this has been breaking the build, removed for now. -->
     </target>
 
-    <target name="server-unit-tests">
-        <mkdir dir="${basedir}/yukon-server/bin/unittests"/>
-        <taskdef name="customexec" 
-                 classname="com.cannontech.customtasks.ExecServerUnitTests">
-            <classpath>
-                <fileset dir="yukon-build/lib">
-                        <include name="**/*.jar"/>
-                </fileset>
-                <fileset file="yukon-build/build/dist/customtasks.jar"/>
-            </classpath>
-        </taskdef>
-
-        <customexec failonerror="true" dir="${basedir}/yukon-server/bin" todir="${basedir}/yukon-server/bin/unittests"/>
-    </target>
-
     <target name="build-install">
         <echo message="building module yukon-install" />
         <mkdir dir="${log.dir}" />
-		
+        
         <property name="client.bag" value="${basedir}/yukon-client/lib" />
         <property name="webcontent.bag" value="${basedir}/yukon-client/lib/WebContent" />
         <property name="install.bag" value="${basedir}/yukon-install/build" />
@@ -184,8 +132,8 @@
         <property name="client.bin" value="${client.dir}/bin"/>
         <property name="yukon.exampleXml" value="${basedir}/yukon-client/lib/exampleXml"/>
         <mkdir dir="${client.dir}"/>
-       	<mkdir dir="${client.dir}/Export"/>
-       	<mkdir dir="${client.dir}/Log"/>
+           <mkdir dir="${client.dir}/Export"/>
+           <mkdir dir="${client.dir}/Log"/>
         
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
@@ -194,11 +142,11 @@
 
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/third-party">
-        	   <include name="**/*.jar"/>
+               <include name="**/*.jar"/>
             </fileset>
         </copy>
-    	
-    	<copy todir="${client.bin}" preservelastmodified="true">
+        
+        <copy todir="${client.bin}" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
             <fileset file="${basedir}/yukon-client/billing/src/main/resources" includes="*.bat"/>
@@ -227,43 +175,43 @@
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/common/pao/definition/dao/paoDefinition.xml" 
             tofile="${yukon.exampleXml}/deviceDefinition_Example.xml"/>
 
-    	<signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
-			<fileset dir="${client.bin}">
-				<include name="*.jar"/>
-				<exclude name="activation.jar"/>
-				<exclude name="bcpkix-jdk15on-149.jar"/>
-				<exclude name="bcprov-jdk15on-149.jar"/>
-			</fileset>
-		</signjar>
+        <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
+            <fileset dir="${client.bin}">
+                <include name="*.jar"/>
+                <exclude name="activation.jar"/>
+                <exclude name="bcpkix-jdk15on-149.jar"/>
+                <exclude name="bcprov-jdk15on-149.jar"/>
+            </fileset>
+        </signjar>
 
-    	<!-- The bouncy castle jars are signed with SHA1 and Java doesn't like jars signed with two different
-    		 digest algorithms so we have to also sign the bouncy castle jars with SHA1.  We need to sign them
-    		 ourselves because their cert isn't official enough but we can't remove their signature because
-    		 we get errors. -->
+        <!-- The bouncy castle jars are signed with SHA1 and Java doesn't like jars signed with two different
+             digest algorithms so we have to also sign the bouncy castle jars with SHA1.  We need to sign them
+             ourselves because their cert isn't official enough but we can't remove their signature because
+             we get errors. -->
         <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore"
-        		digestalg="SHA1">
-			<fileset dir="${client.bin}">
-				<include name="bcpkix-jdk15on-149.jar"/>
-				<include name="bcprov-jdk15on-149.jar"/>
-			</fileset>
-		</signjar>
+                digestalg="SHA1">
+            <fileset dir="${client.bin}">
+                <include name="bcpkix-jdk15on-149.jar"/>
+                <include name="bcprov-jdk15on-149.jar"/>
+            </fileset>
+        </signjar>
 
         <!-- Yukon Base Component (Server) -->      
         <property name="server.dir" value="${install.bag}/Yukon Base/Server"/>
         <property name="server.bin" value="${server.dir}/bin"/>
         <mkdir dir="${server.dir}"/>
-		
+        
         <copy todir="${server.bin}" preservelastmodified="true">
-			<fileset dir="${server.bag}" excludes="unittests/**"/>
+            <fileset dir="${server.bag}" excludes="unittests/**"/>
             <fileset dir="${basedir}/yukon-install/resources/common_dlls" />
-		</copy>
+        </copy>
         
         <copy todir="${server.dir}/MACSscripts" file="${server.bag}/init.tcl" preservelastmodified="true"/>
         <mkdir dir="${server.dir}/MACSftp"/>
         <mkdir dir="${server.dir}/Export"/>
         <mkdir dir="${server.dir}/Import"/>
         <mkdir dir="${server.dir}/Log"/>
-		
+        
         <!-- Initial Server Config Component -->
         <copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
@@ -274,11 +222,11 @@
         </copy>
         
         <!-- Common Directories Component -->
-		<copy todir="${install.bag}/Common Directories/Config/Example" preservelastmodified="true">
-			<fileset file="${basedir}/yukon-install/resources/master.cfg"/>
-			<fileset dir="${client.bag}/exampleXml"/>
-		</copy>
-		
+        <copy todir="${install.bag}/Common Directories/Config/Example" preservelastmodified="true">
+            <fileset file="${basedir}/yukon-install/resources/master.cfg"/>
+            <fileset dir="${client.bag}/exampleXml"/>
+        </copy>
+        
         <!-- JRE Component -->
         <copy todir="${install.bag}/JRE" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE" />
@@ -289,7 +237,7 @@
             <fileset dir="${basedir}/yukon-install/Tomcat7" />
         </copy>
         <copy file="${basedir}/yukon-build/yukonservice.bat"
-        	todir="${install.bag}/Tomcat/bin" preservelastmodified="true"/>
+            todir="${install.bag}/Tomcat/bin" preservelastmodified="true"/>
 
         <!-- WebStart Component -->
         <copy todir="${install.bag}/WebStartJRE" preservelastmodified="true">
@@ -314,8 +262,8 @@
         <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012Spring SAB\System\IsCmdBld.exe" />
         <!-- Location of the installer data file -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
-		
-		<!-- Build the installer -->
+        
+        <!-- Build the installer -->
         <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
             <arg line="-p '${isfile}'" />
             <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
@@ -394,9 +342,9 @@
         <copy todir="${temp.dir}/YukonMisc/YukonImages">
             <fileset dir="${basedir}/yukon-client/esub/images" />
         </copy>
-		<copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseValidation">
-			<fileset dir="${basedir}/yukon-client/common/src/com/cannontech/database/snapshot" />
-		</copy>
+        <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseValidation">
+            <fileset dir="${basedir}/yukon-client/common/src/com/cannontech/database/snapshot" />
+        </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseCreation">
             <fileset dir="${basedir}/yukon-database/CreationScripts" />
         </copy>
@@ -457,17 +405,16 @@
     </target>
     
     <target name="jsdoctoolkit">
-    	<taskdef name= "jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="yukon-build/jsdoc-toolkit/jsdoc-toolkit-ant-task-1.1.2.jar;yukon-build/jsdoc-toolkit/java/classes/js.jar"/>
-    	<jsdoctoolkit jsdochome="${basedir}/yukon-build/jsdoc-toolkit/" template="/jsdoc" outputdir="${basedir}/yukon-build/jsdoc" includeundocumented="true" >
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript" />
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/stars" />
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/ui" />
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/util" />
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js" />
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQueryUI/plugins/dialog-helper.js" />
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
-    	</jsdoctoolkit>
+        <taskdef name= "jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="yukon-build/jsdoc-toolkit/jsdoc-toolkit-ant-task-1.1.2.jar;yukon-build/jsdoc-toolkit/java/classes/js.jar"/>
+        <jsdoctoolkit jsdochome="${basedir}/yukon-build/jsdoc-toolkit/" template="/jsdoc" outputdir="${basedir}/yukon-build/jsdoc" includeundocumented="true" >
+            <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript" />
+            <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/stars" />
+            <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/ui" />
+            <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/util" />
+            <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js" />
+            <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQueryUI/plugins/dialog-helper.js" />
+            <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
+        </jsdoctoolkit>
     </target>
 
-    
 </project>
