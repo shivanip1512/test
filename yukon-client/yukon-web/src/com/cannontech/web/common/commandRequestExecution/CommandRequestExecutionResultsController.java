@@ -2,6 +2,7 @@ package com.cannontech.web.common.commandRequestExecution;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.Months;
@@ -25,9 +26,12 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -58,71 +62,128 @@ public class CommandRequestExecutionResultsController {
 	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
 	public static class ListBackingBean {
-	    private int requestId = 0;
+	   
+        private int creId = 0;
         private int jobId = 0;
         private String typeFilter;
-        private Instant fromDate;
         private Instant toDate = Instant.now();
-	    public int getCommandRequestExecutionId() {return requestId;}
-        public void setCommandRequestExecutionId(int requestId) {this.requestId = requestId;}
-        public int getJobId() {return jobId;}
-        public void setJobId(int jobId) {this.jobId = jobId;}
-        public String getTypeFilter() {return typeFilter;}
-        public void setTypeFilter(String typeFilter) {this.typeFilter = typeFilter;}
-        public Instant getFromDate() {return fromDate;}
-        public void setFromDate(Instant fromDate) {this.fromDate = fromDate;}
-        public Instant getToDate() {return toDate;}
-        public void setToDate(Instant toDate) {this.toDate = toDate;}
+        private Instant fromDate = new DateTime(toDate).minus(Months.ONE).toInstant();
+        
+        public int getCreId() {
+            return creId;
+        }
+
+        public void setCreId(int requestId) {
+            this.creId = requestId;
+        }
+
+        public int getJobId() {
+            return jobId;
+        }
+
+        public void setJobId(int jobId) {
+            this.jobId = jobId;
+        }
+
+        public String getTypeFilter() {
+            return typeFilter;
+        }
+
+        public void setTypeFilter(String typeFilter) {
+            this.typeFilter = typeFilter;
+        }
+
+        public Instant getFromDate() {
+            return fromDate;
+        }
+
+        public void setFromDate(Instant fromDate) {
+            this.fromDate = fromDate;
+        }
+
+        public Instant getToDate() {
+            return toDate;
+        }
+
+        public void setToDate(Instant toDate) {
+            this.toDate = toDate;
+        }   
 	}
 
-	@RequestMapping("list")
-	public String list(ModelMap model, ListBackingBean listBackingBean, YukonUserContext userContext) {
+    @RequestMapping("list")
+    public String list(ModelMap model, ListBackingBean backingBean, YukonUserContext context,
+                       @DefaultItemsPerPage(25) PagingParameters paging) {
 
-        Instant fromDate = listBackingBean.getFromDate();
-        Instant toDate = listBackingBean.getToDate();
-	    String typeFilter = listBackingBean.getTypeFilter();
-	    int commandRequestExecutionId = listBackingBean.getCommandRequestExecutionId();
-	    int jobId = listBackingBean.getJobId();
+        SearchResults<CommandRequestExecutionWrapper> result = getSearchResults(paging, backingBean);
+        initListModel(model, context, result, backingBean);
 
-		if (fromDate == null) {
-			fromDate = new DateTime(toDate).minus(Months.ONE).toInstant();
-		}
+        return "commandRequestExecution/list.jsp";
+    }
 
-		DeviceRequestType deviceRequestType = null;
+    @RequestMapping("page")
+    public String page(ModelMap model, int jobId, long fromDateMillies, long toDateMillies,
+                       String typeFilter, YukonUserContext context, PagingParameters paging) {
 
-		if (typeFilter != null && !typeFilter.equals("ANY")) {
-			deviceRequestType = DeviceRequestType.valueOf(typeFilter);
-		}
+        Instant to = new Instant(toDateMillies);
+        Instant from = new Instant(fromDateMillies);
+        ListBackingBean backingBean = new ListBackingBean();
+        backingBean.setJobId(jobId);
+        backingBean.setTypeFilter(typeFilter);
+        backingBean.setFromDate(from);
+        backingBean.setToDate(to);
+        SearchResults<CommandRequestExecutionWrapper> result = getSearchResults(paging, backingBean);
+        initListModel(model, context, result, backingBean);
 
-		model.addAttribute("commandRequestExecutionId", commandRequestExecutionId);
-		model.addAttribute("jobId", jobId);
-		model.addAttribute("fromDate", fromDate);
-		model.addAttribute("toDate", toDate);
-		model.addAttribute("typeFilter", deviceRequestType);
-		model.addAttribute("commandRequestExecutionTypes", DeviceRequestType.values());
+        return "commandRequestExecution/table.jsp";
+    }
 
-		if (jobId > 0) {
-			ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(jobId, null, null, userContext);
-			model.addAttribute("singleJobType", jobWrapper.getCommandRequestTypeShortName());
-		}
+    private SearchResults<CommandRequestExecutionWrapper> getSearchResults(PagingParameters paging, ListBackingBean backingBean) {
 
-		List<CommandRequestExecution> cres;
-		if (jobId > 0) {
-			cres = scheduledGroupRequestExecutionDao.getCommandRequestExecutionsByJobId(jobId, fromDate.toDate(), toDate.toDate(), false);
-		} else {
-			cres = commandRequestExecutionDao.findByRange(commandRequestExecutionId, fromDate.toDate(), toDate.toDate(), deviceRequestType, false);
-		}
+        DeviceRequestType deviceRequestType = null;
+        if (!StringUtils.isEmpty(backingBean.getTypeFilter()) && !backingBean.getTypeFilter().equals("ANY")) {
+            deviceRequestType = DeviceRequestType.valueOf(backingBean.getTypeFilter());
+        }
 
-		List<CommandRequestExecutionWrapper> creWrappers = Lists.newArrayListWithCapacity(cres.size());
-		for (CommandRequestExecution cre : cres) {
-			CommandRequestExecutionWrapper commandRequestExecutionWrapper = commandRequestExecutionWrapperFactory.createCommandRequestExecutionWrapper(cre);
-			creWrappers.add(commandRequestExecutionWrapper);
-		}
+        List<CommandRequestExecution> cres =
+            commandRequestExecutionDao.findByRange(paging,
+                                                   backingBean.getJobId(),
+                                                   backingBean.getFromDate(),
+                                                   backingBean.getToDate(),
+                                                   deviceRequestType);
+        int totalCount =
+            commandRequestExecutionDao.getByRangeCount(backingBean.getJobId(),
+                                                       backingBean.getFromDate(),
+                                                       backingBean.getToDate(),
+                                                       deviceRequestType);
+        List<CommandRequestExecutionWrapper> creWrappers = Lists.newArrayListWithCapacity(cres.size());
+        for (CommandRequestExecution cre : cres) {
+            CommandRequestExecutionWrapper commandRequestExecutionWrapper =
+                commandRequestExecutionWrapperFactory.createCommandRequestExecutionWrapper(cre);
+            creWrappers.add(commandRequestExecutionWrapper);
+        }
 
-		model.addAttribute("creWrappers", creWrappers);
+        SearchResults<CommandRequestExecutionWrapper> result =
+            SearchResults.pageBasedForSublist(creWrappers, paging, totalCount);
 
-		return "commandRequestExecution/list.jsp";
+        return result;
 	}
+    
+    private void initListModel(ModelMap model, YukonUserContext userContext,
+                               SearchResults<CommandRequestExecutionWrapper> result, ListBackingBean backingBean) {
+        
+        if (backingBean.getJobId() > 0) {
+            ScheduledGroupRequestExecutionJobWrapper jobWrapper =
+                scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(backingBean.getJobId(),
+                                                                                 null,
+                                                                                 null,
+                                                                                 userContext);
+            model.addAttribute("singleJobType", jobWrapper.getCommandRequestTypeShortName());
+        }
+        model.addAttribute("result", result);
+        model.addAttribute("backingBean", backingBean);
+        model.addAttribute("executionTypes", DeviceRequestType.values());
+        
+    }
 
 	@RequestMapping("detail")
 	public String detail(ModelMap model,

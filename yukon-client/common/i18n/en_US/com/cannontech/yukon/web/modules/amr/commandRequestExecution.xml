@@ -11,8 +11,6 @@
     <entry key="yukon.web.modules.amr.cre.list.filter.dateTo">To</entry>
     <entry key="yukon.web.modules.amr.cre.list.filter.type">Type</entry>
     <entry key="yukon.web.modules.amr.cre.list.filter.typeAny">Any</entry>
-    <entry key="yukon.web.modules.amr.cre.list.filter.button">Filter</entry>
-    <entry key="yukon.web.modules.amr.cre.list.filter.clear">Clear</entry>
     <entry key="yukon.web.modules.amr.cre.list.executions.section">Executions</entry>
     <entry key="yukon.web.modules.amr.cre.list.executions.tableHeader.type">Type</entry>
     <entry key="yukon.web.modules.amr.cre.list.executions.tableHeader.status">Status</entry>

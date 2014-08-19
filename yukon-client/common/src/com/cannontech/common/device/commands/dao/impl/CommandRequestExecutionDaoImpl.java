@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.RowAndFieldMapper;
@@ -73,39 +75,55 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         return cres;
     }
     
-    // BY RANGE
     @Override
-    public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date beginTime, Date endTime, DeviceRequestType type, boolean ascending) {
-    	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT CRE.* FROM CommandRequestExec CRE");
+    public List<CommandRequestExecution> findByRange(PagingParameters paging, int jobId, Instant from, Instant to,
+                                                     DeviceRequestType type) {
         
-        if (commandRequestExecutionId > 0) {
-    		sql.append("WHERE CommandRequestExecId = ").appendArgument(commandRequestExecutionId);
-        } else {
-        	sql.append("WHERE 1 = 1");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select CommandRequestExecId, StartTime, StopTime, RequestCount, CommandRequestExecType, Username, CommandRequestExecContextId, ExecutionStatus, CommandRequestType");
+        sql.append("from (select cre.CommandRequestExecId, cre.StartTime, cre.StopTime,  cre.RequestCount, cre.CommandRequestExecType, ");
+        sql.append("             cre.Username, cre.CommandRequestExecContextId, cre.ExecutionStatus, cre.CommandRequestType, ");
+        sql.append("             ROW_NUMBER() over (order by cre.StartTime desc) as RowNum");
+        sql.append("      from CommandRequestExec cre");
+        if (jobId > 0) {
+            sql.append(" join ScheduledGrpCommandRequest sgcr on sgcr.CommandRequestExecContextId = cre.CommandRequestExecContextId");
         }
-        
-        if (beginTime != null) {
-        	sql.append("AND CRE.StartTime >= ").appendArgument(beginTime);
+        sql.append("      where cre.StartTime").gte(from);
+        sql.append("        and cre.StartTime").lte(to);
+        if (jobId > 0) {
+            sql.append("    and sgcr.JobId").eq(jobId);
         }
-        
-        if (endTime != null) {
-        	sql.append("AND CRE.StartTime <= ").appendArgument(endTime);
-        }
-        
         if (type != null) {
-        	sql.append("AND CRE.CommandRequestExecType = ").appendArgument(type.name());
+            sql.append("    and cre.CommandRequestExecType").eq_k(type);
         }
-        
-        if (ascending) {
-        	sql.append("ORDER BY CRE.StartTime");
-        } else {
-        	sql.append("ORDER BY CRE.StartTime DESC");
+        sql.append(") as tbl");
+        sql.append("where tbl.RowNum between").append(paging.getOneBasedStartIndex());
+        sql.append("and").append(paging.getOneBasedEndIndex());
+              
+        List<CommandRequestExecution> executions = yukonJdbcTemplate.query(sql, rowAndFieldMapper);
+                
+        return executions;
+    }
+    
+    @Override
+    public int getByRangeCount(int jobId, Instant from, Instant to, DeviceRequestType type) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        sql.append("from CommandRequestExec cre");
+        if (jobId > 0) {
+            sql.append("join ScheduledGrpCommandRequest sgcr on sgcr.CommandRequestExecContextId = cre.CommandRequestExecContextId");
         }
-        
-        return yukonJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
-    	
+        sql.append("  where cre.StartTime").gte(from);
+        sql.append("    and cre.StartTime").lte(to);
+        if (jobId > 0) {
+            sql.append("and sgcr.JobId").eq(jobId);
+        }
+        if (type != null) {
+            sql.append("and cre.CommandRequestExecType").eq_k(type);
+        }
+
+        return yukonJdbcTemplate.queryForInt(sql);
     }
     
     // REQUEST COUNT

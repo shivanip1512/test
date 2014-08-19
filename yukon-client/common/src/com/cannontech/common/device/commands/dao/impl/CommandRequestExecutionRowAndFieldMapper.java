@@ -13,15 +13,18 @@ import com.cannontech.database.RowAndFieldMapper;
 
 public class CommandRequestExecutionRowAndFieldMapper implements RowAndFieldMapper<CommandRequestExecution> {
 
-	public Number getPrimaryKey(CommandRequestExecution commandRequestExecution) {
+	@Override
+    public Number getPrimaryKey(CommandRequestExecution commandRequestExecution) {
         return commandRequestExecution.getId();
     }
 	
-	public void setPrimaryKey(CommandRequestExecution commandRequestExecution, int value) {
+	@Override
+    public void setPrimaryKey(CommandRequestExecution commandRequestExecution, int value) {
     	commandRequestExecution.setId(value);
     }
 	
-	public void extractValues(MapSqlParameterSource p, CommandRequestExecution commandRequestExecution) {
+	@Override
+    public void extractValues(MapSqlParameterSource p, CommandRequestExecution commandRequestExecution) {
 	    p.addValue("CommandRequestExecContextId", commandRequestExecution.getContextId());
 	    p.addValue("StartTime", commandRequestExecution.getStartTime());
         p.addValue("StopTime", commandRequestExecution.getStopTime());
@@ -32,7 +35,8 @@ public class CommandRequestExecutionRowAndFieldMapper implements RowAndFieldMapp
         p.addValue("ExecutionStatus", commandRequestExecution.getCommandRequestExecutionStatus().name());
     }
 	
-	public CommandRequestExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
+	@Override
+    public CommandRequestExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
 		CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
 		commandRequestExecution.setId(rs.getInt("CommandRequestExecId"));
 		commandRequestExecution.setContextId(rs.getInt("CommandRequestExecContextId"));

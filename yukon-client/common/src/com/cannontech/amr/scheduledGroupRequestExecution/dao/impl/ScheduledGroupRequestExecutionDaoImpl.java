@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -204,38 +204,6 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	return jobs;
 	}
 
-    // GET CRES BY JOB ID
-    @Override
-    public List<CommandRequestExecution> getCommandRequestExecutionsByJobId(int jobId, Date startTime, Date stopTime, boolean acsending) {
-
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT CRE.* FROM ScheduledGrpCommandRequest SGCR");
-        sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
-
-        if (jobId > 0) {
-    		sql.append("WHERE SGCR.JobId").eq(jobId);
-        } else {
-        	sql.append("WHERE SGCR.JobId > 0");
-        }
-
-        if (startTime != null) {
-        	sql.append("AND CRE.StartTime").gte(startTime);
-        }
-
-        if (stopTime != null) {
-        	sql.append("AND CRE.StartTime").lte(stopTime);
-        }
-
-        if (acsending) {
-        	sql.append("ORDER BY CRE.StartTime");
-        } else {
-        	sql.append("ORDER BY CRE.StartTime DESC");
-        }
-
-        List<CommandRequestExecution> cres = yukonJdbcTemplate.query(sql, new CommandRequestExecutionRowAndFieldMapper());
-    	return cres;
-    }
-
     // CRE COUNT BY JOB ID
     @Override
     public int getDistinctCreCountByJobId(int jobId, Date startTime, Date stopTime) {
@@ -318,7 +286,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 		return ScheduledGroupRequestExecutionStatus.ENABLED;
     }
 
-	private FieldMapper<ScheduledGroupRequestExecutionPair> fieldMapper = new FieldMapper<ScheduledGroupRequestExecutionPair>() {
+	private final FieldMapper<ScheduledGroupRequestExecutionPair> fieldMapper = new FieldMapper<ScheduledGroupRequestExecutionPair>() {
         @Override
         public void extractValues(MapSqlParameterSource p, ScheduledGroupRequestExecutionPair pair) {
             p.addValue("JobId", pair.getJobId());

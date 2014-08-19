@@ -161,6 +161,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
         if (!supportedDevices.isEmpty()) {
             List<CommandRequestDevice> commandRequests =
                 meterReadCommandGeneratorService.getCommandRequests(supportedDevices);
+            execution.setRequestCount(commandRequests.size());
             CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor =
                 new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, retryParameters);
             executionObjects = retryExecutor.execute(commandRequests, callback, execution, user);

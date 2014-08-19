@@ -3,9 +3,12 @@ package com.cannontech.common.device.commands.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface CommandRequestExecutionDao {
@@ -20,12 +23,14 @@ public interface CommandRequestExecutionDao {
 	
 	public Date getStopTime(int commandRequestExecutionId);
 	
-	public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date startTime, Date stopTime, DeviceRequestType type, boolean acsending);
-
 	/**
 	 * Creates an execution with execution status of started.
 	 */
     CommandRequestExecution createStartedExecution(CommandRequestType commandType, DeviceRequestType deviceType,
                                                    int requestCount, LiteYukonUser user);
-	
+
+    int getByRangeCount(int jobId, Instant from, Instant to, DeviceRequestType type);
+
+    List<CommandRequestExecution> findByRange(PagingParameters paging, int jobId, Instant from, Instant to,
+                                              DeviceRequestType type);
 }

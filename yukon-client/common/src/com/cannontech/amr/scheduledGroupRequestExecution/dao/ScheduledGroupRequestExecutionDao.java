@@ -23,9 +23,7 @@ public interface ScheduledGroupRequestExecutionDao {
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
 												ScheduleGroupRequestExecutionDaoOnetimeFilter onetime,
 												boolean ascendingJobIds);
-			
-	public List<CommandRequestExecution> getCommandRequestExecutionsByJobId(int jobId, Date startTime, Date stopTime, boolean acsending);
-	
+		
 	/**
 	 * Returns count of the the number of executions of this schedule. Executions are grouped by contextId
 	 * such that retries are not counted as additional executions.
