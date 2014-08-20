@@ -38,7 +38,7 @@ import com.cannontech.core.dao.NotFoundException;
 public class RfnGatewayDataCacheTest {
     
     @Test
-    public void testGetWithCachedValue() throws NetworkManagerCommunicationException {
+    public void test_get_withCachedValue() throws NetworkManagerCommunicationException {
         RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null);
         
         //create data
@@ -56,7 +56,7 @@ public class RfnGatewayDataCacheTest {
     }
     
     @Test
-    public void testGetWithUncachedValue() throws NetworkManagerCommunicationException {
+    public void test_get_withUncachedValue() throws NetworkManagerCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao);
@@ -78,7 +78,7 @@ public class RfnGatewayDataCacheTest {
     }
     
     @Test(expected=NetworkManagerCommunicationException.class)
-    public void testJmsExceptionWithUncachedValue() throws NetworkManagerCommunicationException {
+    public void test_get_jmsExceptionWithUncachedValue() throws NetworkManagerCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao);
@@ -92,7 +92,7 @@ public class RfnGatewayDataCacheTest {
     }
     
     @Test(expected=NetworkManagerCommunicationException.class)
-    public void testTimeoutWithUncachedValue() throws NetworkManagerCommunicationException {
+    public void test_get_timeoutWithUncachedValue() throws NetworkManagerCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao);
