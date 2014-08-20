@@ -26,6 +26,7 @@ import com.cannontech.web.updater.UpdateIdentifier;
 import com.google.common.base.Joiner;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ArrayListMultimap;
@@ -39,14 +40,15 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, AllP
 
     private final static int maxCacheSize = 5000;
     private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
-    private final PointUpdateBackingService thisInstance = this;
     private Cache<Integer, DatedPointValue> cache =
         CacheBuilder.newBuilder().maximumSize(maxCacheSize).removalListener(
             new RemovalListener<Integer, DatedPointValue>() {
                 @Override
                 public void onRemoval(RemovalNotification<Integer, DatedPointValue> notification) {
-                    asyncDataSource.unRegisterForPointData(thisInstance,
-                        Collections.singleton(notification.getKey()));
+                    if (notification.getCause() != RemovalCause.REPLACED) {
+                        asyncDataSource.unRegisterForPointData(PointUpdateBackingService.this,
+                            Collections.singleton(notification.getKey()));
+                    }
                 }
         }).build();
 
