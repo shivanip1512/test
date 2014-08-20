@@ -424,7 +424,7 @@ yukon.ui = (function () {
                 if (btn.is('[data-value]')) {
                     value = btn.data('value');
                     input = btn.is('[data-input]') ? $(btn.data('input')) : btn.siblings('[data-input]');
-                    input.val(value);
+                    input.val(value).change();
                 }
             });
             

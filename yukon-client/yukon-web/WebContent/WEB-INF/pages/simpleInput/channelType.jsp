@@ -10,6 +10,10 @@
 <div class="detail stacked form-control">
     <cti:msg2 key=".rfnChannelConfiguration.enabledChannels.helpText" />
 </div>
+<div class="stacked">
+    <div class="user-message info js-reporting dn"><i:inline key=".rfnChannelConfiguration.error.reportingExceeded"/></div>
+    <div class="user-message info js-midnight dn"><i:inline key=".rfnChannelConfiguration.error.midnightExceeded"/></div>
+</div>
 
 <cti:displayForPageEditModes modes="VIEW">
     <c:forEach var="input" items="${categoryEditBean.channelInputs}" varStatus="loopStatus">
