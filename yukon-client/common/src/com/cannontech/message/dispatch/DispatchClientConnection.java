@@ -15,13 +15,13 @@ public class DispatchClientConnection extends com.cannontech.message.util.Client
     private static final int latchOnRemainingCapacity = maxQueueSize * 50 / 100;
 
     private boolean isBehindLatch = false;
-
     private ArrayBlockingQueue<Message> inQueue = new ArrayBlockingQueue<>(maxQueueSize);
+    private final Thread worker;
 
     public DispatchClientConnection() {
         super("Dispatch");
 
-        Thread worker = new Thread() {
+        worker = new Thread() {
             @Override
             public void run() {
                 while (true) {
@@ -76,5 +76,12 @@ public class DispatchClientConnection extends com.cannontech.message.util.Client
     @ManagedAttribute
     public int getQueueSize() {
         return inQueue.size();
+    }
+
+    /**
+     * Ends the worker thread.
+     */
+    public void contextShutdown() {
+        worker.interrupt();
     }
 }

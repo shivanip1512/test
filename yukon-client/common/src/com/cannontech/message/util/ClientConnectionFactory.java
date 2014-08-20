@@ -1,5 +1,7 @@
 package com.cannontech.message.util;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.message.dispatch.DispatchClientConnection;
@@ -14,12 +16,14 @@ public class ClientConnectionFactory {
 
     @Autowired public ConnectionFactoryService connFactorySvc;
 
+    private DispatchClientConnection connToDispatch;
+
     /**
      * Creates a new Porter connection.
      */
     public PorterClientConnection createPorterConn() {
         PorterClientConnection porterCC = new PorterClientConnection();
-        porterCC.setConnectionFactory(connFactorySvc.findConnectionFactory("Porter"));        
+        porterCC.setConnectionFactory(connFactorySvc.findConnectionFactory("Porter"));
 
         return porterCC;
     }
@@ -28,7 +32,7 @@ public class ClientConnectionFactory {
      * Creates a new Dispatch connection.
      */
     public DispatchClientConnection createDispatchConn() {
-        DispatchClientConnection connToDispatch = new DispatchClientConnection();
+        connToDispatch = new DispatchClientConnection();
         connToDispatch.setConnectionFactory(connFactorySvc.findConnectionFactory("Dispatch"));
         return connToDispatch;
     }
@@ -60,10 +64,15 @@ public class ClientConnectionFactory {
 
         return notifConn;
     }
-    
-    
-    public static ClientConnectionFactory getInstance()
-    {
+
+    public static ClientConnectionFactory getInstance() {
         return YukonSpringHook.getBean(ClientConnectionFactory.class);
+    }
+
+    @PreDestroy
+    public void contextShutdown() {
+        if (connToDispatch != null) {
+            connToDispatch.contextShutdown();
+        }
     }
 }
