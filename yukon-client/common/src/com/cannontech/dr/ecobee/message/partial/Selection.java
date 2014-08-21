@@ -3,7 +3,9 @@ package com.cannontech.dr.ecobee.message.partial;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.FROM_BASIC_CSV;
 import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.FROM_SELECTION_TYPE;
+import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_BASIC_CSV;
 import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_SELECTION_TYPE;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -62,7 +64,7 @@ public class Selection {
      */
     @JsonCreator
     public Selection(@JsonProperty("selectionType") SelectionType selectionType,
-            @JsonProperty("selectionMatch") Collection<String> serialNumbers) {
+            @JsonDeserialize(using=FROM_BASIC_CSV.class) @JsonProperty("selectionMatch") Collection<String> serialNumbers) {
         this.selectionType = selectionType;
         this.serialNumbers = ImmutableSet.copyOf(serialNumbers);
     }
@@ -76,6 +78,7 @@ public class Selection {
     }
 
     @JsonGetter("selectionMatch")
+    @JsonSerialize(using=TO_BASIC_CSV.class)
     public Collection<String> getSerialNumbers() {
         return serialNumbers;
     }
