@@ -11379,7 +11379,7 @@
             <tag name="DB_EDITOR_INCOMPATIBLE" />
         </tags>
     </pao>
-    <pao id="RF_DA" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
+    <pao id="RFN_1200" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>

@@ -237,7 +237,7 @@ public enum PaoType implements DatabaseRepresentationSource {
 
     WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
 
-    RF_DA(DeviceTypes.RF_DA, "RF-DA", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN_1200(DeviceTypes.RFN_1200, "RFN-1200", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "ecobee Smart Si", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ;
@@ -414,7 +414,7 @@ public enum PaoType implements DatabaseRepresentationSource {
                 SIXNET,
                 TRANSDATA_MARKV,
                 VECTRON,
-                RF_DA);
+                RFN_1200);
         
         mctTypes = ImmutableSet.of(
             MCT213,
@@ -501,7 +501,7 @@ public enum PaoType implements DatabaseRepresentationSource {
             TSERVER_DIALUP,
             LOCAL_DIALBACK,
             DIALOUT_POOL,
-            RF_DA);
+            RFN_1200);
         
         twoWayLcrTypes = ImmutableSet.of(
             LCR3102,

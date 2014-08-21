@@ -463,8 +463,8 @@ public final class DeviceFactory {
         case RTM:
             returnDevice = new RTM();
             break;
-        case RF_DA:
-            returnDevice = new RfDa();
+        case RFN_1200:
+            returnDevice = new Rfn1200();
             break;
         case RFN_GATEWAY:
             returnDevice = new RfnGateway();

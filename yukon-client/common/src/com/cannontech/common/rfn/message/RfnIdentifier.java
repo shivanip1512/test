@@ -33,7 +33,7 @@ public final class RfnIdentifier implements Serializable {
     }
 
     public String getCombinedIdentifier() {
-        return String.format("%s_%s_%s", sensorManufacturer, sensorModel, sensorSerialNumber);
+        return String.format("%s_%s_%s", sensorSerialNumber, sensorManufacturer, sensorModel);
     }
 
     

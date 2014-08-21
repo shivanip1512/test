@@ -2360,7 +2360,7 @@ void PilServer::periodicActionThread()
 
             std::vector< CtiDeviceManager::ptr_type > rfDaDevices;
 
-            DeviceManager->getDevicesByType( TYPE_RF_DA, rfDaDevices );
+            DeviceManager->getDevicesByType( TYPE_RFN1200, rfDaDevices );
 
             for each( CtiDeviceSPtr device in rfDaDevices )
             {

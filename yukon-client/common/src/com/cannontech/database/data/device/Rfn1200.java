@@ -8,12 +8,12 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.port.CommPort;
 
-public class RfDa extends RfnBase {
+public class Rfn1200 extends RfnBase {
 
     private CommPort commPort = null;
     
-    public RfDa() {
-        super(PaoType.RF_DA);
+    public Rfn1200() {
+        super(PaoType.RFN_1200);
     }
     
     @Override

@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(test_resolvePortType)
 
     BOOST_CHECK_EQUAL(resolvePortType("tcp"),   PortTypeTcp);
     BOOST_CHECK_EQUAL(resolvePortType("udp"),   PortTypeUdp);
-    BOOST_CHECK_EQUAL(resolvePortType("rf-da"), PortTypeRfDa);
+    BOOST_CHECK_EQUAL(resolvePortType("rfn1200"), PortTypeRfDa);
     BOOST_CHECK_EQUAL(resolvePortType("dialout pool"),      PortTypePoolDialout);
     BOOST_CHECK_EQUAL(resolvePortType("local dialup"),      PortTypeLocalDialup);
     BOOST_CHECK_EQUAL(resolvePortType("local dialback"),    PortTypeLocalDialBack);
@@ -462,8 +462,8 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 
 
-    tempName = "rf-da";
-    devType = TYPE_RF_DA;
+    tempName = "rfn-1200";
+    devType = TYPE_RFN1200;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 
 

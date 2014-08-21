@@ -88,7 +88,7 @@ enum DeviceTypes {
     TYPE_RFN430SL4,
 
     //  RF DA devices
-    TYPE_RF_DA,
+    TYPE_RFN1200,
 
     // Substation device identifiers
     TYPE_CCU700,
