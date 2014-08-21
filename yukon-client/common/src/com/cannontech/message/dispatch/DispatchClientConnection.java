@@ -47,6 +47,8 @@ public class DispatchClientConnection extends com.cannontech.message.util.Client
                 logger.error("Error in thread " + t, e);
             }
         });
+        worker.setName("DispatchClientConnection_worker_thread");
+        worker.setDaemon(true);
         worker.start();
     }
 
@@ -76,12 +78,5 @@ public class DispatchClientConnection extends com.cannontech.message.util.Client
     @ManagedAttribute
     public int getQueueSize() {
         return inQueue.size();
-    }
-
-    /**
-     * Ends the worker thread.
-     */
-    public void contextShutdown() {
-        worker.interrupt();
     }
 }

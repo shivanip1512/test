@@ -1,7 +1,5 @@
 package com.cannontech.message.util;
 
-import javax.annotation.PreDestroy;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.message.dispatch.DispatchClientConnection;
@@ -15,8 +13,6 @@ import com.cannontech.yukon.conns.ServerMACSConnection;
 public class ClientConnectionFactory {
 
     @Autowired public ConnectionFactoryService connFactorySvc;
-
-    private DispatchClientConnection connToDispatch;
 
     /**
      * Creates a new Porter connection.
@@ -32,7 +28,7 @@ public class ClientConnectionFactory {
      * Creates a new Dispatch connection.
      */
     public DispatchClientConnection createDispatchConn() {
-        connToDispatch = new DispatchClientConnection();
+        DispatchClientConnection connToDispatch = new DispatchClientConnection();
         connToDispatch.setConnectionFactory(connFactorySvc.findConnectionFactory("Dispatch"));
         return connToDispatch;
     }
@@ -67,12 +63,5 @@ public class ClientConnectionFactory {
 
     public static ClientConnectionFactory getInstance() {
         return YukonSpringHook.getBean(ClientConnectionFactory.class);
-    }
-
-    @PreDestroy
-    public void contextShutdown() {
-        if (connToDispatch != null) {
-            connToDispatch.contextShutdown();
-        }
     }
 }
