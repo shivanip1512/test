@@ -16,6 +16,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
@@ -74,7 +75,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         // It should just call DeviceAttributeReadService.readMeter without checking if the device is PLC or RF
         YukonMeter meter = meterDao.getForId(deviceId);
         initModel(model, userContext, meter);
-        if(meter.getPaoType().isRfn()) {
+        if (meter instanceof RfnMeter){
             final MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             WaitableRfnMeterDisconnectCallback callback = new WaitableRfnMeterDisconnectCallback() {
     
@@ -107,14 +108,13 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
                 }
             };
             
-            RfnMeter rfnMeter = meterDao.getRfnMeterForId(deviceId);
-            rfnDisconnectService.send(rfnMeter,  RfnMeterDisconnectStatusType.QUERY, callback);
+            rfnDisconnectService.send( (RfnMeter)meter,  RfnMeterDisconnectStatusType.QUERY, callback);
             
             try {
                 callback.waitForCompletion();
             } catch (InterruptedException e) { /* Ignore */ }
             
-        } else if (meter.getPaoType().isPlc()) {
+        } else if (meter instanceof PlcMeter) {
             CommandResultHolder result = readService.readMeter(meter,
                     disconnectAttribute,
                     DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,
