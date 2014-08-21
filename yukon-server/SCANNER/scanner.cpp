@@ -24,7 +24,6 @@
 #include "dev_welco.h"
 
 #include "logger.h"
-#include "exchange.h"
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_dbchg.h"

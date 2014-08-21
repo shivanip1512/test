@@ -5,7 +5,6 @@
 #include <boost/scoped_ptr.hpp>
 
 #include "dlldefs.h"
-#include "exchange.h"
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_ptreg.h"

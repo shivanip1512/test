@@ -25,7 +25,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/toolpro/inetaddr.h>
 
 #include "queue.h"
-#include "exchange.h"
 #include "netports.h"
 #include "logger.h"
 #include "message.h"

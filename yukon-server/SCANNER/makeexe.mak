@@ -160,8 +160,8 @@ mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		slctdev.h smartmap.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h connection_base.h \
+		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h connection_base.h \
 		worker_thread.h xfer.h exceptions.h dev_carrier.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
 		cmd_dlc.h cmd_device.h tbl_metergrp.h vcomdefs.h \
@@ -206,19 +206,18 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		slctdev.h smartmap.h mgr_point.h mgr_config.h \
 		mgr_dyn_paoinfo.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
 		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h connection_base.h \
-		worker_thread.h xfer.h exceptions.h dev_mct.h dev_carrier.h \
-		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
-		cmd_dlc.h cmd_device.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h dev_welco.h \
-		dev_idlc.h dev_remote.h tbl_dialup.h tbl_direct.h \
-		tbl_dv_idlcremote.h trx_info.h trx_711.h prot_welco.h \
-		msg_cmd.h msg_dbchg.h connection_client.h amq_constants.h \
-		dllyukon.h thread_monitor.h thread_register_data.h \
-		ThreadStatusKeeper.h database_transaction.h \
-		millisecond_timer.h
+		connection.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h connection_base.h worker_thread.h \
+		xfer.h exceptions.h dev_mct.h dev_carrier.h dev_dlcbase.h \
+		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
+		cmd_device.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		da_load_profile.h tbl_dv_mctiedport.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h dev_welco.h dev_idlc.h \
+		dev_remote.h tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h \
+		trx_info.h trx_711.h prot_welco.h msg_cmd.h msg_dbchg.h \
+		connection_client.h amq_constants.h dllyukon.h \
+		thread_monitor.h thread_register_data.h ThreadStatusKeeper.h \
+		database_transaction.h millisecond_timer.h
 scansvc.obj:	precompiled.h scanglob.h dlldefs.h scansvc.h cservice.h
 #ENDUPDATE#
 

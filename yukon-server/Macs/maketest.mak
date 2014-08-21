@@ -177,10 +177,10 @@ test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
 		mc_script.h test_mc_serialization.h test_serialization.h \
 		test_serialization_helper.h connection_server.h connection.h \
-		exchange.h string_utility.h queue.h cparms.h rwutil.h \
-		database_connection.h dbaccess.h database_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h \
-		connection_base.h worker_thread.h connection_listener.h
+		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
+		database_reader.h boost_time.h boostutil.h configkey.h \
+		configval.h string_utility.h connection_base.h \
+		worker_thread.h connection_listener.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h thread.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h constants.h numstr.h \

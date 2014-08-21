@@ -53,7 +53,6 @@ dbaccess.obj \
 debug_timer.obj \
 desolvers.obj \
 dllbase.obj \
-exchange.obj \
 elog_cli.obj \
 error.obj \
 fileint.obj \
@@ -350,13 +349,6 @@ encryption.obj:	precompiled.h encryption.h dlldefs.h ctistring.h \
 		os2_2w32.h types.h constants.h numstr.h
 error.obj:	precompiled.h dsm2err.h dlldefs.h yukon.h types.h \
 		ctidbgmem.h constants.h
-exchange.obj:	precompiled.h exchange.h dlldefs.h dllbase.h dsm2.h \
-		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
-		timing_util.h immutable.h readers_writer_lock.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h logger.h thread.h \
-		CtiPCPtrQueue.h string_utility.h
 fileint.obj:	precompiled.h fileint.h dlldefs.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
 		timing_util.h immutable.h readers_writer_lock.h \

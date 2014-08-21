@@ -247,8 +247,8 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		pointdefs.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h connection_base.h \
+		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h connection_base.h \
 		worker_thread.h xfer.h exceptions.h tbl_route.h tbl_carrier.h \
 		prot_emetcon.h cmd_dlc.h cmd_device.h tbl_metergrp.h \
 		vcomdefs.h tbl_loadprofile.h da_load_profile.h \

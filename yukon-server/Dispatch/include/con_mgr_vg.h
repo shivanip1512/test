@@ -7,7 +7,6 @@
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
 
-#include "exchange.h"
 #include "message.h"
 #include "vgexe_factory.h"
 
