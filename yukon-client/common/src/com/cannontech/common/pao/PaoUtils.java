@@ -184,4 +184,17 @@ public class PaoUtils {
     public static boolean isValidPaoName(String name) {
         return StringUtils.containsNone(name, ILLEGAL_NAME_CHARS);
     }
+    
+    /**
+     * Creates a YukonPao with the specified id and type. This is useful for testing and should probably never be used
+     * for "real" code.
+     */
+    public YukonPao createYukonPao(final int paoId, final PaoType paoType) {
+        return new YukonPao() {
+            @Override
+            public PaoIdentifier getPaoIdentifier() {
+                return new PaoIdentifier(paoId, paoType);
+            }
+        };
+    }
 }
