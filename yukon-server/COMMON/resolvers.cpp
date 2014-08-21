@@ -396,7 +396,7 @@ static const std::map<std::string, int> device_lookups = boost::assign::map_list
     ("rfn-430sl4",         TYPE_RFN430SL4)
 
     //  --- RF DA nodes ---
-    ("rfn-1200",              TYPE_RFN1200)
+    ("rfn-1200",           TYPE_RFN1200)
 
     //  --- RTU devices ---
     ("rtu-dart",           TYPE_DARTRTU)
@@ -792,7 +792,7 @@ const std::map<std::string, int> PortTypes = boost::assign::map_list_of
     ("local dialback",           PortTypeLocalDialBack  )
     ("terminal server dialback", PortTypeTServerDialBack)
     ("dialout pool",             PortTypePoolDialout    )
-    ("rfn1200",                    PortTypeRfDa           );
+    ("rfn-1200",                 PortTypeRfDa           );
 
 
 INT resolvePortType(const string& _str)

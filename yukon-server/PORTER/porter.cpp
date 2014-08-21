@@ -1414,7 +1414,7 @@ bool isPortDbChange(const CtiDBChangeMsg *pChg)
 
         case PAO_CATEGORY_DEVICE:
         {
-            //  Special case for RF-DA device/port hybrid
+            //  Special case for RFN-1200 device/port hybrid
             return resolveDeviceType(pChg->getObjectType()) == TYPE_RFN1200;
         }
     }

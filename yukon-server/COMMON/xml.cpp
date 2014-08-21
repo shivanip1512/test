@@ -551,7 +551,7 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         ("RFN430SL3",                   TYPE_RFN430SL3)
         ("RFN430SL4",                   TYPE_RFN430SL4)
 
-        ("RFN1200",                       TYPE_RFN1200)
+        ("RFN1200",                     TYPE_RFN1200)
 
         //  --- RTU devices ---
         ("RTU_DART",                    TYPE_DARTRTU)
