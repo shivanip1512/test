@@ -957,9 +957,6 @@ std_ansi_tbl_52.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h constants.h numstr.h CtiPCPtrQueue.h \
 		std_ansi_tbl_52.h std_ansi_tbl_base.h ctidate.h
-std_ansi_tbl_55.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		types.h constants.h numstr.h CtiPCPtrQueue.h
 std_ansi_tbl_61.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h constants.h numstr.h CtiPCPtrQueue.h \
