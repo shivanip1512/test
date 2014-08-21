@@ -232,21 +232,21 @@ yukon.deviceConfig = (function () {
 
                 $(document).on('change', 'input[name^="channelInputs"]', function () {
                     var buttons = $('.button-group [data-value]'),
-                        inputs = $('.button-group input[data-radio]'),
+                        inputs = $('.button-group input[data-input]'),
                         intervals = buttons.filter(function () {return $(this).data('value') === 'INTERVAL'; }),
                         midnights = buttons.filter(function () {return $(this).data('value') === 'MIDNIGHT'; }),
                         numIntervals = inputs.filter(function () {return $(this).val() === 'INTERVAL'; }).length,
                         numMidnights = inputs.filter(function () {return $(this).val() === 'MIDNIGHT'; }).length;
 
-                    if (numIntervals >= 5) {
+                    if (numIntervals >= 15) {
                         intervals.not('.on').prop('disabled', true);
                         $('.js-reporting').show();
                     } else {
                         intervals.not('.on').prop('disabled', false);
                     }
-                    if (numIntervals + numMidnights >= 10) {
+                    if (numIntervals + numMidnights >= 80) {
                         intervals.add(midnights).each(function () {
-                            if ($(this).siblings('input[data-radio]').val() === 'DISABLED') {
+                            if ($(this).siblings('input[data-input]').val() === 'DISABLED') {
                                 $(this).prop('disabled', true);
                             }
                         });
