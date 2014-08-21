@@ -27,7 +27,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
     @Override
     @Transactional
     public RfnDevice create(final RfnIdentifier rfnIdentifier) {
-        String deviceName = "RFDA_" + rfnIdentifier.getCombinedIdentifier();
+        String deviceName = rfnIdentifier.getCombinedIdentifier();
         
         YukonDevice newDevice = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RFN_1200, deviceName, 
                 rfnIdentifier.getSensorModel(), rfnIdentifier.getSensorManufacturer(), 
