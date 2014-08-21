@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -51,8 +51,8 @@ public class BannerFormat extends FileFormatBase {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedUsageAttributeDatas =
                 rawPointHistoryDao.getLimitedAttributeData(allDevices,
                                                            Sets.newHashSet(BuiltInAttribute.USAGE, BuiltInAttribute.USAGE_WATER),
-                                                           Range.exclusiveInclusive(new DateTime(getBillingFileDefaults().getEnergyStartDate()).toInstant(),
-                                                                                    new DateTime(getBillingFileDefaults().getEndDate()).toInstant()),
+                                                           Range.exclusiveInclusive(new Instant(getBillingFileDefaults().getEnergyStartDate()),
+                                                                                    new Instant(getBillingFileDefaults().getEndDate())),
                                                            1, false, Order.REVERSE, null); 
 
         
@@ -72,24 +72,20 @@ public class BannerFormat extends FileFormatBase {
             boolean dataAdded = false;
             
             final MultiKey<String> usageKey = new MultiKey<String>(meter.getMeterNumber(), "1");
-            BannerData usageData = recordsByMeterNumberScat.get(usageKey);
+            BannerData usageData = recordsByMeterNumberScat.remove(usageKey);
             if (usageData != null) {
                 List<PointValueQualityHolder> pointValues = limitedUsageAttributeDatas.get(meter.getPaoIdentifier());
                 addPointValueToRecords(pointValues, usageData, BuiltInAttribute.USAGE);    //attribute needs to align with the type of data in pointValues
                 dataAdded = true;
             }
-            //might as well try to keep the size somewhat in check
-            recordsByMeterNumberScat.remove(usageKey);
 
             final MultiKey<String> peakDemandKey = new MultiKey<String>(meter.getMeterNumber(), "2");
-            BannerData peakDemandData = recordsByMeterNumberScat.get(peakDemandKey);
+            BannerData peakDemandData = recordsByMeterNumberScat.remove(peakDemandKey);
             if (peakDemandData != null) {
                 List<PointValueQualityHolder> pointValues = limitedPeakDemandAttributeDatas.get(meter.getPaoIdentifier());
                 addPointValueToRecords(pointValues, peakDemandData, BuiltInAttribute.PEAK_DEMAND);    //attribute needs to align with the type of data in pointValues
                 dataAdded = true;
             }
-            //might as well try to keep the size somewhat in check
-            recordsByMeterNumberScat.remove(peakDemandKey);
             
             if (!dataAdded) {
                 log.warn("No BannerData found for meternumber: " + meter.getMeterNumber() + ". Check BannerData_View for existance.");
