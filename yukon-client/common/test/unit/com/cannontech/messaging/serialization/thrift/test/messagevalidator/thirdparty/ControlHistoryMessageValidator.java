@@ -1,8 +1,8 @@
 package com.cannontech.messaging.serialization.thrift.test.messagevalidator.thirdparty;
 
+import com.cannontech.dr.message.ControlHistoryMessage;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.RandomGenerator;
-import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
 
 public class ControlHistoryMessageValidator extends AutoInitializedClassValidator<ControlHistoryMessage> {
     private static long DEFAULT_SEED = 4;

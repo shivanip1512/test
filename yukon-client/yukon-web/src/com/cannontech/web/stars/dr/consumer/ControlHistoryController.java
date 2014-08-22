@@ -21,7 +21,7 @@ import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlHistory.dao.ControlHistoryDao;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
-import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
 import com.cannontech.stars.dr.displayable.model.DisplayableGroupedControlHistory;
@@ -38,7 +38,7 @@ import com.google.common.collect.ListMultimap;
 public class ControlHistoryController extends AbstractConsumerController {
     private static final String viewNamePrefix = "consumer/controlhistory/";
 
-    @Autowired private ControlHistoryService controlHistoryService;
+    @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private ControlHistoryDao controlHistoryDao;
     @Autowired private ProgramEnrollmentService programEnrollmentService;
     @Autowired private ProgramDao programDao;

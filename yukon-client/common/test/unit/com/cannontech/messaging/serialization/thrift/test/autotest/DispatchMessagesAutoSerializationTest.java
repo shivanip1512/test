@@ -22,6 +22,6 @@ public class DispatchMessagesAutoSerializationTest extends MessageAutoSerializat
         autoTestMessage(com.cannontech.message.dispatch.message.TagMsg.class);
 
         // Needed by Dispatch event if defined in thirdparty package
-        autoTestMessage(com.cannontech.thirdparty.messaging.ControlHistoryMessage.class);
+        autoTestMessage(com.cannontech.dr.message.ControlHistoryMessage.class);
     }
 }

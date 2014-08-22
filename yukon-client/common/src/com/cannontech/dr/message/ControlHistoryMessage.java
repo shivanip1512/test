@@ -1,4 +1,4 @@
-package com.cannontech.thirdparty.messaging;
+package com.cannontech.dr.message;
 
 import java.util.Date;
 

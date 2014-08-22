@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.controlHistory.dao.ControlHistoryDao;
-import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -19,7 +19,7 @@ public class AbstractDisplayableDao {
     protected ProgramService programService;
     protected ProgramEnrollmentService programEnrollmentService;
     protected ControlHistoryDao controlHistoryDao;
-    protected ControlHistoryService controlHistoryService;
+    protected StarsControlHistoryService controlHistoryService;
     protected InventoryDao inventoryDao;
     protected LMHardwareControlGroupDao lmHardwareControlGroupDao;
     
@@ -57,7 +57,7 @@ public class AbstractDisplayableDao {
     
     @Autowired
     public void setControlHistoryService(
-            ControlHistoryService controlHistoryService) {
+            StarsControlHistoryService controlHistoryService) {
         this.controlHistoryService = controlHistoryService;
     }
     

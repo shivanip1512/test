@@ -8,7 +8,7 @@ import org.joda.time.Duration;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.google.common.collect.ListMultimap;
 
-public interface ControlHistoryService {
+public interface StarsControlHistoryService {
 
     public boolean containsOnlyNotEnrolledHistory(List<ControlHistory> controlHistoryList);
     

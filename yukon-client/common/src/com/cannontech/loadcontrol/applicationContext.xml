@@ -27,6 +27,8 @@
     <bean id="drScenarioDao" class="com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl"/>
 
     <bean id="drService" class="com.cannontech.dr.service.impl.DemandResponseServiceImpl"/>
+    
+    <bean class="com.cannontech.dr.service.impl.ControlHistoryServiceImpl"/>
 
     <bean id="drControlAreaService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaServiceImpl"/>
     <bean id="drControlAreaFieldService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaFieldServiceImpl"/>

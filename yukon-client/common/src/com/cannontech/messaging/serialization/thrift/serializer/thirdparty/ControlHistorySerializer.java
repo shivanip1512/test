@@ -1,12 +1,12 @@
 package com.cannontech.messaging.serialization.thrift.serializer.thirdparty;
 
+import com.cannontech.dr.message.ControlHistoryMessage;
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.serialization.thrift.ThriftInheritanceSerializer;
 import com.cannontech.messaging.serialization.thrift.ThriftMessageFactory;
 import com.cannontech.messaging.serialization.thrift.generated.LMControlHistory;
 import com.cannontech.messaging.serialization.thrift.serializer.MessageSerializer;
 import com.cannontech.messaging.serialization.util.ConverterHelper;
-import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
 
 public class ControlHistorySerializer
     extends

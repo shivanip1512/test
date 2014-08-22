@@ -52,7 +52,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
-import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
@@ -85,7 +85,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private final static Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
 
     @Autowired private AssignedProgramDao assignedProgramDao;
-    @Autowired private ControlHistoryService controlHistoryService;
+    @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;

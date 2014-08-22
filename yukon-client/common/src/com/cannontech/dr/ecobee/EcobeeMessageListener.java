@@ -8,12 +8,16 @@ import javax.jms.Message;
 import javax.jms.StreamMessage;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.dr.service.ControlHistoryService;
+import com.cannontech.dr.service.ControlType;
 
 /**
  * Listens for ActiveMQ messages from Load Management, parses them, and passes DR messages to the
@@ -23,6 +27,7 @@ public class EcobeeMessageListener {
     private static final Logger log = YukonLogManager.getLogger(EcobeeMessageListener.class);
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+    @Autowired private ControlHistoryService controlHistoryService;
 
     private static final Map<Integer, String> groupToDrIdentifierMap = new HashMap<>();
 
@@ -40,10 +45,21 @@ public class EcobeeMessageListener {
                 log.error("Exception parsing StreamMessage for duty cycle DR event.", e);
                 return;
             }
-
+            
+            //Send DR message to ecobee server
             String drIdentifier = ecobeeCommunicationService.sendDutyCycleDR(parameters);
-            //store the most recent dr handle for each group, so we can cancel
+            
+            //Store the most recent dr handle for each group, so we can cancel
             groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
+            
+            //Send control history message to dispatch
+            Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getEndTime());
+            int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
+            Instant startTime = new Instant(DateTimeZone.getDefault().convertLocalToUTC(parameters.getStartTime().getMillis(), false));
+            
+            controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(), startTime, ControlType.ECOBEE, 
+                                                                null, controlDurationSeconds,
+                                                                parameters.getDutyCyclePercent());
         }
     }
 
@@ -58,9 +74,13 @@ public class EcobeeMessageListener {
                 log.error("Exception parsing StreamMessage for DR restore.", e);
                 return;
             }
-
+            
+            //Send restore to ecobee server
             String drIdentifier = groupToDrIdentifierMap.get(groupId);
             ecobeeCommunicationService.sendRestore(drIdentifier);
+            
+            //Send control history message to dispatch
+            controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
         }
     }
 

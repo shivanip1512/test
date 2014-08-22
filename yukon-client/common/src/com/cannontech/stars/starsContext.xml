@@ -241,7 +241,7 @@
     <bean class="com.cannontech.stars.dr.controlHistory.service.impl.ControlHistoryEventServiceImpl"/>
     <bean id="controlHistoryEventDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryEventDaoImpl"/>
 
-    <bean id="controlHistoryService" class="com.cannontech.stars.dr.controlHistory.service.impl.ControlHistoryServiceImpl"/>
+    <bean id="starsControlHistoryService" class="com.cannontech.stars.dr.controlHistory.service.impl.StarsControlHistoryServiceImpl"/>
     
     <bean id="lmControlHistoryUtilService" class="com.cannontech.stars.dr.controlHistory.service.impl.LmControlHistoryUtilServiceImpl"/>
     

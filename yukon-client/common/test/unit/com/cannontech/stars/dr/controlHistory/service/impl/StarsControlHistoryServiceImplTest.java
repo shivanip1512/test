@@ -17,13 +17,13 @@ import org.junit.Test;
 
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistoryEvent;
-import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
-import com.cannontech.stars.dr.controlHistory.service.impl.ControlHistoryServiceImpl;
+import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService;
+import com.cannontech.stars.dr.controlHistory.service.impl.StarsControlHistoryServiceImpl;
 
-public class ControlHistoryServiceImplTest {
+public class StarsControlHistoryServiceImplTest {
     private static final DateTimeFormatter dateTimeFormmater = 
         DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(DateTimeZone.forOffsetHoursMinutes(5, 0));
-    private final ControlHistoryService service = new ControlHistoryServiceImpl();
+    private final StarsControlHistoryService service = new StarsControlHistoryServiceImpl();
 
     /**
      * Multiple Events with the same control time window.

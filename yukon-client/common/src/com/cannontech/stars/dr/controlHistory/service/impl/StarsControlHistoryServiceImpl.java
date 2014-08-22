@@ -12,11 +12,11 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistoryStatus;
-import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
-public class ControlHistoryServiceImpl implements ControlHistoryService {
+public class StarsControlHistoryServiceImpl implements StarsControlHistoryService {
     private static final Comparator<ControlHistoryEvent> eventComparator;
     
     static {
