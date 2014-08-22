@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.MutableDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,16 +78,21 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
             ecobeeDevices.put(ecobeeSerialNumber, pao);
         }
 
-        Instant end = new Instant().minus(Duration.standardMinutes(15));
-        MutableDateTime mutableStartTime = new MutableDateTime(end.minus(Duration.standardHours(24)));
-        // Start request at top of hour requested. This makes some point archiving calculations easier
-        mutableStartTime.setMinuteOfHour(0);
-        Instant start = mutableStartTime.toInstant();
-        Range<Instant> lastTwentyFourHours = Range.inclusive(start, end);
+        // Set end of range at 15 minutes before current time (which is about the most recent data ecobee will have)
+        MutableDateTime mutableDateTime = new MutableDateTime();
+        mutableDateTime.addMinutes(-15);
+        Instant end = mutableDateTime.toInstant();
+        
+        // Set start of range at the start of the current day.
+        mutableDateTime.setMillisOfDay(0);
+        Instant start = mutableDateTime.toInstant();
+        
+        Range<Instant> dateRange = Range.inclusive(start, end);
+        
         try {
             for (List<String> serialNumbers : Iterables.partition(ecobeeDevices.keySet(), 25)) {
                 List<EcobeeDeviceReadings> allDeviceReadings =
-                    ecobeeCommunicationService.readDeviceData(serialNumbers, lastTwentyFourHours);
+                    ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
                 for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
                     ecobeePointUpdateServiceImpl.updatePointData(ecobeeDevices.get(deviceReadings.getSerialNumber()),
                         deviceReadings);
