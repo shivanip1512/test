@@ -991,7 +991,7 @@ CtiRequestMsg* CtiLMGroupBase::createStopCycleMsg(LONG period, CtiTime &currentT
     setLastControlString(controlString);
     setLastControlSent(currentTime);
 
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString, 0, 0, 0, 0, 0, 0, priority);;
+    return new CtiRequestMsg(getPAOId(), controlString, 0, 0, 0, 0, 0, 0, priority);
 }
 
 /*---------------------------------------------------------------------------

@@ -590,7 +590,6 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
 CtiRequestMsg* CtiLMGroupExpresscom::createStopCycleMsg(LONG period, CtiTime &currentTime)
 {
     const int priority = 11;
-    char tempchar[64];
     string controlString("control xcom cycle 0 count 1 period ");
     controlString += buildPeriodString(period);
     
@@ -602,7 +601,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createStopCycleMsg(LONG period, CtiTime &cu
     setLastControlString(controlString);
     setLastControlSent(currentTime);
 
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString, 0, 0, 0, 0, 0, 0, priority);;
+    return new CtiRequestMsg(getPAOId(), controlString, 0, 0, 0, 0, 0, 0, priority);
 }
 
 /*-------------------------------------------------------------------------
