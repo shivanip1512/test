@@ -169,10 +169,10 @@ if not defined build_version (
 
     for /f "tokens=1* delims== " %%p in (%cd%\..\yukon-build\build_version.properties) do (
 
-        if "%%p" == "external" (
+        if "%%p" == "version.external" (
             set build_version=%%q
         )
-        if "%%p" == "internal" (
+        if "%%p" == "version.internal" (
             set build_version_details=%%q
         )
     )
