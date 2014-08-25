@@ -16,6 +16,7 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -1626,35 +1627,35 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 		handleAlarm( signal );
 		
 		// set all fields that overlap in the PointData() and Signal() data structures
-		int rowNum = getRowNumber(signal) > -1 ? getRowNumber(signal) : getRowNumber(signal.getPointID());
-		if( getPointValue(rowNum) != null)
-		{
-			rNum = rowNum;
-			PointValues pv = getPointValue(rNum); 
-			//the new row has been added, lets set its signal instance
-			pv.updateSignal( signal );
-			// update other things that signals can tell us
-			pv.setPointState(TagUtils.getTagString(signal.getTags()));
-			pv.setTags(signal.getTags());
-			Vector<Object> dataRow = (Vector<Object>)getRows().elementAt( rNum );
-			if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ) {
-			    String quality = "";
-			    if (pv.getPointQuality() != null ) {
-			        quality = (String) pv.getPointQuality().getAbbreviation();
-			    }
-				quality += TagUtils.isAlarmActive(signal.getTags()) ? "-(ALM)" : "";
-				int index = getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY);
-	 			dataRow.setElementAt(quality, index); 
-			}
-			if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_STATE) ){
-	 			dataRow.setElementAt(TagUtils.getTagString( signal.getTags() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_STATE) ); 
-			}
-			
-			// Signal message time stamps should NOT be used for Custom Displays.
-			if( !getCurrentDisplay().getType().equals(Display.DISPLAY_TYPES[Display.CUSTOM_DISPLAYS_TYPE_INDEX]) ) {
-				setRowTimeStamp(getPointValue(rNum), signal.getTimeStamp(), rNum);
-			}
-		}
+		int signalRowNumber = getRowNumber(signal);
+        int rowNum = signalRowNumber > -1 ? signalRowNumber : getRowNumber(signal.getPointID());
+        PointValues pv = getPointValue(rowNum);
+        if (pv != null) {
+            rNum = rowNum;
+            //the new row has been added, lets set its signal instance
+            pv.updateSignal( signal );
+            // update other things that signals can tell us
+            pv.setPointState(TagUtils.getTagString(signal.getTags()));
+            pv.setTags(signal.getTags());
+            Vector<Object> dataRow = (Vector<Object>)getRows().elementAt( rNum );
+            if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ) {
+                String quality = PointQuality.InitDefault.getAbbreviation();
+                if (pv.getPointQuality() != null ) {
+                    quality = (String) pv.getPointQuality().getAbbreviation();
+                }
+                quality += TagUtils.isAlarmActive(signal.getTags()) ? "-(ALM)" : "";
+                int index = getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY);
+                dataRow.setElementAt(quality, index); 
+            }
+            if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_STATE) ){
+                dataRow.setElementAt(TagUtils.getTagString( signal.getTags() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_STATE) ); 
+            }
+            
+            // Signal message time stamps should NOT be used for Custom Displays.
+            if( !getCurrentDisplay().getType().equals(Display.DISPLAY_TYPES[Display.CUSTOM_DISPLAYS_TYPE_INDEX]) ) {
+                setRowTimeStamp(pv, signal.getTimeStamp(), rNum);
+            }
+        } 
 	}
 	else  //handle EVENTS here (these signals should never be in our table)
 	{
