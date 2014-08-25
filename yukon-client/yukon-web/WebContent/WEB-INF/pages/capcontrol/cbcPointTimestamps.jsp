@@ -6,9 +6,9 @@
 
 <cti:msgScope paths="modules.capcontrol.cbcPoints">
 
-    <div style="overflow-y:auto;overflow-x:hidden;">
+    <div>
 
-        <table class="compact-results-table row-highlighting cbcPointTable stacked">
+        <table class="compact-results-table three-column-table stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".analogPoints"/></th>
@@ -34,8 +34,7 @@
                 </c:forEach>
             </tbody>            
         </table>
-        
-        <table class="compact-results-table row-highlighting cbcPointTable stacked">
+        <table class="compact-results-table three-column-table stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".accumulatorPoints"/></th>
@@ -45,7 +44,7 @@
             </thead>
             <tfoot></tfoot>
             <tbody>
-                <c:forEach var="point" items="${pointMap.ACCUMULATOR}">
+                <c:forEach var="point" items="${pointMap[cbcPointGroup.ACCUMULATOR]}">
                     <tr>
                         <td>${fn:escapeXml(point.pointName)}</td>
                         <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
@@ -55,7 +54,7 @@
             </tbody>    
         </table>
         
-        <table class="compact-results-table row-highlighting cbcPointTable stacked">
+        <table class="compact-results-table three-column-table stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".statusPoints"/></th>
@@ -65,7 +64,7 @@
             </thead>
             <tfoot></tfoot>
             <tbody>
-                <c:forEach var="point" items="${pointMap.STATUS}">
+                <c:forEach var="point" items="${pointMap[cbcPointGroup.STATUS]}">
                     <tr>
                         <td>${point.pointName}</td>
                         <td class="b">
@@ -78,7 +77,7 @@
             </tbody>
         </table>
         
-        <table class="compact-results-table row-highlighting cbcPointTable stacked">
+        <table class="compact-results-table three-column-table stacked">
             <thead>
                 <tr>
                     <th><i:inline key=".configParams"/></th>
@@ -88,7 +87,7 @@
             </thead>
             <tfoot></tfoot>
             <tbody>
-                <c:forEach var="point" items="${pointMap.CONFIGURABLE_PARAMETERS}">
+                <c:forEach var="point" items="${pointMap[cbcPointGroup.CONFIGURABLE_PARAMETERS]}">
                     <tr>
                         <td>${fn:escapeXml(point.pointName)}</td>
                         <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
@@ -98,8 +97,8 @@
             </tbody>
         </table>
         
-        <c:if test="${fn:length(pointMap.MISC) > 0 }">
-            <table class="compact-results-table row-highlighting cbcPointTable stacked">
+        <c:if test="${not empty pointMap[cbcPointGroup.MISC]}">
+            <table class="compact-results-table row-highlighting three-column-table stacked">
                 <thead>
                     <tr>
                         <th><i:inline key=".misc"/></th>
@@ -109,7 +108,7 @@
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                    <c:forEach var="point" items="${pointMap.MISC}">
+                    <c:forEach var="point" items="${pointMap[cbcPointGroup.MISC]}">
                         <tr>
                             <td>${fn:escapeXml(point.pointName)}</td>
                             <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>

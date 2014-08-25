@@ -304,12 +304,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_PHASE_ERROR("Voltage Phase Error"),
 
     FIRMWARE_VERSION("Firmware Version"),
+    IGNORED_CONTROL_REASON("Ignored Control Reason"),
     IP_ADDRESS("IP Address"),
+    LAST_CONTROL_REASON("Last Control Reason"),
     NEUTRAL_CURRENT_SENSOR("Neutral Current Sensor"),
     SERIAL_NUMBER("Serial Number"),
     UDP_PORT("UDP Port"),
-    LAST_CONTROL_REASON("Last Control Reason"),
-    IGNORED_CONTROL_REASON("Ignored Control Reason"),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";

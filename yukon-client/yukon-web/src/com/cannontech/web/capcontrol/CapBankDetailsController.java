@@ -13,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.BankLocation;
+import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -123,13 +124,13 @@ public class CapBankDetailsController {
     @RequestMapping("cbcPoints")
     public String cbcPoints(ModelMap model, int cbcId) {
 
-        Map<String, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
+        Map<CBCPointGroup, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
         model.addAttribute("pointMap", pointTimestamps);
 
         PaoType paoType = paoDao.getLiteYukonPAO(cbcId).getPaoType();
         Map<LitePoint, String> formatForAnalogPoints = new HashMap<>();
 
-        for (LitePoint point : pointTimestamps.get("ANALOG")) {
+        for (LitePoint point : pointTimestamps.get(CBCPointGroup.ANALOG)) {
             PointIdentifier pid = PointIdentifier.createPointIdentifier(point);
             PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(paoType, pid);
 
@@ -145,6 +146,13 @@ public class CapBankDetailsController {
         }
 
         model.addAttribute("formatForAnalogPoints", formatForAnalogPoints);
+
+        Map<String, CBCPointGroup> cbcPointGroup = new HashMap<>();
+        for (CBCPointGroup pointGroup : CBCPointGroup.values()) {
+            cbcPointGroup.put(pointGroup.name(), pointGroup);
+        }
+
+        model.put("cbcPointGroup", cbcPointGroup);
         
         List<LitePoint> pointList = new ArrayList<LitePoint>();
         for(List<LitePoint> list : pointTimestamps.values()) {

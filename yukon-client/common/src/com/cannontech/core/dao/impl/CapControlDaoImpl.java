@@ -145,7 +145,8 @@ public class CapControlDaoImpl  implements CapControlDao{
     	
     }
     
-    public Map<String, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcId) {
+    @Override
+    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcId) {
 
         List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(cbcId);
         
@@ -154,7 +155,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         	pointNameMap.put(point.getPointName(), point);
         }
         
-        Map<String, List<LitePoint>> returnMap = new HashMap<String, List<LitePoint>>();
+        Map<CBCPointGroup, List<LitePoint>> returnMap = new HashMap<>();
 
         // Add Analog group points
         List<LitePoint> analogList = new ArrayList<LitePoint>();
@@ -165,7 +166,7 @@ public class CapControlDaoImpl  implements CapControlDao{
             	analogList.add(point);
             }
         }
-        returnMap.put(CBCPointGroup.ANALOG.toString(), analogList);
+        returnMap.put(CBCPointGroup.ANALOG, analogList);
         
         // Add Accumulator group points
         List<LitePoint> accumulatorList = new ArrayList<LitePoint>();
@@ -176,7 +177,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         		accumulatorList.add(point);
         	}
         }
-        returnMap.put(CBCPointGroup.ACCUMULATOR.toString(), accumulatorList);
+        returnMap.put(CBCPointGroup.ACCUMULATOR, accumulatorList);
 
         // Add Status group points
         List<LitePoint> statusList = new ArrayList<LitePoint>();
@@ -187,7 +188,7 @@ public class CapControlDaoImpl  implements CapControlDao{
             	statusList.add(point);
         	}
         }
-        returnMap.put(CBCPointGroup.STATUS.toString(), statusList);
+        returnMap.put(CBCPointGroup.STATUS, statusList);
 
         // Add Configurable Parameters group points
         List<LitePoint> configList = new ArrayList<LitePoint>();
@@ -198,16 +199,17 @@ public class CapControlDaoImpl  implements CapControlDao{
             	configList.add(point);
         	}
         }
-        returnMap.put(CBCPointGroup.CONFIGURABLE_PARAMETERS.toString(), configList);
+        returnMap.put(CBCPointGroup.CONFIGURABLE_PARAMETERS, configList);
         
         // Add all other points
         List<LitePoint> miscList = new ArrayList<LitePoint>();
         miscList.addAll(pointNameMap.values());
-        returnMap.put(CBCPointGroup.MISC.toString(), miscList);
+        returnMap.put(CBCPointGroup.MISC, miscList);
 
         return returnMap;
     }
     
+    @Override
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {
         List<LiteYukonPAObject> subList = new ArrayList<LiteYukonPAObject>(10);
         
@@ -222,10 +224,12 @@ public class CapControlDaoImpl  implements CapControlDao{
         return subList;
     }
 
+    @Override
     public List<LitePoint> getPaoPoints(YukonPAObject pao) {
         return  pointDao.getLitePointsByPaObjectId(pao.getPAObjectID());
     }
 
+    @Override
     public Integer getParentForController(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId FROM Capbank WHERE ControlDeviceId").eq(id);
@@ -238,6 +242,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         return parentId;
     }
 
+    @Override
     public Integer getParentForPoint(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectId FROM Point WHERE PointId").eq(id);
@@ -250,6 +255,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         return parentId;
     }
     
+    @Override
     public CapControlType getCapControlType(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT type FROM YukonPAObject WHERE PAObjectID").eq(id);
@@ -259,6 +265,7 @@ public class CapControlDaoImpl  implements CapControlDao{
     	return CapControlType.getCapControlType(typeStr);
     }
     
+    @Override
     public List<OrphanCBC> getOrphanedCBCs(){
         
         SqlStatementBuilder query = new SqlStatementBuilder();
@@ -275,6 +282,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         query.append("order by y.paoname ");
         
         List<OrphanCBC> cbcList = yukonJdbcTemplate.query(query, new YukonRowMapper<OrphanCBC>() {
+            @Override
             public OrphanCBC mapRow(YukonResultSet rs) throws SQLException {
                 String deviceName = rs.getString("devicename");
                 Integer pointId = rs.getInt("pointid");
@@ -286,6 +294,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         return cbcList;
     }
     
+    @Override
     public List<LiteCapBankAdditional> getCapBankAdditional(List<Integer> deviceIds) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -300,7 +309,8 @@ public class CapControlDaoImpl  implements CapControlDao{
     		sql.append("WHERE bank.DeviceID").in(deviceIds);
     	 	
     		capbanks = yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteCapBankAdditional>() {
-	            public LiteCapBankAdditional mapRow(YukonResultSet rs) throws SQLException {
+	            @Override
+                public LiteCapBankAdditional mapRow(YukonResultSet rs) throws SQLException {
 	                int deviceId = rs.getInt("DeviceID");
 	                String drivingDirections = rs.getString("DriveDirections");
 	                Integer serialNumber = rs.getInt("SERIALNUMBER");
@@ -348,6 +358,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         sql.append("ORDER BY " + CCEventLog.COLUMNS [CCEventLog.COL_DATETIME] + " DESC");
         
         return yukonJdbcTemplate.query(sql, new YukonRowMapper<CCEventLog>() {
+            @Override
             public CCEventLog mapRow(YukonResultSet rs) throws SQLException {
                 CCEventLog row = new CCEventLog(); 
                 row.setLogId (rs.getLong("LogId"));

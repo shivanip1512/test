@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.database.data.lite.LitePoint;
@@ -15,7 +16,7 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public interface CapControlDao {
     
-    public Map<String, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcID);
+    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcID);
 
     public  List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user);
 
