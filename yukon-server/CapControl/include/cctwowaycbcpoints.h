@@ -1,13 +1,7 @@
 #pragma once
 
-#include <map>
-
-#include "msg_cmd.h"
-#include "msg_ptreg.h"
-#include "dbaccess.h"
-#include "observe.h"
 #include "types.h"
-#include "AttributeService.h"
+#include "PointAttribute.h"
 #include "PointValueHolder.h"
 #include "LitePoint.h"
 
@@ -26,12 +20,13 @@ public:
 
     long getPAOId() const;
 
-    std::string getLastControlText() ;
+    virtual std::string getLastControlText() = 0;
+
     CtiCCTwoWayPoints& setPAOId(long paoId);
 
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
     int getPointIdByAttribute(const PointAttribute & attribute) const;
-    double getPointValueByAttribute(PointAttribute pointAttribute);
+    double getPointValueByAttribute(PointAttribute pointAttribute, const double sentinel = 0);
 
 
     bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId);
@@ -45,10 +40,13 @@ public:
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
 
-    CtiCCTwoWayPoints& operator=(const CtiCCTwoWayPoints& right);
+protected:
 
-    int operator==(const CtiCCTwoWayPoints& right) const;
-    int operator!=(const CtiCCTwoWayPoints& right) const;
+    typedef std::map<int, PointAttribute>   OffsetAttributeMappings;
+
+    OffsetAttributeMappings _statusOffsetAttribute,
+                            _analogOffsetAttribute,
+                            _accumulatorOffsetAttribute;
 
 private:
 
@@ -56,9 +54,6 @@ private:
     AttributePoint    _attributes;
     PointValueHolder  _pointValues;
 
-    std::map <int, PointAttribute> _statusOffsetAttribute;
-    std::map <int, PointAttribute> _analogOffsetAttribute;
-    std::map <int, PointAttribute> _accumulatorOffsetAttribute;
     std::map <int, CtiPointType_t> _pointidPointtypeMap;
 
     PointAttribute getAttribute(int pointtype, int offset);
@@ -67,16 +62,92 @@ private:
     PointAttribute getStatusAttribute(int offset);
     bool isTimestampNew(long pointID, CtiTime timestamp);
 
+    virtual int encodeLastControlReasonForDB() = 0;
+    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) = 0;
+
     long _paoid;
     std::string _paotype;
 
     CtiTime _ovuvCountResetDate;
     CtiTime _lastOvUvDateTime;
-    INT _lastControlReason;
 
     //don't stream
     bool _insertDynamicDataFlag;
     bool _dirty;
 };
 
-typedef CtiCCTwoWayPoints* CtiCCTwoWayPointsPtr;
+inline bool operator==( const CtiCCTwoWayPoints & lhs, const CtiCCTwoWayPoints & rhs )
+{
+    return lhs.getPAOId() == rhs.getPAOId();
+}
+
+inline bool operator!=( const CtiCCTwoWayPoints & lhs, const CtiCCTwoWayPoints & rhs )
+{
+    return ! ( lhs == rhs );
+}
+
+
+// ------------------------------
+
+
+class CtiCCTwoWayPointsCbcDnp : public CtiCCTwoWayPoints
+{
+public:
+
+    CtiCCTwoWayPointsCbcDnp(long paoid, std::string paotype);
+
+    virtual std::string getLastControlText();
+
+private:
+
+    virtual int encodeLastControlReasonForDB();
+    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp );
+};
+
+
+// ------------------------------
+
+
+class CtiCCTwoWayPointsCbc702x : public CtiCCTwoWayPoints
+{
+public:
+
+    CtiCCTwoWayPointsCbc702x(long paoid, std::string paotype);
+
+    virtual std::string getLastControlText();
+
+private:
+
+    virtual int encodeLastControlReasonForDB();
+    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp );
+};
+
+
+// ------------------------------
+
+
+class CtiCCTwoWayPointsCbc802x : public CtiCCTwoWayPoints
+{
+public:
+
+    CtiCCTwoWayPointsCbc802x(long paoid, std::string paotype);
+
+    virtual std::string getLastControlText();
+
+private:
+
+    virtual int encodeLastControlReasonForDB();
+    virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp );
+
+    static const std::vector<std::string>   lastControlDecoder;
+};
+
+
+// ------------------------------
+
+
+struct CtiCCTwoWayPointsFactory
+{
+    static CtiCCTwoWayPoints * Create( const long paoID, const std::string & paoType );
+};
+

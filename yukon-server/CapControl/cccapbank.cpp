@@ -116,7 +116,7 @@ CtiCCTwoWayPoints & CtiCCCapBank::getTwoWayPoints()
 {
     if ( ! _twoWayPoints )
     {
-        _twoWayPoints.reset( new CtiCCTwoWayPoints(_controldeviceid, _controlDeviceType) );
+        _twoWayPoints.reset( CtiCCTwoWayPointsFactory::Create(_controldeviceid, _controlDeviceType) );
     }
 
     return *_twoWayPoints;
@@ -1872,7 +1872,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 
         if ( rightObj._twoWayPoints ) 
         {
-            _twoWayPoints.reset( new CtiCCTwoWayPoints(*rightObj._twoWayPoints) );
+            _twoWayPoints.reset( CtiCCTwoWayPointsFactory::Create(rightObj._controldeviceid, rightObj._controlDeviceType) );
         }
         else
         {

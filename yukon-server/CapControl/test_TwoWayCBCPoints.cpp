@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_SUITE( test_TwoWayCBCPoints )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 {
-    boost::scoped_ptr<CtiCCTwoWayPoints>     points( new CtiCCTwoWayPoints( 575, "CBC DNP" ) );
+    boost::scoped_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 575, "CBC DNP" ) );
 
     PointInitializer    databaseInput[] =
     {
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 {
-    boost::scoped_ptr<CtiCCTwoWayPoints>     points( new CtiCCTwoWayPoints( 545, "CBC 7022" ) );
+    boost::scoped_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 7022" ) );
 
     PointInitializer    databaseInput[] =
     {
@@ -267,11 +267,12 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 {
-    boost::scoped_ptr<CtiCCTwoWayPoints>     points( new CtiCCTwoWayPoints( 545, "CBC 8020" ) );
+    boost::scoped_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 8020" ) );
 
     PointInitializer    databaseInput[] =
     {
         // These offsets are defined in the device code
+        { AnalogPointType,                  2,      335 },
         { AnalogPointType,                 12,      340 },
         { AnalogPointType,              10001,      331 },
         { AnalogPointType,              10002,      359 },
@@ -285,12 +286,10 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         { StatusPointType,                 84,      354 },
         { StatusPointType,                 86,      321 },
         { StatusPointType,                 89,      336 },
-        // These are defined in the device but not the 2way points code
         { PulseAccumulatorPointType,        4,      330 },
         { PulseAccumulatorPointType,        5,      350 },
         // The following are not in either one
         { AnalogPointType,                  1,      342 },
-        { AnalogPointType,                  2,      335 },
         { AnalogPointType,                  5,      355 },
         { AnalogPointType,                  6,      357 },
         { AnalogPointType,                  7,      320 },
@@ -338,8 +337,8 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         registrationPoints,
         expected
             = boost::assign::list_of
-                ( 340 )( 331 )( 359 )( 313 )( 323 )( 338 )( 362 )//( 330 )( 350 )
-                ( 318 )( 334 )( 311 )( 354 )( 321 )( 336 )
+                ( 340 )( 331 )( 359 )( 313 )( 323 )( 338 )( 362 )( 330 )( 350 )
+                ( 318 )( 334 )( 311 )( 354 )( 321 )( 336 )( 335 )
                     ;
 
     points->addAllCBCPointsToRegMsg( registrationPoints );
@@ -355,14 +354,110 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
 
-/*
-    Currently there is no LastControlReason attribute to use here.  It is an analog point
-        at offset 2.  From the table above we get its point ID of 335.  This will fail anyway
-        since there is no attribute...
-*/
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     0, now ) );
 
-    BOOST_CHECK( ! points->setTwoWayStatusPointValue(
-                    /* points->getPointIdByAttribute( PointAttribute::LastControlReason ) */ 335,        0, now ) );
+    BOOST_CHECK_EQUAL( "Manual", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     1, now ) );
+
+    BOOST_CHECK_EQUAL( "SCADA Override", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     2, now ) );
+
+    BOOST_CHECK_EQUAL( "Fault Current", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     3, now ) );
+
+    BOOST_CHECK_EQUAL( "Emergency Voltage", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     4, now ) );
+
+    BOOST_CHECK_EQUAL( "Time ONOFF", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     5, now ) );
+
+    BOOST_CHECK_EQUAL( "OVUV Control", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     6, now ) );
+
+    BOOST_CHECK_EQUAL( "VAR", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     7, now ) );
+
+    BOOST_CHECK_EQUAL( "Va", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     8, now ) );
+
+    BOOST_CHECK_EQUAL( "Vb", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),     9, now ) );
+
+    BOOST_CHECK_EQUAL( "Vc", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    10, now ) );
+
+    BOOST_CHECK_EQUAL( "Ia", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    11, now ) );
+
+    BOOST_CHECK_EQUAL( "Ib", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    12, now ) );
+
+    BOOST_CHECK_EQUAL( "Ic", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    13, now ) );
+
+    BOOST_CHECK_EQUAL( "Temp", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    14, now ) );
+
+    BOOST_CHECK_EQUAL( "Remote", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    15, now ) );
+
+    BOOST_CHECK_EQUAL( "Time", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    16, now ) );
+
+    BOOST_CHECK_EQUAL( "Reclose Block", points->getLastControlText() );
+
+    now += 1;
+    BOOST_CHECK( points->setTwoWayAnalogPointValue(
+                    points->getPointIdByAttribute( PointAttribute::LastControlReason ),    17, now ) );
 
     BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
 }

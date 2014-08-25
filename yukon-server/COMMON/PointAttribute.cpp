@@ -69,6 +69,8 @@ const PointAttribute PointAttribute::OvCount                       = PointAttrib
 const PointAttribute PointAttribute::CloseOpCount                  = PointAttribute(PointAttribute::CloseOpCountAttribute,                 "Close Op Count");
 const PointAttribute PointAttribute::OpenOpCount                   = PointAttribute(PointAttribute::OpenOpCountAttribute,                  "Open Op Count");
 
+const PointAttribute PointAttribute::LastControlReason             = PointAttribute(PointAttribute::LastControlReasonAttribute,            "Last Control Reason");
+
 const PointAttribute& PointAttribute::valueOf(const std::string& name)
 {
     AttributeMap::iterator itr = nameToAttributeMap.find(name);

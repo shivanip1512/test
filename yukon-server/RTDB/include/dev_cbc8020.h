@@ -19,9 +19,7 @@ public:
     Cbc8020Device() {};
 
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    static void initOffsetAttributeMaps( std::map <int, PointAttribute> &analogOffsetAttribute,
-                                          std::map <int, PointAttribute> &statusOffsetAttribute,
-                                          std::map <int, PointAttribute> &accumulatorOffsetAttribute);
+
 protected:
     typedef Cbc7020Device Inherited;
     enum PointOffsets
