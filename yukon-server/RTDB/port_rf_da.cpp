@@ -31,7 +31,7 @@ std::string RfDaPort::getSQLCoreStatement()
             "YukonPAObject YP "
             "JOIN RfnAddress RFN ON YP.paobjectid = RFN.deviceid "
         "WHERE "
-            "type='RFN-1200'";
+            "type='RFN-1200'"; //  Future RF-DA device types will need to be added here as well.
 
     return sql;
 }
