@@ -16,19 +16,19 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.multispeak.dao.MspLMMappingDao;
-import com.cannontech.multispeak.db.MspLMInterfaceMapping;
+import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
+import com.cannontech.multispeak.db.MspLmMapping;
 
-public class MspLMInterfaceMappingDaoImpl implements MspLMMappingDao {
+public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
 
 	private final String TABLENAME = "MspLMInterfaceMapping";
 	@Autowired private YukonJdbcTemplate jdbcTemplate;
 	@Autowired private NextValueHelper nextValueHelper;
     @Autowired private PaoDao paoDao;
 
-    private final ParameterizedRowMapper<MspLMInterfaceMapping> mspLMInterfaceMappingRowMapper = new ParameterizedRowMapper<MspLMInterfaceMapping>() {
+    private final ParameterizedRowMapper<MspLmMapping> mspLMInterfaceMappingRowMapper = new ParameterizedRowMapper<MspLmMapping>() {
         @Override
-        public MspLMInterfaceMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public MspLmMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspLMInterfaceMapping(rs);
         };
     };
@@ -61,7 +61,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMMappingDao {
 	}
 	
 	@Override
-	public MspLMInterfaceMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException {
+	public MspLmMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException {
 		try {
             String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
                          " FROM " + TABLENAME +
@@ -75,7 +75,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMMappingDao {
 	}
 
 	@Override
-	public MspLMInterfaceMapping getForStrategyAndSubstation(
+	public MspLmMapping getForStrategyAndSubstation(
 			String strategyName, String substationName) throws NotFoundException {
 		try {
             String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
@@ -104,7 +104,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMMappingDao {
 	}
 
 	@Override
-	public List<MspLMInterfaceMapping> getAllMappings() {
+	public List<MspLmMapping> getAllMappings() {
         String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
                      " FROM " + TABLENAME;
 		
@@ -129,7 +129,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMMappingDao {
 		return (result == 1);
 	}
 
-    private MspLMInterfaceMapping createMspLMInterfaceMapping( ResultSet rset) throws SQLException {
+    private MspLmMapping createMspLMInterfaceMapping( ResultSet rset) throws SQLException {
 
         int mspLMInterfaceMappingID = rset.getInt(1);
         String strategyName = SqlUtils.convertDbValueToString(rset.getString(2).trim());
@@ -137,7 +137,7 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMMappingDao {
         int paobjectId = rset.getInt(4);
         String paoName = paoDao.getYukonPAOName(paobjectId);
         
-        MspLMInterfaceMapping mspLMInterfaceMapping = new MspLMInterfaceMapping(mspLMInterfaceMappingID,
+        MspLmMapping mspLMInterfaceMapping = new MspLmMapping(mspLMInterfaceMappingID,
         																		strategyName,
         																		substationName,
         																		paobjectId,

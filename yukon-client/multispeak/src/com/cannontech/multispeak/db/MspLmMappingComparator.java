@@ -4,23 +4,23 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-public class MspLMMappingComparator implements
-		Comparator<MspLMInterfaceMapping> {
+public class MspLmMappingComparator implements
+		Comparator<MspLmMapping> {
 	
 	private MspLmMappingColumn column;
 	private boolean ascending;
 	
-	public MspLMMappingComparator(MspLmMappingColumn column, boolean ascending) {
+	public MspLmMappingComparator(MspLmMappingColumn column, boolean ascending) {
 		
 		this.column = column;
 		this.ascending = ascending;
 	}
 	
 	@Override
-	public int compare(MspLMInterfaceMapping o1, MspLMInterfaceMapping o2) {
+	public int compare(MspLmMapping o1, MspLmMapping o2) {
 		
-		MspLMInterfaceMapping obj1 = o1;
-		MspLMInterfaceMapping obj2 = o2;
+		MspLmMapping obj1 = o1;
+		MspLmMapping obj2 = o2;
 		if (ascending) {
 		    obj1 = o2;
 			obj2 = o1;

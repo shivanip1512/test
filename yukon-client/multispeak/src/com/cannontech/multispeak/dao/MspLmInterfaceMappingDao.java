@@ -3,9 +3,9 @@ package com.cannontech.multispeak.dao;
 import java.util.List;
 
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.multispeak.db.MspLMInterfaceMapping;
+import com.cannontech.multispeak.db.MspLmMapping;
 
-public interface MspLMMappingDao {
+public interface MspLmInterfaceMappingDao {
 
     public boolean add(String strategyName, String substationName, int paobjectId);
     
@@ -23,9 +23,9 @@ public interface MspLMMappingDao {
 
     public boolean removeAllByStrategyName(String strategyName);
 
-    public MspLMInterfaceMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException;
+    public MspLmMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException;
     
-    public MspLMInterfaceMapping getForStrategyAndSubstation(String strategyName, String substationName) throws NotFoundException;
+    public MspLmMapping getForStrategyAndSubstation(String strategyName, String substationName) throws NotFoundException;
     
     /**
      * Search for a mapping for a given strategy and substation.
@@ -37,6 +37,6 @@ public interface MspLMMappingDao {
      */
     public Integer findIdForStrategyAndSubstation(String strategyName, String substationName);
 			
-    public List<MspLMInterfaceMapping> getAllMappings();
+    public List<MspLmMapping> getAllMappings();
 
 }

@@ -6,14 +6,14 @@ import java.util.List;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
 
 public class MspLoadControl {
-    private List<MspLMInterfaceMapping> mspLmInterfaceMappings;
+    private List<MspLmMapping> mspLmInterfaceMappings;
     private ControlEventType controlEventType;
     private Date startTime;
     private Date stopTime;
     
     public MspLoadControl() { }
 
-    public MspLoadControl(List<MspLMInterfaceMapping> mspLmInterfaceMappings,
+    public MspLoadControl(List<MspLmMapping> mspLmInterfaceMappings,
 			ControlEventType controlEventType, Date startTime, Date stopTime) {
 		super();
 		this.mspLmInterfaceMappings = mspLmInterfaceMappings;
@@ -22,12 +22,12 @@ public class MspLoadControl {
 		this.stopTime = stopTime;
 	}
     
-    public List<MspLMInterfaceMapping> getMspLmInterfaceMappings() {
+    public List<MspLmMapping> getMspLmInterfaceMappings() {
 		return mspLmInterfaceMappings;
 	}
 
 	public void setMspLmInterfaceMappings(
-			List<MspLMInterfaceMapping> mspLmInterfaceMappings) {
+			List<MspLmMapping> mspLmInterfaceMappings) {
 		this.mspLmInterfaceMappings = mspLmInterfaceMappings;
 	}
 

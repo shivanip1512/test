@@ -46,13 +46,13 @@ import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
-import com.cannontech.multispeak.dao.MspLMMappingDao;
+import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.db.MspLMGroupCommunications;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
-import com.cannontech.multispeak.db.MspLMInterfaceMapping;
-import com.cannontech.multispeak.db.MspLMMappingComparator;
+import com.cannontech.multispeak.db.MspLmMapping;
+import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.multispeak.db.MspLmMappingColumn;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
@@ -68,7 +68,7 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 
 public class MultispeakLMServiceImpl implements MultispeakLMService {
 
-    @Autowired private MspLMMappingDao mspLMInterfaceMappingDao;
+    @Autowired private MspLmInterfaceMappingDao mspLMInterfaceMappingDao;
 	@Autowired private PaoDao paoDao;
 	@Autowired private FdrTranslationDao fdrTranslationDao;
 	@Autowired private SimplePointAccessDao simplePointAccessDao;
@@ -111,13 +111,13 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
         //build the mspLMInterfaceMapping from strategy and substation names
         String strategyName = loadManagementEvent.getStrategy().getStrategyName();
-        List<MspLMInterfaceMapping> lmInterfaces = new ArrayList<MspLMInterfaceMapping>();
+        List<MspLmMapping> lmInterfaces = new ArrayList<MspLmMapping>();
         ObjectRef[] substations = loadManagementEvent.getStrategy().getApplicationPointList();
         
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
     	for (ObjectRef substationRef : substations) {
 			String substationName = substationRef.getName();
-    		MspLMInterfaceMapping lmInterface = new MspLMInterfaceMapping();
+    		MspLmMapping lmInterface = new MspLmMapping();
     		try {
     			lmInterface = mspLMInterfaceMappingDao.getForStrategyAndSubstation(strategyName, substationName);
     			lmInterfaces.add(lmInterface);
@@ -135,7 +135,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	@Override
 	public ErrorObject control(MspLoadControl mspLoadControl, LiteYukonUser liteYukonUser) {
 		ErrorObject errorObject = null;
-        for (MspLMInterfaceMapping mspLMInterfaceMapping : mspLoadControl.getMspLmInterfaceMappings()) {
+        for (MspLmMapping mspLMInterfaceMapping : mspLoadControl.getMspLmInterfaceMappings()) {
 			try {
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(mspLMInterfaceMapping.getPaobjectId());
 				if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
@@ -290,8 +290,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         List<ControlItem> controlledItemsList = new ArrayList<ControlItem>();
         
         Map<Integer, Integer> programCounts = enrollmentDao.getActiveEnrollmentExcludeOptOutCount(new Date(), new Date());
-        List<MspLMInterfaceMapping> mspLmInterfaceMappingList = mspLMInterfaceMappingDao.getAllMappings();
-        Collections.sort(mspLmInterfaceMappingList, new MspLMMappingComparator(MspLmMappingColumn.SUBSTATION, true) );
+        List<MspLmMapping> mspLmInterfaceMappingList = mspLMInterfaceMappingDao.getAllMappings();
+        Collections.sort(mspLmInterfaceMappingList, new MspLmMappingComparator(MspLmMappingColumn.SUBSTATION, true) );
         
         List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
 		Set<MspLMGroupStatus> allStatus = new HashSet<MspLMGroupStatus>();
@@ -299,7 +299,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
         String prevSubstationName = null;
         boolean exclude = false;
-        for (MspLMInterfaceMapping mspLMInterfaceMapping : mspLmInterfaceMappingList) {
+        for (MspLmMapping mspLMInterfaceMapping : mspLmInterfaceMappingList) {
         	
         	String substationName = mspLMInterfaceMapping.getSubstationName();
         	exclude = strategiesToExcludeInReport.contains(mspLMInterfaceMapping.getStrategyName().toUpperCase());

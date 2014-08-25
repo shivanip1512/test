@@ -19,9 +19,9 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.multispeak.dao.MspLMMappingDao;
-import com.cannontech.multispeak.db.MspLMInterfaceMapping;
-import com.cannontech.multispeak.db.MspLMMappingComparator;
+import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
+import com.cannontech.multispeak.db.MspLmMapping;
+import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.multispeak.db.MspLmMappingColumn;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableMap;
 public class LMMappingsController {
 
     @Autowired private PaoDao paoDao;
-    @Autowired private MspLMMappingDao mspLMMappingDao;
+    @Autowired private MspLmInterfaceMappingDao mspLMMappingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("home")
@@ -111,7 +111,7 @@ public class LMMappingsController {
 
         String mappedName = null;
         try{
-            MspLMInterfaceMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+            MspLmMapping mapping = mspLMMappingDao.getForStrategyAndSubstation(strategyName, substationName);
             int paoId = mapping.getPaobjectId();
             mappedName = paoDao.getYukonPAOName(paoId);
         } catch (NotFoundException e) {
@@ -132,11 +132,11 @@ public class LMMappingsController {
 
         model.addAttribute("columns", columns);
 
-        List<MspLMInterfaceMapping> allMappings = mspLMMappingDao.getAllMappings();
+        List<MspLmMapping> allMappings = mspLMMappingDao.getAllMappings();
 
         MspLmMappingColumn column = MspLmMappingColumn.valueOf(sorting.getSort());
         boolean asc = sorting.getDirection().equals(Direction.asc);
-        Collections.sort(allMappings, new MspLMMappingComparator(column, asc));
+        Collections.sort(allMappings, new MspLmMappingComparator(column, asc));
 
         model.addAttribute("allMappings", allMappings);
     }
