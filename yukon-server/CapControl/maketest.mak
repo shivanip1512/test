@@ -60,7 +60,8 @@ test_pointHolder.obj \
 test_IVVCAlgorithm.obj \
 test_GangOperatedVoltageRegulator.obj \
 test_PhaseOperatedVoltageRegulator.obj \
-test_utils.obj
+test_utils.obj \
+test_TwoWayCBCPoints.obj
 
 
 CAPCTRLBASEOBJS= \
