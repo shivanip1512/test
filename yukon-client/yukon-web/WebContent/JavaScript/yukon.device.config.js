@@ -230,9 +230,9 @@ yukon.deviceConfig = (function () {
                     _openCategoryPopup(btn, url);
                 });
 
-                $(document).on('change', 'input[name^="channelInputs"]', function () {
+                $(document).on('change', 'input[data-channel-read]', function () {
                     var buttons = $('.button-group [data-value]'),
-                        inputs = $('.button-group input[data-input]'),
+                        inputs = $('.button-group input[data-channel-read]'),
                         intervals = buttons.filter(function () {return $(this).data('value') === 'INTERVAL'; }),
                         midnights = buttons.filter(function () {return $(this).data('value') === 'MIDNIGHT'; }),
                         numIntervals = inputs.filter(function () {return $(this).val() === 'INTERVAL'; }).length,
@@ -246,7 +246,7 @@ yukon.deviceConfig = (function () {
                     }
                     if (numIntervals + numMidnights >= 80) {
                         intervals.add(midnights).each(function () {
-                            if ($(this).siblings('input[data-input]').val() === 'DISABLED') {
+                            if ($(this).siblings('input[data-channel-read]').val() === 'DISABLED') {
                                 $(this).prop('disabled', true);
                             }
                         });

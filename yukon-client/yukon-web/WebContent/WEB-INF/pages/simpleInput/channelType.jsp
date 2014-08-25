@@ -51,7 +51,7 @@
                         data-channel="${loopStatus.index}" data-value="${readType}" />
                 </c:forEach>
                 <spring:bind path="channelInputs[${loopStatus.index}].read" htmlEscape="true">
-                    <input type="hidden" name="${status.expression}" value="${status.value}" data-input />
+                    <input type="hidden" name="${status.expression}" data-channel-read value="${status.value}" data-input />
                 </spring:bind>
             </div>
             <spring:bind path="channelInputs[${loopStatus.index}].attribute" htmlEscape="true">
