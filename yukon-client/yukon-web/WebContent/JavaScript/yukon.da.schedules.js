@@ -66,7 +66,7 @@ yukon.da.schedules = (function () {
                             'paoId': btn.data('paoId'),
                             'com.cannontech.yukon.request.csrf.token': btn.data('csrfToken')
                     };
-                $.post(removeUrl, data).success(function () {
+                $.post(removeUrl, data).done(function () {
                     var dropdownMenu = btn.closest('.dropdown-menu'),
                         dropdownTrigger = dropdownMenu.data('trigger'),
                         row = dropdownTrigger.closest('tr');
