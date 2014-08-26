@@ -1,25 +1,49 @@
-
-yukon.namespace('yukon.dr');
 yukon.namespace('yukon.dr.assetDetails');
 
+/**
+ * Handles Asset Availability operations.
+ * 
+ * @module yukon.dr.assetDetails
+ * @requires JQUERY
+ * @requires yukon
+ * @requires yukon.ui
+ */
 yukon.dr.assetDetails = (function() {
-    var
-    _initialized = false, 
-    _assetId = "", // Set in intializer
-    _itemsPerPage = "", // Set in intializer
-    _aaDiv = '', // Set in initializer
+
+    var _initialized = false,
     
+    /** @type {string} - Asset Id. */
+    _assetId = "",
+    
+    /** @type {string} - Number of items to be shown per page */
+    _itemsPerPage = "",
+    
+    /** @type {Object} - Reference of div */
+    _aaDiv = '',
+
+    /**
+     * Get the filter attributes
+     * @returns {Object} - Returns list of filter attributes.
+     */
     _getFilter = function() {
         var filter = [];
-        $('[data-filter].on').each(function (idx, item) {
+        $('[data-filter].on').each(function(idx, item) {
             filter.push($(item).data('filter'));
         });
         return filter;
     },
 
-    _doFilterTable  = function(event) {
+    /**
+     * Filter table data
+     * @param {Object} event - jquery event object.
+     * @returns {boolean} - Returns false after loading data.
+     */
+    _doFilterTable = function(event) {
         $(event.currentTarget).toggleClass('on');
-        var data = {'assetId': _assetId, 'filter': _getFilter()};
+        var data = {
+            'assetId' : _assetId,
+            'filter' : _getFilter()
+        };
         if ("" != _itemsPerPage) {
             data.itemsPerPage = _itemsPerPage;
         }
@@ -27,27 +51,39 @@ yukon.dr.assetDetails = (function() {
         return false;
     },
 
+    /**
+     * Download data to a CSV
+     * @param {Object} event - jquery event object.
+     * @returns {boolean} - Returns false after download request.
+     */
     _downloadToCsv = function(event) {
-        var data = {'assetId': _assetId, 'filter': _getFilter()},
-            param = $.param(data);
+        var data = {
+            'assetId' : _assetId,
+            'filter' : _getFilter()
+        }, param = $.param(data);
         window.location = 'downloadToCsv?' + param;
         return false;
     },
 
+    /**
+     * Send request to ping a device
+     * @param {Object} event - jquery event object.
+     * @returns {boolean} - Returns true after completion
+     */
     _pingDevices = function(event) {
         $('#pingResults').show();
         $('.progressbar-percent-complete').text("0%");
         $('.progress-bar').width(0);
         var url = "pingDevices?assetId=" + _assetId;
         $.ajax({
-            url: url,
-            method: 'POST'
+            url : url,
+            method : 'POST'
         });
         return true;
     },
-    
+
     mod = {
-        init: function () {
+        init : function() {
             if (_initialized) {
                 return;
             }
@@ -59,28 +95,31 @@ yukon.dr.assetDetails = (function() {
             $(document).on('click', '[data-filter]', _doFilterTable);
             $(document).on('click', '#dd-download', _downloadToCsv);
             $(document).on('click', '#pingButton', _pingDevices);
-            
+
             if (_aaDiv.length) {
                 yukon.ui.elementGlass.show(_aaDiv);
                 $.ajax('assetAvailability', {
-                    data: {'paoId': _assetId}
+                    data : {
+                        'paoId' : _assetId
+                    }
                 }).done(function(data) {
                     _aaDiv.html(data);
                     yukon.ui.elementGlass.hide(_aaDiv);
                 });
             }
-            
+
             _initialized = true;
         },
-        
-        unbusyPingButton: function() {
+
+        /** Unbusy the ping button */
+        unbusyPingButton : function() {
             yukon.ui.unbusy($('#pingButton'));
         }
 
     };
-    
+
     return mod;
-    
+
 }());
 
 $(function() {
