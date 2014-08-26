@@ -57,45 +57,7 @@ yukon.da = (function () {
             $('#alertMessageContainer').hide('fade', {}, 3000);
         },
 
-        mod = {
-
-        init : function() {
-            $(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
-                pointPicker.show.call(pointPicker);
-            });
-            $(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
-                bankPicker.show.call(bankPicker);
-            });
-
-            /* bank move */
-            $(document).on('click', 'li.toggle', function(e) {
-                if (e.target === e.currentTarget) {
-                    var li = $(this);
-                    var subMenu = li.find('ul:first');
-                    if (subMenu[0]) {
-                        subMenu.toggle();
-                        li.toggleClass('minus').toggleClass('plus');
-                    }
-                    return false;
-                }
-                return true;
-            });
-
-            if ($('[data-has-control]').length) {
-                mod.initBankTier();
-            }
-
-            /* creation menu popup */
-            $('.js-cc-create').click(function() {
-                var content = $('#contentPopup');
-                content.load(yukon.url('/capcontrol/menu/create'), function() {
-                    var title = content.find('input.title').val();
-                    content.dialog({title: title});
-                });
-            });
-        },
-
-        initBankTier: function() {
+        _initBankTier =  function () {
 
             var banks = $('[data-bank-id]');
             banks.each( function(index, item){
@@ -143,6 +105,44 @@ yukon.da = (function () {
 
                 stateMenuOpener.click( function(event){
                     mod.getMenuFromURL(yukon.url('/capcontrol/menu/capBankState?id=' + bankId), event, {showNote: true});
+                });
+            });
+        },
+
+        mod = {
+
+        init : function() {
+            $(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
+                pointPicker.show.call(pointPicker);
+            });
+            $(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
+                bankPicker.show.call(bankPicker);
+            });
+
+            /* bank move */
+            $(document).on('click', 'li.toggle', function(e) {
+                if (e.target === e.currentTarget) {
+                    var li = $(this);
+                    var subMenu = li.find('ul:first');
+                    if (subMenu[0]) {
+                        subMenu.toggle();
+                        li.toggleClass('minus').toggleClass('plus');
+                    }
+                    return false;
+                }
+                return true;
+            });
+
+            if ($('[data-has-control]').length) {
+                _initBankTier();
+            }
+
+            /* creation menu popup */
+            $('.js-cc-create').click(function() {
+                var content = $('#contentPopup');
+                content.load(yukon.url('/capcontrol/menu/create'), function() {
+                    var title = content.find('input.title').val();
+                    content.dialog({title: title});
                 });
             });
         },

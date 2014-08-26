@@ -1,6 +1,6 @@
-yukon.namespace('yukon.da.moved.banks');
+yukon.namespace('yukon.da.movedBanks');
 
-yukon.da.moved.banks = (function () {
+yukon.da.movedBanks = (function () {
 
     var mod;
 
@@ -27,4 +27,4 @@ yukon.da.moved.banks = (function () {
     return mod;
 }());
 
-$(function () { yukon.da.moved.banks.init(); });
+$(function () { yukon.da.movedBanks.init(); });
