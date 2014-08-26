@@ -16,8 +16,15 @@
 
 
 
-class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread
+class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread, private boost::noncopyable
 {
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiTagManager(const CtiTagManager&);
+    CtiTagManager& operator=(const CtiTagManager&);
+
 public:
 
     typedef std::map< int, CtiTagMsg* >    TagMgrMap_t;
@@ -67,10 +74,7 @@ private:
 public:
 
     CtiTagManager();
-    CtiTagManager(const CtiTagManager& aRef);
     virtual ~CtiTagManager();
-
-    CtiTagManager& operator=(const CtiTagManager& aRef);
 
     int processTagMsg(CtiTagMsg &tag);
 

@@ -11,8 +11,15 @@
 
 #define SIGNAL_MANAGER_MASK (MASK_ANY_ALARM|TAG_ACTIVE_CONDITION)
 
-class IM_EX_CTIVANGOGH CtiSignalManager
+class IM_EX_CTIVANGOGH CtiSignalManager : private boost::noncopyable
 {
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiSignalManager(const CtiSignalManager&);
+    CtiSignalManager& operator=(const CtiSignalManager&);
+
 public:
 
     typedef std::map< std::pair< long, int >, CtiSignalMsg* > SigMgrMap_t;
@@ -31,12 +38,7 @@ private:
 public:
 
     CtiSignalManager();
-
-    CtiSignalManager(const CtiSignalManager& aRef);
-
     virtual ~CtiSignalManager();
-
-    CtiSignalManager& operator=(const CtiSignalManager& aRef);
 
     CtiSignalManager& addSignal(const CtiSignalMsg &sig, bool markDirty = true);                   // The manager adds an active and unacknowledged alarm on this condition for this point.
 

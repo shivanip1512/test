@@ -40,12 +40,6 @@ _dirty(false)
 {
 }
 
-CtiSignalManager::CtiSignalManager(const CtiSignalManager& aRef) :
-_dirty(false)
-{
-    *this = aRef;
-}
-
 CtiSignalManager::~CtiSignalManager()
 {
     SigMgrMap_t::iterator itr;
@@ -74,18 +68,6 @@ CtiSignalManager::~CtiSignalManager()
             }
         }
     }
-}
-
-CtiSignalManager& CtiSignalManager::operator=(const CtiSignalManager& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
 }
 
 CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool markDirty/*=true*/)

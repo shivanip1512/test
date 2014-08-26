@@ -39,12 +39,6 @@ _dirty(false)
 {
 }
 
-CtiTagManager::CtiTagManager(const CtiTagManager& aRef) :
-_dirty(false)
-{
-    *this = aRef;
-}
-
 CtiTagManager::~CtiTagManager()
 {
     TagMgrMap_t::iterator itr;
@@ -77,18 +71,6 @@ CtiTagManager::~CtiTagManager()
         processTagLogQueue();
         processDynamicRemovals();
     }
-}
-
-CtiTagManager& CtiTagManager::operator=(const CtiTagManager& aRef)
-{
-    if(this != &aRef)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
 }
 
 int CtiTagManager::processTagMsg(CtiTagMsg &tag)
