@@ -22,7 +22,7 @@ public:
 
     virtual std::string getLastControlText() = 0;
 
-    CtiCCTwoWayPoints& setPAOId(long paoId);
+    void setPAOId(long paoId);
 
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
     int getPointIdByAttribute(const PointAttribute & attribute) const;
@@ -34,7 +34,7 @@ public:
     bool setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp);
     bool setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp);
 
-    CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::set<long>& pointList);
+    void addAllCBCPointsToRegMsg(std::set<long>& pointList);
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void restore(Cti::RowReader& rdr);
@@ -57,10 +57,9 @@ private:
     std::map <int, CtiPointType_t> _pointidPointtypeMap;
 
     PointAttribute getAttribute(int pointtype, int offset);
-    PointAttribute getAnalogAttribute(int offset);
-    PointAttribute getAccumulatorAttribute(int offset);
-    PointAttribute getStatusAttribute(int offset);
+
     bool isTimestampNew(long pointID, CtiTime timestamp);
+    bool setTwoWayPointValue(long pointID, long value, CtiPointType_t type, CtiTime timestamp);
 
     virtual int encodeLastControlReasonForDB() = 0;
     virtual void decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp ) = 0;

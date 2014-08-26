@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     PointInitializer    databaseInput[] =
     {
-        // These offsets are defined in the device code
+        // These type/offsets are defined in the 2-way point code for CBC 702X devices
         { AnalogPointType,                  5,      739 },
         { AnalogPointType,                  6,      691 },
         { AnalogPointType,                  7,      732 },
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     PointInitializer    databaseInput[] =
     {
-        // These offsets are defined in the device code
+        // These type/offsets are defined in the 2-way point code for CBC 802X devices
         { AnalogPointType,                  2,      335 },
         { AnalogPointType,                 12,      340 },
         { AnalogPointType,              10001,      331 },
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         { StatusPointType,                 89,      336 },
         { PulseAccumulatorPointType,        4,      330 },
         { PulseAccumulatorPointType,        5,      350 },
-        // The following are not in either one
+        // The following are not...
         { AnalogPointType,                  1,      342 },
         { AnalogPointType,                  5,      355 },
         { AnalogPointType,                  6,      357 },

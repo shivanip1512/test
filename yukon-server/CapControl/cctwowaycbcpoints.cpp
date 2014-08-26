@@ -4,8 +4,13 @@
 #include "ccid.h"
 #include "database_util.h"
 #include "ccutil.h"
+#include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 using std::string;
 using std::endl;
@@ -75,18 +80,14 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(long paoid, string paotype)
                 ;
 }
 
-
 long CtiCCTwoWayPoints::getPAOId() const
 {
     return _paoid;
 }
 
-
-
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setPAOId(long paoId)
+void CtiCCTwoWayPoints::setPAOId(long paoId)
 {
     _paoid = paoId;
-    return *this;
 }
 
 void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
@@ -245,14 +246,11 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
 LitePoint CtiCCTwoWayPoints::getPointByAttribute(const PointAttribute & attribute) const
 {
-    AttributePoint::const_iterator iter = _attributes.find(attribute);
-
-    if ( iter == _attributes.end() )
+    if ( boost::optional<LitePoint> lookup = Cti::mapFind( _attributes, attribute ) )
     {
-        throw MissingPointAttribute( _paoid, attribute, _paotype );
+        return *lookup;
     }
-
-    return iter->second;
+    throw MissingPointAttribute( _paoid, attribute, _paotype );
 }
 
 int CtiCCTwoWayPoints::getPointIdByAttribute(const PointAttribute & attribute) const
@@ -268,46 +266,40 @@ int CtiCCTwoWayPoints::getPointIdByAttribute(const PointAttribute & attribute) c
         dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
         return 0;
     }
-
 }
 
 PointAttribute CtiCCTwoWayPoints::getAttribute(int pointtype, int offset)
 {
-    switch (pointtype)
+    OffsetAttributeMappings * selectedMap = 0;
+
+    switch ( pointtype )
     {
         case StatusPointType:
         {
-            return getStatusAttribute(offset);
+            selectedMap = &_statusOffsetAttribute;
             break;
         }
         case AnalogPointType:
         {
-            return getAnalogAttribute(offset);
+            selectedMap = &_analogOffsetAttribute;
             break;
         }
         case PulseAccumulatorPointType:
         {
-            return getAccumulatorAttribute(offset);
-            break;
-    }
-        default:
-        {
-            return PointAttribute::Unknown;
+            selectedMap = &_accumulatorOffsetAttribute;
             break;
         }
     }
-}
-PointAttribute CtiCCTwoWayPoints::getAnalogAttribute(int offset)
-{
-    return (_analogOffsetAttribute.find(offset) != _analogOffsetAttribute.end() ? _analogOffsetAttribute.find(offset)->second : PointAttribute::Unknown);
-}
-PointAttribute CtiCCTwoWayPoints::getStatusAttribute(int offset)
-{
-    return (_statusOffsetAttribute.find(offset) != _statusOffsetAttribute.end() ? _statusOffsetAttribute.find(offset)->second : PointAttribute::Unknown);
-}
-PointAttribute CtiCCTwoWayPoints::getAccumulatorAttribute(int offset)
-{
-    return (_accumulatorOffsetAttribute.find(offset) != _accumulatorOffsetAttribute.end() ? _accumulatorOffsetAttribute.find(offset)->second : PointAttribute::Unknown);
+
+    if ( selectedMap )
+    {
+        if ( boost::optional<PointAttribute> lookup = Cti::mapFind( *selectedMap, offset ) )
+        {
+            return *lookup;
+        }
+    }
+
+    return PointAttribute::Unknown;
 }
 
 bool CtiCCTwoWayPoints::setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId)
@@ -333,8 +325,8 @@ bool CtiCCTwoWayPoints::setTwoWayPointId(CtiPointType_t pointtype, int offset, l
         return false;
     }
     return true;
-
 }
+
 double CtiCCTwoWayPoints::getPointValueByAttribute(PointAttribute attribute, const double sentinel)
 {
     double value = sentinel;
@@ -344,71 +336,45 @@ double CtiCCTwoWayPoints::getPointValueByAttribute(PointAttribute attribute, con
 
 bool CtiCCTwoWayPoints::isTimestampNew(long pointID, CtiTime timestamp)
 {
-    bool retVal = true;
     CtiTime prevTime = gInvalidCtiTime;
-    if (_pointValues.getPointTime(pointID, prevTime) && timestamp <= prevTime)
+    return ! (_pointValues.getPointTime(pointID, prevTime) && timestamp <= prevTime);
+}
+
+bool CtiCCTwoWayPoints::setTwoWayPointValue(long pointID, long value, CtiPointType_t type, CtiTime timestamp)
+{
+    boost::optional<CtiPointType_t> lookupType = Cti::mapFind( _pointidPointtypeMap, pointID );
+    if ( lookupType && *lookupType == type && isTimestampNew( pointID, timestamp ) )
     {
-        retVal = false;
+        _pointValues.addPointValue(pointID, value, timestamp);
+        _dirty = true;
+        return true;
     }
-    return retVal;
+    return false;
 }
 
 bool CtiCCTwoWayPoints::setTwoWayStatusPointValue(long pointID, long value, CtiTime timestamp)
 {
-    bool retVal = false;
-    if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
-        return retVal;
-    if ( _pointidPointtypeMap.find(pointID)->second == StatusPointType &&
-         (retVal = isTimestampNew(pointID, timestamp)) )
-    {
-        _pointValues.addPointValue(pointID, value, timestamp);
-        _dirty = true;
-    }
-    return retVal;
+    return setTwoWayPointValue( pointID, value, StatusPointType, timestamp );
 }
+
 bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp)
 {
-    bool retVal = false;
-    if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
-        return retVal;
-    if ( _pointidPointtypeMap.find(pointID)->second == AnalogPointType &&
-         (retVal = isTimestampNew(pointID, timestamp)) )
-    {
-        _pointValues.addPointValue(pointID, value, timestamp);
-        _dirty = true;
-    }
-    return retVal;
+    return setTwoWayPointValue( pointID, value, AnalogPointType, timestamp );
 }
+
 bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp)
 {
-    bool retVal = false;
-    if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
-        return retVal;
-    if ( _pointidPointtypeMap.find(pointID)->second == PulseAccumulatorPointType &&
-         (retVal = isTimestampNew(pointID, timestamp)) )
-    {
-        _pointValues.addPointValue(pointID, value, timestamp);
-        _dirty = true;
-    }
-    return retVal;
+    return setTwoWayPointValue( pointID, value, PulseAccumulatorPointType, timestamp );
 }
 
-
-
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& pointList)
+void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& pointList)
 {
-    AttributePoint::const_iterator iter = _attributes.begin();
-    while ( iter != _attributes.end() )
-    {
-        if ( (iter->second).getPointId() > 0)
-        {
-            pointList.insert((iter->second).getPointId());
-        }
-        iter++;
-    }
-    return *this;
+    boost::copy( _attributes
+                    | boost::adaptors::map_values
+                    | boost::adaptors::transformed( std::mem_fun_ref( &LitePoint::getPointId ) )
+                    | boost::adaptors::filtered( std::bind2nd( std::greater<long>(), 0 ) ),
+                 std::inserter( pointList, pointList.begin() ) );
 }
-
 
 struct ColumnMapping
 {
@@ -458,15 +424,11 @@ static const TwoWayColumns[] =
 
 void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTime timestamp)
 {
-
-
-
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::CapacitorBankState), cbcState, timestamp);
+
     for each( const ColumnMapping &cm in TwoWayColumns )
     {
         double value;
-
-
 
         if( cm.type == ColumnMapping::Boolean )
         {
@@ -733,7 +695,6 @@ int CtiCCTwoWayPointsCbc802x::encodeLastControlReasonForDB()
 
     return lastControlReason;
 }
-
 
 void CtiCCTwoWayPointsCbc802x::decodeLastControlReasonFromDB( const int lastControlReason, const CtiTime & timestamp )
 {
