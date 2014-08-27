@@ -1080,7 +1080,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                                  << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
                             dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                         }
-                        status = NOTNORMAL;
+                        status = SOCKWRITE;
                     }
 
                     //We had a comm error and need to report it.
