@@ -37,10 +37,6 @@ public class LogHelper {
         log(log, Level.WARN, format, args);
     }
 
-    public void warn(String format, Object ... args) {
-        warn(log, format, args);
-    }
-    
     public static void debug(Logger log, String format, Object ... args) {
         if (log.isDebugEnabled()) {
             String output = String.format(format, processArgs(args));
@@ -59,10 +55,6 @@ public class LogHelper {
         }
     }
 
-    public void trace(String format, Object ... args) {
-        trace(log, format, args);
-    }
-    
     private static Object[] processArgs(Object[] args) {
         Object[] result = new Object[args.length];
         for (int i = 0; i < result.length; i++) {
