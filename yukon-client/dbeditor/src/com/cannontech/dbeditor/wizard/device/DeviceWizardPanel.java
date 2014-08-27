@@ -178,12 +178,13 @@ public class DeviceWizardPanel extends WizardPanel {
 
     @Override
     protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel) {
+        
+        PaoType devType = getDeviceTypePanel().getDeviceType();
+        
         if (currentInputPanel == null) {
             getDeviceTypePanel().setFirstFocus();
             return getDeviceTypePanel();
         } else if (currentInputPanel == getDeviceTypePanel()) {
-            PaoType devType = getDeviceTypePanel().getDeviceType();
-
             if (devType == PaoType.TAPTERMINAL || devType == PaoType.TNPP_TERMINAL || devType == PaoType.RDS_TERMINAL) {
                 getDeviceTapTerminalPanel().setDeviceType(devType);
                 getDeviceTapTerminalPanel().setFirstFocus();
@@ -213,7 +214,6 @@ public class DeviceWizardPanel extends WizardPanel {
                 return getDeviceNameAddressPanel();
             }
         } else if (currentInputPanel == getDeviceBaseNamePanel()) {
-            PaoType devType = getDeviceTypePanel().getDeviceType();
             if (devType.isIed()) {
                 getDeviceMeterNumberPanel().setFirstFocus();
                 return getDeviceMeterNumberPanel();
@@ -222,8 +222,6 @@ public class DeviceWizardPanel extends WizardPanel {
                 return getRfnBasePanel();
             }
         } else if ((currentInputPanel == getDeviceNameAddressPanel()) || (currentInputPanel == getDeviceIEDNamePanel())) {
-            PaoType devType = getDeviceTypePanel().getDeviceType();
-
             if (devType.isIed() || devType.isMct()) {
                 getDeviceMeterNumberPanel().setValue(null);
                 if (DeviceTypesFuncs.isMCT2XXORMCT310XX(devType)) {
@@ -237,7 +235,7 @@ public class DeviceWizardPanel extends WizardPanel {
                 getDeviceMeterNumberPanel().setFirstFocus();
                 return getDeviceMeterNumberPanel();
             } else if (devType == PaoType.DAVISWEATHER) {
-                getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+                getDeviceScanRatePanel().setDeviceType(devType);
                 getDeviceScanRatePanel().setFirstFocus();
                 return getDeviceScanRatePanel();
             } else if (devType == PaoType.MCTBROADCAST) {
@@ -248,12 +246,11 @@ public class DeviceWizardPanel extends WizardPanel {
             } else if (devType == PaoType.RDS_TERMINAL) {
                 return getRDSTerminalPanel();
             } else {
-                getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+                getDeviceScanRatePanel().setDeviceType(devType);
                 getDeviceScanRatePanel().setFirstFocus();
                 return getDeviceScanRatePanel();
             }
         } else if (currentInputPanel == getDeviceMeterNumberPanel()) {
-            PaoType devType = getDeviceTypePanel().getDeviceType();
             if (devType.isRfn()) {
                 getRfnBasePanel().setFirstFocus();
                 return getRfnBasePanel();
@@ -263,8 +260,6 @@ public class DeviceWizardPanel extends WizardPanel {
                 return getDeviceScanRatePanel();
             }
         } else if (currentInputPanel == getDeviceScanRatePanel()) {
-            PaoType devType = getDeviceTypePanel().getDeviceType();
-
             if (devType.isPlc() || devType.isRepeater()) {
                 getDeviceRoutePanel().setValue(null);
                 getDeviceRoutePanel().setFirstFocus();
@@ -275,24 +270,26 @@ public class DeviceWizardPanel extends WizardPanel {
             } else if (devType.isRtu() || devType.isIon() || devType.isCcu()) {
                 getDeviceCommChannelPanel().setValue(null);
                 getDeviceCommChannelPanel().setAddress(new Integer(getDeviceNameAddressPanel().getAddress()).intValue());
-                getDeviceCommChannelPanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+                getDeviceCommChannelPanel().setDeviceType(devType);
                 getDeviceCommChannelPanel().setFirstFocus();
                 return getDeviceCommChannelPanel();
             } else if (paoDefinitionDao.isTagSupported(devType, PaoTag.IPC_METER)) {
                 getTcpTerminalPanel().setFirstFocus();
                 return getTcpTerminalPanel();
-            } else
+            } else {
+                getDeviceCommChannelPanel().setDeviceType(devType);
                 getDeviceCommChannelPanel().setFirstFocus();
+            }
             return getDeviceCommChannelPanel();
         } else if (currentInputPanel == getDeviceSixnetWizardPanel()) {
             getDeviceCommChannelPanel().setValue(null);
+            getDeviceCommChannelPanel().setDeviceType(devType);
             getDeviceCommChannelPanel().setFirstFocus();
             return getDeviceCommChannelPanel();
         } else if (currentInputPanel == getDeviceTapTerminalPanel()) {
-            PaoType devType = getDeviceTypePanel().getDeviceType();
-
             if (devType == PaoType.TAPTERMINAL) {
                 getDeviceCommChannelPanel().setValue(null);
+                getDeviceCommChannelPanel().setDeviceType(devType);
                 getDeviceCommChannelPanel().setFirstFocus();
                 return getDeviceCommChannelPanel();
             }
@@ -307,11 +304,13 @@ public class DeviceWizardPanel extends WizardPanel {
             return null;
         } else if (currentInputPanel == getDeviceTapVerizonPanel() || currentInputPanel == getDeviceTNPPTerminalPanel()) {
             getDeviceCommChannelPanel().setValue(null);
+            getDeviceCommChannelPanel().setDeviceType(devType);
             getDeviceCommChannelPanel().setFirstFocus();
             return getDeviceCommChannelPanel();
         } else if (currentInputPanel == getDeviceCommChannelPanel()) {
             // To get to this point the device must be a dialup device
             // If it isn't better go find out why we got here!
+            getDeviceCommChannelPanel().setDeviceType(devType);
             getDeviceCommChannelPanel().setFirstFocus();
             return getDevicePhoneNumberPanel();
         } else if (currentInputPanel == getMCTBroadcastListEditorPanel()) {
@@ -320,6 +319,7 @@ public class DeviceWizardPanel extends WizardPanel {
             return getDeviceRoutePanel();
         } else if (currentInputPanel == getRDSTerminalPanel()) {
             getDeviceCommChannelPanel().setFirstFocus();
+            getDeviceCommChannelPanel().setDeviceType(devType);
             return getDeviceCommChannelPanel();
         } else
             throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
