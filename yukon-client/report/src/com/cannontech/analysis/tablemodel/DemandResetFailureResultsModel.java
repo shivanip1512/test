@@ -64,8 +64,6 @@ public class DemandResetFailureResultsModel extends BareReportModelBase<DemandRe
                 if (error != null) {
                     row.errorDescription = error.getDescription();
                     row.errorCode = String.valueOf(error.getErrorCode());
-                } else {
-                    row.errorDescription =  result.getCustomError(device);
                 }
                 data.add(row);
             }

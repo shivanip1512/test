@@ -109,12 +109,12 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
     }
 
     @Override
-    public void failed(SimpleDevice device, String reason) {
-        log.error("device " + device + " failed verification because \"" + reason + '"');
+    public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
+        log.error("device " + device + " failed verification because \"" + error.getDescription() + '"');
     }
 
     @Override
-    public void cannotVerify(SimpleDevice device, String reason) {
-        log.error("device " + device + " cannot be verified because \"" + reason + '"');
+    public void cannotVerify(SimpleDevice device, SpecificDeviceErrorDescription error) {
+        log.error("device " + device + " cannot be verified because \"" + error.getDescription() + '"');
     }
 }
