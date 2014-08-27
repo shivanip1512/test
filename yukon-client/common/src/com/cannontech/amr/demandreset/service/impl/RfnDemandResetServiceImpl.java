@@ -213,7 +213,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         qrTemplate = new RequestReplyTemplateImpl<RfnMeterDemandResetReply>(
                 configurationName, configurationSource, connectionFactory, queueName, false);
         verificationTimeout = configurationSource.getDuration(configurationName
-            + "_VALIDATION_TIMEOUT", Duration.standardMinutes(1));
+            + "_VALIDATION_TIMEOUT", Duration.standardHours(26));
     }
 
     @Override

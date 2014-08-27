@@ -63,7 +63,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     
     @Autowired
     public  PlcDemandResetServiceImpl(ConfigurationSource configurationSource) {
-        minutesToWait = configurationSource.getInteger(MasterConfigIntegerKeysEnum.PLC_ACTIONS_CANCEL_TIMEOUT, 2);
+        minutesToWait = configurationSource.getInteger(MasterConfigIntegerKeysEnum.PLC_ACTIONS_CANCEL_TIMEOUT, 10);
     }
 
     @Override
