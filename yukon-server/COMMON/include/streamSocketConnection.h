@@ -4,12 +4,12 @@
 #define NOMINMAX
 #endif
 
-#include <vector>
-
 #include "streamConnection.h"
 #include "dlldefs.h"
 #include "netports.h"
 #include "socket_helper.h"
+
+#include <vector>
 
 namespace Cti {
 
@@ -29,10 +29,10 @@ class IM_EX_CTIBASE StreamSocketConnection : public StreamConnection
 
 public:
 
-    // These are ONLY when the connection is open, and remain unchanged for the life of the connection.
+    // These are ONLY set when the connection is opened, and remain unchanged for the life of the connection.
     enum ConnectionModes
     {
-        ReadExacly = 0,
+        ReadExactly = 0,
         ReadAny
     };
 
@@ -40,10 +40,10 @@ public:
     virtual ~StreamSocketConnection();
 
     // virtual methods inherited from StreamConnection
-    virtual bool isValid () const;
-    virtual int  write   (void *buf, int len, const Chrono& timeout);
-    virtual int  read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort);
-    virtual int  peek    (void *buf, int len);
+    virtual bool isValid () const                                                          override;
+    virtual int  write   (void *buf, int len, const Chrono& timeout)                       override;
+    virtual int  read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
+    virtual int  peek    (void *buf, int len)                                              override;
 
     // methods added
     bool open       (const std::string &zServer, unsigned short nPort, ConnectionModes mode);

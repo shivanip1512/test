@@ -1,15 +1,12 @@
 #include "precompiled.h"
 
-#include <string>
-#include <boost/lexical_cast.hpp>
-
 #include "logger.h"
-#include "cticalls.h"
-#include "dsm2.h"
 #include "std_helper.h"
 #include "win_helper.h"
 #include "millisecond_timer.h"
 #include "streamSocketConnection.h"
+
+#include <boost/lexical_cast.hpp>
 
 using std::string;
 using std::endl;
@@ -377,7 +374,7 @@ int StreamSocketConnection::readFromSocket(void *buf, int len, const Chrono& tim
                 }
                 else if( ! bytesRead ) // graceful shutdown
                 {
-                    if( _readBuffer.empty() || _connectionMode == ReadExacly )
+                    if( _readBuffer.empty() || _connectionMode == ReadExactly )
                     {
                         close();
                         logErrorAndThrowException(__FILE__, __LINE__, "Connection has been gracefully closed");

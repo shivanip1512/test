@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-#include "cparms.h"
 #include "logger.h"
 #include "millisecond_timer.h"
 #include "win_helper.h"

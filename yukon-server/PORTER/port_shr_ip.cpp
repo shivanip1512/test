@@ -170,7 +170,7 @@ void CtiPortShareIP::inThread()
                         dout << CtiTime() << " " << getIDString() << " - inThread is looking for a new SCADA connection. Loops = " << loopsSinceRead << ". " << FILELINE << endl;
                     }
 
-                    std::auto_ptr<StreamSocketConnection> newNexus = scadaListenNexus.accept(StreamSocketConnection::ReadExacly, Chrono::seconds(1), &_shutdownEvent);
+                    std::auto_ptr<StreamSocketConnection> newNexus = scadaListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::seconds(1), &_shutdownEvent);
 
                     if( newNexus.get() )
                     {

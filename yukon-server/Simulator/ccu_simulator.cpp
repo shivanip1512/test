@@ -268,7 +268,7 @@ void CcuPort(int portNumber, int strategy)
         logger.log("Listening for connection");
 
         //  wait to connect for 10 second
-        newSocket = listenSocket.accept(StreamSocketConnection::ReadExacly, Chrono::seconds(10), &gQuitEvent);
+        newSocket = listenSocket.accept(StreamSocketConnection::ReadExactly, Chrono::seconds(10), &gQuitEvent);
     }
 
     //  done with the listener

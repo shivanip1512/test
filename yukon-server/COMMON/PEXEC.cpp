@@ -31,7 +31,7 @@ IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
    PorterNexus.Name = "pexec nexus from client to " + Name + " port control";
 
    unsigned waitCount = 0;
-   while( ! PorterNexus.open(Name, PORTCONTROLNEXUS, Cti::StreamSocketConnection::ReadExacly) )
+   while( ! PorterNexus.open(Name, PORTCONTROLNEXUS, Cti::StreamSocketConnection::ReadExactly) )
    {
       if( Wait != WAIT )
       {

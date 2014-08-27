@@ -1,10 +1,10 @@
 #pragma once
 
-#include <boost/ptr_container/ptr_set.hpp>
-
 #include "streamConnection.h"
 #include "critical_section.h"
 #include "dlldefs.h"
+
+#include <boost/ptr_container/ptr_set.hpp>
 
 namespace Cti {
 
@@ -45,10 +45,10 @@ public:
     virtual ~StreamLocalConnection();
 
     // virtual methods inherited from StreamConnection
-    virtual bool isValid () const;
-    virtual int  write   (void *buf, int len, const Chrono& timeout);
-    virtual int  read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort);
-    virtual int  peek    (void *buf, int len);
+    virtual bool isValid () const                                                          override;
+    virtual int  write   (void *buf, int len, const Chrono& timeout)                       override;
+    virtual int  read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
+    virtual int  peek    (void *buf, int len)                                              override;
 
     void setMatchingConnection (StreamLocalConnection<Inbound, Outbound> &connection);
     void purgeRequest          (int request);

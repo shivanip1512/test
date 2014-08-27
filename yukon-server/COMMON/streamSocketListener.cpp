@@ -1,13 +1,12 @@
 #include "precompiled.h"
 
-#include <string>
-#include <boost/lexical_cast.hpp>
-
 #include "logger.h"
 #include "std_helper.h"
 #include "win_helper.h"
 #include "millisecond_timer.h"
 #include "streamSocketListener.h"
+
+#include <boost/lexical_cast.hpp>
 
 using std::string;
 using std::endl;

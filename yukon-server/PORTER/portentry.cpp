@@ -88,7 +88,7 @@ void PorterConnectionThread (void *Arg)
         /*
          *  Blocking wait on the listening nexus.
          */
-        auto_ptr<StreamSocketConnection> newNexus = PorterListenNexus.accept(StreamSocketConnection::ReadExacly, Chrono::infinite, &hPorterEvents[P_QUIT_EVENT]);
+        auto_ptr<StreamSocketConnection> newNexus = PorterListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::infinite, &hPorterEvents[P_QUIT_EVENT]);
 
         if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
         {
@@ -182,7 +182,7 @@ void ConnectionThread(StreamConnection *MyNexus)
 
             try
             {
-                // MyNexus is expected to be in ReadExacly mode
+                // MyNexus is expected to be in ReadExactly mode
                 // read() can only end if either:
                 // - an abort event is signaled, in which case bytesReads will be zero
                 // - a full message is received

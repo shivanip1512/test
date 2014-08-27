@@ -1,5 +1,10 @@
 #pragma once
 
+#include "critical_section.h"
+#include "guard.h"
+#include "timing_util.h"
+#include "win_helper.h"
+
 #include <exception>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -9,12 +14,6 @@
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/lexical_cast.hpp>
-
-#include "numstr.h"
-#include "critical_section.h"
-#include "guard.h"
-#include "timing_util.h"
-#include "win_helper.h"
 
 namespace Cti {
 
@@ -176,7 +175,7 @@ public:
         return _hEvent;
     }
 
-    SOCKET verifySockets() const
+    SOCKET findActiveSocket() const
     {
         WSANETWORKEVENTS NetworkEvents;
 
@@ -274,7 +273,7 @@ public:
             }
         case WAIT_OBJECT_0 + 1:
             {
-                SOCKET sock = event->verifySockets();
+                SOCKET sock = event->findActiveSocket();
                 if( sock == INVALID_SOCKET )
                 {
                     throw SocketException("WaitForMultipleObjects was interrupted");
