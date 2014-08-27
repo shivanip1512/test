@@ -30,6 +30,8 @@
     <entry key="yukon.web.modules.tools.tableHeader.status">Status</entry>
     <entry key="yukon.web.modules.tools.tableHeader.startTime">Start Time</entry>
     <entry key="yukon.web.modules.tools.tableTooltip">Success / Failure</entry>
+    <entry key="yukon.web.modules.tools.tableHeader.successCount">Success</entry>
+    <entry key="yukon.web.modules.tools.tableHeader.failureCount">Failure</entry>
 
     <!-- resultList.jsp -->
     <entry key="yukon.web.modules.tools.groupCommand.results.pageName">Group Command Processing Results</entry>
