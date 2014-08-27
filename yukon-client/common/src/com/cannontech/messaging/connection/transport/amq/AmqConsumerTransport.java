@@ -75,8 +75,7 @@ public class AmqConsumerTransport extends AmqDestinationTransport {
         if (consumer != null) {
             try {
                 consumer.setMessageListener(listener);
-            }
-            catch (JMSException e) {
+            } catch (JMSException e) {
                 throw new TransportException("Unable to set the message listnener on the Consumer Transport", e);
             }
         }
@@ -96,6 +95,6 @@ public class AmqConsumerTransport extends AmqDestinationTransport {
     }
 
     public void setSelector(String selectorString) {
-        this.selector = selectorString;
+        selector = selectorString;
     }
 }

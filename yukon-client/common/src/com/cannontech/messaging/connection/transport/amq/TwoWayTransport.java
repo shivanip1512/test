@@ -6,6 +6,8 @@ import javax.jms.MessageListener;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQDestination;
 
+import com.cannontech.messaging.connection.transport.TransportException;
+
 public class TwoWayTransport extends AmqTransport {
 
     private static final long MAX_READ_TIME_AFTER_CLOSE_MILLIS = 1000; // 1 second
@@ -30,7 +32,7 @@ public class TwoWayTransport extends AmqTransport {
         setSession(this.outTransport.getSession());
 
         setInTransport(inTransport);
-        this.setListener(this.inTransport.getListener());
+        setListener(this.inTransport.getListener());
     }
 
     @Override
@@ -62,7 +64,12 @@ public class TwoWayTransport extends AmqTransport {
         }
 
         if (inTransport != null) {
-            drainInboundMessages();
+            try {
+                drainInboundMessages();
+            } catch (TransportException e) {
+                // Log it but don't throw as we don't want to interrupt the closing/disconnecting operation
+                logger.warn("Unable to flush inbound messages. ", e);
+            }
             inTransport.close();
             inTransport = null;
         }
@@ -143,7 +150,7 @@ public class TwoWayTransport extends AmqTransport {
     public void setInTransport(AmqConsumerTransport inTransport) {
         this.inTransport = inTransport;
         if (this.inTransport != null) {
-            this.setInQueue(this.inTransport.getDestination());
+            setInQueue(this.inTransport.getDestination());
         }
     }
 

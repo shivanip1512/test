@@ -157,8 +157,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             if (isManagedConnection() && connection != null && !connection.isClosed()) {
                 connection.close();
             }
-        }
-        catch (JMSException e) {
+        } catch (JMSException e) {
             // log it but don't throw as we don't want to interrupt the closing/disconnecting operation as we don't want
             // to interrupt the closing/disconnecting operation
             // throw new ConnectionException("Error while disconnecting from the ActiveMQ broker", e);
