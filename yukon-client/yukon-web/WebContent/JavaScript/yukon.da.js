@@ -54,7 +54,7 @@ yukon.da = (function () {
         },
 
         _hideAlertMessage = function() {
-            $('#alertMessageContainer').hide('fade', {}, 3000);
+            $('#alert-message-container').hide('fade', {}, 3000);
         },
 
         _initBankTier =  function () {
@@ -357,7 +357,7 @@ yukon.da = (function () {
         },
 
         showAlertMessage : function(message, success) {
-            var contents = $('#alertMessageContents');
+            var contents = $('#alert-message-contents');
 
             if (success) {
                 contents.addClass('success').removeClass('error');
@@ -365,13 +365,13 @@ yukon.da = (function () {
                 contents.removeClass('success').addClass('error');
             }
             contents.html(message);
-            $('#alertMessageContainer').show();
+            $('#alert-message-container').show();
             setTimeout (_hideAlertMessage, success ? 3000 : 8000);
         },
 
         showMessage : function(message) {
-            $('#alertMessageContents').html(message);
-            $('#alertMessageContainer').show();
+            $('#alert-message-contents').html(message);
+            $('#alert-message-container').show();
             setTimeout (_hideAlertMessage, 3000);
         }
     };

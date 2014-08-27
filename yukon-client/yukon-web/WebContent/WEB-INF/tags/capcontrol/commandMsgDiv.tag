@@ -1,3 +1,3 @@
-<div id="alertMessageContainer" style="display:none;">
-    <div id="alertMessageContents" style=""></div>
+<div id="alert-message-container" class="dn">
+    <div id="alert-message-contents"></div>
 </div>
