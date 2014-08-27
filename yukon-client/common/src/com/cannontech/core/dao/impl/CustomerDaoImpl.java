@@ -167,10 +167,10 @@ public final class CustomerDaoImpl implements CustomerDao {
         graphCustomerListDao.deleteGraphsForCustomer(customerId);
         deviceCustomerListDao.deleteDeviceListForCustomer(customerId);
         
-        /*
-         * Delete additional contacts
-         * - needs to happen before Customer is deleted
-         */
+        /* Need to load the primaryContact before deleting the customer */
+        LiteContact primaryContact = getPrimaryContact(customerId);
+        
+        /* Delete additional contacts - needs to happen before Customer is deleted */
         List<Integer> additionalContacts = contactDao.getAdditionalContactIdsForCustomer(customerId);
         for (int contactId : additionalContacts) {
             LiteContact contact = contactDao.getContact(contactId);
@@ -186,11 +186,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         String delete = "DELETE FROM Customer WHERE CustomerId = ?";
         yukonJdbcTemplate.update(delete, customerId);
         
-        /*
-         * Delete primary contact
-         * - needs to happen after Customer is deleted
-         */
-        LiteContact primaryContact = getPrimaryContact(customerId);
+        /* Delete primary contact - needs to happen after Customer is deleted */
         contactDao.deleteContact(primaryContact);
         
     }
