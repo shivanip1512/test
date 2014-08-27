@@ -1068,7 +1068,35 @@
             </ul>
         </troubleshooting>
     </error>
-
+    <error code="281">
+        <category>Demand Reset</category>
+        <porter></porter>
+        <description>Demand Reset point is missing.</description>
+        <troubleshooting>
+            Add demand reset point.
+        </troubleshooting>
+    </error>
+    <error code="282">
+        <category>Demand Reset</category>
+        <porter></porter>
+        <description>Demand reset failed, the reset timestamp was not received.</description>
+        <troubleshooting>
+            <ul>
+                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+            </ul>
+        </troubleshooting>
+    </error>
+     <error code="283">
+        <category>Demand Reset</category>
+        <porter></porter>
+        <description>Demand reset failed, the reset timestamp is outside of the expected range.</description>
+        <troubleshooting>
+            <ul>
+                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+            </ul>
+        </troubleshooting>
+    </error>
+    
     <error code="1024">
         <category>Network Manager</category>
         <porter>No node in Network Manager.</porter>

@@ -29,6 +29,8 @@ yukon.tools.demand.reset = (function() {
                     command: btn.data('command')
                 };
 
+                yukon.ui.busy(btn);
+                
                 _canceled = true;
                 debug.log('canceling demand reset');
     

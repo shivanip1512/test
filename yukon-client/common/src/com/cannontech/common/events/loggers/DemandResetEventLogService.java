@@ -12,13 +12,17 @@ public interface DemandResetEventLogService {
                                           @Arg(ArgEnum.deviceName) String deviceName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void collectionDemandResetAttempted(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void collectionDemandResetAttempted(String collection, @Arg(ArgEnum.username) LiteYukonUser user);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void verifDemandResetAttempted(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void verifDemandResetAttempted(@Arg(ArgEnum.totalRequests) Integer total,
+                                          @Arg(ArgEnum.notAttemptedRequests) Integer notAttempted,
+                                          @Arg(ArgEnum.username) LiteYukonUser user);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void sendDemandResetAttempted(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void initDemandResetAttempted(@Arg(ArgEnum.totalRequests) Integer total,
+                                         @Arg(ArgEnum.notAttemptedRequests) Integer notAttempted,
+                                         @Arg(ArgEnum.username) LiteYukonUser user);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
     public void cancelAttempted(@Arg(ArgEnum.username) LiteYukonUser user);

@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
 import com.cannontech.amr.demandreset.service.PlcDemandResetService;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -57,6 +59,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     @Autowired private AttributeService attributeService;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     @Autowired
     public  PlcDemandResetServiceImpl(ConfigurationSource configurationSource) {
@@ -125,7 +128,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             log.error("Can't Verify:" + devicesWithoutPoint + " \"IED Demand Reset Count\" point is missing.");
         }
         for (SimpleDevice device : devicesWithoutPoint) {
-            callback.cannotVerify(device, "\"IED Demand Reset Count\" point is missing.");
+            callback.cannotVerify(device, getError(DemandResetError.NO_POINT));
         }
 
         // send verification to devices that support IED_DEMAND_RESET_COUNT attribute
@@ -264,7 +267,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             if (value.getId() == deviceToPoint.get(device).getLiteID()) {
                 if (value.getPointDataTimeStamp() == null) {
                     log.error("Failed:" + device);
-                    callback.failed(device, "Demand reset failed, the reset timestamp  was not received.");
+                    callback.cannotVerify(device, getError(DemandResetError.NO_TIMESTAMP));
                 } else {
                     Instant resetTime = new Instant(value.getPointDataTimeStamp());
                     if (log.isDebugEnabled()) {
@@ -273,8 +276,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                     }
                     if (resetTime.isBefore(whenRequested.toInstant())) {
                         log.error("Failed:" + device);
-                        callback.failed(device,
-                                        "Demand reset failed, the reset timestamp is outside of the expected range.");
+                        callback.cannotVerify(device, getError(DemandResetError.TIMESTAMP_OUT_OF_RANGE));
                     } else {
                         log.debug("Verified:" + device);
                         callback.verified(device, resetTime);
@@ -289,7 +291,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             if (log.isDebugEnabled()) {
                 log.debug("PLC receivedLastError:" + command + " Error:" + error);
             }
-            callback.cannotVerify(command.getDevice(), error.getDescription());
+            callback.cannotVerify(command.getDevice(), error);
             meters.remove(command.getDevice());
         }
         
@@ -330,5 +332,13 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             }
         }
         return commands;
+    }
+    
+    private SpecificDeviceErrorDescription getError(DemandResetError errorType) {
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorType.getErrorCode());
+        SpecificDeviceErrorDescription deviceErrorDescription =
+            new SpecificDeviceErrorDescription(errorDescription, null);
+
+        return deviceErrorDescription;
     }
 }

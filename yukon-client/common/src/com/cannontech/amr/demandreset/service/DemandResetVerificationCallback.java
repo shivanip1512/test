@@ -2,6 +2,7 @@ package com.cannontech.amr.demandreset.service;
 
 import org.joda.time.Instant;
 
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 
 public abstract class DemandResetVerificationCallback implements DemandResetCallback{
@@ -11,11 +12,11 @@ public abstract class DemandResetVerificationCallback implements DemandResetCall
     }
 
     @Override
-    public void failed(SimpleDevice device, String reason) {
+    public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
     }
 
     @Override
-    public void cannotVerify(SimpleDevice device, String reason) {
+    public void cannotVerify(SimpleDevice device, SpecificDeviceErrorDescription error) {
     }
 
     @Override

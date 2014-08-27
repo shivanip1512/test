@@ -204,9 +204,9 @@
     <entry key="yukon.common.events.amr.disconnect.actionCompleted">User {1} initiated a {2} {3}. {7} device selected. (Success:{8} Failure:{9} Not Attempted:{10})</entry>
     
     <!-- Demand Reset-->
-    <entry key="yukon.common.events.amr.demand.reset.collectionDemandResetAttempted">Demand Reset collection action initiated by {1}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.verifDemandResetAttempted">Demand Reset and verification initiated by {1}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.sendDemandResetAttempted">Demand Reset initiated by {1}.</entry>
+    <entry key="yukon.common.events.amr.demand.reset.collectionDemandResetAttempted">Demand Reset collection action (collection={1}) initiated by {2}.</entry>
+    <entry key="yukon.common.events.amr.demand.reset.verifDemandResetAttempted">Demand Reset verification (Total Requests:{7} Not Attempted:{8}) by {1}.</entry>
+    <entry key="yukon.common.events.amr.demand.reset.initDemandResetAttempted">Demand Reset initiated (Total Requests:{7} Not Attempted:{8}) by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted">Demand Reset attempted on {2} by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.groupCancelAttempted">Demand Reset canceled by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCompletedResults">Demand Reset Results: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10}). Demand Reset collection action initiated by {1}.</entry>

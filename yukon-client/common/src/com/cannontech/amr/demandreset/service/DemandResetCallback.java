@@ -63,14 +63,14 @@ public interface DemandResetCallback {
      * This method will be called on a per device basis when it is known that the demand reset
      * failed.
      */
-    void failed(SimpleDevice device, String reason);
+    void failed(SimpleDevice device, SpecificDeviceErrorDescription error);
 
     /**
      * This method will be called on a per device basis for devices for which it cannot be
      * determined if the reset succeeded or failed.  Often this is the result of a timeout but
      * it can also be caused by missing points.
      */
-    void cannotVerify(SimpleDevice device, String reason);
+    void cannotVerify(SimpleDevice device, SpecificDeviceErrorDescription error);
     
     /**
      * This method should be called when it is known that all the sending and verification requests are completed

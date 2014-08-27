@@ -40,11 +40,8 @@ public class DemandResetResult implements Completable, Comparable<DemandResetRes
     private DemandResetCallback demandResetCallback;
     private boolean cancellable;
     
-    //contains failed devices
+    //contains error
     private final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
-    
-    //contains errors, that are not execution related such as "Demand reset failed, the reset timestamp is outside of the expected range"
-    private final Map<SimpleDevice, String> customErrors = new ConcurrentHashMap<>(100, .75f, 1);
     
     //contains successful devices
     private final Map<SimpleDevice, Instant> timestamps = new ConcurrentHashMap<>(100, .75f, 1);
@@ -91,16 +88,7 @@ public class DemandResetResult implements Completable, Comparable<DemandResetRes
     public void setKey(String key) {
         this.key = key;
     }
-    
-    public void addCustomError(SimpleDevice meter, String reason) {
-        customErrors.put(meter, reason);
-    }
-    
-    public String getCustomError(SimpleDevice meter) {
-        String reason = customErrors.get(meter);
-        return reason == null ? "" : reason;
-    }
-    
+        
     public void addError(SimpleDevice meter, SpecificDeviceErrorDescription error) {
         errors.put(meter, error);
     }
@@ -172,7 +160,7 @@ public class DemandResetResult implements Completable, Comparable<DemandResetRes
 
     
     public boolean isCanceled() {
-        return demandResetCallback.isCanceled();
+        return demandResetCallback == null || demandResetCallback.isCanceled();
     }
 
     public DeviceCollection getConfirmedCollection() {
