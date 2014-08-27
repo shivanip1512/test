@@ -10352,7 +10352,7 @@
                 <name>Total Op Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="1" />
+                <decimalplaces value="0" />
             </point>
             <!-- ANALOG POINTS -->
             <!-- STATUS POINTS -->
@@ -10436,14 +10436,14 @@
                 <name>UV Op Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="PulseAccumulator" offset="3">
                 <init>true</init>
                 <name>OV Op Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <!-- ANALOG POINTS -->
             <point type="Analog" offset="3">
@@ -10897,28 +10897,28 @@
                 <name>OV Op Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="PulseAccumulator" offset="3">
                 <init>true</init>
                 <name>UV Op Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="PulseAccumulator" offset="4">
                 <init>true</init>
                 <name>Close Op Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="PulseAccumulator" offset="5">
                 <init>true</init>
                 <name>Open Op Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <!-- STATUS POINTS -->
             <point type="Status" offset="2">
