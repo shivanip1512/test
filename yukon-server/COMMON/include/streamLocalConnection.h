@@ -37,7 +37,7 @@ class IM_EX_CTIBASE StreamLocalConnection : public StreamConnection
         MessagePeek
     };
 
-    int readFromOutQueue (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option);
+    size_t readFromOutQueue (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option);
 
 public:
 
@@ -45,17 +45,17 @@ public:
     virtual ~StreamLocalConnection();
 
     // virtual methods inherited from StreamConnection
-    virtual bool isValid () const                                                          override;
-    virtual int  write   (void *buf, int len, const Chrono& timeout)                       override;
-    virtual int  read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
-    virtual int  peek    (void *buf, int len)                                              override;
+    virtual bool   isValid () const                                                             override;
+    virtual size_t write   (void *buf, int len, const Chrono& timeout)                       override;
+    virtual size_t read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
+    virtual size_t peek    (void *buf, int len)                                              override;
 
     void setMatchingConnection (StreamLocalConnection<Inbound, Outbound> &connection);
     void purgeRequest          (int request);
 
     // these function will access the matching connection readFromOutQueue()
-    friend int DirectConnectionType::read (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort);
-    friend int DirectConnectionType::peek (void *buf, int len);
+    friend size_t DirectConnectionType::read (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort);
+    friend size_t DirectConnectionType::peek (void *buf, int len);
 };
 
 } // namespace Cti

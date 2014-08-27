@@ -1897,7 +1897,7 @@ INT DeQueue (INMESS *InMessage)
                                      << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
                                 dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                             }
-                            status = NOTNORMAL;
+                            status = SOCKWRITE;
                         }
                     }
                     /* Now free up the table entry */
@@ -2033,7 +2033,7 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
                     dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                 }
 
-                // if it is StreamSocketConnection and the error was caused by a timeout, which is not consider an error.
+                // if it is StreamSocketConnection and the error was caused by a timeout, which is not considered an error.
                 // close the connection
                 if( StreamSocketConnection *pConn = dynamic_cast<StreamSocketConnection*>(InMessage.ReturnNexus) )
                 {

@@ -53,7 +53,7 @@ StreamLocalConnection<Outbound, Inbound>::~StreamLocalConnection()
 }
 
 template <class Outbound, class Inbound>
-int StreamLocalConnection<Outbound, Inbound>::write(void *buf, int len, const Chrono& timeout)
+size_t StreamLocalConnection<Outbound, Inbound>::write(void *buf, int len, const Chrono& timeout)
 {
     if( ! isValid() )
     {
@@ -91,7 +91,7 @@ int StreamLocalConnection<Outbound, Inbound>::write(void *buf, int len, const Ch
 }
 
 template <class Outbound, class Inbound>
-int StreamLocalConnection<Outbound, Inbound>::read(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort)
+size_t StreamLocalConnection<Outbound, Inbound>::read(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort)
 {
     if( ! isValid() )
     {
@@ -102,7 +102,7 @@ int StreamLocalConnection<Outbound, Inbound>::read(void *buf, int len, const Chr
 }
 
 template <class Outbound, class Inbound>
-int StreamLocalConnection<Outbound, Inbound>::peek(void *buf, int len)
+size_t StreamLocalConnection<Outbound, Inbound>::peek(void *buf, int len)
 {
     if( ! isValid() )
     {
@@ -113,7 +113,7 @@ int StreamLocalConnection<Outbound, Inbound>::peek(void *buf, int len)
 }
 
 template <class Outbound, class Inbound>
-int StreamLocalConnection<Outbound, Inbound>::readFromOutQueue(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option)
+size_t StreamLocalConnection<Outbound, Inbound>::readFromOutQueue(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option)
 {
     if( len != sizeof(Outbound) )
     {

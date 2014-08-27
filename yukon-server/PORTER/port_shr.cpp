@@ -26,11 +26,14 @@ CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _shutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
    if( _shutdownEvent == (HANDLE)NULL )
    {
+       const char* message = "Couldn't create _shutdownEvent event!";
+
        {
            CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << "Couldn't create _shutdownEvent event!" << endl;
+           dout << CtiTime() << message << endl;
        }
-       exit(-1);
+
+       throw std::runtime_error(message);
    }
 }
 

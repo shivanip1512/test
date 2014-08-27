@@ -40,10 +40,10 @@ public:
     virtual ~StreamSocketConnection();
 
     // virtual methods inherited from StreamConnection
-    virtual bool isValid () const                                                          override;
-    virtual int  write   (void *buf, int len, const Chrono& timeout)                       override;
-    virtual int  read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
-    virtual int  peek    (void *buf, int len)                                              override;
+    virtual bool   isValid () const                                                          override;
+    virtual size_t write   (void *buf, int len, const Chrono& timeout)                       override;
+    virtual size_t read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
+    virtual size_t peek    (void *buf, int len)                                              override;
 
     // methods added
     bool open       (const std::string &zServer, unsigned short nPort, ConnectionModes mode);
@@ -75,7 +75,7 @@ private:
         MessagePeek
     };
 
-    int    readFromSocket (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option);
+    size_t readFromSocket (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option);
     SOCKET getSocket      (); // return the current socket handle using the _socketMux
 };
 

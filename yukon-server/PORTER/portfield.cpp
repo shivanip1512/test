@@ -2969,7 +2969,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         InMessage->InLength = j;
                     }
 
-                    if( status ) // any error received from CCUResponseDecode() is fatal
+                    if( status == SOCKWRITE )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);

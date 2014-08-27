@@ -202,7 +202,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
 //-----------------------------------------------------------------------------
 //  Socket write with milliseconds timeout
 //-----------------------------------------------------------------------------
-int StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
+size_t StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
 {
     CtiLockGuard<CtiCriticalSection> guard(_writeMux);
 
@@ -306,7 +306,7 @@ int StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
 //-----------------------------------------------------------------------------
 //  Socket read with milliseconds
 //-----------------------------------------------------------------------------
-int StreamSocketConnection::read(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort)
+size_t StreamSocketConnection::read(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort)
 {
     CtiLockGuard<CtiCriticalSection> guard(_readMux);
     
@@ -321,7 +321,7 @@ int StreamSocketConnection::read(void *buf, int len, const Chrono& timeout, cons
 //-----------------------------------------------------------------------------
 //  Socket peek
 //-----------------------------------------------------------------------------
-int StreamSocketConnection::peek(void *buf, int len)
+size_t StreamSocketConnection::peek(void *buf, int len)
 {
     CtiLockGuard<CtiCriticalSection> guard(_readMux);
     
@@ -336,7 +336,7 @@ int StreamSocketConnection::peek(void *buf, int len)
 //-----------------------------------------------------------------------------
 //  Socket read with milliseconds
 //-----------------------------------------------------------------------------
-int StreamSocketConnection::readFromSocket(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option)
+size_t StreamSocketConnection::readFromSocket(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort, ReadOptions option)
 {
     try
     {
