@@ -39,6 +39,7 @@ public:
 
    virtual void run();
 
+   using CtiPortShare::start; // unhide start method from parent
    void start(CtiPortShare& shr);
 
    void inThread();

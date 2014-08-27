@@ -295,14 +295,14 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
 
     if( (ptPort->getSharedPortType() == "acs") || (ptPort->getSharedPortType() == "ilex" ) )
     {
-        CtiPortShare *tmpPortShare = CTIDBG_new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size());
-        if( tmpPortShare != NULL )
+        try
         {
-            ((CtiPortShareIP *)tmpPortShare)->setIPPort(ptPort->getSharedSocketNumber());
-            tmpPortShare->start();
-            PortShareManager.insert(std::make_pair(ptPort->getPortID(), tmpPortShare));
+            std::auto_ptr<CtiPortShareIP> newPortShareIP(new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size()));
+            newPortShareIP->setIPPort(ptPort->getSharedSocketNumber());
+            newPortShareIP->start();
+            PortShareManager.insert(std::make_pair(ptPort->getPortID(), newPortShareIP.release()));
         }
-        else
+        catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error initializing shared port for " << ptPort->getName() << endl;
