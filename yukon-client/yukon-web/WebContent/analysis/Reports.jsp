@@ -393,7 +393,7 @@ function makeFirstSelectedFilterValueVisible () {
             <% //Create a local instance of the map.
             Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
             for (ReportFilter filter : filterObjectsMap.keySet()) {%>
-                var container = $('#Div<%=filter.getFilterTitle()%>');
+                var container = $('#Div<%=filter.name()%>');
                 var show = filterBy == '<%=filter%>';
                 if (show) {
                     container.show();
@@ -507,18 +507,18 @@ function makeFirstSelectedFilterValueVisible () {
                         %>
                     
                         <%if( filter.equals(ReportFilter.METER ) ){%>
-                            <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type='text' name="filterMeterValues" style='width:650px;'/>
                             <BR><span class='NavText'><cti:msg key="yukon.common.reports.filterMeterValues"/></span><br></div>
                         <%} else if( filter.equals(ReportFilter.DEVICE)) {%>
-                            <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type='text' name='filterDeviceValues' style='width:650px;'/>
                             <BR><span class='NavText'><cti:msg key="yukon.common.reports.filterDeviceValues"/></span><br></div>   
                             
                         <%-- LM PROGRAM PICKER --%>
                         <%} else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {%>
                             
-                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                        <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type="hidden" id="selectedPickerValues" name="filterValues">
                             
                             <span style="font-size:16px;">
@@ -564,7 +564,7 @@ function makeFirstSelectedFilterValueVisible () {
                         </div>
                         <%-- LM GROUP PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMGROUP)) {%>
-                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                        <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type="hidden" id="selectedPickerValues" name="filterValues">
                             
                             <span style="font-size:16px;">
@@ -585,7 +585,7 @@ function makeFirstSelectedFilterValueVisible () {
                         </div>
                         <%-- LM CONTROL AREA PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMCONTROLAREA)) {%>
-                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                        <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type="hidden" id="selectedPickerValues" name="filterValues">
                             
                             <span style="font-size:16px;">
@@ -607,7 +607,7 @@ function makeFirstSelectedFilterValueVisible () {
                         </div>
                         <%-- LM SCENARIO PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMSCENARIO)) {%>
-                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                        <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type="hidden" id="selectedPickerValues" name="filterValues">
                             
                             <span style="font-size:16px;">
@@ -630,7 +630,7 @@ function makeFirstSelectedFilterValueVisible () {
                         
                         <%-- ACCOUNT NUMBER PICKER --%>
                         <%} else if( filter.equals(ReportFilter.ACCOUNT_NUMBER)) {%>
-                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                        <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type="hidden" id="selectedPickerValues" name="filterValues">
                             
                             <span style="font-size:16px;">
@@ -653,7 +653,7 @@ function makeFirstSelectedFilterValueVisible () {
                         
                         <%-- SERIAL NUMBER PICKER --%>
                         <%} else if( filter.equals(ReportFilter.SERIAL_NUMBER)) {%>
-                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                        <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type="hidden" id="selectedPickerValues" name="filterValues">
                             
                             <span style="font-size:16px;">
@@ -677,7 +677,7 @@ function makeFirstSelectedFilterValueVisible () {
                         
                         <%-- USER PICKER --%>
                         <%} else if( filter.equals(ReportFilter.USER)) {%>
-                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                        <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             <input type="hidden" id="selectedPickerValues" name="filterValues">
                             
                             <span style="font-size:16px;">
@@ -701,7 +701,7 @@ function makeFirstSelectedFilterValueVisible () {
                         
                         <%-- ALL OTHER FILTER OBJECT TYPES --%>   
                         <% }else {%>
-                            <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
                             
                             <select id="selectFilterValues" name='filterValues' size='10' <%if(filter.isMultiSelect()) {%>multiple<%}%> style='width:350px;'>
                             <%List objects = filterObjectsMap.get(filter);%>
