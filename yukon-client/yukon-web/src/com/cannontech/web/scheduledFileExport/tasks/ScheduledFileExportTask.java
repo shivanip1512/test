@@ -91,7 +91,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	}
 
 	public void setDefaultYukonExternalUrl(String url) {
-		this.defaultYukonExternalUrl = url;
+		defaultYukonExternalUrl = url;
 	}
 	
 	public String getName() {
@@ -139,7 +139,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     }
 
     public void setTimestampPatternField(String timestampPattern) {
-        this.timestampPatternField = timestampPattern;
+        timestampPatternField = timestampPattern;
     }
 
     public String getExportFileExtension() {
@@ -252,22 +252,15 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
      * Create the (empty) File object in the archive path...
      */
     protected File createArchiveFile(DateTime now, String defaultFileExtension) {
-        String finalName = this.getExportFileName();
-        String fileExtension = defaultFileExtension;
-        String filePath = CtiUtilities.getArchiveDirPath();
+        String finalName = getExportFileName();
         if (appendDateToFileName) {
-            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(timestampPatternField);
-            String dateString = DATE_FORMAT.format(now.toDate());
+            String dateString = new SimpleDateFormat(timestampPatternField).format(now.toDate());
             // strip characters not allowed in file names.
-            dateString = dateString.replaceAll("[\\/:*?\"><|]", "");
-            finalName = finalName + dateString;
+            finalName += dateString.replaceAll("[\\/:*?\"><|]", "");
         }
-        if (overrideFileExtension) {
-            fileExtension = exportFileExtension;
-        }
-        fileExtension += "_" + CtiUtilities.getUuidString();
-        File archiveFile = new File(filePath, finalName + fileExtension);
-        return archiveFile;
+        finalName += "_" + CtiUtilities.getUuidString();
+        finalName += overrideFileExtension ? exportFileExtension : defaultFileExtension;
+        return new File(CtiUtilities.getArchiveDirPath(), finalName);
     }
 	
     /**

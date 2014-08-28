@@ -22,7 +22,7 @@
     
     <tags:sectionContainer2 nameKey="exports">
         <c:choose>
-            <c:when test="${fn:length(searchResult.resultList) == 0}">
+            <c:when test="${empty exports}">
                 <span class="empty-list"><i:inline key=".noExports"/></span>
             </c:when>
             <c:otherwise>
@@ -37,7 +37,7 @@
                         </thead>
                         <tfoot></tfoot>
                         <tbody>
-                            <c:forEach var="exportHistoryEntry" items="${searchResult.resultList}">
+                            <c:forEach var="exportHistoryEntry" items="${exports}">
                                 <tr>
                                     <!-- NAME/DOWNLOAD -->
                                     <td>
@@ -60,19 +60,9 @@
                                         </c:choose>
                                         
                                     </td>
-                                    <!-- TYPE -->
-                                    <td>
-                                        ${exportHistoryEntry.type}
-                                    </td>
-                                    <!-- INITIATOR -->
-                                    <td>
-                                        ${exportHistoryEntry.initiator}
-                                    </td>
-                                    <!-- DATE -->
-                                    <td>
-                                        <cti:formatDate value="${exportHistoryEntry.date}" type="DATEHM"/>
-                                    </td>
-                                    <!-- EXPORT PATH -->
+                                    <td><cti:msg2 key="${exportHistoryEntry.type}"/></td>
+                                    <td>${exportHistoryEntry.initiator}</td>
+                                    <td><cti:formatDate value="${exportHistoryEntry.date}" type="DATEHM"/></td>
                                     <td>
                                     <c:choose>
                                         <c:when test="${exportHistoryEntry.exportPath == null}">
@@ -83,7 +73,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                     </td>
-                                </tr>    
+                                </tr>
                             </c:forEach>
                         </tbody>
                     </table>
