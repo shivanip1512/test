@@ -258,8 +258,9 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
             // strip characters not allowed in file names.
             finalName += dateString.replaceAll("[\\/:*?\"><|]", "");
         }
-        finalName += "_" + CtiUtilities.getUuidString();
+        // Yeah it's weird we put the extension before the random string but it's intentional
         finalName += overrideFileExtension ? exportFileExtension : defaultFileExtension;
+        finalName += "_" + CtiUtilities.getUuidString();
         return new File(CtiUtilities.getArchiveDirPath(), finalName);
     }
 	
