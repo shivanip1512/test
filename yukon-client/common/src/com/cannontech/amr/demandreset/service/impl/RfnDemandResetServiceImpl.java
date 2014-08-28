@@ -394,7 +394,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
             // Since we're starting the executor when we get our first demand reset request, we
             // can wait the full timeout before we check the first time.  After that, we need to
             // check more often.
-            executor.scheduleWithFixedDelay(new TimeoutChecker(), 1, 1, TimeUnit.MINUTES);
+            executor.scheduleWithFixedDelay(new TimeoutChecker(),
+                                            verificationTimeout.getStandardMinutes(), 5, TimeUnit.MINUTES);
         }
     }
 
