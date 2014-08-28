@@ -106,25 +106,52 @@ CtiLogger& CtiLogger::setRetentionLength(const unsigned long days_to_keep)
     return *this;
 }
 
-CtiLogger& CtiLogger::flush()
+void CtiLogger::flush()
 {
-    if( _current_stream != NULL && (_current_stream->pcount()) > 0 )           // Only do this if there is data there. 081001 CGP
+    if( _current_stream )
     {
-        _queue.write(_current_stream);
-        _current_stream = NULL;
+        const std::streamsize pcount = _current_stream->pcount();
 
-        if( _flush_mux.acquire(0) )
+        if( pcount > 0 )
         {
-            interrupt();
-            _flush_mux.release();
+            if( pcount > 256 * 1024 )
+            {
+                std::auto_ptr<strstream> tmp(new strstream);
+
+                *tmp << std::string(_current_stream->str(), 1024);
+                *tmp << endl;
+                *tmp << "Log entry trimmed due to excessive size(" << pcount << ")" << endl;
+                *tmp << "Stack trace follows:" << endl;
+                *tmp << autopsy_as_string(__FILE__,  __LINE__);
+
+                delete _current_stream;
+                _current_stream = 0;
+
+                _queue.write(tmp.release());
+            }
+            else
+            {
+                _queue.write(_current_stream);
+                _current_stream = 0;
+            }
+
+            if( _flush_mux.acquire(0) )
+            {
+                interrupt();
+                _flush_mux.release();
+            }
+        }
+        else if( pcount < 0 )
+        {
+            //  This is not legal in any of the 50 states, Puerto Rico, Guam, or anywhere else in the universe.
+            delete _current_stream;
+            _current_stream = 0;
+        }
+        else
+        {
+            _current_stream->rdbuf()->freeze(false);     // Unfreeze it, for further input...
         }
     }
-    else if( _current_stream != NULL )
-    {
-        _current_stream->rdbuf()->freeze(false);     // Unfreeze it, for further input...
-    }
-
-    return *this;
 }
 CtiLogger& CtiLogger::write()
 {

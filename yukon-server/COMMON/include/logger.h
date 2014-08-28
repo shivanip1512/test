@@ -50,7 +50,7 @@ public:
     CtiLogger& write();
 
     //Immediately move everything to the queue for writing
-    CtiLogger& flush();
+    void flush();
 
     bool acquire(unsigned long millis);
     CtiLogger& acquire();
