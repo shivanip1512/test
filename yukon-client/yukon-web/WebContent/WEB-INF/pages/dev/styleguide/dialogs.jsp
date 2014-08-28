@@ -1,103 +1,111 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dev" page="dialogs">
 <tags:styleguide page="dialogs">
 
-<cti:msgScope paths="modules.dev.styleguide">
+<style>
+.dialog-example .one { line-height: 26px; }
+.description { line-height: 22px; }
+</style>
 
-<script type="text/javascript">
-$(document).ready(function() {
-    $('#confirmDeleteDlg').on('yukonConfirmDialogOK', function() {
-        $('#confirmDeleteDlg').dialog('close');
-        alert('You seem to be certain you want to delete it.');
-    });
+<p class="description">
+    Popups and dialogs are made with html elements and data attributes.  (Dialogs are just popups with buttons.)  Use the 
+    methods described here for popups and dialogs instead of the legacy popup/dialog tags which are being phased out. All 
+    popups in Yukon utilize the JQuery dialog widget.
+    <br><br>
+    All data about a popup/dialog is stored in data attributes on the popup/dialog html element.<br>
+    <h2>Popup/Dialog Options</h2>
+    <tags:nameValueContainer>
+        <tags:nameValue name="data-title">The text used for the title of the popup.</tags:nameValue>
+        <tags:nameValue name="data-height">The initial height of the popup.</tags:nameValue>
+        <tags:nameValue name="data-width">The initial width of the popup.</tags:nameValue>
+        <tags:nameValue name="data-url">
+            If present, the contents of the popup element will be replaced with the response of an ajax request to the url 
+            before the popup is shown.
+        </tags:nameValue>
+        <tags:nameValue name="data-load-event">
+            If present, this event will be fired right before the popup is shown. If 
+            <span class="label label-attr">data-url</span> is used, the event will be fired after the dialog is loaded with 
+            the response body.
+        </tags:nameValue>
+        <tags:nameValue name="data-popup-toggle">
+            If present, the trigger element can be clicked to close the popup as well.
+        </tags:nameValue>
+        <tags:nameValue name="data-dialog">
+            If present the popup will have 'ok' and 'cancel' buttons.
+        </tags:nameValue>
+        <tags:nameValue name="data-event">
+            If present and <span class="label label-attr">data-dialog</span> is present, the value of 
+            <span class="label label-attr">data-event</span> will be the name of the event to fire when clicking the 'ok' 
+            button.
+        </tags:nameValue>
+        <tags:nameValue name="data-target">
+            If present and <span class="label label-attr">data-event</span> is present, the value of 
+            <span class="label label-attr">data-target</span> is the css selector to the element that will be the target of 
+            the event specified in <span class="label label-attr">data-event</span>.
+        </tags:nameValue>
+        <tags:nameValue name="data-form">
+            If present, a form will be submitted when the 'ok' button is clicked.  If the value is not present, the first 
+            form found inside the popup will be submitted.  Otherwise the value is a css selector to the form to submit.
+        </tags:nameValue>
+    </tags:nameValueContainer>
+    <br><br>
+    <h2>Popup/Dialog Trigger Options</h2>
+    Popups/Dialogs can be opened by clicking elements with the <span class="label label-attr">data-popup</span> attribute. 
+    Popup/Dialog trigger element options are as follows:
+    <tags:nameValueContainer>
+        <tags:nameValue name="data-popup">A css selector to the popup element to open.</tags:nameValue>
+        <tags:nameValue name="data-popup-toggle">
+            If present, the trigger element will also close the popup when clicked.
+        </tags:nameValue>
+    </tags:nameValueContainer>
+</p>
 
-    $('#inlineDialog3').on('yukonOkPressed', function() {
-        $('#inlineDialog3').dialog('close');
-        alert('You pressed OK.');
-    });
-});
-</script>
+<h2 id="simple-popup-example">Simple Popup</h2>
 
-<div id="ajaxDialog"></div>
+<p class="description">
+    To make a simple popup just start with a hidden <span class="label label-attr">&lt;div&gt;</span> and a trigger.
+</p>
+<div class="column-4-20 clearfix dialog-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="popup-1" data-title="Popup Example">This is a simple popup.</div>
+        <cti:button label="Open Popup" data-popup="#popup-1"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;popup-1&quot; data-title=&quot;My First Popup&quot;&gt;This is a simple popup.&lt;/div&gt;
+&lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#popup-1&quot;/&gt;
+</pre>
 
-<d:inline nameKey="inlineDialog1" okEvent="none" on="#sampleInlineBtn1">
-    <p>I'm an example of an in-line dialog box "none" for the okEvent.<p>
-    <p>Because of this, I have no OK button.</p>
-</d:inline>
+<h2 id="button-text-example">Width and Height</h2>
 
-<d:inline id="inlineDialog2" nameKey="inlineDialog2" okEvent="yukonDialogSubmit" on="#sampleInlineBtn2">
-    <form action="http://en.wikipedia.org/w/index.php" method="get">
-        <p>I'm an example of an in-line dialog box with a "yukonDialogSubmit" okEvent.<p>
-        <p>Because of this, you will submit a form when you press "OK".</p>
-        <input type="hidden" name="title" value="Special:Search">
-        <p>Search For: <input type="text" name="search"></p>
-    </form>
-</d:inline>
-
-<d:inline id="inlineDialog3" nameKey="inlineDialog3" okEvent="yukonOkPressed" on="#sampleInlineBtn3">
-    <p>I'm an example of an in-line dialog box with "yukonOkPressed" okEvent.<p>
-    <p>Because of this, the dialog will trigger the "yukonOkPressed" custom event on the dialog
-    div when you press OK.</p>
-</d:inline>
-
-<d:inline id="inlineDialog4" nameKey="inlineDialog4" okEvent="none" on="#sampleInlineBtn4"
-    options="{'modal' : false}">
-    <p>I'm an example of an in-line dialog box with options.  Specifically, my options are
-    set to "{'modal' : false}" to turn of modality.<p>
-</d:inline>
-
-<cti:msg2 var="button1" key=".inlineDialog5.button1"/>
-<cti:msg2 var="button2" key=".inlineDialog5.button2"/>
-<cti:msg2 var="cancelText" key="yukon.web.components.button.cancel.label"/>
-<d:inline id="inlineDialog5" okEvent="none" nameKey="inlineDialog5" on="#sampleInlineBtn5"
-                options="{width: 550, 'buttons': [{text: '${button1}', click: function() { alert('Sup, Im button 1!'); }, 'class': 'inline_dialog_button_1' },
-                                                  {text: '${button2}', click: function() { alert('Sup, Im button 2!'); } },
-                                                  {text: '${cancelText}', click: function() { $(this).dialog('close'); } }]}">
-	<p>Options used in this dialog:</p>
-	<ul>
-		<li>-width</li>
-		<li>-buttons (button 1 has a specified class on it)</li>
-	</ul>
-</d:inline>
-
-<tags:sectionContainer title="Confirmation Dialogs">
-    <h3>Custom OK Handling</h3>
-    <d:confirm on="#deleteBtn" nameKey="confirmDelete" argument="Thing to Delete"/>
-    <cti:button id="deleteBtn" nameKey="delete"/>
-
-    <h3>OK Goes to a Specified Link</h3>
-    <d:confirm on="#gotoHome" nameKey="confirmGotoHome"/>
-    <a href="/home" id="gotoHome">Home</a>
-
-    <h3>OK Submits a Form</h3>
-    <form action="http://en.wikipedia.org/w/index.php" method="get" id="wikipediaForm">
-        <input type="hidden" name="title" value="Special:Search">
-        <input type="text" name="search">
-        <d:confirm on="#searchWikipedia" nameKey="searchWikipedia"/>
-        <cti:button id="searchWikipedia" type="submit" label="Search Wikipedia"/>
-    </form>
-
-    <h3>OK Submits an Other Form</h3>
-    <d:confirm on="#searchWikipedia2" nameKey="searchWikipedia" />
-    <cti:button id="searchWikipedia2" data-form="#wikipediaForm" label="Search Wikipedia"/>
-</tags:sectionContainer>
-
-<tags:sectionContainer title="In-line Dialogs">
-  <div class="clearfix">
-  <cti:button id="sampleInlineBtn1" nameKey="inline1"/>
-  <cti:button id="sampleInlineBtn2" nameKey="inline2"/>
-  <cti:button id="sampleInlineBtn3" nameKey="inline3"/>
-  <cti:button id="sampleInlineBtn4" nameKey="inline4"/>
-  <cti:button id="sampleInlineBtn5" nameKey="inline5"/>
-  </div>
-</tags:sectionContainer>
-
-</cti:msgScope>
-
+<p class="description">
+    A popup with initial width of 500 pixels and height of 300 pixels.
+</p>
+<div class="column-4-20 clearfix dialog-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="popup-2" 
+                data-title="Popup Example"
+                data-width="500"
+                data-height="300">This is a popup with initial width of 500 pixels and height of 300 pixels.</div>
+        <cti:button label="Open Popup" data-popup="#popup-2"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;popup-2&quot; 
+        data-title=&quot;Popup Example&quot;
+        data-width=&quot;500&quot;
+        data-height=&quot;300&quot;&gt;This is a popup with initial width of 500 pixels and height of 300 pixels.&lt;/div&gt;
+&lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#popup-2&quot;/&gt;
+</pre>
+    
 </tags:styleguide>
 </cti:standardPage>
