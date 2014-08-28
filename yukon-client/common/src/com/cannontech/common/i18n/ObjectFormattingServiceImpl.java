@@ -47,7 +47,7 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
                                                                                       userContext);
             return new YukonMessageSourceResolvable(null, arguments, messageString);
         }
-        return new YukonMessageSourceResolvable(null, arguments, Objects.toString(object));
+        return new YukonMessageSourceResolvable(null, arguments, object != null ? Objects.toString(object) : "");
     }
 
     @Override
@@ -85,8 +85,9 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
         Collections.sort(retVal, new Comparator<T>() {
             @Override
             public int compare(T t1, T t2) {
-                if (t1 == t2)
+                if (t1 == t2) {
                     return 0;
+                }
                 if (t1 == first || t2 == last) {
                     return descending ? 1 : -1;
                 }
