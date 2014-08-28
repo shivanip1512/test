@@ -408,24 +408,6 @@ public final class CtiUtilities {
         return (System.getProperty("catalina.base") != null);
     }
 
-    /**
-     * This method creates a new CTIPrintStackTaceExc() instance and
-     * returns the current stack trace
-     */
-    public final static String getSTACK_TRACE() {
-        CTIPrintStackTraceExc e = new CTIPrintStackTraceExc();
-
-        try {
-            e.printStackTrace(e.printStream);
-            e.byteStream.flush();
-        } catch (java.io.IOException io) {
-            io.printStackTrace(System.out);
-            return null;
-        }
-
-        return e.byteStream.toString();
-    }
-
     public final static String[] getStateAbbreviations() {
         String[] s = { "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC",
                 "FL", "GA", "GU", "HI", "ID", "IL", "IN", "IA", "KS",
@@ -527,23 +509,6 @@ public final class CtiUtilities {
     /**
      * Returns true of the given id is in the given array
      */
-    public static final boolean isInSet(int[] idSet, int id) {
-        if (idSet == null) {
-            return false;
-        }
-
-        for (int i = 0; i < idSet.length; i++) {
-            if (idSet[i] == id) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true of the given id is in the given array
-     */
     public static final boolean isInSet(Integer[] idSet, int id) {
         if (idSet == null) {
             return false;
@@ -585,20 +550,6 @@ public final class CtiUtilities {
         } catch (IOException e) {
             CTILogger.info("Unable to display help for: " + helpFileName, e);
         }
-    }
-
-    /**
-     * This method will return a string representing a the date passed in.
-     */
-    public static final String toDatabaseString(Date date) {
-        if (date == null) {
-            return null;
-        }
-
-        java.text.SimpleDateFormat format =
-            new java.text.SimpleDateFormat("dd-MMM-yyyy");
-
-        return format.format(date).toUpperCase();
     }
 
     /**
