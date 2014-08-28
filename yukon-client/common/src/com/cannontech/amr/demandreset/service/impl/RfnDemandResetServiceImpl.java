@@ -319,11 +319,9 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                  * devices waiting for verification and creates an applicable error.
                  */
                 private void processError(SimpleDevice device, int errorCode) {
-
-                    DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(errorCode);
-                    SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
-                    saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), error.getErrorCode());
-                    errors.put(device, deviceError);
+                    
+                    saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), errorCode);
+                    errors.put(device, getError(errorCode));
                     // check if this device needs to be verified
                     if (verifiableDevices.contains(device)) {
 
@@ -342,7 +340,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                                                                       ImmutableSet.of(pointId));
                                         saveCommandRequestExecutionResult(verificationInfo.verificationExecution,
                                                                           device.getDeviceId(),
-                                                                          error.getErrorCode());
+                                                                          errorCode);
                                     }
                                 }
                                 if (verificationInfo.isAllVerified()) {
