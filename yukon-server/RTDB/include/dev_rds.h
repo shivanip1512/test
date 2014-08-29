@@ -23,10 +23,10 @@ public:
 
     RDSTransmitter();
 
-    int recvCommRequest( OUTMESS *OutMessage );
+    YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
-    virtual int  generate(CtiXfer &xfer);
-    virtual int  decode(CtiXfer &xfer, int status);
+    virtual YukonError_t generate(CtiXfer &xfer);
+    virtual YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
     virtual bool isTransactionComplete();
 
     virtual std::string getSQLCoreStatement() const;
@@ -48,7 +48,7 @@ protected:
         Normal=0,
         Complete
     };
-    
+
     enum StateMachine
     {
         StateSendBiDirectionalRequest,
@@ -111,7 +111,7 @@ protected:
 
     void printAcknowledgmentError   (unsigned char error);
 
-    virtual int sendCommResult      (INMESS *InMessage);
+    virtual YukonError_t sendCommResult      (INMESS *InMessage);
 
     bool isTwoWay();
     bool isOdaConfigSendNeeded();

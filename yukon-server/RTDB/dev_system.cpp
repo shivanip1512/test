@@ -825,7 +825,7 @@ INT CtiDeviceSystem::ProcessResult(const INMESS* InMessage, CtiTime& TimeNow, li
 
     CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-    int ErrReturn = InMessage->EventCode & 0x3fff;
+    int ErrReturn = InMessage->ErrorCode;
 
     if (ErrReturn)
     {

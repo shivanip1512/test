@@ -388,9 +388,9 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
         DlcCommand::request_ptr ptr;
         string description;
 
-        if( InMessage.EventCode )
+        if( InMessage.ErrorCode )
         {
-            ptr = command.error(TimeNow, static_cast<YukonError_t>(InMessage.EventCode), description);
+            ptr = command.error(TimeNow, InMessage.ErrorCode, description);
         }
         else
         {
@@ -448,7 +448,7 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
             InEchoToOut(InMessage, OutMessage);
 
             //  If there were no errors, start the command on the first macro route
-            if( ! InMessage.EventCode )
+            if( ! InMessage.ErrorCode )
             {
                 OutMessage->Request.RetryMacroOffset = selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
             }

@@ -505,17 +505,17 @@ public:
                            std::list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
 
-   virtual INT generateCommandLoadProfile( CtiXfer  &Transfer, std::list< CtiMessage* > &traceList );
-   virtual INT generateCommandScan( CtiXfer  &Transfe, std::list< CtiMessage* > &tListr );
+   virtual YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList );
+   virtual YukonError_t generateCommandScan       (CtiXfer  &Transfer, std::list< CtiMessage* > &tListr );
 
-   virtual INT decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseScan        (CtiXfer  &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT decodeResultLoadProfile (const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-   virtual INT decodeResultScan (const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT decodeResultScan        (const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
    INT   getA1ClassOffset(UINT Key, void *ptr);
-   INT   getA1FuncOffset(UINT Key, void *ptr);
+   INT   getA1FuncOffset (UINT Key, void *ptr);
 
    LONG findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, const AlphaA1Class14Real_t &class14);
 

@@ -121,9 +121,9 @@ _command(Normal)
 }
 
 
-INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
+YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t commReturnValue)
 {
-    INT status = commReturnValue;
+    YukonError_t status = commReturnValue;
 
     try
     {
@@ -138,7 +138,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                            xfer.getInBuffer()[xfer.getInCountActual()] == *_EOT)
                         {
                             //SUCCESS!!!!
-                            status = Normal;
+                            status = NORMAL;
                             setCurrentState(getPreviousState());
                             break;
                         }
@@ -193,7 +193,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             {
                                 _serialNumber = 1;
                                 setCurrentState(StateGeneratePacket);
-                                status = Normal;
+                                status = NORMAL;
                             }
                             else if(getPreviousState() == StateGeneratePacket)
                             {
@@ -216,7 +216,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 {
                                     _command = Success;
                                 }
-                                status = Normal;
+                                status = NORMAL;
                             }
 
                         }
@@ -297,9 +297,9 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
     return status;
 }
 
-INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
+YukonError_t CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     try
     {
         switch( getCurrentState() )
@@ -410,9 +410,9 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
     return status;
 }
 
-int CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
+YukonError_t CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
 {
-    int retVal = Normal;
+    YukonError_t retVal = NORMAL;
     if( OutMessage )
     {
         _outMessage = *OutMessage;
@@ -786,7 +786,7 @@ string CtiDeviceTnppPagingTerminal::getFunctionCode()
 
 }
 
-int CtiDeviceTnppPagingTerminal::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDeviceTnppPagingTerminal::sendCommResult(INMESS *InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.

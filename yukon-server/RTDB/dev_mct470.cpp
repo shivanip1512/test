@@ -1556,7 +1556,7 @@ INT Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 CtiString(InMessage.Return.CommandStr),
                                                 CtiString(),
-                                                InMessage.EventCode & 0x7fff,
+                                                InMessage.ErrorCode,
                                                 InMessage.Return.RouteID,
                                                 InMessage.Return.RetryMacroOffset,
                                                 InMessage.Return.Attempt,
@@ -3812,7 +3812,7 @@ INT Mct470Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     bool demand_defined = false;
     point_info pi;
 
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -3896,7 +3896,7 @@ INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS *InMessage, CtiTime &T
     point_info  pi, pi_time;
     CtiTime     pointTime;
 
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
@@ -4748,7 +4748,7 @@ INT Mct470Device::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    INT ErrReturn  =  InMessage->EventCode & 0x3fff;
+    INT ErrReturn  =  InMessage->ErrorCode;
     const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi

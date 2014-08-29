@@ -219,11 +219,11 @@ public:
                             std::list< CtiMessage* > &retList);
 
     // all defined in dev_alpha.cpp
-    virtual INT generateCommand          (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-    virtual INT generateCommandHandshake (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t generateCommand          (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t generateCommandHandshake (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
 
-    virtual INT decodeResponse          (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
-    virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t decodeResponse          (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
     virtual INT freeDataBins();
 
 

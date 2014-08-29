@@ -219,9 +219,9 @@ CtiDeviceLandisGyrS4& CtiDeviceLandisGyrS4::setCurrentLPDate (ULONG aDate)
 
 
 
-INT CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    USHORT retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
 
     switch (getCurrentState())
@@ -248,15 +248,15 @@ INT CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, list< Ct
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
             }
     }
     return retCode;
 }
 
-INT CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
-    USHORT retCode=NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentCommand())
     {
@@ -287,7 +287,7 @@ INT CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, list< CtiMessage*
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
                 break;
             }
 
@@ -296,9 +296,9 @@ INT CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, list< CtiMessage*
 }
 
 
-INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    int               retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
     BYTEUSHORT checkSum;
 
     /*
@@ -446,16 +446,16 @@ INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMess
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
 }
 
 
-INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    int               retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
     LGS4LProfileConfig_t * localLPConfig = (LGS4LProfileConfig_t*)iLoadProfileConfig;
 
     /*
@@ -615,7 +615,7 @@ INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< 
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
@@ -624,7 +624,7 @@ INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< 
 
 
 
-INT CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
 //   BYTE  Command;
 
@@ -650,9 +650,9 @@ INT CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, INT commR
 
 
 
-INT CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    USHORT retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentCommand())
     {
@@ -686,7 +686,7 @@ INT CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, INT commReturnValu
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
                 break;
             }
     }
@@ -694,9 +694,9 @@ INT CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, INT commReturnValu
 }
 
 
-INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    int               retCode    = NORMAL;
+    YukonError_t  retCode    = NORMAL;
     LGS4LoadProfile_t    *localLP         = ((LGS4LoadProfile_t *)iLoadProfileBuffer);
     CHAR  dataBuffer[100];
 
@@ -722,7 +722,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -752,7 +752,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -775,7 +775,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = StateScanAbort;
+                            retCode = NOTNORMAL;
                         }
                         else
                         {
@@ -789,7 +789,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                         setAttemptsRemaining(0);
 
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -799,7 +799,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = StateScanAbort;
+                            retCode = NOTNORMAL;
                         }
                         else
                         {
@@ -836,7 +836,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -852,7 +852,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -888,15 +888,15 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                 dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
 }
 
-INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    int               retCode    = NORMAL;
+    YukonError_t retCode    = NORMAL;
     LGS4LProfileConfig_t *localLPConfig   = ((LGS4LProfileConfig_t*)iLoadProfileConfig);
     LGS4LoadProfile_t    *localLP         = ((LGS4LoadProfile_t *)iLoadProfileBuffer);
 
@@ -923,7 +923,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -954,7 +954,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -978,7 +978,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = StateScanAbort;
+                            retCode = NOTNORMAL;
                         }
                         else
                         {
@@ -991,7 +991,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                         // failed on the checksum, resend the packet
                         setAttemptsRemaining(0);
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -1001,7 +1001,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = StateScanAbort;
+                            retCode = NOTNORMAL;
                         }
                         else
                         {
@@ -1037,7 +1037,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -1053,7 +1053,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -1285,7 +1285,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                 dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
     return retCode;
 }
@@ -1895,7 +1895,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS        &InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage.EventCode & 0x7fff,
+                                            InMessage.ErrorCode,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.RetryMacroOffset,
                                             InMessage.Return.Attempt,
@@ -1909,7 +1909,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS        &InMessage,
         pMsg->insert(CtiCommandMsg::OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert(getID());             // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-        pMsg->insert(InMessage.EventCode);
+        pMsg->insert(InMessage.ErrorCode);
     }
 
     insertPointIntoReturnMsg (pMsg, pPIL);
@@ -1964,7 +1964,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
@@ -1978,7 +1978,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS *InMessage,
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            (InMessage->EventCode != 0))
+            InMessage->ErrorCode)
         {
 
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -1990,14 +1990,10 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS *InMessage,
                 pMsg->insert(getID());             // The id (device or point which failed)
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-                if (InMessage->EventCode != 0)
-                {
-                    pMsg->insert(InMessage->EventCode);
-                }
-                else
-                {
-                    pMsg->insert(GeneralScanAborted);
-                }
+                pMsg->insert(
+                        InMessage->ErrorCode
+                            ? InMessage->ErrorCode
+                            : GeneralScanAborted);
             }
 
             insertPointIntoReturnMsg (pMsg, pPIL);
@@ -2078,7 +2074,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,

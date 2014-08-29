@@ -938,7 +938,7 @@ INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 string(InMessage.Return.CommandStr),
                                                 string(),
-                                                InMessage.EventCode & 0x7fff,
+                                                InMessage.ErrorCode,
                                                 InMessage.Return.RouteID,
                                                 InMessage.Return.RetryMacroOffset,
                                                 InMessage.Return.Attempt,
@@ -1108,7 +1108,7 @@ int MctDevice::insertPointFail( const INMESS &InMessage, CtiReturnMsg *pPIL, int
         pMsg->insert( CtiCommandMsg::OP_POINTID );  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert( pPoint->getPointID() );
         pMsg->insert( scanType );
-        pMsg->insert( InMessage.EventCode );  // The error number from dsm2.h or yukon.h which was reported.
+        pMsg->insert( InMessage.ErrorCode );
 
         pPIL->PointData().push_back(pMsg);
         pMsg = NULL;
@@ -3168,7 +3168,7 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
     bool expectMore = false;
 
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {

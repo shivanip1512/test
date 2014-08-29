@@ -326,17 +326,17 @@ public:
    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
    // interrogation routines
-   virtual INT generateCommandHandshake (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT generateCommand    (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT generateCommandScan (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT generateCommandLoadProfile (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT generateCommandSelectMeter( CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandHandshake   (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommand            (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandScan        (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandSelectMeter (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
 
-   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponseScan (CtiXfer  &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponseSelectMeter ( CtiXfer  &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList );
-   virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponse            (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseHandshake   (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseScan        (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseSelectMeter (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList );
+   virtual YukonError_t decodeResponseLoadProfile (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);

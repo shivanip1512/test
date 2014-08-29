@@ -79,9 +79,6 @@ void ConnectionHandlerThread( string name )
 
     cout << CtiTime() << " Server Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
 
-    // Up this threads priority a notch over the other procs
-    CTISetPriority( PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL );
-
     try
     {
         for(;!bQuit && !bGCtrlC;)

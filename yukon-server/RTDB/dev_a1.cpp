@@ -187,11 +187,11 @@ USHORT CtiDeviceAlphaA1::calculateStartingByteCountForCurrentScanState (int aCla
 }
 
 
-INT CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     AlphaA1LoadProfile_t *localLP      = ((AlphaA1LoadProfile_t*)_loadProfileBuffer);
     AlphaA1ScanData_t    *localData    = ((AlphaA1ScanData_t *)_dataBuffer);
-    int               retCode = NORMAL;
+    YukonError_t      retCode = NORMAL;
     BYTEUSHORT        reqLength;
     BYTEUSHORT        reqOffset;
     BYTE              classToRead;
@@ -498,14 +498,14 @@ INT CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, list< CtiMessage*
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
     return retCode;
 }
 
-INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
-    int               retCode = NORMAL;
+    YukonError_t      retCode = NORMAL;
     BYTEUSHORT        reqLength;
     BYTEUSHORT        reqOffset;
     BYTE              classToRead;
@@ -897,13 +897,13 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, list< CtiM
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
     return retCode;
 }
 
 
-INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
 
     INT         iClass;
@@ -912,7 +912,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
     // ClassLength is the byte length count of the requested class from the APlusClasses array
     INT         classLength;
 
-    int retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     // get appropriate data
     switch (getCurrentState())
@@ -1258,7 +1258,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                 if (getCurrentState() == StateScanComplete)
                     retCode =NORMAL;
                 else
-                    retCode = getCurrentState();
+                    retCode = NOTNORMAL;
                 break;
             }
 
@@ -1276,9 +1276,9 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
     return retCode;
 }
 
-INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    INT retCode= NORMAL;
+    YukonError_t retCode= NORMAL;
     INT         iClass;
     // Class Offset is the position of the requested class in the APlusClasses array
     INT         classOffset;
@@ -1692,9 +1692,9 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                 setCurrentState(getPreviousState());
 
                 if (getCurrentState() == StateScanComplete)
-                    retCode =NORMAL;
+                    retCode = NORMAL;
                 else
-                    retCode = getCurrentState();
+                    retCode = NOTNORMAL;
                 break;
             }
 
@@ -1745,7 +1745,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
@@ -1763,7 +1763,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
 
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            (InMessage->EventCode != 0))
+            InMessage->ErrorCode )
         {
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -1774,14 +1774,10 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
                 pMsg->insert(getID());             // The id (device or point which failed)
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-                if (InMessage->EventCode != 0)
-                {
-                    pMsg->insert(InMessage->EventCode);
-                }
-                else
-                {
-                    pMsg->insert(GeneralScanAborted);
-                }
+                pMsg->insert(
+                        InMessage->ErrorCode
+                            ? InMessage->ErrorCode
+                            : GeneralScanAborted);
             }
 
             insertPointIntoReturnMsg (pMsg, pPIL);
@@ -1918,7 +1914,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,

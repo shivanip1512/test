@@ -23,24 +23,20 @@ using std::list;
 
 int CtiPortPoolDialout::_poolDebugLevel = 0;
 
-INT CtiPortPoolDialout::openPort(INT rate, INT bits, INT parity, INT stopbits)
+YukonError_t CtiPortPoolDialout::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     return status;
 }
-INT CtiPortPoolDialout::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
+YukonError_t CtiPortPoolDialout::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
-
-    return status;
+    return NORMAL;
 }
 
-INT CtiPortPoolDialout::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
+YukonError_t CtiPortPoolDialout::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
-
-    return status;
+    return NORMAL;
 }
 
 string CtiPortPoolDialout::getSQLCoreStatement()

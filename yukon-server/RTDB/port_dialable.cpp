@@ -60,11 +60,11 @@ CtiPortDialable& CtiPortDialable::setDialedUpNumber(const string &str)
 
 
 /* Routine to wait for a response or a timeout */
-INT CtiPortDialable::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+YukonError_t CtiPortDialable::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
     ULONG   i , j;
     ULONG   BytesRead;
-    INT     status = READTIMEOUT;
+    YukonError_t status = READTIMEOUT;
 
     i = 0;        // i represents the count of bytes in response.
     j = 0;

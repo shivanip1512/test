@@ -219,14 +219,10 @@ INT CtiDeviceMarkV::ErrorDecode( const INMESS        &InMessage,
       pMsg->insert( getID() );          // The id (device or point which failed)
       pMsg->insert( ScanRateInvalid );  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-      if( InMessage.EventCode != 0 )
-      {
-         pMsg->insert( InMessage.EventCode );
-      }
-      else
-      {
-         pMsg->insert( GeneralScanAborted );
-      }
+      pMsg->insert(
+              InMessage.ErrorCode
+                ? InMessage.ErrorCode
+                : GeneralScanAborted );
 
       retList.push_back( pMsg );
       pMsg = NULL;
@@ -256,7 +252,7 @@ int CtiDeviceMarkV::decodeResultScan( const INMESS               *InMessage,
    CtiReturnMsg      *pPIL = CTIDBG_new CtiReturnMsg( getID(),
                                                        string(InMessage->Return.CommandStr),
                                                        string(),
-                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->ErrorCode,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
@@ -907,7 +903,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 //=====================================================================================================================
 //=====================================================================================================================
 
-int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
+YukonError_t CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
 {
    CtiProtocolTransdata::llp  *lLP = NULL;
 

@@ -133,14 +133,12 @@ INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT Ccu721Device::ResultDecode( const INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
-
-    if( !ErrReturn )
+    if( ! InMessage->ErrorCode )
     {
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                                   string(InMessage->Return.CommandStr),
                                                   string((const char *)(InMessage->Buffer.InMessage + InMessage_StringOffset)),
-                                                  InMessage->EventCode & 0x7fff,
+                                                  InMessage->ErrorCode,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.RetryMacroOffset,
                                                   InMessage->Return.Attempt,
@@ -384,9 +382,9 @@ DeviceQueueInterface *Ccu721Device::getDeviceQueueHandler()
 }
 
 
-INT Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
+YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    int retval = NORMAL;
+    YukonError_t retval = NORMAL;
 
     // If they are the same, it is a message to the CCU and should not be queued
     // Instead of checking this, should all messages to the CCU be marked DTRAN?
@@ -523,7 +521,7 @@ bool Ccu721Device::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 }
 
 
-int Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
+YukonError_t Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 {
     if( !OutMessage )
     {
@@ -562,9 +560,9 @@ int Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 }
 
 
-int Ccu721Device::sendCommResult(INMESS *InMessage)
+YukonError_t Ccu721Device::sendCommResult(INMESS *InMessage)
 {
-    int status = translateKlondikeError(_klondike.errorCode());
+    YukonError_t status = translateKlondikeError(_klondike.errorCode());
 
     //  if the CCU owns the InMessage - we don't end up owning the DTRAN InMessage, the MCT does...
     //    so there's no use in putting a string in there, since we won't decode it anyway
@@ -649,15 +647,15 @@ int Ccu721Device::sendCommResult(INMESS *InMessage)
                         im->Port      = om->Port;
                         im->Remote    = om->Remote;
 
-                        im->EventCode = translateKlondikeError(result.error);
+                        im->ErrorCode = translateKlondikeError(result.error);
                         im->Time      = result.timestamp;
                         im->InLength  = result.message.size();
 
                         copy(result.message.begin(), result.message.end(), im->Buffer.InMessage);
 
-                        if( !im->EventCode )
+                        if( ! im->ErrorCode )
                         {
-                            im->EventCode = processInbound(om, im);
+                            im->ErrorCode = processInbound(om, im);
                         }
 
                         _results.push_back(make_pair(om, im));
@@ -673,7 +671,7 @@ int Ccu721Device::sendCommResult(INMESS *InMessage)
 }
 
 
-int Ccu721Device::translateKlondikeError(KlondikeProtocol::Errors error)
+YukonError_t Ccu721Device::translateKlondikeError(KlondikeProtocol::Errors error)
 {
     switch( error )
     {
@@ -786,7 +784,7 @@ void Ccu721Device::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 }
 
 
-int Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
+YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
 {
     if( (om->EventCode & BWORD) &&
         (om->Buffer.BSt.IO & Protocols::EmetconProtocol::IO_Read ) )
@@ -795,7 +793,7 @@ int Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
         ESTRUCT tmp_e_struct;
 
         //  inbound command - decode the D words
-        int dword_status = decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct, &tmp_e_struct);
+        const YukonError_t dword_status = decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct, &tmp_e_struct);
 
         switch( dword_status )
         {
@@ -832,7 +830,7 @@ int Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
 }
 
 
-int Ccu721Device::decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt) const
+YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt) const
 {
     if( input_length % DWORDLEN )
     {
@@ -847,7 +845,7 @@ int Ccu721Device::decodeDWords(const unsigned char *input, const unsigned input_
     {
         unsigned short unused;
 
-        int status = NoError;
+        YukonError_t status = NoError;
 
         switch( i )
         {
@@ -871,14 +869,14 @@ int Ccu721Device::decodeDWords(const unsigned char *input, const unsigned input_
 }
 
 
-int Ccu721Device::decodeEWord(const unsigned char *input, const unsigned input_length, ESTRUCT *ESt)
+YukonError_t Ccu721Device::decodeEWord(const unsigned char *input, const unsigned input_length, ESTRUCT *ESt)
 {
     if( input_length < EWORDLEN )
     {
         return MEMORY;
     }
 
-    int error = E_Word(input, ESt);
+    YukonError_t error = E_Word(input, ESt);
 
     if( error != EWORDRCV )
     {

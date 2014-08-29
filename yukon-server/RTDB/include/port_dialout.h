@@ -17,19 +17,19 @@ protected:
 
 private:
 
-    INT modemReset(USHORT Trace, BOOL dcdTest = TRUE);
+    YukonError_t modemReset(USHORT Trace, BOOL dcdTest = TRUE);
     INT modemSetup(USHORT Trace, BOOL dcdTest = TRUE);
     INT modemHangup(USHORT Trace, BOOL dcdTest = TRUE);
-    INT modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest = TRUE);
+    YukonError_t modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest = TRUE);
 
 public:
 
     CtiPortDialout();
 
-    INT  connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
+    YukonError_t connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
     INT  disconnect(CtiDeviceSPtr Device, INT trace);
 
-    INT reset(INT trace);
+    YukonError_t reset(INT trace);
     INT setup(INT trace);
     INT close(INT trace);
 };

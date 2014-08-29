@@ -48,7 +48,7 @@ const string &CtiPortTCPIPDirect::getIPAddress() const  {  return _tcpIpInfo.get
 INT           CtiPortTCPIPDirect::getIPPort()    const  {  return _tcpIpInfo.getIPPort();     }
 
 
-INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
+YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
     if( isSimulated() )
     {
@@ -96,7 +96,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         return ErrorDnsLookupFailed;
     }
 
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     /* get a stream socket. */
     if((_socket = socket(pAddrInfo->ai_family, pAddrInfo->ai_socktype, pAddrInfo->ai_protocol)) == INVALID_SOCKET)
@@ -220,7 +220,7 @@ INT CtiPortTCPIPDirect::close(INT trace)
     return shutdownClose(__FILE__, __LINE__);
 }
 
-INT CtiPortTCPIPDirect::inClear() const
+YukonError_t CtiPortTCPIPDirect::inClear() const
 {
     if( _socket == INVALID_SOCKET )
     {
@@ -240,14 +240,14 @@ INT CtiPortTCPIPDirect::inClear() const
         case 1:             break;
 
         default:
-        case SOCKET_ERROR:  return SOCKET_ERROR;
+        case SOCKET_ERROR:  return SYSTEM;
     }
 
     // How many are available ??
     ULONG ulTemp;
     if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
     {
-        return SOCKET_ERROR;
+        return SYSTEM;
     }
 
     scoped_array<char> buf(new char[ulTemp]);
@@ -266,9 +266,9 @@ INT CtiPortTCPIPDirect::outClear() const
 }
 
 
-INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
+YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    INT      status      = NORMAL;
+    YukonError_t status = NORMAL;
 
     BYTE     SomeMessage[300];
     ULONG    DCDCount    = 0;
@@ -465,9 +465,9 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
     return status;
 }
 
-INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
+YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    INT      status = NORMAL;
+    YukonError_t status = NORMAL;
 
     ULONG    Written;
     ULONG    MSecs;
@@ -630,107 +630,104 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
 }
 
 
-INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength)
+YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength)
 {
-    INT status = NORMAL;
     int WaitCount = 0;
     ULONG bytes_available = 0;
 
     *ReceiveLength = 0;  // no lies here
 
-    if(_socket != INVALID_SOCKET)
+    if(_socket == INVALID_SOCKET)
     {
-        /* Wait up to timeout for characters to be available */
-        while((ULONG)WaitCount++ <= ((TimeOut * 1000L) / 50L))
-        {
-            /* Find out if we have any bytes */
-            ioctlsocket (_socket, FIONREAD, &bytes_available);
+        return BADSOCK;
+    }
 
-            /* if a specific length specified wait for at least that much */
-            if(Length > 0)
-            {
-                if((LONG)bytes_available < Length)
-                {
-                    CTISleep (50L);
-                }
-                else
-                {
-                    break;                     // the while loop ends now.
-                }
-            }
-            else                             // Otherwise any length will do
-            {
-                if(bytes_available == 0)               // Wait for something, or the timeout.
-                {
-                    CTISleep (50L);
-                }
-                else
-                {
-                    break;                     // the while loop ends now.
-                }
-            }
-        }
+    /* Wait up to timeout for characters to be available */
+    while((ULONG)WaitCount++ <= ((TimeOut * 1000L) / 50L))
+    {
+        /* Find out if we have any bytes */
+        ioctlsocket (_socket, FIONREAD, &bytes_available);
 
-        if(bytes_available == 0)
-        {
-            return(READTIMEOUT);
-        }
-
+        /* if a specific length specified wait for at least that much */
         if(Length > 0)
         {
-            /* Go ahead and actually read some bytes */
-            if((*ReceiveLength = recv(_socket, (CHAR*)Message, Length, 0)) <= 0)
+            if((LONG)bytes_available < Length)
             {
-                shutdownClose(__FILE__, __LINE__);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
-                }
-                return(TCPREADERROR);
+                CTISleep (50L);
             }
-
-            if(*ReceiveLength < Length)
+            else
             {
-                if(bytes_available >= Length)     // The stupid thing told us the bytes were there!
-                {
-                    int bytesrecv = 0;
-
-                    while(*ReceiveLength < Length)
-                    {
-                        bytesrecv = recv(_socket, (CHAR*)&Message[*ReceiveLength], Length - *ReceiveLength, 0);
-
-                        if(bytesrecv > 0)
-                        {
-                            *ReceiveLength += bytesrecv;
-                        }
-                    }
-                }
-                else
-                {
-                    status = READTIMEOUT;
-                }
+                break;                     // the while loop ends now.
             }
         }
-        else
+        else                             // Otherwise any length will do
         {
-            /* Go ahead and actually read some bytes */
-            if((*ReceiveLength = recv(_socket, (CHAR*)Message, -Length, 0)) <= 0)
+            if(bytes_available == 0)               // Wait for something, or the timeout.
             {
-                shutdownClose(__FILE__, __LINE__);
+                CTISleep (50L);
+            }
+            else
+            {
+                break;                     // the while loop ends now.
+            }
+        }
+    }
+
+    if( bytes_available == 0 )
+    {
+        return READTIMEOUT;
+    }
+
+    if(Length > 0)
+    {
+        /* Go ahead and actually read some bytes */
+        if((*ReceiveLength = recv(_socket, (CHAR*)Message, Length, 0)) <= 0)
+        {
+            shutdownClose(__FILE__, __LINE__);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
+            }
+            return(TCPREADERROR);
+        }
+
+        if(*ReceiveLength < Length)
+        {
+            if(bytes_available >= Length)     // The stupid thing told us the bytes were there!
+            {
+                int bytesrecv = 0;
+
+                while(*ReceiveLength < Length)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
+                    bytesrecv = recv(_socket, (CHAR*)&Message[*ReceiveLength], Length - *ReceiveLength, 0);
+
+                    if(bytesrecv > 0)
+                    {
+                        *ReceiveLength += bytesrecv;
+                    }
                 }
-                status = TCPREADERROR;
+            }
+            else
+            {
+                return READTIMEOUT;
             }
         }
     }
     else
     {
-        status = BADSOCK;
+        /* Go ahead and actually read some bytes */
+        if((*ReceiveLength = recv(_socket, (CHAR*)Message, -Length, 0)) <= 0)
+        {
+            shutdownClose(__FILE__, __LINE__);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
+            }
+            return TCPREADERROR;
+        }
     }
 
-    return status;
+    return NORMAL;
 }
 
 
@@ -797,9 +794,9 @@ string CtiPortTCPIPDirect::getSQLCoreStatement()
     return sql;
 }
 
-INT CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+YukonError_t CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
-    INT status = BADPORT;
+    YukonError_t status = BADPORT;
 
     if(_dialable)
     {
@@ -885,7 +882,7 @@ bool CtiPortTCPIPDirect::isSocketBroken() const
     return false;
 }
 
-INT CtiPortTCPIPDirect::reset(INT trace)
+YukonError_t CtiPortTCPIPDirect::reset(INT trace)
 {
     if(_dialable)
     {
@@ -895,7 +892,7 @@ INT CtiPortTCPIPDirect::reset(INT trace)
     return NORMAL;
 }
 
-INT CtiPortTCPIPDirect::setup(INT trace)
+YukonError_t CtiPortTCPIPDirect::setup(INT trace)
 {
     if(_dialable)
     {
@@ -905,11 +902,11 @@ INT CtiPortTCPIPDirect::setup(INT trace)
     return NORMAL;
 }
 
-INT  CtiPortTCPIPDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
+YukonError_t CtiPortTCPIPDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
-    pair< bool, INT > portpair = checkCommStatus(Device, trace);
+    pair< bool, YukonError_t > portpair = checkCommStatus(Device, trace);
 
     status = portpair.second;
 

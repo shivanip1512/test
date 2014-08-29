@@ -38,13 +38,13 @@ public:
     virtual BOOL shouldDisconnect() const;
     virtual void setShouldDisconnect(BOOL b = TRUE);
 
-    virtual INT connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace) = 0;
+    virtual YukonError_t connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace) = 0;
 
-    virtual INT reset(INT trace) = 0;
+    virtual YukonError_t reset(INT trace) = 0;
     virtual INT setup(INT trace) = 0;
     virtual INT close(INT trace) = 0;
 
-    virtual INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
+    virtual YukonError_t waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
     virtual INT disconnect(CtiDeviceSPtr Device, INT trace);
 
     const CtiTablePortDialup& getTablePortDialup() const;

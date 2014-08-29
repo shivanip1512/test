@@ -408,9 +408,9 @@ INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
    return retval;
 }
 
-INT CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    USHORT retCode=NORMAL;
+    YukonError_t retCode=NORMAL;
 
     switch (getCurrentCommand())
     {
@@ -442,7 +442,7 @@ INT CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, lis
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
                 }
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
                 break;
             }
     }
@@ -552,7 +552,7 @@ INT CtiDeviceAlpha::ErrorDecode (const INMESS        &InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             InMessage.Return.CommandStr,
                                             "",
-                                            InMessage.EventCode & 0x7fff,
+                                            InMessage.ErrorCode,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.RetryMacroOffset,
                                             InMessage.Return.Attempt,
@@ -566,7 +566,7 @@ INT CtiDeviceAlpha::ErrorDecode (const INMESS        &InMessage,
         pMsg->insert(CtiCommandMsg::OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert(getID());             // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-        pMsg->insert(InMessage.EventCode);     // The error number from dsm2.h or yukon.h which was reported.
+        pMsg->insert(InMessage.ErrorCode);
     }
 
     insertPointIntoReturnMsg (pMsg, pPIL);
@@ -586,9 +586,9 @@ INT CtiDeviceAlpha::ErrorDecode (const INMESS        &InMessage,
 }
 
 
-INT CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
-    USHORT retCode=NORMAL;
+    YukonError_t retCode = NORMAL;
     int i;
 
     switch (getCurrentCommand())
@@ -610,23 +610,6 @@ INT CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &tr
                 retCode = generateCommandLoadProfile (Transfer, traceList);
                 break;
             }
-#if 0
-        case CmdAlphaNoData:
-            {
-                retCode = generateCommandWithNoData( Transfer, traceList );
-                break;
-            }
-        case CmdAlphaWithData:
-            {
-                retCode = generateCommandWithData( Transfer, traceList );
-                break;
-            }
-        case CmdAlphaPartialRead:
-            {
-                break;
-            }
-#endif
-
         default:
             //   set this to zero so nothing happens
             generateCommandTerminate (Transfer, traceList);
@@ -635,18 +618,18 @@ INT CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &tr
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
             }
-            retCode = !NORMAL;
+            retCode = NOTNORMAL;
             break;
     }
     return retCode;
 }
 
-INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     BYTEULONG         passWord;
     BYTEULONG         passwordValue;
     BYTEULONG         keyValue;
-    USHORT            retCode = NORMAL;
+    YukonError_t      retCode = NORMAL;
 
     switch (getCurrentState())
     {
@@ -784,16 +767,16 @@ INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessa
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = StateHandshakeAbort;
+                retCode = NOTNORMAL;
                 break;
             }
     }
     return retCode;
 }
 
-INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    USHORT            retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentState())
     {
@@ -910,7 +893,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
                     dout << CtiTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
                 break;
             }
 

@@ -481,9 +481,9 @@ void CtiPort::haltLog()
     }
 }
 
-INT CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
+YukonError_t CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
-    INT   status = NORMAL;
+    YukonError_t status = NORMAL;
 
     Xfer.setInCountActual((ULONG)0L);    // Make sure that any error on the outMess does not affect a state machine!
 
@@ -587,9 +587,9 @@ bool CtiPort::isSimulated() const
     return _simulated > 0;
 }
 
-INT CtiPort::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
+YukonError_t CtiPort::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    INT status     = NORMAL;
+    YukonError_t status = NORMAL;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
 
     LastDeviceId = 0L;
@@ -657,11 +657,11 @@ BOOL CtiPort::shouldDisconnect() const
 {
     return FALSE;
 }
-INT CtiPort::reset(INT trace)
+YukonError_t CtiPort::reset(INT trace)
 {
     return NORMAL;
 }
-INT CtiPort::setup(INT trace)
+YukonError_t CtiPort::setup(INT trace)
 {
     return NORMAL;
 }
@@ -702,7 +702,7 @@ INT       CtiPort::raiseDTR()
     return NORMAL;
 }
 
-INT       CtiPort::inClear()
+YukonError_t CtiPort::inClear()
 {
     return NORMAL;
 }
@@ -818,9 +818,9 @@ CtiPort& CtiPort::setConnectedDeviceUID(const ULONG &i)
 }
 
 
-pair< bool, INT > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
+pair< bool, YukonError_t > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
 {
-    pair< bool, INT > rpair = make_pair( false, NORMAL );
+    pair< bool, YukonError_t > rpair = make_pair( false, NORMAL );
     static const bool release_idle_ports = gConfigParms.isTrue("PORTER_RELEASE_IDLE_PORTS");
 
     //  no need to attempt this if we're simulating the port
@@ -835,10 +835,10 @@ pair< bool, INT > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
     return rpair;
 }
 
-pair< bool, INT > CtiPort::checkCommStatus(CtiDeviceSPtr Device, INT trace)
+pair< bool, YukonError_t > CtiPort::checkCommStatus(CtiDeviceSPtr Device, INT trace)
 {
-    INT status = NORMAL;
-    pair< bool, INT > rpair = make_pair( false, NORMAL );
+    YukonError_t status = NORMAL;
+    pair< bool, YukonError_t > rpair = make_pair( false, NORMAL );
 
     if(!isViable())
     {
@@ -872,7 +872,7 @@ CTI_PORTTHREAD_FUNC_PTR CtiPort::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
     return oldFn;
 }
 
-INT CtiPort::setPortReadTimeOut(USHORT millitimeout)
+YukonError_t CtiPort::setPortReadTimeOut(USHORT millitimeout)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -881,7 +881,7 @@ INT CtiPort::setPortReadTimeOut(USHORT millitimeout)
     return NORMAL;
 }
 
-INT CtiPort::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+YukonError_t CtiPort::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1269,11 +1269,11 @@ INT CtiPort::searchPortQueueForConnectedDeviceUID(BOOL (*myFunc)(void*, void*))
 }
 
 
-INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount)
+int CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount)
 {
     bool readPortQueue = true;
     static CtiTime lastQueueReportTime;
-    INT status = QUEUE_READ;
+    int status = QUEUE_READ;
 
     ULONG Element = getQueueSlot();
 
@@ -1404,9 +1404,9 @@ bool CtiPort::adjustCommCounts( INT CommResult )
 }
 
 // Return all queue entries to the processing parent.
-INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
+YukonError_t CtiPort::requeueToParent(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if(_parentPort) // Do we have this ability??
     {

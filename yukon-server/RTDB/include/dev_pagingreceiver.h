@@ -44,18 +44,18 @@ public:
 
     static std::vector<const char*> initCommandVector();
     CtiDevicePagingReceiver();
-    int recvCommRequest(OUTMESS *OutMessage);
+    YukonError_t recvCommRequest(OUTMESS *OutMessage);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    virtual int sendCommResult(INMESS *InMessage);
+    virtual YukonError_t sendCommResult(INMESS *InMessage);
     bool isTransactionComplete();
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   int decode(CtiXfer &xfer, int commReturnValue);
-   int generate(CtiXfer &xfer);
+   YukonError_t decode(CtiXfer &xfer, YukonError_t commReturnValue);
+   YukonError_t generate(CtiXfer &xfer);
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
 
    enum CommandState

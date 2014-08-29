@@ -630,7 +630,7 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, 
 
     ULONG lValue;
 
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse( InMessage->Return.CommandStr );
@@ -2001,7 +2001,7 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
 
     ULONG accums[3];
 
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     DOUBLE Value;

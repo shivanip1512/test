@@ -242,7 +242,7 @@ INT CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse
 
 INT CtiDeviceSeriesV::ResultDecode( const INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     list<CtiPointDataMsg*> seriesvPoints;
 
     string resultString;

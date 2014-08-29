@@ -31,9 +31,9 @@ _remainingSleepDelay(0)
     resetStates(StateSendRequestedMessage);
 }
 
-int RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
+YukonError_t RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( OutMessage )
     {
@@ -125,7 +125,7 @@ void RDSTransmitter::buildRDSMessage(const StateMachine &m, MessageStore &msg)
     addStartStopBytes(msg);
 }
 
-int RDSTransmitter::generate(CtiXfer &xfer)
+YukonError_t RDSTransmitter::generate(CtiXfer &xfer)
 {
     MessageStore newMessage;
 
@@ -149,12 +149,12 @@ int RDSTransmitter::generate(CtiXfer &xfer)
 
     copyMessageToXfer(xfer, newMessage);
 
-    return Normal;
+    return NORMAL;
 }
 
-int RDSTransmitter::decode(CtiXfer &xfer, int status)
+YukonError_t RDSTransmitter::decode(CtiXfer &xfer, YukonError_t status)
 {
-    status = Normal;
+    status = NORMAL;
 
     if(isTwoWay() && xfer.getInCountActual() < UECPResponseLen)
     {
@@ -162,13 +162,13 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
         status = FinalError;
         _isBiDirectionSet = false;
     }
-    else 
+    else
     {
         // Check if we are ok, then continue? somehow.
         if(!isTwoWay() || xfer.getInBuffer()[6] == 0)
         {
             //OK!
-            status = Normal;
+            status = NORMAL;
             if(_previousState == StateSendBiDirectionalRequest)
             {
                 _isBiDirectionSet = true;
@@ -583,7 +583,7 @@ INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
     return nRet;
 }
 
-int RDSTransmitter::sendCommResult(INMESS *InMessage)
+YukonError_t RDSTransmitter::sendCommResult(INMESS *InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.

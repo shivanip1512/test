@@ -251,9 +251,9 @@ string CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse
     return trelay;
 }
 
-INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    INT status = commReturnValue;
+    YukonError_t status = commReturnValue;
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
@@ -512,9 +512,9 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
  * It uses the current state and the Xfer InBuffer to get us to the next point
  * in the sequence.
  *-----------------------------------------------------------------------------*/
-INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
@@ -868,10 +868,10 @@ INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
 }
 
 
-INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
     INT   i;
-    INT   status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
@@ -1076,9 +1076,9 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage
     return status;
 }
 
-INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    INT status = commReturnValue;
+    YukonError_t status = commReturnValue;
 
     if( status == NORMAL )     // Communications must have been successful
     {
@@ -1230,10 +1230,10 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
 }
 
 
-INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
     INT   i;
-    INT   status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
@@ -1359,9 +1359,9 @@ INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list<
     return status;
 }
 
-INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    INT status = commReturnValue;
+    YukonError_t status = commReturnValue;
 
     if( status == NORMAL )     // Communications must have been successful
     {

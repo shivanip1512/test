@@ -26,10 +26,10 @@ using std::string;
 using std::endl;
 using std::list;
 
-INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
+YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
-    INT      status = NORMAL;
-    ULONG    Result, i;
+    YukonError_t status = NORMAL;
+    ULONG    Result;
 
     if( !isSimulated() )
     {
@@ -75,6 +75,8 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
                 /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
                 initPrivateStores();
+
+                YukonError_t i;
 
                 /* set the baud rate bits parity etc! on the port */
                 if((i = setLine()) != NORMAL)
@@ -158,9 +160,9 @@ CtiPortDirect& CtiPortDirect::setHandle(const HANDLE& hdl)
     return *this;
 }
 
-INT CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits)
+YukonError_t CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits)
 {
-    INT retval = NORMAL;
+    YukonError_t retval = NORMAL;
 
     if( !rate )
     {
@@ -238,7 +240,7 @@ INT CtiPortDirect::raiseDTR()
     return(EscapeCommFunction(_portHandle, SETDTR) ? NORMAL : SYSTEM);
 }
 
-INT CtiPortDirect::inClear()
+YukonError_t CtiPortDirect::inClear()
 {
     return(PurgeComm(_portHandle, PURGE_RXCLEAR) ? NORMAL : SYSTEM );
 }
@@ -248,9 +250,9 @@ INT CtiPortDirect::outClear()
     return(PurgeComm(_portHandle, PURGE_TXCLEAR) ? NORMAL : SYSTEM );
 }
 
-INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
+YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
-    INT      status      = NORMAL;
+    YukonError_t status = NORMAL;
 
     // 091201 CGP CCH  // BYTE     SomeMessage[300];
     ULONG    DCDCount    = 0;
@@ -431,9 +433,9 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > 
 }
 
 
-INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool suppressEcho)
+YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool suppressEcho)
 {
-    int status = NORMAL;
+    YukonError_t status = NORMAL;
 
     bool  matching;
 
@@ -536,9 +538,9 @@ INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool 
 
 
 
-INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
+YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
-    INT      status = NORMAL;
+    YukonError_t status = NORMAL;
     INT      i = 0;
 
     ULONG    Written;
@@ -630,22 +632,6 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* >
                     dout << CtiTime() << " " << getName() << " CTS has not come high." << endl;
                     dout << "  CTS has not come high.  Check your communications channel timings" << endl;
                 }
-    #if 0
-                INT cnt = rtstoout / 10;
-
-                // We will wait one more RTS to DATA out cycle looking for this.
-                while( !ctsTest() && cnt-- > 0 )
-                {
-                    CTISleep(10);
-                }
-
-                if(cnt <= 0)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CTS never came high.  Check your communications channel timings" << endl;
-                }
-    #endif
             }
 
             /* Remember when we started writing */
@@ -795,7 +781,7 @@ void CtiPortDirect::DecodeDialableDatabaseReader(Cti::RowReader &rdr)
     }
 }
 
-INT CtiPortDirect::setPortReadTimeOut(USHORT millitimeout)
+YukonError_t CtiPortDirect::setPortReadTimeOut(USHORT millitimeout)
 {
     _cto.ReadIntervalTimeout = 0;
     _cto.ReadTotalTimeoutMultiplier = 0;
@@ -804,7 +790,7 @@ INT CtiPortDirect::setPortReadTimeOut(USHORT millitimeout)
     return(SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
 }
 
-INT CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
+YukonError_t CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
 {
     _cto.WriteTotalTimeoutMultiplier = 0;
     _cto.WriteTotalTimeoutConstant = (millitimeout);
@@ -814,9 +800,9 @@ INT CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
 
 
 
-INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+YukonError_t CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
-    INT status = BADPORT;
+    YukonError_t status = BADPORT;
 
     if(_dialable)
     {
@@ -848,9 +834,9 @@ bool CtiPortDirect::isViable()
 }
 
 
-INT CtiPortDirect::reset(INT trace)
+YukonError_t CtiPortDirect::reset(INT trace)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if(_dialable)
     {
@@ -860,7 +846,7 @@ INT CtiPortDirect::reset(INT trace)
     return status;
 }
 
-INT CtiPortDirect::setup(INT trace)
+YukonError_t CtiPortDirect::setup(INT trace)
 {
     if(_dialable)
     {
@@ -870,9 +856,9 @@ INT CtiPortDirect::setup(INT trace)
     return NORMAL;
 }
 
-INT  CtiPortDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
+YukonError_t CtiPortDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if(_dialable)
     {

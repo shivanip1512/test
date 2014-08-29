@@ -54,7 +54,7 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
          retMsg = CTIDBG_new CtiReturnMsg(getID(),
                              pReq->CommandString(),
                              string(getName() + " / loopback in progress"),
-                             NORMAL,//EventCode & 0x7fff
+                             NORMAL,
                              pReq->RouteId(),
                              pReq->MacroOffset(),
                              1, //pReq->Attempt(),
@@ -112,7 +112,7 @@ INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NORMAL,//EventCode & 0x7fff
+                                          NORMAL,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -324,7 +324,7 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
                 InMessage->Return.CommandStr,
                 returnString,
-                InMessage->EventCode & 0x7fff,
+                InMessage->ErrorCode,
                 InMessage->Return.RouteID,
                 InMessage->Return.RetryMacroOffset,
                 InMessage->Return.Attempt,
@@ -341,7 +341,7 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
                                                 InMessage->Return.CommandStr,
                                                 //string(),
                                                 getName() + " / general scan successful : \n" + _result_string.c_str(),
-                                                InMessage->EventCode & 0x7fff,
+                                                InMessage->ErrorCode,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.RetryMacroOffset,
                                                 InMessage->Return.Attempt,
@@ -354,7 +354,7 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
                                                 InMessage->Return.CommandStr,
                                                 //string(),
                                                 getName() + " / general scan failed",
-                                                InMessage->EventCode & 0x7fff,
+                                                InMessage->ErrorCode,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.RetryMacroOffset,
                                                 InMessage->Return.Attempt,
@@ -417,19 +417,17 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
 
     return( 0 ); //just a val
 }
-INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
+YukonError_t CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
 {
     if (getANSIProtocol().getScanOperation() >= CtiProtocolANSI::demandReset ) //2= demand Reset, 3=loopback
     {
         string returnString = (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset ? "demand reset " : "loopback ");
-        if (InMessage->EventCode == NORMAL)
+        if( ! InMessage->ErrorCode )
         {
             returnString += "successful";
             int sizeOfReturnString = returnString.length();
             memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
-
-            InMessage->EventCode = NORMAL;
         }
         else
         {
@@ -442,7 +440,7 @@ INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
     else //general Scan
     {
 
-        if (InMessage->EventCode == NORMAL)
+        if( ! InMessage->ErrorCode )
         {
             if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == CtiProtocolANSI::generalScan) //scanner
             {
@@ -463,8 +461,6 @@ INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
                 int sizeOfReturnString = returnString.length();
                 memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
                 InMessage->InLength = sizeOfReturnString;
-
-                InMessage->EventCode = NORMAL;
             }
         }
         else
@@ -477,7 +473,7 @@ INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
 
     }
 
-    return( InMessage->EventCode ); //just a val
+    return InMessage->ErrorCode;
 }
 //=====================================================================================================================
 //=====================================================================================================================

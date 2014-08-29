@@ -248,9 +248,9 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
 }
 
 
-INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
-    USHORT retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch( getCurrentState( ) )
     {
@@ -370,17 +370,17 @@ INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list< CtiMess
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState( StateHandshakeAbort );
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
             }
     }
     return retCode;
 }
 
 
-INT CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct MeterSt;
-    USHORT          retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     //  generate the appropriate command
     switch( getCurrentCommand( ) )
@@ -412,7 +412,7 @@ INT CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, list< CtiMessage* > &t
                     CtiLockGuard<CtiLogger> dout_guard( dout );
                     dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - generating command - Invalid command " << getCurrentCommand( ) << endl;
                 }
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
                 break;
             }
     }
@@ -420,10 +420,10 @@ INT CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, list< CtiMessage* > &t
     return retCode;
 }
 
-INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct MeterSt;
-    int             retCode = NORMAL;
+    YukonError_t    retCode = NORMAL;
 
     //  get appropriate data
     switch ( getCurrentState( ) )
@@ -557,16 +557,16 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMe
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState( StateScanAbort );
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
 }
 
 
-INT CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
-    int retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     // get appropriate data
     switch( getCurrentState( ) )
@@ -607,7 +607,7 @@ INT CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, list< CtiMessage* 
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState( StateScanAbort );
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
             }
     }
 
@@ -667,13 +667,13 @@ LONG CtiDeviceQuantum::getNextRecordLocation( LONG currentRecordAddress )
 }
 
 
-INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     //  grab the mass memory config
     QuantumConfigData_t  *mmCfg       = (QuantumConfigData_t *)_massMemoryConfig;
     ULONG                *lastLPTime  = (ULONG *)_loadProfileTimeDate;
 
-    INT     retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
     INT     recordSize;
     LONG    recordDuration;
     LONG    chunkStart,
@@ -830,7 +830,7 @@ INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState( StateScanAbort );
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
             }
     }
 
@@ -838,10 +838,10 @@ INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
 }
 
 
-INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct   MeterSt;
-    int retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     setAttemptsRemaining( getAttemptsRemaining( ) - 1 );
 
@@ -925,7 +925,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
                     //  otherwise, abort the handshake - this was our last attempt, and the
                     //    meter's not respoding to the ENQs.
                     setCurrentState( StateHandshakeAbort );
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -962,7 +962,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
                 {
                     //  we've run out of attempts, abort the handshake
                     setCurrentState( StateHandshakeAbort );
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -993,7 +993,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
                 {
                     //  no ACK from the meter...  abort, we can't verify security code
                     setCurrentState( StateHandshakeAbort );
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1004,7 +1004,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
                     dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding handshake - Invalid state " << getCurrentState( ) << endl;
                 }
                 setCurrentState( StateHandshakeAbort );
-                retCode = StateHandshakeAbort;
+                retCode = NOTNORMAL;
                 break;
             }
     }
@@ -1012,10 +1012,10 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
 }
 
 
-INT CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct MeterSt;
-    USHORT retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     //  decode the response with the appropriate function
     switch( getCurrentCommand( ) )
@@ -1047,7 +1047,7 @@ INT CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, INT commReturnValue, li
                     CtiLockGuard<CtiLogger> dout_guard( dout );
                     dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding - Invalid command " << getCurrentCommand( ) << endl;
                 }
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
                 break;
             }
     }
@@ -1057,9 +1057,9 @@ INT CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, INT commReturnValue, li
 
 
 
-INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
 {
-    int retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
     SchlMeterStruct   MeterSt;
 
     setAttemptsRemaining( getAttemptsRemaining( ) - 1 );
@@ -1119,7 +1119,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
                 {
                     //  we've run out of attempts, abort the handshake
                     setCurrentState( StateHandshakeAbort );
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1150,7 +1150,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
                 {
                     //  no ACK from the meter...  abort, we can't verify security code
                     setCurrentState( StateHandshakeAbort );
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1174,7 +1174,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
                 {
                     //  no response to D command, abort
                     setCurrentState( StateScanAbort );
-                    retCode = StateScanAbort;
+                    retCode = NOTNORMAL;
                 }
 
                 break;
@@ -1214,7 +1214,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
                     {
                         //  it won't shut up, so we are aborting
                         setCurrentState( StateScanAbort );
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                 }
                 else
@@ -1262,7 +1262,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
                         //  timed out;  too many read delays and/or didn't read enough ACKs
                         setCurrentState( StateScanAbort );
                         setTotalByteCount( 0 );
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                 }
                 break;
@@ -1274,16 +1274,16 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
                 dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding select meter - Invalid state " << getCurrentState( ) << endl;
             }
             setCurrentState( StateScanAbort );
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
 }
 
 
-INT CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
 {
-    int retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     //  run the return through the wringer
     retCode = checkReturnMsg( Transfer, commReturnValue );
@@ -1332,12 +1332,12 @@ INT CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, INT commReturnValue
                     dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding scan - Invalid state " << getCurrentState( ) << endl;
                 }
                 setCurrentState( StateScanAbort );
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
                 break;
             }
         }
     }
-    else if( retCode == SCHLUM_RESEND_CMD )
+    else if( retCode == RETRY_SUBMITTED )
     {
         //  we don't want to abort, just try again
         retCode = NORMAL;
@@ -1347,11 +1347,11 @@ INT CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, INT commReturnValue
 }
 
 
-INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
     QuantumConfigData_t  *mmCfg = ((QuantumConfigData_t *)_massMemoryConfig);
 
-    int                   retCode = NORMAL;
+    YukonError_t          retCode = NORMAL;
     INT                   lastCommandStartAddress;
     INT                   recordSize;
     ULONG                 mmRealTime;
@@ -1533,10 +1533,10 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding load profile - Invalid state " << getCurrentState( ) << endl;
                 }
                 setCurrentState( StateScanAbort );
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
         }
     }
-    else if( retCode == SCHLUM_RESEND_CMD )
+    else if( retCode == RETRY_SUBMITTED )
     {
         //  we don't want to abort, just try again
         retCode = NORMAL;
@@ -1859,7 +1859,7 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
     CtiReturnMsg    *pPIL          = CTIDBG_new CtiReturnMsg( getID( ),
                                                        string( InMessage->Return.CommandStr ),
                                                        string( ),
-                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->ErrorCode,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
@@ -1890,7 +1890,7 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
             //  if we bombed, we need an error condition and to plug values
             if( (tmpCurrentState == StateScanAbort)      ||
                 (tmpCurrentState == StateHandshakeAbort) ||
-                (InMessage->EventCode != 0) )
+                InMessage->ErrorCode )
             {
                 CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
 
@@ -1901,14 +1901,10 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
                     pMsg->insert( getID( ) );     // The id (device or point which failed)
                     pMsg->insert( ScanRateGeneral );    // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-                    if( InMessage->EventCode != 0 )
-                    {
-                        pMsg->insert( InMessage->EventCode );
-                    }
-                    else
-                    {
-                        pMsg->insert( GeneralScanAborted );
-                    }
+                    pMsg->insert(
+                            InMessage->ErrorCode
+                                ? InMessage->ErrorCode
+                                : GeneralScanAborted );
                 }
 
                 // through this into the return list
@@ -2024,7 +2020,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (const INMESS *InMessage,
     CtiReturnMsg                *pPIL = CTIDBG_new CtiReturnMsg( getID( ),
                                                           string( InMessage->Return.CommandStr ),
                                                           string( ),
-                                                          InMessage->EventCode & 0x7fff,
+                                                          InMessage->ErrorCode,
                                                           InMessage->Return.RouteID,
                                                           InMessage->Return.RetryMacroOffset,
                                                           InMessage->Return.Attempt,

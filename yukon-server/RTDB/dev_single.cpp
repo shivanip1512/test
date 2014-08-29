@@ -655,9 +655,9 @@ inline Protocol::Interface *CtiDeviceSingle::getProtocol()
 }
 
 
-int CtiDeviceSingle::generate(CtiXfer &xfer)
+YukonError_t CtiDeviceSingle::generate(CtiXfer &xfer)
 {
-    int retval = -1;
+    YukonError_t retval = NOTNORMAL;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->generate(xfer);
@@ -665,9 +665,9 @@ int CtiDeviceSingle::generate(CtiXfer &xfer)
     return retval;
 }
 
-int CtiDeviceSingle::decode(CtiXfer &xfer, int status)
+YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
 {
-    int retval = -1;
+    YukonError_t retval = NOTNORMAL;
     Protocol::Interface *prot = getProtocol();
 
     try
@@ -687,9 +687,9 @@ int CtiDeviceSingle::decode(CtiXfer &xfer, int status)
     return retval;
 }
 
-int CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
+YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 {
-    int retval = -1;
+    YukonError_t retval = NOTNORMAL;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->recvCommRequest(OutMessage);
@@ -697,9 +697,9 @@ int CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
     return retval;
 }
 
-int CtiDeviceSingle::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDeviceSingle::sendCommResult(INMESS *InMessage)
 {
-    int retval = NOTNORMAL;
+    YukonError_t retval = NOTNORMAL;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->sendCommResult(InMessage);
@@ -783,7 +783,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
                                    list< CtiMessage* > &retList,
                                    list< OUTMESS* > &outList)
 {
-    INT   nRet = InMessage->EventCode & 0x3fff;
+    INT   nRet = InMessage->ErrorCode;
     INT   status = 0;
     bool  bLastFail = false;
 
@@ -893,10 +893,10 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
         if(bLastFail)
         {
             /* something went wrong so start by printing error */
-            if( (InMessage->EventCode & ~DECODED) != ErrPortSimulated)
+            if( InMessage->ErrorCode != ErrPortSimulated)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
+                dout << TimeNow << " Error (" << InMessage->ErrorCode << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
             }
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(getID(),

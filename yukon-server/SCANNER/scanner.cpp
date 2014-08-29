@@ -348,9 +348,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     Cti::DynamicPaoInfoManager::setOwner(Cti::Application_Scanner);
 
-    /* Give us a tiny attitude */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
-
     /* check for various flags */
     if(argc > 1)
     {
@@ -743,9 +740,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 /* The following thread handles results coming back from field devices */
 void ResultThread (void *Arg)
 {
-    // I want an attitude!
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-
     /* Wait until main program is in loop */
     DWORD dwWait = WaitForMultipleObjects(2, hLockArray, FALSE, INFINITE);
 
@@ -869,7 +863,7 @@ void ResultThread (void *Arg)
                 if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " InMessage from " << pBase->getName() << " " << GetErrorString(InMessage->EventCode & 0x3fff) << endl;
+                    dout << CtiTime() << " InMessage from " << pBase->getName() << " " << GetErrorString(InMessage->ErrorCode) << endl;
                 }
 
                 if(pBase && pBase->isSingle())
@@ -974,9 +968,6 @@ void NexusThread (void *Arg)
 
     /* Misc. definitions */
     ULONG       i = 0;
-
-    // I want an attitude!
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     /* perform the wait loop forever */
     for(;!ScannerQuit;)
@@ -1530,7 +1521,7 @@ void DatabaseHandlerThread(void *Arg)
                            recvd_size == sizeof(long) )
                     {
                         paoIds.insert(paoId);
-                        
+
                         if( timer_backtoback.elapsed() > 1000 )
                         {
                             {

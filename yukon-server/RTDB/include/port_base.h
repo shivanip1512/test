@@ -58,7 +58,7 @@ public:
     BOOL isTAP() const;
     CtiPort& setTAP(BOOL b = TRUE);
 
-    virtual INT connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
+    virtual YukonError_t connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
     virtual BOOL connected();
     virtual BOOL connectedTo(LONG devID);
     virtual BOOL connectedTo(ULONG crc);
@@ -66,9 +66,9 @@ public:
     virtual BOOL shouldDisconnect() const;
     virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
 
-    virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
-    virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
-    virtual INT outInMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
+    virtual YukonError_t outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
+    virtual YukonError_t outInMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
     virtual INT traceIn(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
     virtual INT traceOut(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
     virtual INT traceXfer(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
@@ -91,7 +91,7 @@ public:
     virtual INT    lowerDTR();
     virtual INT    raiseDTR();
 
-    virtual INT    inClear();
+    virtual YukonError_t inClear();
     virtual INT    outClear();
 
     virtual INT    byteTime(ULONG bytes) const;
@@ -100,17 +100,17 @@ public:
     virtual std::string getPhysicalPort() const;
     virtual std::string getModemInit() const;
 
-    virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT) = 0;
-    virtual INT reset(INT trace);
-    virtual INT setup(INT trace);
+    virtual YukonError_t openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT) = 0;
+    virtual YukonError_t reset(INT trace);
+    virtual YukonError_t setup(INT trace);
     virtual INT close(INT trace);
 
     virtual INT writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten);
     virtual INT readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead);
 
-    virtual INT setPortReadTimeOut(USHORT millitimeout);
-    virtual INT setPortWriteTimeOut(USHORT millitimeout);
-    virtual INT waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
+    virtual YukonError_t setPortReadTimeOut(USHORT millitimeout);
+    virtual YukonError_t setPortWriteTimeOut(USHORT millitimeout);
+    virtual YukonError_t waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual void DecodeDialableDatabaseReader(Cti::RowReader &rdr);
@@ -154,8 +154,8 @@ public:
 
     ULONG getConnectedDeviceUID() const;
     CtiPort& setConnectedDeviceUID(const ULONG &i);
-    std::pair< bool, INT > verifyPortStatus(CtiDeviceSPtr Device, INT trace = 0);
-    std::pair< bool, INT > checkCommStatus(CtiDeviceSPtr Device, INT trace = 0);
+    std::pair< bool, YukonError_t > verifyPortStatus(CtiDeviceSPtr Device, INT trace = 0);
+    std::pair< bool, YukonError_t > checkCommStatus(CtiDeviceSPtr Device, INT trace = 0);
 
     CTI_PORTTHREAD_FUNC_PTR  setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);
 
@@ -164,7 +164,7 @@ public:
     virtual int enableRTSCTS();
     virtual int disableRTSCTS();
 
-    virtual INT setLine(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT );     // Set/reset the port's linesettings.
+    virtual YukonError_t setLine(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT );     // Set/reset the port's linesettings.
     virtual bool setPortForDevice(CtiDeviceSPtr  Device);
 
     virtual ULONG getDelay(int Offset) const { return 0L; }
@@ -195,7 +195,7 @@ public:
     virtual INT portMaxCommFails() const;
     bool adjustCommCounts( INT CommResult );
     bool isQuestionable() const;
-    INT requeueToParent(OUTMESS *&OutMessage);            // Return all queue entries to the processing parent.
+    YukonError_t requeueToParent(OUTMESS *&OutMessage);            // Return all queue entries to the processing parent.
     bool isMinMaxIdle() const;
     void setMinMaxIdle(bool mmi);
     bool waitForPost(HANDLE quitEvent = INVALID_HANDLE_VALUE, LONG timeout = -1L) const;
@@ -320,8 +320,8 @@ inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();
 inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup || getType() == PortTypePoolDialout)); }
 
 inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }
-inline INT CtiPort::setPortWriteTimeOut(USHORT timeout) { return NORMAL; }
-inline INT CtiPort::setLine(INT rate, INT bits, INT parity, INT stopbits ) { return NORMAL; }
+inline YukonError_t CtiPort::setPortWriteTimeOut(USHORT timeout) { return NORMAL; }
+inline YukonError_t CtiPort::setLine(INT rate, INT bits, INT parity, INT stopbits ) { return NORMAL; }
 inline int CtiPort::enableXONXOFF()    { return NORMAL; }
 inline int CtiPort::disableXONXOFF()   { return NORMAL; }
 inline int CtiPort::enableRTSCTS()     { return NORMAL; }

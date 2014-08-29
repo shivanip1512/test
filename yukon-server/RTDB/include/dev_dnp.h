@@ -87,12 +87,12 @@ public:
     LONG getMasterAddress() const;
 
     int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
-    int recvCommRequest( OUTMESS *OutMessage );
+    YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
     void initUnsolicited();
 
     void sendDispatchResults(CtiConnection &vg_connection);
-    int  sendCommResult(INMESS *InMessage);
+    YukonError_t sendCommResult(INMESS *InMessage);
 
     //  virtual in case devices need to form up different DNP requests for the same command ("control open", for example)
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);

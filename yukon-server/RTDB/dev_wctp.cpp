@@ -804,10 +804,10 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
     return len;
 }
 
-INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
     INT   i;
-    INT   status = NORMAL;
+    YukonError_t status = NORMAL;
 
     xfer.setInCountExpected(4000);
 
@@ -957,9 +957,9 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
     return status;
 }
 
-INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    INT status = commReturnValue;
+    YukonError_t status = commReturnValue;
 
     INT inCnt = 0, msgLen = 0;
     CHAR *in  = (CHAR*)xfer.getInBuffer();

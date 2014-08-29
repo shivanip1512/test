@@ -25,9 +25,9 @@ using std::string;
 CtiPortDialin::CtiPortDialin()
 {}
 
-INT CtiPortDialin::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
+YukonError_t CtiPortDialin::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    INT status     = !NORMAL;
+    YukonError_t status = NOTNORMAL;
 
     LastDeviceId = 0L;
     {
@@ -50,9 +50,9 @@ INT CtiPortDialin::close(INT trace)
     return status;
 }
 
-INT CtiPortDialin::reset(INT trace)
+YukonError_t CtiPortDialin::reset(INT trace)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     try
     {
@@ -97,7 +97,7 @@ INT CtiPortDialin::setup(INT trace)
 }
 
 /* Routine to force the reset of modem */
-INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
+YukonError_t CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
 {
     CHAR Response[100];
     ULONG ResponseSize;
@@ -243,7 +243,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
         }
     }
 
-    return(!NORMAL);
+    return NOTNORMAL;
 }
 
 

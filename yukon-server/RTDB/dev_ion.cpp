@@ -454,7 +454,7 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     list<CtiPointDataMsg*> pointData;
     list<CtiSignalMsg*>    eventData;
     string returnInfo;
@@ -821,7 +821,7 @@ void CtiDeviceION::processInboundData( const INMESS *InMessage, CtiTime &TimeNow
 
 INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
-    INT retCode = NORMAL, ErrReturn = InMessage.EventCode & 0x3fff;
+    INT retCode = NORMAL, ErrReturn = InMessage.ErrorCode;
 
     //CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *retMsg;
@@ -836,7 +836,7 @@ INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
     retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                      string(InMessage.Return.CommandStr),
                                      string(),
-                                     InMessage.EventCode & 0x7fff,
+                                     InMessage.ErrorCode,
                                      InMessage.Return.RouteID,
                                      InMessage.Return.RetryMacroOffset,
                                      InMessage.Return.Attempt,
@@ -858,7 +858,7 @@ INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
                     pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                     pMsg->insert(getID());          //  The id (device or point which failed)
                     pMsg->insert(ScanRateGeneral);  //  defined in yukon.h
-                    pMsg->insert(InMessage.EventCode);
+                    pMsg->insert(InMessage.ErrorCode);
 
                     break;
                 }
@@ -869,7 +869,7 @@ INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
                     pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                     pMsg->insert(getID());          //  The id (device or point which failed)
                     pMsg->insert(ScanRateIntegrity);
-                    pMsg->insert(InMessage.EventCode);
+                    pMsg->insert(InMessage.ErrorCode);
 
                     break;
                 }
@@ -880,7 +880,7 @@ INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
                     pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                     pMsg->insert(getID());          //  The id (device or point which failed)
                     pMsg->insert(ScanRateAccum);
-                    pMsg->insert(InMessage.EventCode);
+                    pMsg->insert(InMessage.ErrorCode);
 
                     break;
                 }

@@ -507,10 +507,10 @@ int CtiDeviceSixnet::assembleGetHeaderInfo()
 /*
  *  Presumable an assemble was just performed to bring in the correct data.
  */
-int CtiDeviceSixnet::processGetHeaderInfo()
+YukonError_t CtiDeviceSixnet::processGetHeaderInfo()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
-    int status = NORMAL;
+    YukonError_t status = NORMAL;
 
 
     if (getSixnetProtocol().getByteBuffer().size() >= SXL_HDR_SIZE)     // Did we get that which we asked for??
@@ -532,7 +532,7 @@ int CtiDeviceSixnet::processGetHeaderInfo()
         {
             if (getSixnetProtocol().getfd8(SXL_ERROR) != 0)
             {
-                status = !NORMAL;
+                status = NOTNORMAL;
                 bOk = false;      // configuration has errors, give up
             }
         }
@@ -801,12 +801,12 @@ INT CtiDeviceSixnet::freeDataBins()
     return NORMAL;
 }
 
-INT CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
     setCurrentState( CtiDeviceIED::StateHandshakeInitialize );
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -868,10 +868,10 @@ INT CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, list< CtiMessa
 
     return status;
 }
-INT CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -933,9 +933,9 @@ INT CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, INT commReturnVa
     return status;
 }
 
-INT CtiDeviceSixnet::generateCommandDisconnect(CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceSixnet::generateCommandDisconnect(CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     setCurrentState(CtiDeviceIED::StateComplete);
 
@@ -950,9 +950,9 @@ INT CtiDeviceSixnet::generateCommandDisconnect(CtiXfer  &Transfer, list< CtiMess
 
     return status;
 }
-INT CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -963,9 +963,9 @@ INT CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, INT commReturnV
     return status;
 }
 
-INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -1111,9 +1111,9 @@ INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &tr
     return status;
 }
 
-INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -1131,7 +1131,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
 
                     if ( processGetFields() == 0 )
                     {
-                        status = !NORMAL;
+                        status = NOTNORMAL;
                     }
                 }
                 else
@@ -1153,7 +1153,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
 
                     if ( processGetHeadTail() == 0 )     // No records on the device.
                     {
-                        status = !NORMAL;
+                        status = NOTNORMAL;
                     }
                 }
                 else
@@ -1774,8 +1774,8 @@ INT CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow
     INT retCode = NORMAL;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
-                                            GetErrorString(InMessage.EventCode & 0x7fff),
-                                            InMessage.EventCode & 0x7fff,
+                                            GetErrorString(InMessage.ErrorCode),
+                                            InMessage.ErrorCode,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.RetryMacroOffset,
                                             InMessage.Return.Attempt,
@@ -1793,7 +1793,7 @@ INT CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow
             pMsg->insert(CtiCommandMsg::OP_DEVICEID);   // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
             pMsg->insert(getID());         // The id (device or point which failed)
             pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-            pMsg->insert(InMessage.EventCode);
+            pMsg->insert(InMessage.ErrorCode);
 
 
             pPIL->PointData().push_back(pMsg);
@@ -1846,7 +1846,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
@@ -1893,7 +1893,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &
                 pRetMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                   string(InMessage->Return.CommandStr),
                                                   resString,
-                                                  InMessage->EventCode & 0x7fff,
+                                                  InMessage->ErrorCode,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.RetryMacroOffset,
                                                   InMessage->Return.Attempt,

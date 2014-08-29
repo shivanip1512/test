@@ -60,11 +60,11 @@ public:
     INT ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
     INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
 
-    int recvCommRequest(OUTMESS *OutMessage);
-    int sendCommResult(INMESS *InMessage);
+    YukonError_t recvCommRequest(OUTMESS *OutMessage);
+    YukonError_t sendCommResult(INMESS *InMessage);
 
-    int generate(CtiXfer &xfer);
-    int decode(CtiXfer &xfer, int status);
+    YukonError_t generate(CtiXfer &xfer);
+    YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
 
     void getVerificationObjects(std::queue<CtiVerificationBase *> &work_queue);
 

@@ -322,7 +322,7 @@ public:
     virtual LONG getCycleTime() const;
     virtual LONG getCycleOffset() const;
 
-    virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt = 0);
+    virtual YukonError_t queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt = 0);
     virtual LONG deviceQueueCommunicationTime() const;          // how many millis of comm time do we have?
     virtual LONG deviceMaxCommunicationTime() const;            // maximum transmitter transmit time that this device is permitted to grab.  Assigned by db or CPARM "PORTER_MAX_TRANSMITTER_TIME"
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
@@ -395,7 +395,7 @@ inline INT     CtiDeviceBase::getBits() const                 { return 8; }
 inline INT     CtiDeviceBase::getStopBits() const             { return ONESTOPBIT; }
 inline INT     CtiDeviceBase::getParity() const               { return NOPARITY; }
 inline INT     CtiDeviceBase::getProtocolWrap() const         { return ProtocolWrapNone; }
-inline INT     CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
+inline YukonError_t CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
 inline bool    CtiDeviceBase::hasQueuedWork() const           { return false; }
 inline unsigned CtiDeviceBase::queuedWorkCount() const         { return 0; }
 inline bool    CtiDeviceBase::hasPreloadWork() const          { return false; }

@@ -55,9 +55,9 @@ INT CtiDevicePagingReceiver::ResultDecode(const INMESS *InMessage, CtiTime &Time
     return NORMAL;
 }
 
-int CtiDevicePagingReceiver::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDevicePagingReceiver::sendCommResult(INMESS *InMessage)
 {
-    InMessage->EventCode = NoError;
+    InMessage->ErrorCode = NoError;
     InMessage->DeviceID = getID();
     return NoError;
 }
@@ -101,10 +101,10 @@ INT CtiDevicePagingReceiver::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
 
 }
 
-int CtiDevicePagingReceiver::recvCommRequest(OUTMESS *OutMessage)
+YukonError_t CtiDevicePagingReceiver::recvCommRequest(OUTMESS *OutMessage)
 {
     _command = Normal;
-    return Normal;//could do something with this someday.
+    return NORMAL;//could do something with this someday.
 }
 
 void CtiDevicePagingReceiver::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
@@ -117,9 +117,9 @@ void CtiDevicePagingReceiver::getVerificationObjects(queue< CtiVerificationBase 
     }
 }
 
-int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
+YukonError_t CtiDevicePagingReceiver::generate(CtiXfer &xfer)
 {
-    int status = NORMAL;
+    YukonError_t status = NORMAL;
 
     try
     {
@@ -272,9 +272,9 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
     return status;
 }
 
-int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
+YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commReturnValue)
 {
-    int status = commReturnValue;
+    YukonError_t status = commReturnValue;
     int headLocation = 0;
     int footLocation = 0;
     string reportString;
@@ -319,7 +319,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
 
                     if(getPreviousState()==Done)
                     {
-                        status = Normal;
+                        status = NORMAL;
                         _command = Complete;
                         resetStates();
                     }
@@ -355,7 +355,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                                 else
                                 {
                                     _command = Complete;
-                                    status = Normal;
+                                    status = NORMAL;
                                     resetStates();
 
                                 }
@@ -390,7 +390,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                                 _messageString = _messageString.substr(headLocation);//take off anything before headLocation
                                 _hadHeader = true;
                                 _command = Complete;
-                                status = Normal;
+                                status = NORMAL;
                                 resetStates();
                                 break;
                             }
@@ -407,7 +407,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                             _messageString = _messageString.substr(_messageString.length()-4);
                         }
                         _command = Complete;
-                        status = Normal;
+                        status = NORMAL;
                         resetStates();
                     }
 

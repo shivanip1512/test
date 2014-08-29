@@ -683,9 +683,9 @@ int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList 
 }
 
 
-int DnpDevice::recvCommRequest( OUTMESS *OutMessage )
+YukonError_t DnpDevice::recvCommRequest( OUTMESS *OutMessage )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( OutMessage )
     {
@@ -761,7 +761,7 @@ void DnpDevice::initUnsolicited()
 }
 
 
-int DnpDevice::sendCommResult(INMESS *InMessage)
+YukonError_t DnpDevice::sendCommResult(INMESS *InMessage)
 {
     char *buf;
     string result_string;
@@ -1014,11 +1014,9 @@ void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
 
 INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
-
     CtiReturnMsg *retMsg;
 
-    if( !ErrReturn )
+    if( ! InMessage->ErrorCode )
     {
         string result_string;
 
@@ -1035,7 +1033,7 @@ INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
             length = sizeof(InMessage->Buffer.InMessage);
         }
 
-        result_string.assign(InMessage->Buffer.InMessage, 
+        result_string.assign(InMessage->Buffer.InMessage,
                              InMessage->Buffer.InMessage + length);
 
         if( strstr(InMessage->Return.CommandStr, "scan integrity") )
@@ -1052,7 +1050,7 @@ INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                          string(InMessage->Return.CommandStr),
                                          result_string.c_str(),
-                                         InMessage->EventCode & 0x7fff,
+                                         InMessage->ErrorCode,
                                          InMessage->Return.RouteID,
                                          InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
@@ -1063,16 +1061,16 @@ INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
     }
     else
     {
-        const string error_str = GetErrorString(ErrReturn);
+        const string error_str = GetErrorString(InMessage->ErrorCode);
 
         string resultString;
 
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(InMessage->ErrorCode).xhex().zpad(2)) + ")";
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                          string(InMessage->Return.CommandStr),
                                          resultString,
-                                         InMessage->EventCode & 0x7fff,
+                                         InMessage->ErrorCode,
                                          InMessage->Return.RouteID,
                                          InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
@@ -1082,7 +1080,7 @@ INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
         retList.push_back(retMsg);
     }
 
-    return ErrReturn;
+    return  InMessage->ErrorCode;
 }
 
 
@@ -1120,15 +1118,10 @@ INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list<
         pMsg->insert(getID());          // The id (device or point which failed)
         pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        if(InMessage.EventCode != 0)
-        {
-            pMsg->insert(InMessage.EventCode);
-        }
-        else
-        {
-            //  does this ever get called?  should probably be removed...
-            pMsg->insert(GeneralScanAborted);
-        }
+        pMsg->insert(
+                InMessage.ErrorCode
+                    ? InMessage.ErrorCode
+                    : GeneralScanAborted);
 
         retList.push_back( pMsg );
     }

@@ -52,7 +52,7 @@ INT CtiDeviceCCU710::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, lis
             CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                     cmd,
                                                     string(),
-                                                    InMessage->EventCode & 0x7fff,
+                                                    InMessage->ErrorCode,
                                                     InMessage->Return.RouteID,
                                                     InMessage->Return.RetryMacroOffset,
                                                     InMessage->Return.Attempt,
@@ -215,7 +215,7 @@ INT CtiDeviceCCU710::Loopback(OUTMESS* OutMessage)
    return(NORMAL);
 }
 
-CtiDeviceCCU710::CtiDeviceCCU710() 
+CtiDeviceCCU710::CtiDeviceCCU710()
 {}
 
 INT CtiDeviceCCU710::getProtocolWrap() const

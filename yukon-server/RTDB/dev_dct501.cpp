@@ -364,7 +364,6 @@ INT Dct501Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     USHORT SaveCount;
     string resultString;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     const DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
     DOUBLE Value;

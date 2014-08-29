@@ -253,10 +253,10 @@ INT CtiDeviceSchlumberger::fillUploadTransferObject (CtiXfer  &aTransfer, ULONG 
 }
 
 
-INT CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
-                                          INT       commReturnValue)
+YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
+                                                   YukonError_t commReturnValue)
 {
-    int               retCode    = NORMAL;
+    YukonError_t retCode    = NORMAL;
 
     if (commReturnValue || Transfer.getInBuffer()[0] == NAK)
     {
@@ -271,7 +271,7 @@ INT CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
                 setCRCErrors (0);
                 setCurrentState (StateScanAbort);
                 setAttemptsRemaining (0);
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
             }
 
             if (Transfer.doTrace(BADCRC))
@@ -298,14 +298,14 @@ INT CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
         if (getAttemptsRemaining() <= 0)
         {
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
         }
         else
         {
             // do this all again
             setPreviousState (getCurrentState());
             setCurrentState (StateScanResendRequest);
-            retCode = SCHLUM_RESEND_CMD;
+            retCode = RETRY_SUBMITTED;
         }
     }
     else // Good Data read
@@ -317,7 +317,7 @@ INT CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
         {
             setCurrentState (StateScanAbort);
             setAttemptsRemaining (0);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
         }
         else
             retCode = NORMAL;
@@ -540,7 +540,7 @@ INT CtiDeviceSchlumberger::ErrorDecode (const INMESS        &InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage.EventCode & 0x7fff,
+                                            InMessage.ErrorCode,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.RetryMacroOffset,
                                             InMessage.Return.Attempt,
@@ -554,7 +554,7 @@ INT CtiDeviceSchlumberger::ErrorDecode (const INMESS        &InMessage,
         pMsg->insert(CtiCommandMsg::OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert(getID());             // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-        pMsg->insert(InMessage.EventCode);
+        pMsg->insert(InMessage.ErrorCode);
 
     }
 

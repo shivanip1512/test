@@ -52,7 +52,7 @@ public:
 
     unsigned queuedWorkCount() const;
     virtual bool hasQueuedWork() const;
-    virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
+    virtual YukonError_t queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
     virtual LONG deviceQueueCommunicationTime() const;
     virtual LONG deviceMaxCommunicationTime() const;

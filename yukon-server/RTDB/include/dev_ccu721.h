@@ -38,7 +38,7 @@ private:
         InMessage_StringOffset = 96  //  hopefully enough to stay out of the way of the DSTRUCT
     };
 
-    static int translateKlondikeError(Protocols::KlondikeProtocol::Errors error);
+    static YukonError_t translateKlondikeError(Protocols::KlondikeProtocol::Errors error);
 
 protected:
 
@@ -49,8 +49,8 @@ protected:
     static void writeAWord      (byte_buffer_t &buf, const ASTRUCT &ASt);
     static void writeBWord      (byte_buffer_t &buf, const BSTRUCT &BSt);
 
-    int decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt) const;
-    static int decodeEWord(const unsigned char *input, const unsigned input_length, ESTRUCT *ESt);
+    YukonError_t decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt, ESTRUCT *ESt) const;
+    static YukonError_t decodeEWord(const unsigned char *input, const unsigned input_length, ESTRUCT *ESt);
 
     Protocols::KlondikeProtocol _klondike;
 
@@ -88,7 +88,7 @@ public:
     bool hasQueuedWork()   const;
     bool hasWaitingWork()  const;
     bool hasRemoteWork()   const;
-    INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
+    YukonError_t queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
 
     std::string queueReport() const;
 
@@ -101,12 +101,12 @@ public:
 
     bool buildCommand(CtiOutMessage *&OutMessage, Commands command);
 
-    virtual int recvCommRequest(OUTMESS *OutMessage);
-    virtual int sendCommResult (INMESS  *InMessage);
+    virtual YukonError_t recvCommRequest(OUTMESS *OutMessage);
+    virtual YukonError_t sendCommResult (INMESS  *InMessage);
 
     void getQueuedResults(std::vector<queued_result_t> &results);
 
-    int processInbound(const OUTMESS *om, INMESS *im);
+    YukonError_t processInbound(const OUTMESS *om, INMESS *im);
 };
 
 typedef boost::shared_ptr<Ccu721Device> Ccu721SPtr;

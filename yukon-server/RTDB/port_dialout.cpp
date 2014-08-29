@@ -30,9 +30,9 @@ CtiPortDialout::CtiPortDialout()
 {
 }
 
-INT CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
+YukonError_t CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    INT status     = NORMAL;
+    YukonError_t status = NORMAL;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
     LastDeviceId = 0L;
 
@@ -73,7 +73,7 @@ INT CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, IN
 
     if( !_superPort->connectedTo(DeviceCRC) )
     {
-        pair< bool, INT > portpair = _superPort->checkCommStatus(Device, trace);
+        pair< bool, YukonError_t > portpair = _superPort->checkCommStatus(Device, trace);
 
         status = portpair.second;
 
@@ -119,9 +119,9 @@ INT CtiPortDialout::disconnect(CtiDeviceSPtr Device, INT trace)
     return status;
 }
 
-INT CtiPortDialout::reset(INT trace)
+YukonError_t CtiPortDialout::reset(INT trace)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     setDialedUpNumber(string());
 
@@ -155,7 +155,7 @@ INT CtiPortDialout::close(INT trace)
 
 
 /* Routine to force the reset of modem */
-INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
+YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
 {
     CHAR Response[100];
     ULONG ResponseSize;
@@ -393,9 +393,9 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
 }
 
 /* Routine to establish modem connection */
-INT CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
+YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     ULONG BytesWritten, i;
     CHAR MyMessage[100];
     CHAR Response[100];

@@ -33,10 +33,10 @@ public:
 
    CtiDeviceTnppPagingTerminal();
 
-   INT decode(CtiXfer &xfer,INT commReturnValue);
-   INT generate(CtiXfer  &xfer);
+   YukonError_t decode  (CtiXfer &xfer, YukonError_t commReturnValue);
+   YukonError_t generate(CtiXfer  &xfer);
 
-   int recvCommRequest( OUTMESS *OutMessage );
+   YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
    virtual std::string getSQLCoreStatement() const;
 
@@ -51,7 +51,7 @@ public:
    bool isTransactionComplete();
 
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
-   int sendCommResult(INMESS *InMessage);
+   YukonError_t sendCommResult(INMESS *InMessage);
 
    enum CommandState
    {

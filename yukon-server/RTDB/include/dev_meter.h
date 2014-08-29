@@ -50,13 +50,13 @@ public:
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
     *  the port's function out/inMess pair.
     */
-   virtual INT   generateCommandScan       ( CtiXfer &Transfer, std::list< CtiMessage* > &traceList)                     { return NoGenerateCmdMethod; };
-   virtual INT   generateCommandLoadProfile( CtiXfer &Transfer, std::list< CtiMessage* > &traceList )                     { return NoGenerateCmdMethod; };
-   virtual INT   generateCommandSelectMeter( CtiXfer &Transfer, std::list< CtiMessage* > &traceList )                     { return NoGenerateCmdMethod; };
+   virtual YukonError_t generateCommandScan       ( CtiXfer &Transfer, std::list< CtiMessage* > &traceList )    { return NoGenerateCmdMethod; };
+   virtual YukonError_t generateCommandLoadProfile( CtiXfer &Transfer, std::list< CtiMessage* > &traceList )    { return NoGenerateCmdMethod; };
+   virtual YukonError_t generateCommandSelectMeter( CtiXfer &Transfer, std::list< CtiMessage* > &traceList )    { return NoGenerateCmdMethod; };
 
-   virtual INT   decodeResponseScan       ( CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
-   virtual INT   decodeResponseLoadProfile( CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
-   virtual INT   decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
+   virtual YukonError_t decodeResponseScan       ( CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
+   virtual YukonError_t decodeResponseLoadProfile( CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
+   virtual YukonError_t decodeResponseSelectMeter( CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
 
    virtual INT   decodeResultScan( const INMESS               *InMessage,
                                    CtiTime                    &TimeNow,

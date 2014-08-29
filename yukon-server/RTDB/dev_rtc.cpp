@@ -182,7 +182,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
 
     string resultString;
 
@@ -218,7 +218,7 @@ INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        string(InMessage->Return.CommandStr),
                                                        getName() + " / operation complete",
-                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->ErrorCode,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
@@ -258,7 +258,7 @@ INT CtiDeviceRTC::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                                      string(InMessage.Return.CommandStr),
                                                      string(),
-                                                     InMessage.EventCode & 0x7fff,
+                                                     InMessage.ErrorCode,
                                                      InMessage.Return.RouteID,
                                                      InMessage.Return.RetryMacroOffset,
                                                      InMessage.Return.Attempt,
@@ -283,14 +283,10 @@ INT CtiDeviceRTC::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
             pMsg->insert(getID());          // The id (device or point which failed)
             pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-            if(InMessage.EventCode != 0)
-            {
-                pMsg->insert(InMessage.EventCode);
-            }
-            else
-            {
-                pMsg->insert(GeneralScanAborted);
-            }
+            pMsg->insert(
+                    InMessage.ErrorCode
+                        ? InMessage.ErrorCode
+                        : GeneralScanAborted);
 
             retList.push_back( pMsg );
         }
@@ -378,9 +374,9 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage)
     return status;
 }
 
-INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
+YukonError_t CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if( !(MessageFlag_QueuedToDevice & OutMessage->MessageFlags) && hasExclusions())
     {

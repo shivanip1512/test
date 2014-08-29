@@ -69,12 +69,12 @@ public:
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
-    int recvCommRequest( OUTMESS *OutMessage );
+    YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
-    virtual int generate(CtiXfer &xfer);
-    virtual int decode(CtiXfer &xfer, int status);
+    virtual YukonError_t generate(CtiXfer &xfer);
+    virtual YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
     void sendDispatchResults(CtiConnection &vg_connection);
-    int  sendCommResult(INMESS *InMessage);
+    YukonError_t sendCommResult(INMESS *InMessage);
 
     //  virtual in case devices need to form up different Modbus requests for the same command ("control open", for example)
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);

@@ -189,10 +189,10 @@ public:
     BOOL     setUseScanFlags(BOOL b = TRUE);
     BOOL     resetUseScanFlags(BOOL b = FALSE);
 
-    virtual int  generate(CtiXfer &xfer);
-    virtual int  decode(CtiXfer &xfer, int status);
-    virtual int  recvCommRequest(OUTMESS *OutMessage);
-    virtual int  sendCommResult(INMESS *InMessage);
+    virtual YukonError_t generate(CtiXfer &xfer);
+    virtual YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
+    virtual YukonError_t recvCommRequest(OUTMESS *OutMessage);
+    virtual YukonError_t sendCommResult(INMESS *InMessage);
     virtual bool isTransactionComplete();
     virtual void sendDispatchResults(CtiConnection &vg_connection);
 

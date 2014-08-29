@@ -286,7 +286,7 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
 
 INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT status = InMessage->EventCode & 0x7fff;
+    INT status = InMessage->ErrorCode;
 
     if( status )
     {
@@ -419,7 +419,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                                 string(InMessage->Return.CommandStr),
                                                                 string(getName() + " / successful ping"),
-                                                                InMessage->EventCode & 0x7fff,
+                                                                InMessage->ErrorCode,
                                                                 InMessage->Return.RouteID,
                                                                 InMessage->Return.RetryMacroOffset,
                                                                 InMessage->Return.Attempt,
@@ -834,7 +834,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
             pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                            string(InMessage->Return.CommandStr),
                                            string("LCU status request complete"),
-                                           InMessage->EventCode & 0x7fff,
+                                           InMessage->ErrorCode,
                                            InMessage->Return.RouteID,
                                            InMessage->Return.RetryMacroOffset,
                                            InMessage->Return.Attempt,
@@ -919,7 +919,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
         pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                        string(InMessage->Return.CommandStr),
                                        string("LCU status request complete"),
-                                       InMessage->EventCode & 0x7fff,
+                                       InMessage->ErrorCode,
                                        InMessage->Return.RouteID,
                                        InMessage->Return.RetryMacroOffset,
                                        InMessage->Return.Attempt,
@@ -995,7 +995,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS *InMessage)
     CtiReturnMsg    *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                                     string(InMessage->Return.CommandStr),
                                                     string("LCU status request complete"),
-                                                    InMessage->EventCode & 0x7fff,
+                                                    InMessage->ErrorCode,
                                                     InMessage->Return.RouteID,
                                                     InMessage->Return.RetryMacroOffset,
                                                     InMessage->Return.Attempt,
@@ -1122,7 +1122,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS *InMessage, list<
         pPIL  = CTIDBG_new CtiReturnMsg(getID(),
                                         string(InMessage->Return.CommandStr),
                                         string("LCU accumulator request complete"),
-                                        InMessage->EventCode & 0x7fff,
+                                        InMessage->ErrorCode,
                                         InMessage->Return.RouteID,
                                         InMessage->Return.RetryMacroOffset,
                                         InMessage->Return.Attempt,
@@ -1221,7 +1221,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS *InMessage)
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                                      string(InMessage->Return.CommandStr),
                                                      string("LCU analog request complete"),
-                                                     InMessage->EventCode & 0x7fff,
+                                                     InMessage->ErrorCode,
                                                      InMessage->Return.RouteID,
                                                      InMessage->Return.RetryMacroOffset,
                                                      InMessage->Return.Attempt,
@@ -1838,7 +1838,7 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS *InMessag
     CtiTime now;
 
     // Pretend for the simulated ports!
-    if((InMessage->EventCode & 0x3ffff) == ErrPortSimulated)
+    if(InMessage->ErrorCode == ErrPortSimulated)
     {
         if(getNextCommandTime() > now)
         {

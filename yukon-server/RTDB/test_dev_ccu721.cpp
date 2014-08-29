@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_all)
     OUTMESS *om_queued = &om;
     void *nullptr = 0;
 
-    int retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
+    YukonError_t retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
 
     BOOST_CHECK_EQUAL(retval, QUEUED_TO_DEVICE);
     BOOST_CHECK_EQUAL(device_queue_count, 1);
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
     OUTMESS *om_queued = &om;
     void *nullptr = 0;
 
-    int retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
+    YukonError_t retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
 
     BOOST_CHECK_EQUAL(retval, QUEUED_TO_DEVICE);
     BOOST_CHECK_EQUAL(device_queue_count, 1);

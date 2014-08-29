@@ -936,7 +936,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
             //  submit a retry if we're multi-day and we have any retries left
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                if( _daily_read_info.request.multi_day_retries-- > 0  && InMessage.EventCode != ErrorRequestCancelled)
+                if( _daily_read_info.request.multi_day_retries-- > 0  && InMessage.ErrorCode != ErrorRequestCancelled)
                 {
                     string request_str = "getvalue daily read ";
 

@@ -70,7 +70,7 @@ public:
    virtual int buildCommanderTableRequest (BYTE *ptr, UINT flags) = 0;
    virtual int buildSingleTableRequest(BYTE *ptr, UINT tableId = 0);
 
-   INT sendCommResult( INMESS *InMessage);
+   YukonError_t sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER
    {

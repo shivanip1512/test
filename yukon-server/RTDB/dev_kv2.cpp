@@ -72,7 +72,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NORMAL,//EventCode & 0x7fff
+                                          NORMAL,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -362,7 +362,7 @@ INT CtiDeviceKV2::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(getName() + " / demand reset successful"),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
@@ -374,7 +374,7 @@ INT CtiDeviceKV2::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(getName() + " / demand reset failed"),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
@@ -391,7 +391,7 @@ INT CtiDeviceKV2::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
                 retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 string(InMessage->Return.CommandStr),
                                                 string(getName() + " / general scan successful : \n" + _result_string.data()),
-                                                InMessage->EventCode & 0x7fff,
+                                                InMessage->ErrorCode,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.RetryMacroOffset,
                                                 InMessage->Return.Attempt,
@@ -403,7 +403,7 @@ INT CtiDeviceKV2::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
                  retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 string(InMessage->Return.CommandStr),
                                                 string(getName() + " / general scan failed"),
-                                                InMessage->EventCode & 0x7fff,
+                                                InMessage->ErrorCode,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.RetryMacroOffset,
                                                 InMessage->Return.Attempt,
@@ -460,18 +460,16 @@ INT CtiDeviceKV2::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
     return( 0 ); //just a val
 }
-INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
+YukonError_t CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 {
     if (getKV2Protocol().getScanOperation() == CtiProtocolANSI::demandReset) //demand Reset
     {
-        if (InMessage->EventCode == NORMAL)
+        if( ! InMessage->ErrorCode )
         {
             string returnString("demand reset successful");
             int sizeOfReturnString = returnString.length();
             memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
-
-            InMessage->EventCode = NORMAL;
         }
         else
         {
@@ -486,7 +484,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 
         //if (useScanFlags())
 
-        if (InMessage->EventCode == NORMAL)
+        if( ! InMessage->ErrorCode )
         {
             if (getKV2Protocol().getlastLoadProfileTime() != 0 || getKV2Protocol().getScanOperation() == CtiProtocolANSI::generalScan) //scanner
             {
@@ -506,8 +504,6 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
                 int sizeOfReturnString = returnString.length();
                 memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
                 InMessage->InLength = sizeOfReturnString;
-
-                InMessage->EventCode = NORMAL;
             }
         }
         else
@@ -519,7 +515,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
         }
 
     }
-   return( InMessage->EventCode ); //just a val
+   return InMessage->ErrorCode;
 }
 
 

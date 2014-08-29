@@ -106,7 +106,7 @@ public:
                           std::vector<CtiTransdataData *> transVector );
 
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
-   int sendCommResult( INMESS *InMessage );
+   YukonError_t sendCommResult( INMESS *InMessage );
    int checkQuality( int yyMap, int lpValue );
    void CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec, int yyMap, int &value, int &quality );
    int getChannelOffset( int index );

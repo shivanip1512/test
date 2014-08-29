@@ -24,9 +24,9 @@ Cti::Protocol::Interface *CtiDeviceLMI::getProtocol()
 }
 
 
-int CtiDeviceLMI::decode(CtiXfer &xfer, int status)
+YukonError_t CtiDeviceLMI::decode(CtiXfer &xfer, YukonError_t status)
 {
-    int retval = CtiDeviceSingle::decode(xfer, status);
+    YukonError_t retval = CtiDeviceSingle::decode(xfer, status);
 
     if( _lmi.isTransactionComplete() )
     {
@@ -289,7 +289,7 @@ INT CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
 INT CtiDeviceLMI::ResultDecode( const INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     list<CtiPointDataMsg*> points;
 
     string resultString, info;
@@ -496,9 +496,9 @@ unsigned CtiDeviceLMI::queuedWorkCount() const
 }
 
 
-INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
+YukonError_t CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    int retval = NORMAL;
+    YukonError_t retval = NORMAL;
 
     if( OutMessage->Sequence == CtiProtocolLMI::Sequence_Code )
     {

@@ -168,6 +168,6 @@ public:
    LONG     nibblesAndBits (const unsigned char *bptr, INT MaxChannel, INT Channel, INT Interval);
 
    INT fillUploadTransferObject (CtiXfer  &aTransfer, ULONG aStartAddress, ULONG aStopAddress);
-   INT checkReturnMsg(CtiXfer  &Transfer,INT       commReturnValue);
+   YukonError_t checkReturnMsg(CtiXfer &Transfer, YukonError_t commReturnValue);
 
 };

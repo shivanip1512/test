@@ -32,17 +32,17 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual INT inMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
+    virtual YukonError_t inMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
     {
-        return 0;
+        return NoError;
     }
-    virtual INT openPort(INT rate, INT bits, INT parity, INT stopbits)
+    virtual YukonError_t openPort(INT rate, INT bits, INT parity, INT stopbits)
     {
-        return 0;
+        return NoError;
     }
-    virtual INT outMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
+    virtual YukonError_t outMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
     {
-        return 0;
+        return NoError;
     }
     virtual bool isViable()
     {

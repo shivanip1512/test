@@ -198,7 +198,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceRTM::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
 
     string resultString;
 
@@ -211,7 +211,7 @@ INT CtiDeviceRTM::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        string(InMessage->Return.CommandStr),
                                                        getName() + " / scan successful, " + CtiNumStr(InMessage->Buffer.InMessage[0]) + " codes returned",
-                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->ErrorCode,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
@@ -267,14 +267,10 @@ INT CtiDeviceRTM::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
         pMsg->insert(getID());          // The id (device or point which failed)
         pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        if(InMessage.EventCode != 0)
-        {
-            pMsg->insert(InMessage.EventCode);
-        }
-        else
-        {
-            pMsg->insert(GeneralScanAborted);
-        }
+        pMsg->insert(
+                InMessage.ErrorCode
+                    ? InMessage.ErrorCode
+                    : GeneralScanAborted);
 
         retList.push_back( pMsg );
     }
@@ -292,17 +288,17 @@ LONG CtiDeviceRTM::getAddress() const
     return getIED().getSlaveAddress();
 }
 
-int CtiDeviceRTM::recvCommRequest(OUTMESS *OutMessage)
+YukonError_t CtiDeviceRTM::recvCommRequest(OUTMESS *OutMessage)
 {
     _outbound = *OutMessage;
     _state    = State_Output;
     _error_count    = 0;
     _codes_received = 0;
 
-    return 0;
+    return NoError;
 }
 
-int CtiDeviceRTM::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDeviceRTM::sendCommResult(INMESS *InMessage)
 {
     InMessage->Buffer.InMessage[0] = _codes_received;
 
@@ -310,7 +306,7 @@ int CtiDeviceRTM::sendCommResult(INMESS *InMessage)
 }
 
 
-int CtiDeviceRTM::generate(CtiXfer &xfer)
+YukonError_t CtiDeviceRTM::generate(CtiXfer &xfer)
 {
     switch( _state )
     {
@@ -362,7 +358,7 @@ int CtiDeviceRTM::generate(CtiXfer &xfer)
         }
     }
 
-    return 0;
+    return NoError;
 }
 
 
@@ -403,7 +399,7 @@ unsigned long CtiDeviceRTM::findHeader(unsigned char *buf, unsigned long len)
 }
 
 
-int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
+YukonError_t CtiDeviceRTM::decode(CtiXfer &xfer, YukonError_t status)
 {
     if( status )
     {

@@ -70,9 +70,9 @@ INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
 
 
 
-INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    USHORT retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentState())
     {
@@ -198,17 +198,17 @@ INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMes
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
             }
     }
     return retCode;
 }
 
 
-INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
-    USHORT retCode=NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentCommand())
     {
@@ -303,7 +303,7 @@ INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMessage* > 
                         Transfer.setOutCount( 0 );
                         Transfer.setInCountExpected( 0 );
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -316,7 +316,7 @@ INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMessage* > 
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
                 break;
             }
 
@@ -325,10 +325,10 @@ INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMessage* > 
     return retCode;
 }
 
-INT CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
-    int               retCode = NORMAL;
+    YukonError_t      retCode = NORMAL;
 
     // get appropriate data
     switch (getCurrentState())
@@ -460,16 +460,16 @@ INT CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, list< CtiM
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
     return retCode;
 }
 
 
-INT CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    SchlMeterStruct   MeterSt;
-    int               retCode = NORMAL;
+    SchlMeterStruct MeterSt;
+    YukonError_t    retCode = NORMAL;
 
     /*
      *  This is the scanner request... Scanned data comes through here
@@ -598,13 +598,13 @@ INT CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage*
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
 }
 
-INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     // make this easier to read in the following code
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
@@ -613,7 +613,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
     FulcrumLoadProfileMessage_t *localLProfile      = ((FulcrumLoadProfileMessage_t*)_loadProfileBuffer);
     FulcrumRealTimeRegister_t   *localRTReg         = ((FulcrumRealTimeRegister_t *)_loadProfileTimeDate);
 
-    int               retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
     ULONG    MMTemp               = 0L;
     SchlMeterStruct   MeterSt;
 
@@ -906,7 +906,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
                                 Transfer.setInCountExpected( 0 );
                                 setCurrentState (StateScanAbort);
                                 setAttemptsRemaining (0);
-                                retCode = StateScanAbort;
+                                retCode = NOTNORMAL;
                             }
 
                         }
@@ -916,7 +916,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
                             Transfer.setInCountExpected( 0 );
                             setCurrentState (StateScanAbort);
                             setAttemptsRemaining (0);
-                            retCode = StateScanAbort;
+                            retCode = NOTNORMAL;
                         }
                     }
                     else
@@ -1057,17 +1057,17 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
 
     }
     return retCode;
 }
 
 
-INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
-    int retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentState())
     {
@@ -1134,7 +1134,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                 {
                     setAttemptsRemaining (0);
                     setCurrentState (StateHandshakeAbort);  // Couldn't get the job done... bail out here
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1165,7 +1165,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                 {
                     setAttemptsRemaining (0);
                     setCurrentState (StateHandshakeAbort);  // Couldn't get the job done... bail out here
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1205,7 +1205,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                 {
                     setAttemptsRemaining (0);
                     setCurrentState (StateHandshakeAbort);  // Couldn't get the job done... bail out here
-                    retCode = StateHandshakeAbort;
+                    retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1216,7 +1216,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
-                retCode = StateHandshakeAbort;
+                retCode = NOTNORMAL;
                 break;
             }
     }
@@ -1224,10 +1224,10 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
 }
 
 
-INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
-    USHORT retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentCommand())
     {
@@ -1281,7 +1281,7 @@ INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, l
                             dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1295,7 +1295,7 @@ INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, l
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
                 break;
             }
     }
@@ -1304,10 +1304,10 @@ INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, l
 
 
 
-INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 
 {
-    int               retCode    = NORMAL;
+    YukonError_t retCode    = NORMAL;
 
     // get appropriate data
     switch (getCurrentState())
@@ -1347,7 +1347,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                     else
                     {
@@ -1411,7 +1411,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                         {
                             setCurrentState (StateScanAbort);  // Couldn't get the job done... bail out here
                             setTotalByteCount (0);
-                            retCode = StateScanAbort;
+                            retCode = NOTNORMAL;
                         }
                         else
                         {
@@ -1422,7 +1422,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                     {
                         setCurrentState (StateScanAbort);  // Couldn't get the job done... bail out here
                         setTotalByteCount (0);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                     }
                 }
                 break;
@@ -1457,7 +1457,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         dout << CtiTime() << " Failed switching to master " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = StateScanAbort;
+                                    retCode = NOTNORMAL;
                                 }
                                 break;
                             }
@@ -1476,7 +1476,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                             dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = StateScanAbort;
+                                        retCode = NOTNORMAL;
                                     }
                                     else
                                     {
@@ -1495,7 +1495,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = StateScanAbort;
+                                    retCode = NOTNORMAL;
                                 }
 
 
@@ -1515,7 +1515,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                             dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = StateScanAbort;
+                                        retCode = NOTNORMAL;
                                     }
                                     else
                                     {
@@ -1534,7 +1534,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = StateScanAbort;
+                                    retCode = NOTNORMAL;
                                 }
                                 break;
                             }
@@ -1552,7 +1552,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                             dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = StateScanAbort;
+                                        retCode = NOTNORMAL;
                                     }
                                     else
                                     {
@@ -1571,7 +1571,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = StateScanAbort;
+                                    retCode = NOTNORMAL;
                                 }
 
                                 break;
@@ -1590,7 +1590,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                             dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = StateScanAbort;
+                                        retCode = NOTNORMAL;
                                     }
                                     else
                                     {
@@ -1609,7 +1609,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = StateScanAbort;
+                                    retCode = NOTNORMAL;
                                 }
 
                                 break;
@@ -1618,7 +1618,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                 }
                 else
                 {
-                    retCode = StateScanAbort;
+                    retCode = NOTNORMAL;
                     setCurrentState (StateScanAbort);
                 }
                 break;
@@ -1630,18 +1630,18 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                 dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
 
     }
     return retCode;
 }
 
 
-INT CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
     FulcrumLoadProfileMessage_t *localLProfile      = ((FulcrumLoadProfileMessage_t*)_loadProfileBuffer);
     SchlMeterStruct   MeterSt;
-    int               retCode    = NORMAL;
+    YukonError_t      retCode    = NORMAL;
     // run the return through the ringer
     retCode = checkReturnMsg (Transfer, commReturnValue);
     if (!retCode)
@@ -1738,10 +1738,10 @@ INT CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
         }
     }
-    else if (retCode == SCHLUM_RESEND_CMD)
+    else if (retCode == RETRY_SUBMITTED)
     {
         // we don't want to abort, just try again
         retCode = NORMAL;
@@ -1751,7 +1751,7 @@ INT CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
 }
 
 
-INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
     SchlLoadProfile_t           *localMMLoadProfile = ((SchlLoadProfile_t *)_massMemoryLoadProfile);
@@ -1760,7 +1760,7 @@ INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
     FulcrumRealTimeRegister_t   *localTimeDate      = ((FulcrumRealTimeRegister_t *)_loadProfileTimeDate);
 
     SchlMeterStruct   MeterSt;
-    int               retCode  = NORMAL;
+    YukonError_t      retCode  = NORMAL;
 
 
     // run the return through the ringer
@@ -1827,10 +1827,10 @@ INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
-                retCode = StateScanAbort;
+                retCode = NOTNORMAL;
         }
     }
-    else if (retCode == SCHLUM_RESEND_CMD)
+    else if (retCode == RETRY_SUBMITTED)
     {
         // we don't want to abort, just try again
         retCode = NORMAL;
@@ -1871,7 +1871,7 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
@@ -1887,7 +1887,7 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            (InMessage->EventCode != 0))
+            InMessage->ErrorCode)
         {
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -1897,15 +1897,10 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
                 pMsg->insert(CtiCommandMsg::OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                 pMsg->insert(getID());             // The id (device or point which failed)
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-
-                if (InMessage->EventCode != 0)
-                {
-                    pMsg->insert(InMessage->EventCode);
-                }
-                else
-                {
-                    pMsg->insert(GeneralScanAborted);
-                }
+                pMsg->insert(
+                        InMessage->ErrorCode
+                            ? InMessage->ErrorCode
+                            : GeneralScanAborted);
             }
 
             // through this into the return list
@@ -2004,7 +1999,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,

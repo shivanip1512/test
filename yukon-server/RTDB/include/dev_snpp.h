@@ -33,10 +33,10 @@ public:
 
    CtiDeviceSnppPagingTerminal();
 
-   INT decode(CtiXfer &xfer,INT commReturnValue);
-   INT generate(CtiXfer  &xfer);
+   YukonError_t decode  (CtiXfer &xfer, YukonError_t commReturnValue);
+   YukonError_t generate(CtiXfer  &xfer);
 
-   int recvCommRequest( OUTMESS *OutMessage );
+   YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                           CtiCommandParser               &parse,
@@ -44,7 +44,7 @@ public:
                           std::list< CtiMessage* >      &vgList,
                           std::list< CtiMessage* >      &retList,
                           std::list< OUTMESS* >         &outList);
-   virtual int sendCommResult(INMESS *InMessage);
+   virtual YukonError_t sendCommResult(INMESS *InMessage);
 
    bool isTransactionComplete();
 

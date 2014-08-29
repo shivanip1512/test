@@ -259,7 +259,7 @@ public:
    int assembleSetTail(uint32 tail);
 
    bool processGetAlias();
-   int processGetHeaderInfo();
+   YukonError_t processGetHeaderInfo();
    int processGetHeadTail();
    int processGetRecords(int &recProcessed);
    int processGetFields();
@@ -287,14 +287,14 @@ public:
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
     *  the port's function out/inMess pair.
     */
-   virtual INT generateCommandHandshake (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandHandshake (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandDisconnect (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseDisconnect (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommand    (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommand    (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponse (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *);
    virtual INT freeDataBins ();

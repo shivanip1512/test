@@ -79,14 +79,14 @@ public:
 
    std::string getDescription(const CtiCommandParser & parse) const;
 
-   virtual INT decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual INT generateCommandHandshake(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseHandshake(CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandHandshake(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandDisconnect (CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseDisconnect (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
 
-   virtual INT generateCommand(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommand(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT freeDataBins();

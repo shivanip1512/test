@@ -1049,7 +1049,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    *InMessage,
                                              OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -2380,7 +2380,7 @@ string Mct440_213xBDevice::describeStatusAndEvents(const unsigned char *buf)
 INT Mct440_213xBDevice::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     string resultString;
@@ -2467,7 +2467,7 @@ INT Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS   *InMess
                                                           OutMessageList &outList)
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -2659,7 +2659,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
                                            OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
@@ -2983,7 +2983,7 @@ INT Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    *InMessage,
                                               OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -3043,7 +3043,7 @@ INT Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    *InMessage,
                                                  OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -3136,7 +3136,7 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    *InMessage,
                                                  OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -3344,7 +3344,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
                                           OutMessageList &outList)
 {
     INT status    = NORMAL;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -3499,7 +3499,7 @@ INT Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   *InMessage,
                                                   OutMessageList &outList)
 {
     INT status    = NORMAL, state = 0;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string stateName;
@@ -3562,7 +3562,7 @@ INT Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   *InMessage,
                                                   OutMessageList &outList)
 {
     INT status    = NORMAL, state = 0;
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string resultStr, stateName;

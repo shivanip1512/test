@@ -188,17 +188,15 @@ Protocol::Interface *ModbusDevice::getProtocol()
 }
 
 
-int ModbusDevice::generate(CtiXfer &xfer)
+YukonError_t ModbusDevice::generate(CtiXfer &xfer)
 {
     return _modbus.generate(xfer);
 }
 
 
-int ModbusDevice::decode(CtiXfer &xfer, int status)
+YukonError_t ModbusDevice::decode(CtiXfer &xfer, YukonError_t status)
 {
-    int retval = NoError;
-
-    retval = _modbus.decode(xfer, status);
+    YukonError_t retval = _modbus.decode(xfer, status);
 
     if( _modbus.isTransactionComplete() )
     {
@@ -248,9 +246,9 @@ int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outLi
 }
 
 
-int ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
+YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( OutMessage )
     {
@@ -358,7 +356,7 @@ int ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-int ModbusDevice::sendCommResult(INMESS *InMessage)
+YukonError_t ModbusDevice::sendCommResult(INMESS *InMessage)
 {
     char *buf;
     int offset;
@@ -544,7 +542,7 @@ void ModbusDevice::processPoints( Protocol::Interface::pointlist_t &points )
 
 INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    INT ErrReturn = InMessage->ErrorCode;
 
     CtiReturnMsg *retMsg;
 
@@ -570,7 +568,7 @@ INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                          string(InMessage->Return.CommandStr),
                                          result_string.data(),
-                                         InMessage->EventCode & 0x7fff,
+                                         InMessage->ErrorCode,
                                          InMessage->Return.RouteID,
                                          InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
@@ -590,7 +588,7 @@ INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                          string(InMessage->Return.CommandStr),
                                          resultString,
-                                         InMessage->EventCode & 0x7fff,
+                                         InMessage->ErrorCode,
                                          InMessage->Return.RouteID,
                                          InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
@@ -612,7 +610,7 @@ INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                               string(InMessage.Return.CommandStr),
                                               string(),
-                                              InMessage.EventCode & 0x7fff,
+                                              InMessage.ErrorCode,
                                               InMessage.Return.RouteID,
                                               InMessage.Return.RetryMacroOffset,
                                               InMessage.Return.Attempt,
@@ -637,14 +635,10 @@ INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
             pMsg->insert(getID());          // The id (device or point which failed)
             pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-            if(InMessage.EventCode != 0)
-            {
-                pMsg->insert(InMessage.EventCode);
-            }
-            else
-            {
-                pMsg->insert(GeneralScanAborted);
-            }
+            pMsg->insert(
+                    InMessage.ErrorCode
+                        ? InMessage.ErrorCode
+                        : GeneralScanAborted);
 
             retList.push_back( pMsg );
         }

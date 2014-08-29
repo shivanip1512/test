@@ -36,7 +36,7 @@ public:
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    int decode(CtiXfer &xfer, int status);
+    YukonError_t decode(CtiXfer &xfer, YukonError_t status);
     void sendDispatchResults(CtiConnection &vg_connection);
     void getVerificationObjects(std::queue< CtiVerificationBase * > &vq);
 
@@ -71,7 +71,7 @@ public:
     LONG    getCycleTime() const;
     LONG    getCycleOffset() const;
 
-    INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
+    YukonError_t queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     bool getOutMessage(CtiOutMessage *&OutMessage);
     LONG deviceQueueCommunicationTime() const;
     LONG deviceMaxCommunicationTime() const;

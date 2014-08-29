@@ -265,10 +265,9 @@ CtiDeviceDR87& CtiDeviceDR87::setNumberOfIncompleteMsgs (INT aNumberOfIncomplete
 
 
 
-INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    USHORT retCode = NORMAL;
-
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentState())
     {
@@ -350,15 +349,15 @@ INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessag
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
             }
     }
     return retCode;
 }
 
-INT CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
-    USHORT retCode=NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentCommand())
     {
@@ -388,7 +387,7 @@ INT CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &tra
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
                 break;
             }
 
@@ -397,9 +396,9 @@ INT CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &tra
 }
 
 
-INT CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    int               retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     // get appropriate data
     switch (getCurrentState())
@@ -459,7 +458,7 @@ INT CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > 
             }
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
@@ -528,9 +527,9 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, list< CtiMessag
     return retVal;
 }
 
-INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
-    int               retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
     DR87LoadProfile_t * localLP = (DR87LoadProfile_t*)iLoadProfileBuffer;
 
     /*
@@ -756,7 +755,7 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMess
             }
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
-            retCode = StateScanAbort;
+            retCode = NOTNORMAL;
     }
 
     return retCode;
@@ -765,7 +764,7 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMess
 
 
 
-INT CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
 //   BYTE  Command;
     int cnt=0;
@@ -836,9 +835,9 @@ INT CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnVa
 
 
 
-INT CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    USHORT retCode = NORMAL;
+    YukonError_t retCode = NORMAL;
 
     switch (getCurrentCommand())
     {
@@ -872,17 +871,17 @@ INT CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = !NORMAL;
+                retCode = NOTNORMAL;
                 break;
             }
     }
     return retCode;
 }
 
-INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    int retCode = NORMAL,x;
-    int msgDecodeRetVal;
+    YukonError_t retCode = NORMAL;
+    int x, msgDecodeRetVal;
     DR87ScanData_t * localData = (DR87ScanData_t*)iDataBuffer;
 
     msgDecodeRetVal = getMessageInDataStream (Transfer, commReturnValue);
@@ -998,7 +997,7 @@ INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, 
                     {
                         // problem generating the terminate command is the only way we get here
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                         break;
                     }
 
@@ -1008,7 +1007,7 @@ INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, 
                             dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1040,10 +1039,10 @@ INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, 
     return retCode;
 }
 
-INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
 {
-    int retCode = NORMAL,x;
-    int msgDecodeRetVal;
+    YukonError_t retCode = NORMAL;
+    int x, msgDecodeRetVal;
     DR87LoadProfile_t * localLP = (DR87LoadProfile_t*)iLoadProfileBuffer;
 
     msgDecodeRetVal = getMessageInDataStream (Transfer, commReturnValue);
@@ -1267,7 +1266,7 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
                         {
                             // problem generating the terminate command is the only way we get here
                             setCurrentState (StateScanAbort);
-                            retCode = StateScanAbort;
+                            retCode = NOTNORMAL;
                             break;
                         }
 
@@ -1277,7 +1276,7 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
                             dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
-                        retCode = StateScanAbort;
+                        retCode = NOTNORMAL;
                 }
                 break;
             }
@@ -1564,7 +1563,7 @@ INT CtiDeviceDR87::ErrorDecode (const INMESS        &InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage.EventCode & 0x7fff,
+                                            InMessage.ErrorCode,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.RetryMacroOffset,
                                             InMessage.Return.Attempt,
@@ -1578,7 +1577,7 @@ INT CtiDeviceDR87::ErrorDecode (const INMESS        &InMessage,
         pMsg->insert(CtiCommandMsg::OP_DEVICEID);   // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert(getID());         // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-        pMsg->insert(InMessage.EventCode);
+        pMsg->insert(InMessage.ErrorCode);
     }
 
     insertPointIntoReturnMsg (pMsg, pPIL);
@@ -1633,7 +1632,7 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
@@ -1647,7 +1646,7 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            (InMessage->EventCode != 0))
+            InMessage->ErrorCode)
         {
 
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -1659,14 +1658,10 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
                 pMsg->insert(getID());             // The id (device or point which failed)
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-                if (InMessage->EventCode != 0)
-                {
-                    pMsg->insert(InMessage->EventCode);
-                }
-                else
-                {
-                    pMsg->insert(GeneralScanAborted);
-                }
+                pMsg->insert(
+                        InMessage->ErrorCode
+                            ? InMessage->ErrorCode
+                            : GeneralScanAborted);
             }
 
             insertPointIntoReturnMsg (pMsg, pPIL);
@@ -1749,7 +1744,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS *InMessage,
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
+                                            InMessage->ErrorCode,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
