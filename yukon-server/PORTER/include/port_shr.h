@@ -10,6 +10,13 @@
 
 class IM_EX_PORTGLOB CtiPortShare : public CtiThread
 {
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiPortShare(const CtiPortShare&);
+    CtiPortShare& operator=(const CtiPortShare&);
+
 public:
 
    enum
@@ -57,14 +64,6 @@ protected:
         SOCKFAILED,
         RUNCOMPLETE
    };
-
-private:
-
-   CtiPortShare(const CtiPortShare& aRef)
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-   }
 
 public:
 

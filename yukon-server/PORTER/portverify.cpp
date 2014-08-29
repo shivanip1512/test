@@ -45,14 +45,6 @@ CtiPorterVerification::CtiPorterVerification() :
 {
 }
 
-CtiPorterVerification::CtiPorterVerification(const CtiPorterVerification& aRef)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - copy constructor called for CtiPorterVerification **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-}
-
 CtiPorterVerification::~CtiPorterVerification()
 {
     if( !_work_queue.empty() )

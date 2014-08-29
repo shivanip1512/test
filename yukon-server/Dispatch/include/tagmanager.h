@@ -16,7 +16,7 @@
 
 
 
-class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread, private boost::noncopyable
+class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread
 {
     // WORKAROUND:
     // Declare copy ctor and assignment operator private with no implementation

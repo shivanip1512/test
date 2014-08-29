@@ -35,14 +35,6 @@ _pMainQueue(0)
     _dbThread.start();
 }
 
-CtiPendingOpThread::CtiPendingOpThread(const CtiPendingOpThread& aRef)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - copy constructor called for CtiPendingOpThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-}
-
 CtiPendingOpThread::~CtiPendingOpThread()
 {
     _dbThread.join();

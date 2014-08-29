@@ -10,6 +10,13 @@
 
 class CtiPorterVerification : public CtiThread
 {
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiPorterVerification(const CtiPorterVerification&);
+    CtiPorterVerification& operator=(const CtiPorterVerification&);
+
 private:
 
     //  the input queue
@@ -49,11 +56,6 @@ private:
     void pruneEntries(const boost::posix_time::ptime::time_duration_type &earliest);
 
     long long logIDGen(bool force=false);
-
-    //  yeah
-    CtiPorterVerification(const CtiPorterVerification& aRef);
-
-protected:
 
 public:
 

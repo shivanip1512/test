@@ -14,6 +14,13 @@
 
 class CtiPendingOpThread : public CtiThread
 {
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    CtiPendingOpThread(const CtiPendingOpThread&);
+    CtiPendingOpThread& operator=(const CtiPendingOpThread&);
+
 public:
 
     typedef std::set< CtiPendingPointOperations >  CtiPendingOpSet_t;
@@ -45,10 +52,6 @@ private:
     void dbWriterThread();
     static CtiPendingOpSet_t::iterator erasePendingControl(CtiPendingOpSet_t::iterator iter);
     static std::pair< CtiPendingOpSet_t::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
-
-    CtiPendingOpThread(const CtiPendingOpThread& aRef);
-
-protected:
 
 public:
 
