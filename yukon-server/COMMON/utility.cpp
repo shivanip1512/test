@@ -1385,7 +1385,7 @@ std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess
 
     hPsapi = LoadLibrary( "psapi.dll" );
     if( hPsapi == 0 )
-        return false;
+        return "";
 
     modules.clear();
 
@@ -1397,7 +1397,7 @@ std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess
     {
         // yuck. Some API is missing.
         FreeLibrary( hPsapi );
-        return false;
+        return "";
     }
 
     hMods = new HMODULE[TTBUFLEN / sizeof HMODULE];
