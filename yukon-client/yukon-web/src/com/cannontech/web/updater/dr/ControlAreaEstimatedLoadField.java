@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
-import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlAreaEstimatedLoadField extends EstimatedLoadBackingFieldBase {

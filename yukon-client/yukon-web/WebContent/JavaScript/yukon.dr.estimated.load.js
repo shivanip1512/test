@@ -12,69 +12,61 @@ yukon.dr.estimatedLoad = (function() {
                 var status = data.status;
                 var row = $('[data-pao=' + data.paoId +']');
                 
-                var connectedSpan = row.find('.js-connected-load');
-                var diversifiedSpan = row.find('.js-diversified-load');
-                var kwSavingsSpan = row.find('.js-kw-savings');
+                var connected = row.find('.js-connected-load');
+                var diversified = row.find('.js-diversified-load');
+                var kwSavings = row.find('.js-kw-savings');
                 
-                var flashOnUpdate = row.data('flash-on-update') === undefined ? false : row.data('flash-on-update');
+                var flash = row.is('[data-flash]');
                 
                 if (status == 'error') {
                     row.attr("title", data.tooltip);
                     row.find('.icon-error').show();
-
-                    if (connectedSpan.length > 0 && connectedSpan.html() != data.value) {
-                        connectedSpan.html(data.value).flashYellow(1.5);
+                    
+                    if (connected.length > 0 && connected.text() != data.value) {
+                        connected.text(data.value).flashYellow(1.5);
                     }
-                    if (diversifiedSpan.length > 0 && diversifiedSpan.html() != data.value) {
-                        diversifiedSpan.html(data.value).flashYellow(1.5);
+                    if (diversified.length > 0 && diversified.text() != data.value) {
+                        diversified.text(data.value).flashYellow(1.5);
                     }
-                    if (kwSavingsSpan.length > 0 && kwSavingsSpan.html() != data.value) {
-                        kwSavingsSpan.html(data.value).flashYellow(1.5);
+                    if (kwSavings.length > 0 && kwSavings.text() != data.value) {
+                        kwSavings.text(data.value).flashYellow(1.5);
                     }
-                    flashOnUpdate = true;
-                    row.data('in-error', true);
                 } else if (status == 'success') {
                     row.removeAttr("title");
-
-                    var inError = row.data('in-error');
-                    if (inError) {
-                        row.find('.icon-error').hide();
-                        row.data('in-error', false);
-                    }
-
-                    if (connectedSpan.length > 0 && connectedSpan.html() != data.connected) {
-                        connectedSpan.html(data.connected);
-                        if (flashOnUpdate) {
-                            connectedSpan.flashYellow(1.5);
+                    row.find('.icon-error').hide();
+                    
+                    if (connected.length > 0 && connected.text() != data.connected) {
+                        connected.text(data.connected);
+                        if (flash) {
+                            connected.flashYellow(1.5);
                         }
                     }
-                    if (diversifiedSpan.length > 0 && diversifiedSpan.html() != data.diversified) {
-                        diversifiedSpan.html(data.diversified);
-                        if (flashOnUpdate) {
-                            diversifiedSpan.flashYellow(1.5);
+                    if (diversified.length > 0 && diversified.text() != data.diversified) {
+                        diversified.text(data.diversified);
+                        if (flash) {
+                            diversified.flashYellow(1.5);
                         }
                     }
-                    if (kwSavingsSpan.length > 0 && kwSavingsSpan.html() != data.kwSavings) {
-                        kwSavingsSpan.html(data.kwSavings);
-                        if (flashOnUpdate) {
-                            kwSavingsSpan.flashYellow(1.5);
+                    if (kwSavings.length > 0 && kwSavings.text() != data.kwSavings) {
+                        kwSavings.text(data.kwSavings);
+                        if (flash) {
+                            kwSavings.flashYellow(1.5);
                         }
                     }
-                    flashOnUpdate = true;
                 }
-                row.data('flash-on-update', flashOnUpdate);
+                row.attr('data-flash', '');
             },
-    
+            
             displaySummaryValue : function (msg) {
                 var data = msg.value == undefined ? $.parseJSON(msg.identifier) : $.parseJSON(msg.value);
                 var status = data.status;
                 var row = $('[data-pao=' + data.paoId +']');
                 
-                var connectedSpan = row.find('.js-connected-load');
-                var diversifiedSpan = row.find('.js-diversified-load');
-                var kwSavingsSpan = row.find('.js-kw-savings');
+                var connected = row.find('.js-connected-load');
+                var diversified = row.find('.js-diversified-load');
+                var kwSavings = row.find('.js-kw-savings');
                 
-                var flashOnUpdate = row.data('flash-on-update') === undefined ? false : row.data('flash-on-update');
+                var flash = row.is('[data-flash]');
                 
                 // Display/hide icons and tooltips based on status.
                 if (status == 'error' || status == 'errorAndCalc') {
@@ -89,27 +81,26 @@ yukon.dr.estimatedLoad = (function() {
                 
                 // Update and flash amount fields only when in error or success states. 
                 if (status == 'error' || status == 'success') {
-                    if (connectedSpan.length > 0 && connectedSpan.html() != data.connected) {
-                        connectedSpan.html(data.connected);
-                        if (flashOnUpdate) {
-                            connectedSpan.flashYellow(1.5);
+                    if (connected.length > 0 && connected.text() != data.connected) {
+                        connected.text(data.connected);
+                        if (flash) {
+                            connected.flashYellow(1.5);
                         }
                     }
-                    if (diversifiedSpan.length > 0 && diversifiedSpan.html() != data.diversified) {
-                        diversifiedSpan.html(data.diversified);
-                        if (flashOnUpdate) {
-                            diversifiedSpan.flashYellow(1.5);
+                    if (diversified.length > 0 && diversified.text() != data.diversified) {
+                        diversified.text(data.diversified);
+                        if (flash) {
+                            diversified.flashYellow(1.5);
                         }
                     }
-                    if (kwSavingsSpan.length > 0 && kwSavingsSpan.html() != data.kwSavings) {
-                        kwSavingsSpan.html(data.kwSavings);
-                        if (flashOnUpdate) {
-                            kwSavingsSpan.flashYellow(1.5);
+                    if (kwSavings.length > 0 && kwSavings.text() != data.kwSavings) {
+                        kwSavings.text(data.kwSavings);
+                        if (flash) {
+                            kwSavings.flashYellow(1.5);
                         }
                     }
                 }
-                flashOnUpdate = true;
-                row.data('flash-on-update', flashOnUpdate);
+                row.attr('data-flash', '');
             }
     };
     

@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceHelper;
+import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;

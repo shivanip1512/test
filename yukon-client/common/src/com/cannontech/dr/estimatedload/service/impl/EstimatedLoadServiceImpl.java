@@ -22,6 +22,7 @@ import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
 import com.cannontech.dr.estimatedload.PartialEstimatedLoadReductionAmount;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
 import com.cannontech.dr.estimatedload.dao.FormulaDao;
+import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.estimatedload.service.FormulaService;
 import com.cannontech.loadcontrol.data.LMProgramBase;

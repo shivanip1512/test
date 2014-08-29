@@ -1,4 +1,4 @@
-package com.cannontech.dr.estimatedload.service.impl;
+package com.cannontech.dr.estimatedload.service;
 
 import org.springframework.context.MessageSourceResolvable;
 
@@ -16,21 +16,30 @@ public interface EstimatedLoadBackingServiceHelper {
      * which includes estimated load fields: connected load, diversified load, and kW savings max/now.
      * If the requested program isn't in the cache, this returns null and the requested program's calculation begins.
      * If the calculation results in an error, an EstimatedLoadException will be returned.
-     */
+     * @param paoId The pao id of the program to calculate.
+     * @param blocking When true, the function will wait for calculation to complete before returning. 
+     * If false, the cache will be checked for a result.  If not present, null is returned immediately and 
+     * the result is calculated in a new runnable and inserted into cache. */
     EstimatedLoadResult findProgramValue(final int paoId, boolean blocking);
 
     /** Retrieves an EstimatedLoadSummary object for a given LM control area.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
      * The summary object also includes the following information: # of programs in error, # of programs currently
      * being calculated.
-     */
+     * @param paoId The pao identifier of the control area to calculate.
+     * @param blocking When true, the function will wait for calculation to complete before returning. 
+     * If false, the cache will be checked for a result.  If not present, null is returned immediately and 
+     * the result is calculated in a new runnable and inserted into cache. */
     EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId, boolean blocking);
 
     /** Retrieves the EstimatedLoadSummary object for a given LM scenario.
      * This includes estimated load fields: connected load, diversified load, and kW savings max/now.
      * The summary object also includes the following information: # of programs in error, # of programs currently
      * being calculated.
-     */
+     * @param paoId The pao id of the scenario to calculate.
+     * @param blocking When true, the function will wait for calculation to complete before returning. 
+     * If false, the cache will be checked for a result.  If not present, null is returned immediately and 
+     * the result is calculated in a new runnable and inserted into cache. */
     EstimatedLoadSummary getScenarioValue(PaoIdentifier paoId, boolean blocking);
     
     /**

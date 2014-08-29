@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +35,7 @@ import com.cannontech.dr.estimatedload.LmServerNotConnectedException;
 import com.cannontech.dr.estimatedload.NoAppCatFormulaException;
 import com.cannontech.dr.estimatedload.NoGearFormulaException;
 import com.cannontech.dr.estimatedload.dao.EstimatedLoadDao;
+import com.cannontech.dr.estimatedload.service.EstimatedLoadBackingServiceHelper;
 import com.cannontech.dr.estimatedload.service.EstimatedLoadService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -59,7 +61,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     @Autowired private @Qualifier("estimatedLoad") Executor executor;
 
     private static final int CACHE_SECONDS_TO_LIVE = 120;
-    private final Cache<EstimatedLoadResultKey, EstimatedLoadResult> cache = CacheBuilder.newBuilder()
+    private final Cache<MultiKey, EstimatedLoadResult> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(CACHE_SECONDS_TO_LIVE, TimeUnit.SECONDS).build();
 
     @Override
@@ -79,7 +81,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * that value is returned. If not, a new Runnable is created and executed that will insert the value into cache.  
      */
     private EstimatedLoadResult getProgramValue(final int programId, final Integer gearId, boolean blocking) {
-        final EstimatedLoadResultKey resultKey = new EstimatedLoadResultKey(programId, gearId);
+        final MultiKey resultKey = new MultiKey(programId, gearId); 
         EstimatedLoadResult amount = null;
         
         if (blocking) {
@@ -119,7 +121,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * Then the value will be returned to all waiting callers and placed in the cache.
     **/
     private EstimatedLoadResult getProgramValueBlocking(final int programId, final int gearId) {
-        final EstimatedLoadResultKey resultKey = new EstimatedLoadResultKey(programId, gearId);
+        final MultiKey resultKey = new MultiKey(programId, gearId); 
         EstimatedLoadResult result = null;
         try {
             result = cache.get(resultKey, new Callable<EstimatedLoadResult>() {
