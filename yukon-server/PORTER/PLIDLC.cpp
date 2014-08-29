@@ -170,7 +170,7 @@ INT PostIDLC (PBYTE    Message,       /* message and result */
 
 /* Routine to check for valid response from a IDLC CCU */
 
-INT GenReply (PBYTE Reply,            /* reply message */
+YukonError_t GenReply (PBYTE Reply,            /* reply message */
               USHORT  Length,         /* reply message length */
               PUSHORT ReqNum,         /* request number */
               PUSHORT RepNum,         /* reply number */
@@ -222,7 +222,7 @@ INT GenReply (PBYTE Reply,            /* reply message */
    {
        return(FRAMEERR);
    }
-      
+
    if(++(*RepNum) >= 8)
    {
       *RepNum = 0;
@@ -247,7 +247,7 @@ INT GenReply (PBYTE Reply,            /* reply message */
 
 
 /* Routine to check for valid response from a IDLC RTU */
-INT RTUReply (PBYTE Reply, USHORT Length)
+YukonError_t RTUReply (PBYTE Reply, USHORT Length)
 
 {
    USHORT Save;
@@ -266,7 +266,7 @@ INT RTUReply (PBYTE Reply, USHORT Length)
 
 
 /* function gets length from unsequeced rtu frame */
-INT RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, PULONG ReadLength)
+YukonError_t RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, PULONG ReadLength)
 {
    USHORT Length1, Length2;
 
@@ -304,7 +304,7 @@ INT RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, PULONG Re
 
 
 /* Routine to test for an idlc reject frame */
-INT IDLCRej (PBYTE Reply, PUSHORT ReqNum)
+YukonError_t IDLCRej (PBYTE Reply, PUSHORT ReqNum)
 {
    USHORT Save;
 

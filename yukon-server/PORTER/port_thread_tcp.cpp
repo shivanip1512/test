@@ -268,7 +268,7 @@ void TcpPortHandler::updatePortProperties( void )
 }
 
 
-int TcpPortHandler::sendOutbound( device_record &dr )
+YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
 {
     TcpConnectionManager::bytes buf(dr.xfer.getOutBuffer(),
                                     dr.xfer.getOutBuffer() + dr.xfer.getOutCount());

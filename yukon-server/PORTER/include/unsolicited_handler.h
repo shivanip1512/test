@@ -72,8 +72,8 @@ protected:
         packet_queue inbound;
 
         CtiXfer xfer;
-        int     device_status;
-        int     comm_status;
+        YukonError_t device_status;
+        YukonError_t comm_status;
 
         CtiTime last_outbound;
         CtiTime last_keepalive;
@@ -174,7 +174,7 @@ protected:
 
     virtual bool setupPort( void ) = 0;
     virtual bool manageConnections( void ) = 0;
-    virtual int  sendOutbound( device_record &dr ) = 0;
+    virtual YukonError_t sendOutbound( device_record &dr ) = 0;
     virtual unsigned getDeviceTimeout( const device_record &dr ) const = 0;
     virtual bool collectInbounds( const Cti::Timing::MillisecondTimer & timer, const unsigned long until) = 0;
 
@@ -194,7 +194,7 @@ protected:
 
     void addInboundWork(device_record &dr, packet *p);
 
-    void traceOutbound( const device_record &dr, int socket_status );
+    void traceOutbound( const device_record &dr, YukonError_t socket_status );
     void traceInbound ( std::string location, int status, const unsigned char *message, int count, const device_record *dr = 0 );
 
     static bool isDnpDevice  (const CtiDeviceSingle &ds);

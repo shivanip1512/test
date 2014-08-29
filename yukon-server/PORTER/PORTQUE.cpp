@@ -232,9 +232,6 @@ void QueueThread (void *Arg)
         hPorterEvents[P_QUEUE_EVENT]
     };
 
-    /* make it clear who isn't the boss */
-    CTISetPriority(PRTYC_REGULAR, THREAD_PRIORITY_BELOW_NORMAL);
-
     for( ;PorterQuit != TRUE; )
     {
         dwWait = WaitForMultipleObjects(2, hQueueArray, FALSE, 5000L);
@@ -276,13 +273,13 @@ void QueueThread (void *Arg)
 
 
 /* Routine to process results from CCU's */
-INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
+YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 {
     extern INT LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
     CtiDeviceCCU *ccu = (CtiDeviceCCU *)Dev.get();
 
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     ULONG i;
     INMESS ResultMessage;
     USHORT QueTabEnt;
@@ -295,7 +292,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
 
     CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 
-    UINT ErrorReturnCode = (InMessage->EventCode & ~DECODED);
+    YukonError_t ErrorReturnCode = InMessage->ErrorCode;
 
     bool foreignCCU = isForeignCcuPort(InMessage->Port);
 
@@ -879,7 +876,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                 /* see if we have any interest in decoding the results */
                 if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
                 {
-                    ResultMessage.EventCode       = NORMAL;
+                    ResultMessage.ErrorCode           = NORMAL;
 
                     ResultMessage.DeviceID        = InMessage->DeviceID;
                     ResultMessage.MessageFlags    = InMessage->MessageFlags;
@@ -907,7 +904,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                     if((InMessage->Buffer.InMessage[Offset++] >> 4) != 15)
                     {
                         /* Nope */
-                        ResultMessage.EventCode = QUEUEEXEC;
+                        ResultMessage.ErrorCode = QUEUEEXEC;
                         Offset = Offset + setL - 5;
                     }
                     else
@@ -943,16 +940,16 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                             switch(InMessage->Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
-                                ResultMessage.EventCode = NOATTEMPT;
+                                ResultMessage.ErrorCode = NOATTEMPT;
                                 break;
                             case 1:
-                                ResultMessage.EventCode = NORMAL;
+                                ResultMessage.ErrorCode = NORMAL;
                                 break;
                             case 2:
-                                ResultMessage.EventCode = ROUTEFAILED;
+                                ResultMessage.ErrorCode = ROUTEFAILED;
                                 break;
                             case 3:
-                                ResultMessage.EventCode = TRANSFAILED;
+                                ResultMessage.ErrorCode = TRANSFAILED;
                                 break;
                             }
                             /* Skip next byte */
@@ -965,17 +962,15 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                             switch(InMessage->Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
-                                ResultMessage.EventCode = NOATTEMPT;
+                                ResultMessage.ErrorCode = NOATTEMPT;
                                 break;
                             case 1:
-                                if(!ResultMessage.EventCode)
-                                    ResultMessage.EventCode = NORMAL;
                                 break;
                             case 2:
-                                ResultMessage.EventCode = ROUTEFAILED;
+                                ResultMessage.ErrorCode = ROUTEFAILED;
                                 break;
                             case 3:
-                                ResultMessage.EventCode = TRANSFAILED;
+                                ResultMessage.ErrorCode = TRANSFAILED;
                                 break;
                             }
                             /* Skip next byte */
@@ -988,17 +983,15 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                             switch(InMessage->Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
-                                ResultMessage.EventCode = NOATTEMPT;
+                                ResultMessage.ErrorCode = NOATTEMPT;
                                 break;
                             case 1:
-                                if(!ResultMessage.EventCode)
-                                    ResultMessage.EventCode = NORMAL;
                                 break;
                             case 2:
-                                ResultMessage.EventCode = ROUTEFAILED;
+                                ResultMessage.ErrorCode = ROUTEFAILED;
                                 break;
                             case 3:
-                                ResultMessage.EventCode = TRANSFAILED;
+                                ResultMessage.ErrorCode = TRANSFAILED;
                                 break;
                             }
                             /* Skip next byte */
@@ -1031,18 +1024,18 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
 
                             if(InMessage->Buffer.InMessage[Offset] & 0x0040)
                             {
-                                ResultMessage.EventCode = EWORDRCV;
+                                ResultMessage.ErrorCode = EWORDRCV;
                                 //  The CCU doesn't pass along the E word, so make sure the optional repeater info fields are cleared out
                                 ResultMessage.Buffer.RepeaterError.ESt = 0;
                                 ResultMessage.Buffer.RepeaterError.Details = 0;
                             }
 
                             if(InMessage->Buffer.InMessage[Offset++] & 0x0080)
-                                ResultMessage.EventCode = DLCTIMEOUT;
+                                ResultMessage.ErrorCode = DLCTIMEOUT;
 
                             Offset++;
 
-                            if(!ResultMessage.EventCode)
+                            if(!ResultMessage.ErrorCode)
                             {
                                 ResultMessage.Buffer.DSt.Length = (USHORT)ResultMessage.InLength;
                                 for(i = 0; i < ResultMessage.InLength; i++)
@@ -1084,9 +1077,9 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                     }
 
                     //We had a comm error and need to report it.
-                    addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
+                    addCommResult(ResultMessage.TargetID, ResultMessage.ErrorCode, false);
 
-                    PorterStatisticsManager.newCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
+                    PorterStatisticsManager.newCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.ErrorCode, ResultMessage.MessageFlags );
                 }
                 else
                 {
@@ -1292,9 +1285,6 @@ void KickerThread (void *Arg)
     UINT sanity = 0;
 
     ThreadStatusKeeper threadStatus("CCU Kicker Thread");
-
-    /* make it clear who isn't the boss */
-    CTISetPriority(PRTYC_REGULAR, THREAD_PRIORITY_LOWEST);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1818,9 +1808,9 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 
 /* Routine to take messages off because of errant LGRPQ */
 /* Dequeues only those entries marked as having QueueEntrySequence equal to the inbound message sequence*/
-INT DeQueue (INMESS *InMessage)
+YukonError_t DeQueue (INMESS *InMessage)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     struct timeb TimeB;
     ULONG i;
     INMESS ResultMessage;
@@ -1837,7 +1827,7 @@ INT DeQueue (INMESS *InMessage)
     /* Make sure this is one of em */
     if(!(InMessage->Sequence & 0x8000))
     {
-        return(!NORMAL);
+        return NOTNORMAL;
     }
 
     CtiDeviceSPtr TransmitterDev = DeviceManager.getDeviceByID(InMessage->DeviceID);
@@ -1863,7 +1853,7 @@ INT DeQueue (INMESS *InMessage)
                         ResultMessage.ReturnNexus = pInfo->QueTable[i].ReturnNexus;
                         ResultMessage.Return = pInfo->QueTable[i].Request;
                         ResultMessage.MessageFlags = pInfo->QueTable[i].MessageFlags;
-                        ResultMessage.EventCode = InMessage->EventCode;
+                        ResultMessage.ErrorCode = InMessage->ErrorCode;
                         ResultMessage.Time = InMessage->Time;
                         ResultMessage.MilliTime = InMessage->MilliTime;
                         if(pInfo->QueTable[i].EventCode & BWORD)
@@ -1872,9 +1862,9 @@ INT DeQueue (INMESS *InMessage)
                         }
 
                         //We had a comm error and need to report it.
-                        addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
+                        addCommResult(ResultMessage.TargetID, ResultMessage.ErrorCode, false);
 
-                        PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
+                        PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.ErrorCode, ResultMessage.MessageFlags );
 
                         /* Now send it back */
                         int bytesWritten = 0;
@@ -1995,7 +1985,7 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
             InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
             InMessage.Time          = LongTime();
             InMessage.MilliTime     = 0;
-            InMessage.EventCode     = QUEUEFLUSHED;                 // Indicates the result of the request.. The CCU queue was blown away!
+            InMessage.ErrorCode         = QUEUEFLUSHED;                 // Indicates the result of the request.. The CCU queue was blown away!
         }
         catch(...)
         {

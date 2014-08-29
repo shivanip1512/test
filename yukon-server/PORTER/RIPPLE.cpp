@@ -349,9 +349,9 @@ BOOL Block;
 BOOL OverRetry;
 
 /* Routine to decode result of LCU handshake */
-INT LCUResultDecode (OUTMESS *OutMessage, const INMESS *InMessage, CtiDeviceSPtr Dev, ULONG Result, bool mayqueuescans)
+YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS *InMessage, CtiDeviceSPtr Dev, YukonError_t Result, bool mayqueuescans)
 {
-    INT status = Result;
+    YukonError_t status = Result;
 
     CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev.get();
     CtiDeviceSPtr MyRemoteRecord;

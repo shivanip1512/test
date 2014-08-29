@@ -487,7 +487,7 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, str
 }
 
 
-int UdpPortHandler::sendOutbound( device_record &dr )
+YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
 {
     string  device_ip   = getDeviceIp  (dr.device->getID());
     u_short device_port = getDevicePort(dr.device->getID());
@@ -956,12 +956,12 @@ std::string UdpPortHandler::describeDeviceAddress( const long device_id ) const
 
     boost::optional<u_short> port = mapFind(_ports, device_id);
 
-	if( ! port )
-	{
-		return ipAddress + " (Port is Undefined)";
-	}
-	
-	return formatHostAndPort(ipAddress, *port);
+    if( ! port )
+    {
+        return ipAddress + " (Port is Undefined)";
+    }
+
+    return formatHostAndPort(ipAddress, *port);
 }
 
 void UdpPortHandler::loadEncodingFilter()

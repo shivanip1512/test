@@ -10,13 +10,13 @@ int callGenReply(BYTE reply[], int size, CtiTransmitter711Info &pInfo)
 {
     int address = 0, cmd = 0x00;
 
-    int status = GenReply(&reply[0],
-                          size,
-                          &pInfo.RemoteSequence.Request,
-                          &pInfo.RemoteSequence.Reply,
-                          address,
-                          cmd,
-                          &pInfo.SequencingBroken);
+    YukonError_t status = GenReply(&reply[0],
+                                   size,
+                                   &pInfo.RemoteSequence.Request,
+                                   &pInfo.RemoteSequence.Reply,
+                                   address,
+                                   cmd,
+                                   &pInfo.SequencingBroken);
 
     // Neither of these should have been changed.
     BOOST_CHECK_EQUAL(address, 0);

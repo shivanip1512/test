@@ -60,7 +60,7 @@ extern CtiDeviceManager DeviceManager;
 HCTIQUEUE*   QueueHandle(LONG pid);
 
 /* Routine to send error message back to originating process */
-INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
+YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *PassedInMessage)
 {
     if(!OutMessage)
     {
@@ -89,8 +89,8 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
             OutEchoToIN( OutMessage, &DefaultInMessage );
 
-            DefaultInMessage.InLength      = 0;
-            DefaultInMessage.EventCode     = ErrorCode;
+            DefaultInMessage.InLength  = 0;
+            DefaultInMessage.ErrorCode     = ErrorCode;
 
             CtiTime now;
 

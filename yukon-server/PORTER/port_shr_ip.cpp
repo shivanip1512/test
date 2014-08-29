@@ -179,7 +179,7 @@ void CtiPortShareIP::inThread()
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << getIDString() << " - inThread got a new SCADA connection - copying tmpNexus to _scadaNexus " << FILELINE << endl;
                         }
-                        
+
                         _scadaNexus.close();      //  make sure the old/invalid socket is closed
 
                         newNexus->Name = getIDString();
@@ -202,7 +202,7 @@ void CtiPortShareIP::inThread()
                 {
                     bytesRead = 0;      // <-- else we tend to report we've read a rather amazing 4e9 bytes from the TCP stack...
                     bool dataReady = false;
-                    
+
                     // listen to our SCADA system for a bit.
                     if( bytesReadChunk = _scadaNexus.read(Buffer, 4, Chrono::seconds(15), &_shutdownEvent) )
                     {
@@ -521,12 +521,12 @@ void CtiPortShareIP::outThread()
                     }
 
                     //  We got one so see if we need to embed the error code
-                    if(InMessage.EventCode & ~ENCODED)
+                    if(InMessage.ErrorCode)
                     {
                         // first byte of non-DLC section of message
                         // for ACS set byte 11 to 7d (error) and set byte 12 to event code
                         InMessage.IDLCStat[11] = 0x7d;
-                        InMessage.IDLCStat[12] = ProcessEventCode(InMessage.EventCode & ~ENCODED);
+                        InMessage.IDLCStat[12] = ProcessEventCode(InMessage.ErrorCode);
                         InMessage.InLength = 2;
                     }
                     else

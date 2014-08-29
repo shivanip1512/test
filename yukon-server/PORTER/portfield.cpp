@@ -62,10 +62,10 @@ using namespace Cti;
 /* Threads that handle each port for communications */
 void PortThread(void *pid)
 {
-    INT            status;
+    YukonError_t   status;
 
     CtiTime        nowTime, nextExpireTime;
-    ULONG          i;
+    YukonError_t   i;
     INMESS         InMessage;
     OUTMESS        *OutMessage = 0;
     ULONG          QueEntries = 0;
@@ -81,9 +81,6 @@ void PortThread(void *pid)
     CtiDeviceSPtr  LastExclusionDevice;
 
     CtiPortSPtr    Port( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
-
-    /* make it clear who is the boss */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     // Let the threads get up and running....
     WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
@@ -152,7 +149,7 @@ void PortThread(void *pid)
                 DeviceManager.setDevicePrioritiesForPort(portid, CtiDeviceManager::device_priorities_t());
 
                 Sleep(50);
-                status = 0;
+                status = NoError;
                 continue;
             }
 
@@ -336,13 +333,13 @@ void PortThread(void *pid)
                 continue;  // It has been re-queued!
             }
 
-            if( int error_code = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device) )
+            if( YukonError_t error_code = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device) )
             {
                 RequeueReportError(error_code, OutMessage, &InMessage);
                 continue;
             }
 
-            if( int error_code = ReturnResultMessage(i, &InMessage, OutMessage) )
+            if( YukonError_t error_code = ReturnResultMessage(i, &InMessage, OutMessage) )
             {
                 RequeueReportError(error_code, OutMessage);
                 continue;
@@ -561,9 +558,9 @@ struct primeTRXInfo
  * variable is used by the portqueue to decide which queue entry to pop from its
  * internal queue
  *----------------------------------------------------------------------------*/
-INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
+YukonError_t ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     try
     {
@@ -584,7 +581,7 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
              *  If the port has not been intialized at all, do it NOW!
              */
 
-            pair< bool, INT > portpair = Port->verifyPortStatus(Device);
+            pair< bool, YukonError_t > portpair = Port->verifyPortStatus(Device);
             status = portpair.second;
 
             if( portpair.first == true && portpair.second == NORMAL)    // Indicates that it was (re)opened successfully on this pass.
@@ -618,9 +615,9 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
     return status;
 }
 
-INT CheckInhibitedState(CtiPortSPtr Port, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+YukonError_t CheckInhibitedState(CtiPortSPtr Port, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
-    INT      status = NORMAL;
+    YukonError_t status = NORMAL;
 
 
     if(!Device) /* Non-existant or inhibited device so do as needed with message */
@@ -693,9 +690,9 @@ INT CheckInhibitedState(CtiPortSPtr Port, OUTMESS *OutMessage, CtiDeviceSPtr &De
  * connected to the correct phone number/crc and keeps the connection
  * otherwise it makes the correct connection.
  *-------------------------------------------------------------------*/
-INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+YukonError_t EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     LONG LastConnectedDevice = 0L;
 
     Port->setShouldDisconnect(FALSE);
@@ -746,9 +743,9 @@ struct TAPLoggedOn
     }
 };
 
-INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
+YukonError_t DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     struct timeb   TimeB;
     ULONG          QueueCount;
     CtiOutMessage *om = 0;
@@ -1053,7 +1050,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                             }
                         } while(TimeB.time <= (LONG)pInfo->getNextCommandTime());
 
-                        if(QueueCount) status = !NORMAL;
+                        if(QueueCount) status = NOTNORMAL;
                     }
                 }
                 break;
@@ -1171,10 +1168,10 @@ void processPreloads(CtiPortSPtr Port)
 }
 
 
-INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMessage, const CtiDeviceSPtr &Device)
+YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMessage, const CtiDeviceSPtr &Device)
 {
-    INT            status = NORMAL;
-    ULONG          reject_status, ReadLength;
+    YukonError_t   status = NORMAL;
+    ULONG          ReadLength;
     struct timeb   TimeB;
 
     CtiXfer        trx;
@@ -1247,7 +1244,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_CCU721:
                     {
                         CtiDeviceSingleSPtr ds = boost::static_pointer_cast<CtiDeviceSingle>(Device);
-                        int comm_status = NoError;
+                        YukonError_t comm_status = NoError;
 
                         if( !Device->isSingle() )
                         {
@@ -1294,7 +1291,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                             ds->sendDispatchResults(VanGoghConnection);
 
                             //  send text results to Commander here via return string
-                            if( int commResult_status = ds->sendCommResult(InMessage) )
+                            if( YukonError_t commResult_status = ds->sendCommResult(InMessage) )
                             {
                                 status = commResult_status;
                             }
@@ -1309,7 +1306,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                                 if( om && im )
                                 {
-                                    if( (status == EWORDRCV || im->EventCode == EWORDRCV) && im->Buffer.RepeaterError.ESt )
+                                    if( (status == EWORDRCV || im->ErrorCode == EWORDRCV) && im->Buffer.RepeaterError.ESt )
                                     {
                                         im->Buffer.RepeaterError.Details =
                                             findRepeaterInRouteByAddress(
@@ -1324,17 +1321,17 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                             if( DlcBaseDevice::dlcAddressMismatch(im->Buffer.DSt, *temDevice) )
                                             {
                                                 status = WRONGADDRESS;
-                                                im->EventCode = WRONGADDRESS;
+                                                im->ErrorCode = WRONGADDRESS;
                                             }
                                         }
                                     }
 
-                                    addCommResult(im->TargetID, im->EventCode & 0x3fff, false);
+                                    addCommResult(im->TargetID, im->ErrorCode, false);
 
                                     //  always a completion - om->retry is generally for comms-related retries for transmitter/single devices
-                                    PorterStatisticsManager.newCompletion( im->Port, im->DeviceID, im->TargetID, im->EventCode & 0x3fff, im->MessageFlags );
+                                    PorterStatisticsManager.newCompletion( im->Port, im->DeviceID, im->TargetID, im->ErrorCode, im->MessageFlags );
 
-                                    ReturnResultMessage(im->EventCode & 0x3fff, im, om);
+                                    ReturnResultMessage(im->ErrorCode, im, om);
                                 }
 
                                 // clean up the allocated memory
@@ -1423,7 +1420,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                 delete_container(retList);
                                 retList.clear();
 
-                                InMessage->EventCode = NORMAL;
+                                InMessage->ErrorCode = NORMAL;
                             }
                             else
                             {
@@ -1432,7 +1429,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " "<< ansiDev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << endl;
                                 }
-                                InMessage->EventCode = NOTNORMAL;
+                                InMessage->ErrorCode = NOTNORMAL;
                             }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1549,10 +1546,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                         if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
                         {
-                            int dcstat;
-
                             status = PerformRequestedCmd (Port, Device, InMessage, OutMessage, traceList);
-                            dcstat = TerminateHandshake (Port, Device, traceList);
+                            YukonError_t dcstat = TerminateHandshake (Port, Device, traceList);
 
                             if(status == NORMAL)
                                 status = dcstat;
@@ -1654,7 +1649,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                 }
                             }
 
-                            INT dcstat = TerminateHandshake (Port, Device, traceList);
+                            YukonError_t dcstat = TerminateHandshake (Port, Device, traceList);
 
                             if(status == NORMAL)
                                 status = dcstat;
@@ -2419,7 +2414,12 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                                 if(!status)
                                 {
-                                    status = InMessage->Buffer.InMessage[2];
+                                    //  Commented out on 2014-08-29
+                                    //  Judging by the FIX FIX FIX comment above,
+                                    //    I don't think we support CCU-700/-710 or
+                                    //    the Davis weather station with IDLC wrap.
+                                    //status = InMessage->Buffer.InMessage[2];
+                                    status = ErrorProtocolUnsupported;
                                     InMessage->InLength = InMessage->Buffer.InMessage[1];
                                     if(InMessage->InLength)
                                     {
@@ -2475,7 +2475,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                             {
                                                 case REJ:
                                                 {
-                                                    if((reject_status = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                                    if( YukonError_t reject_status = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request) )
                                                     {
                                                         status = reject_status;
                                                     }
@@ -2539,7 +2539,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                 {
                                     if(InMessage->InLength >= 5)
                                     {
-                                        if((reject_status = IDLCRej (InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                        if( YukonError_t reject_status = IDLCRej (InMessage->IDLCStat, &pInfo->RemoteSequence.Request) )
                                         {
                                             status = reject_status;
                                         }
@@ -2609,7 +2609,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                 }
 
                 /* Do not do a retry if we REQACK */
-                if((status & ~DECODED) == REQACK)
+                if( status == REQACK )
                 {
                     OutMessage->Retry = 0;
                 }
@@ -2640,9 +2640,9 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
     return status;
 }
 
-INT NonWrapDecode(const INMESS *InMessage, CtiDeviceSPtr &Device)
+YukonError_t NonWrapDecode(const INMESS *InMessage, CtiDeviceSPtr &Device)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     switch(Device->getType())
     {
@@ -2672,9 +2672,9 @@ INT NonWrapDecode(const INMESS *InMessage, CtiDeviceSPtr &Device)
 }
 
 
-INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
+YukonError_t CheckAndRetryMessage(YukonError_t CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
 {
-    INT            status = CommResult;
+    YukonError_t   status = CommResult;
     ULONG          j;
     ULONG          QueueCount;
     INT port = OutMessage->Port;
@@ -2875,12 +2875,12 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 }
 
 
-INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     extern void blitzNexusFromQueue(HCTIQUEUE q, StreamConnection *&Nexus);
     extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, StreamConnection *&Nexus);
 
-    INT            status = NORMAL;
+    YukonError_t   status = NORMAL;
     ULONG          j;
     struct timeb   TimeB;
 
@@ -2889,7 +2889,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
     if( InMessage && OutMessage )
     {
-        InMessage->EventCode = (USHORT)CommResult;
+        InMessage->ErrorCode = CommResult;
 
         switch(Device->getType())
         {
@@ -2905,12 +2905,12 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *temDevice ))
                             {
                                 status = CommResult = WRONGADDRESS;
-                                InMessage->EventCode = WRONGADDRESS;
+                                InMessage->ErrorCode = WRONGADDRESS;
                             }
                         }
                     }
 
-                    if( InMessage->EventCode == EWORDRCV )
+                    if( InMessage->ErrorCode == EWORDRCV )
                     {
                         InMessage->Buffer.RepeaterError.Details =
                             findRepeaterInRouteByAddress(
@@ -3018,7 +3018,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             ESTRUCT ESt;
 
                             /* This is I so decode dword(s) for the result */
-                            CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt, &ESt);
+                            CommResult = InMessage->ErrorCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt, &ESt);
 
                             if( status == EWORDRCV )
                             {
@@ -3040,7 +3040,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     else if( !status && nack1 )
                     {
                         status = NOTNORMAL;
-                        InMessage->EventCode = NOTNORMAL;
+                        InMessage->ErrorCode = NOTNORMAL;
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3053,7 +3053,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read) )
                         {
                             status = NACKPAD1;
-                            InMessage->EventCode = NACKPAD1;
+                            InMessage->ErrorCode = NACKPAD1;
                         }
 
                         if( !(OutMessage->MessageFlags & (MessageFlag_AddMctDisconnectSilence |
@@ -3071,7 +3071,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *temDevice) )
                             {
                                 status = CommResult = WRONGADDRESS;
-                                InMessage->EventCode = WRONGADDRESS;
+                                InMessage->ErrorCode = WRONGADDRESS;
                             }
                         }
                     }
@@ -3319,15 +3319,15 @@ void SnipeDynamicInfo(const INMESS &ResultMessage)
 }
 
 
-INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
+YukonError_t ReturnResultMessage(YukonError_t CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if( InMessage && OutMessage )
     {
         if(OutMessage->EventCode & RESULT)         /* If the OutMessage indicates it this routine responds to the client */
         {
-            InMessage->EventCode = (USHORT)CommResult;
+            InMessage->ErrorCode = CommResult;
 
             if(CommResult != NORMAL)
             {
@@ -3386,10 +3386,8 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
  * It should ALWAYS be used in a case where some errors may actually cause
  * a re-queue
  *---------------------------------------------------------------------------*/
-INT RequeueReportError(INT status, OUTMESS *OutMessage, INMESS *InMessage)
+void RequeueReportError(YukonError_t status, OUTMESS *OutMessage, INMESS *InMessage)
 {
-    INT result = NORMAL;
-
     switch(status)
     {
     case RETRY_SUBMITTED:
@@ -3410,14 +3408,12 @@ INT RequeueReportError(INT status, OUTMESS *OutMessage, INMESS *InMessage)
             break;
         }
     }
-
-    return result;
 }
 
 
-INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage)
+YukonError_t ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if(!isForeignCcuPort(Device->getPortID()) && Device->getAddress() != 0xffff && !Device->isInhibited())
     {
@@ -3479,12 +3475,12 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
     return status;
 }
 
-INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
+YukonError_t InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
 {
     CtiXfer        transfer;
     BYTE           inBuffer[512];
     BYTE           outBuffer[256];
-    INT            status = NORMAL;
+    YukonError_t   status = NORMAL;
     ULONG          bytesReceived (0);
 
     CtiDeviceIED *aIEDDevice = (CtiDeviceIED *)dev.get();
@@ -3519,15 +3515,15 @@ INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMe
     // check our return
     if(status == NORMAL && aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeAbort)
     {
-        status = !NORMAL;
+        status = NOTNORMAL;
     }
 
     return status;
 }
 
-INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList)
+YukonError_t PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList)
 {
-    INT            status = NORMAL;
+    YukonError_t   status = NORMAL;
     CtiXfer        transfer;
     BYTE           inBuffer[2048];
     BYTE           outBuffer[2048];
@@ -3588,7 +3584,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
                     dout << "  breaking loop, forcing abort state." << endl;
                 }
 
-                status = !NORMAL;
+                status = NOTNORMAL;
             }
 
             DisplayTraceList(aPortRecord, traceList, true);
@@ -3607,7 +3603,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
                 dout << "  status was returned as " << status << ".  This may be a ied state or an actual error status." << endl;
             }
 
-            status = !NORMAL;
+            status = NOTNORMAL;
         }
 
         DisplayTraceList(aPortRecord, traceList, true);
@@ -3626,9 +3622,9 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
 
 
 
-INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage,  list< CtiMessage* > &traceList)
+YukonError_t ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage,  list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     INMESS MyInMessage;
 
     CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
@@ -3681,9 +3677,9 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *
 }
 
 
-INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList)
+YukonError_t LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList)
 {
-    int retCode (NORMAL);
+    YukonError_t retCode = NORMAL;
     int i;
     CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
     INT   previousCmd ((INT)aIED->getCurrentCommand());
@@ -3727,12 +3723,12 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessag
     return retCode;
 }
 
-INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
+YukonError_t TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
 {
     CtiXfer        transfer;
     BYTE           inBuffer[512];
     BYTE           outBuffer[256];
-    INT            status = NORMAL;
+    YukonError_t   status = NORMAL;
     ULONG          bytesReceived (0);
 
     CtiDeviceIED *aIEDDevice = (CtiDeviceIED *)dev.get();
@@ -3800,7 +3796,7 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMes
     //This will never ever be called. Is that desired behavior? JMO 6/20/2006
     else if(status == NORMAL && aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort)
     {
-        status = !NORMAL;
+        status = NOTNORMAL;
     }
 
     return status;
@@ -4007,7 +4003,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
  *----------------------------------------------------------------------------*/
 INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
 {
-    INT     nRet = NoError;
+    YukonError_t nRet = NoError;
 
     if(OutMessage != NULL)
     {
@@ -4028,9 +4024,9 @@ INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
     return nRet;
 }
 
-INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device)
+YukonError_t ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
     static const string PORTER_EXCLUSION_TEST("PORTER_EXCLUSION_TEST");
     /*
      * Exclusion logic will consist of:
@@ -4124,9 +4120,9 @@ struct commFailDevice
  *  It is responsible for opening, or reopening the comm channel or IP channel.
  *  It is responsible for resetting, or verifying any established connection from the last loop.
  */
-INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
+YukonError_t ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     if( NORMAL != (status = ResetCommsChannel(Port, Device)) )
     {
@@ -4296,9 +4292,9 @@ void analyzePortQueue(CtiPortSPtr Port, bool timesyncPreference, CtiDeviceManage
 }
 
 
-INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, bool timesyncPreference)
+YukonError_t GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, bool timesyncPreference)
 {
-    INT status;
+    YukonError_t status;
     ULONG ReadLength;
     BYTE ReadPriority;
 
@@ -4316,16 +4312,16 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, boo
      *  OutMessage pointer, and fills it from it's queue entries!
      */
 
-    if((status = Port->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_NOWAIT, &ReadPriority, &QueEntries)) != NORMAL )
+    if( const int queueStatus = Port->readQueue(&ReadLength, (PPVOID) &OutMessage, DCWW_NOWAIT, &ReadPriority, &QueEntries) )
     {
-        if(status == ERROR_QUE_EMPTY)
+        if(queueStatus == ERROR_QUE_EMPTY)
         {
             if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 250L) )
             {
                 PorterQuit = TRUE;
             }
         }
-        else if( status != ERROR_QUE_UNABLE_TO_ACCESS)
+        else if( queueStatus != ERROR_QUE_UNABLE_TO_ACCESS)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4355,9 +4351,9 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, boo
 }
 
 
-INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion)
+YukonError_t OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion)
 {
-    INT status = NORMAL;
+    YukonError_t status = NORMAL;
 
     switch(exclusion.getFunctionRequeue())              // Determine what to do with this OM based upon the exclusion which BLOCKED us?
     {

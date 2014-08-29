@@ -25,7 +25,7 @@ using Cti::Timing::MillisecondTimer;
 
 extern CtiClientConnection VanGoghConnection;
 
-extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
+extern YukonError_t ReturnResultMessage(YukonError_t CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 extern bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, const CtiDeviceSPtr &Device);
 
 namespace Cti {
@@ -733,7 +733,7 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
 }
 
 
-void UnsolicitedHandler::traceOutbound( const device_record &dr, int status )
+void UnsolicitedHandler::traceOutbound( const device_record &dr, YukonError_t status )
 {
     CtiTraceMsg mTrace;
     string msg;
@@ -1075,7 +1075,7 @@ void UnsolicitedHandler::processGpuffInbound(device_record &dr)
             dr.xfer.setOutBuffer(&response.front());
             dr.xfer.setOutCount(response.size());
 
-            int status = sendOutbound(dr);
+            YukonError_t status = sendOutbound(dr);
 
             traceOutbound(dr, status);
         }

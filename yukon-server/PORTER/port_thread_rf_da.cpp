@@ -95,7 +95,7 @@ void RfDaPortHandler::receiveConfirm(Messaging::Rfn::E2eMessenger::Confirm msg)
 }
 
 
-int RfDaPortHandler::sendOutbound( device_record &dr )
+YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
 {
     if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
     {

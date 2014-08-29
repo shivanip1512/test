@@ -60,7 +60,7 @@ void PortDialbackThread(void *pid)
     {
         try
         {
-            pair< bool, INT > portpair = Port->checkCommStatus(CtiDeviceSPtr());
+            pair< bool, YukonError_t > portpair = Port->checkCommStatus(CtiDeviceSPtr());
 
             if(portpair.first)  // Port was opened on this pass.
             {

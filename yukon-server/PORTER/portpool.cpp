@@ -49,9 +49,6 @@ void PortPoolDialoutThread(void *pid)
     CtiTime         lastQueueReportTime;
     CtiDeviceSPtr  Device;
 
-    /* make it clear who is the boss */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-
     if(!ParentPort)
     {
         {
@@ -180,7 +177,7 @@ void PortPoolDialoutThread(void *pid)
                     dout << CtiTime() << " did not assign new deviceID" << endl;
                 }
 
-                SendError(OutMessage, status);
+                SendError(OutMessage, IDNF);
                 continue;
             }
         }
@@ -199,7 +196,7 @@ void PortPoolDialoutThread(void *pid)
 
                 try
                 {
-                    SendError(OutMessage, status);
+                    SendError(OutMessage, IDNF);
                 }
                 catch(...)
                 {

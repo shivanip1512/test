@@ -630,8 +630,6 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
             // 12 #define REMS            0x1000   // This can never be used now.... CGP Corey.
             // 13 #define FISHERPIERCE    0x1000
             // 14 #define ENCODED         0x4000
-            // 14 #define DECODED         0x4000
-            // 15 #define COMMANDCODE     0x8000
 
             int pos;
             for(pos = 0; pos < 16; pos++)
@@ -831,9 +829,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
         }
     }
-
-    /* make it clear who is just about the boss */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
 
     bool writeLogMessage = true;
 

@@ -119,9 +119,6 @@ void ConnectionThread(StreamConnection *MyNexus)
     OUTMESS *OutMessage = NULL;
     list< OUTMESS* > outList;
 
-    /* make it clear who is the boss */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ConnectionThread started as TID:  " << CurrentTID() << endl;
