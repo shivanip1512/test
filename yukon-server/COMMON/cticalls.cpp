@@ -15,72 +15,12 @@ using namespace std;
 /* CTI Sleep Function */
 APIRET IM_EX_CTIBASE CTISleep (ULONG SleepTime)
 {
-#if defined(__OS2__)
-   return(DosSleep (SleepTime));
-#elif defined(_WIN32)
    Sleep (SleepTime);      // Win32 does not return anything.
    return((APIRET)0);    // Return a OS/2 NO_ERROR!
-#elif defined(__MOTIF__)
-   return();
-#endif
 }
 
 APIRET IM_EX_CTIBASE CTIScanEnv ( PSZ Name, PSZ *Result )
 {
-#if defined(__OS2__)
-
-   return(DosScanEnv (Name, Result));
-
-#elif defined(_WIN32)
-
-#if 0
-   int     status = 1;
-   int     pos = 0;
-   char    Key[512] = {'\0'};      // Anything larger is considered unruly by this programmer
-   LPTSTR  lpValue;
-   LPTSTR  lpNext;
-
-   LPTSTR  lpStr = GetEnvironmentStrings();
-   LPTSTR  lpTemp = lpStr;
-
-   while(*lpTemp)
-   {
-
-      // printf("\nFull:  %s\n",lpTemp);
-      lpNext = lpTemp+strlen(lpTemp)+1;
-
-      lpValue = strstr(lpTemp+1, "=");         // This is the position of the = sign in the first key
-
-      while(lpTemp != lpValue)
-      {              // Make a copy of the Ksy Value
-         Key[pos] = *lpTemp;
-         pos++;
-         lpTemp++;
-      }
-      Key[pos] = '\0';                         // Terminate the "key" string
-      /****************************
-       * lpTemp should point at the equal sign now just like lpValue
-       ****************************/
-
-
-      if(!strcmp(Name, Key))
-      {
-         *Result = ((lpTemp+1));
-         status = 0;
-         break;
-      }
-      else
-      {
-         pos = 0;
-         lpTemp = lpNext;
-      }
-   }
-
-   FreeEnvironmentStrings( lpStr );
-
-   return(APIRET)status;   // Couldn't Find it.
-#else
-
    int status = -1;
 
    *Result = NULL;
@@ -95,45 +35,22 @@ APIRET IM_EX_CTIBASE CTIScanEnv ( PSZ Name, PSZ *Result )
    }
 
    return (status);
-
-#endif
-
-
-
-#elif defined(__MOTIF__)
-   return();
-#endif
 }
 
 
 void IM_EX_CTIBASE CTIExit (ULONG ExitType, ULONG ExitCode)
 {
-#if defined(__OS2__)
-
-   DosExit (ExitType, ExitCode);
-
-#elif defined(_WIN32)
-
-
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " **** Checkpoint CTIExit (deprecated) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
    ExitThread(ExitCode);
-
-#elif defined(__MOTIF__)
-   return;
-#endif
-
 }
 
 
 APIRET IM_EX_CTIBASE CTICloseMutexSem(PHMTX phmtx)
 {
-#if __OS2__
-   return(DosCloseMutexSem(phmtx));
-#elif defined(_WIN32)
    DWORD err;
    if(!(CloseHandle(*phmtx)))
    {
@@ -148,19 +65,11 @@ APIRET IM_EX_CTIBASE CTICloseMutexSem(PHMTX phmtx)
    {
       return(APIRET)0;    // OS2 returns zero on success so do that.
    }
-#endif
 }
 
 
 APIRET IM_EX_CTIBASE CTICreateMutexSem(PSZ pszName, PHMTX phmtx, ULONG Flags, BOOL bState)
 {
-#if __OS2__
-   char temp[1024] = {"\\SEM32\\"
-      strcat(temp,pszName);
-
-      return(DosCreateMutexSem(temp, phmtx, Flags, bState));
-#elif defined(_WIN32)
-
    /**********************************************************************
       * CreateMutex pp. 1272 in the Windows NT Win32 SuperBible
       */
@@ -176,14 +85,10 @@ APIRET IM_EX_CTIBASE CTICreateMutexSem(PSZ pszName, PHMTX phmtx, ULONG Flags, BO
    {
       return(APIRET)0;    // OS2 returns zero on success so do that.
    }
-#endif
 }
 
 APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG duration)
 {
-#if __OS2__
-   return(DosRequestMutexSem(hmtx, duration));
-#elif defined(_WIN32)
    DWORD rVal;
 
    rVal = WaitForSingleObject(hmtx, duration);
@@ -223,56 +128,26 @@ APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG duration)
    }
 
    return (APIRET)rVal;    // We have the mutex now!
-#endif
 }
 
 APIRET IM_EX_CTIBASE CTIReleaseMutexSem(HMTX hmtx)
 {
-#if __OS2__
-   return(DosReleaseMutexSem(hmtx));
-#elif defined(_WIN32)
    return(!(ReleaseMutex(hmtx)));
-#endif
 }
 
 APIRET IM_EX_CTIBASE CTIDelete(PSZ old)
 {
-#if __OS2__
-
-   return(DosDelete(old));
-#elif defined(_WIN32)
    return(!(DeleteFile(old)));   // OS2 wants 0 ret if OK NT rets TRUE on OK
-#endif
 }
 
 /* Function to return the current thread ID - 32 bit only */
 DWORD      IM_EX_CTIBASE CurrentTID()
 {
-#if __OS2__
-
-   PTIB ThreadInfoBlock;
-   PPIB ProcessInfoBlock;
-
-   /* Get the information Blocks */
-   DosGetInfoBlocks (&ThreadInfoBlock,
-                     &ProcessInfoBlock);
-
-   /* Return the current thread ID */
-   return(ThreadInfoBlock->tib_ptib2->tib2_ultid);
-
-#elif defined(_WIN32)
-
    return GetCurrentThreadId();
-
-#endif
 }
 
 APIRET IM_EX_CTIBASE CTIClose(HANDLE &hFile)
 {
-#if __OS2__
-   return(DosClose(hFile));
-#elif defined(_WIN32)
-
    DWORD status = NORMAL;
 
    if( !CloseHandle(hFile) )
@@ -283,26 +158,18 @@ APIRET IM_EX_CTIBASE CTIClose(HANDLE &hFile)
    hFile = (HANDLE)NULL;
 
    return(status);        // Win32 returns positive if successfull.
-#endif
 }
 
-APIRET IM_EX_CTIBASE CTIRead   (   HANDLE    &hFile,
-                                   PVOID    pBuf,
-                                   ULONG    BufLen,
-                                   PULONG   pBytesRead
-                               )
+YukonError_t CTIRead( HANDLE   &hFile,
+                      PVOID    pBuf,
+                      ULONG    BufLen,
+                      PULONG   pBytesRead )
 {
-#if __OS2__
-   return(DosRead(hFile, pBuf, BufLen, pBytesRead));
-#elif defined(_WIN32)
    BOOL  bSuccess = FALSE;
-//   fprintf(stderr,"*** DEBUG CTIRead File Handle %8d\n",hFile);
-   bSuccess = ReadFile(hFile, pBuf, BufLen, pBytesRead, NULL);
-//   fprintf(stderr,"*** DEBUG CTIRead File Handle %8d",hFile);
-//   fprintf(stderr," * %d bytes DONE* \n",*pBytesRead);
 
-   return(!bSuccess);        // Win32 returns positive if successfull.
-#endif
+   bSuccess = ReadFile(hFile, pBuf, BufLen, pBytesRead, NULL);
+
+   return bSuccess ? NoError : NOTNORMAL;  // Win32 returns positive if successfull.
 }
 
 APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
@@ -311,9 +178,6 @@ APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
                                           PULONG   pBytesWritten
                                       )
 {
-#if __OS2__
-   return(DosWrite(hFile, pBuf, BufLen, pBytesWritten));
-#elif defined(_WIN32)
    BOOL bSuccess = FALSE;
 
    DWORD status = NORMAL;
@@ -348,7 +212,6 @@ APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
       }
    }
    return(status);        // Win32 returns positive if successfull.
-#endif
 }
 
 
@@ -356,13 +219,6 @@ APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
 
 APIRET IM_EX_CTIBASE CTICreateEventSem(PSZ pszName, PHEV phev, ULONG Flags, BOOL32 bState)
 {
-#if __OS2__
-   char temp[1024] = {"\\SEM32\\"
-      strcat(temp,pszName);
-
-      return(DosCreateEventSem(temp, phev, Flags, bState));
-#elif defined(_WIN32)
-
    /**********************************************************************
       * CreateMutex pp. 1272 in the Windows NT Win32 SuperBible
       */
@@ -381,14 +237,10 @@ APIRET IM_EX_CTIBASE CTICreateEventSem(PSZ pszName, PHEV phev, ULONG Flags, BOOL
    {
       return(APIRET)0;    // OS2 returns zero on success so do that.
    }
-#endif
 }
 
 APIRET IM_EX_CTIBASE CTICloseEventSem(PHEV phev)
 {
-#if __OS2__
-   return(DosCloseEventSem(phev));
-#elif defined(_WIN32)
    DWORD err;
    if(!(CloseHandle(*phev)))
    {
@@ -403,26 +255,17 @@ APIRET IM_EX_CTIBASE CTICloseEventSem(PHEV phev)
    {
       return(APIRET)0;    // OS2 returns zero on success so do that.
    }
-#endif
 }
 
 
 APIRET  CTIResetEventSem(HEV hev, PULONG pulPostCt)
 {
-#if __OS2__
-   return(DosResetEventSem(hev, pulPostCnt));
-#elif defined(_WIN32)
    return(!(ResetEvent(hev)));
-#endif
 }
 
 APIRET IM_EX_CTIBASE CTIPostEventSem(HEV hev)
 {
-#if __OS2__
-   return(DosPostEventSem(hev));
-#elif defined(_WIN32)
    return(!(SetEvent(hev)));
-#endif
 }
 
 
@@ -437,17 +280,6 @@ APIRET IM_EX_CTIBASE CTIOpen (
                              PEAOP2      peaop2
                              )
 {
-#if __OS2__
-   return(DosOpen( pszFileName,  pHf, pAction
-                   cbFile,
-                   ulAttrib,
-                   Flags,
-                   Mode,
-                   peaop2
-                 )
-         );
-#elif defined(_WIN32)
-
    DWORD    dwAccess = 0;      // GENERIC_READ/WRITE  - Attrib in OS2.
    DWORD    dwShare  = 0;      // share mode (Mode in OS2) FILE_SHARE_DELETE/READ/WRITE
    DWORD    dwCreate = 0;      // how to create (Flags for OS2)
@@ -549,26 +381,6 @@ APIRET IM_EX_CTIBASE CTIOpen (
       *pAction = 1;
       return(APIRET)0;    // We have the file handle now!
    }
-#endif
-}
-
-APIRET IM_EX_CTIBASE CTISetPriority( ULONG ulPriClass, int tPri )
-{
-    /*
-    if(ulPriClass)
-    {
-        if(!SetPriorityClass(GetCurrentProcess(), ulPriClass))
-        {
-            DWORD lerror = GetLastError();
-            printf("Error in CTISetPriority %d\n", lerror);
-            return(1);
-        }
-    }
-
-    return !SetThreadPriority((HANDLE)GetCurrentThread(), tPri);
-    */
-
-    return 0;
 }
 
 void  IM_EX_CTIBASE   DebugLine(char *fName, char *funcName, int lineNum)
@@ -598,8 +410,6 @@ void IM_EX_CTIBASE DisplayError(DWORD Error, DWORD Line, char* FileName, char *F
 
    if(DebugLevel & 0x00000002)
    {
-
-      #if defined(_WIN32)
       FormatMessage(
                    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                    NULL,
@@ -609,11 +419,6 @@ void IM_EX_CTIBASE DisplayError(DWORD Error, DWORD Line, char* FileName, char *F
                    0,
                    NULL
                    );
-      #else
-
-      #error "Fix this code"
-
-      #endif
 
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -622,11 +427,8 @@ void IM_EX_CTIBASE DisplayError(DWORD Error, DWORD Line, char* FileName, char *F
       }
 
       // Free the buffer.
-      #if defined(_WIN32)
       LocalFree( lpMsgBuf );
-      #endif
    }
-   return;
 }
 
 void IM_EX_CTIBASE DumpOutMessage(void *Mess)

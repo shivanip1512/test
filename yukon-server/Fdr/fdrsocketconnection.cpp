@@ -86,7 +86,7 @@ CtiFDRSocketConnection& CtiFDRSocketConnection::setConnectionStatus (CtiFDRSocke
 
 int CtiFDRSocketConnection::closeAndFailConnection ()
 {
-    int retVal=NORMAL;
+    int retVal = 0;
 
     setConnectionStatus (Failed);
 

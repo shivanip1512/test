@@ -78,7 +78,7 @@ int PreMaster (PBYTE Message, USHORT Length)
 
 /* Routine to check out the first 4 bytes of a mastercom reply */
 
-int PostMaster (PBYTE  Message, USHORT Remote, PULONG   Length)
+YukonError_t PostMaster (PBYTE  Message, USHORT Remote, PULONG   Length)
 {
    if(Message[0] != 0x01)
       return(FRAMEERR);
@@ -93,7 +93,7 @@ int PostMaster (PBYTE  Message, USHORT Remote, PULONG   Length)
 
 
 /* Routine to check the CRC on the master reply message */
-int MasterReply (PBYTE Message,
+YukonError_t MasterReply (PBYTE Message,
              USHORT Length)
 
 {

@@ -88,7 +88,6 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
     ULONG bytesSent,bytesRead;
     UCHAR priority;
     int retVal = NORMAL;
-    int queueReturn;
     int connectionBadCount=0;
     int outCount=0;
 
@@ -171,7 +170,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
 
                     bytesRead = 0;
 
-                    queueReturn = ReadFrontElement(iQueueHandle, &bytesRead, (PVOID *) &buffer, DCWW_NOWAIT, &priority);
+                    const int queueReturn = ReadFrontElement(iQueueHandle, &bytesRead, (PVOID *) &buffer, DCWW_NOWAIT, &priority);
 
                     // only try to send if the connection is available
                     if (getConnectionStatus() ==  CtiFDRSocketConnection::Ok)
@@ -181,7 +180,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Error reading from " << getParent()->getName() << " out queue" << queueReturn << endl;
                         }
-                        else if (queueReturn == NO_ERROR)
+                        else if (queueReturn == NoError)
                         {
                             pSelf.serviceCancellation( );
                             retVal = writeSocket(buffer, getParent()->getMessageSize(buffer), bytesSent);

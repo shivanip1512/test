@@ -352,9 +352,6 @@ void CtiVanGogh::VGMainThread()
         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
         ConnThread_.start();
 
-        // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-        CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-
         Cti::Timing::MillisecondTimer timer;
 
         for(;!bGCtrlC;)

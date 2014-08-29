@@ -246,7 +246,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
             CHAR *buffer = NULL;
             ULONG bytesRead = 0;
 
-            int queueReturn = ReadFrontElement(_outboundQueue, &bytesRead, (PVOID *) &buffer, DCWW_WAIT, &priority);
+            const int queueReturn = ReadFrontElement(_outboundQueue, &bytesRead, (PVOID *) &buffer, DCWW_WAIT, &priority);
 
             // see if we got here because someone requested cancellation
             pSelf.serviceCancellation( );
@@ -263,7 +263,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
                     << queueReturn << ")" << endl;
                 break;
             }
-            if (queueReturn == NO_ERROR)
+            if (queueReturn == NoError)
             {
                 ULONG bytesSent;
                 retVal = writeSocket(buffer, bytesRead, bytesSent);

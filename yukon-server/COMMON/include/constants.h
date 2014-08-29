@@ -2,7 +2,6 @@
 
 enum CtiMiscContants_t
 {
-    NORMAL                  = 0,
     MAXPRIORITY             = 15,
 
     /* Misc. definitions */

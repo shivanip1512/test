@@ -115,17 +115,19 @@ struct ESTRUCT
 };
 
 
-int   IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
-int   IM_EX_CTIBASE B_Word  (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
-int   IM_EX_CTIBASE C_Word  (PBYTE, const PBYTE, USHORT);
-int   IM_EX_CTIBASE C_Words (unsigned char *, const unsigned char *, unsigned short, unsigned int *cword_count = 0);
-int   IM_EX_CTIBASE D1_Word (const unsigned char *, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
-int   IM_EX_CTIBASE D23_Word(const unsigned char *, PBYTE, PUSHORT, PUSHORT);
-int   IM_EX_CTIBASE D_Words (const unsigned char *, USHORT, USHORT, DSTRUCT *, ESTRUCT *);
-int   IM_EX_CTIBASE E_Word  (const unsigned char *, ESTRUCT *);
+enum YukonError_t;
+
+int          IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
+int          IM_EX_CTIBASE B_Word  (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
+int          IM_EX_CTIBASE C_Word  (PBYTE, const PBYTE, USHORT);
+int          IM_EX_CTIBASE C_Words (unsigned char *, const unsigned char *, unsigned short, unsigned int *cword_count = 0);
+YukonError_t IM_EX_CTIBASE D1_Word (const unsigned char *, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
+YukonError_t IM_EX_CTIBASE D23_Word(const unsigned char *, PBYTE, PUSHORT, PUSHORT);
+YukonError_t IM_EX_CTIBASE D_Words (const unsigned char *, USHORT, USHORT, DSTRUCT *, ESTRUCT *);
+YukonError_t IM_EX_CTIBASE E_Word  (const unsigned char *, ESTRUCT *);
 bool isBchValid  (const unsigned char *);
 bool isNackPadded(const unsigned char *, USHORT, USHORT);
-int   IM_EX_CTIBASE NackTst (BYTE, PUSHORT, USHORT);
-int   IM_EX_CTIBASE APreamble (PBYTE, const ASTRUCT &);
-int   IM_EX_CTIBASE BPreamble (PBYTE, const BSTRUCT &, INT wordsToFollow);
+YukonError_t IM_EX_CTIBASE NackTst (BYTE, PUSHORT, USHORT);
+int          IM_EX_CTIBASE APreamble (PBYTE, const ASTRUCT &);
+int          IM_EX_CTIBASE BPreamble (PBYTE, const BSTRUCT &, INT wordsToFollow);
 

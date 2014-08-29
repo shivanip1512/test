@@ -1989,8 +1989,6 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
         // #define REMS            0x1000   // This can never be used now.... CGP Corey.
         // #define FISHERPIERCE    0x1000
         // #define ENCODED         0x4000
-        // #define DECODED         0x4000
-        // #define COMMANDCODE     0x8000
 
         UINT ec = OutMessage->EventCode;
 

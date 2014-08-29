@@ -470,7 +470,7 @@ public:
    ULONG       Time;
    UINT        MilliTime;
 
-   UINT        EventCode;
+   YukonError_t ErrorCode;
    UINT        MessageFlags;
    UINT        Priority;
    ULONG       InLength;

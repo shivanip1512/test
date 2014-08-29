@@ -195,9 +195,6 @@ void PilServer::mainThread()
     VanGoghConnection.start();
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), TRUE));
 
-    /* Give us a tiny attitude */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-
     if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
     {
         systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
@@ -574,9 +571,6 @@ void PilServer::resultThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ResThread      : Started as TID " << rwThreadId() << endl;
     }
-
-    /* Give us a tiny attitude */
-    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_HIGHEST);
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -1022,9 +1016,6 @@ void PilServer::nexusThread()
         dout << CtiTime() << " NexusThread    : Started as TID " << rwThreadId() << endl;
     }
 
-    /* Give us a tiny attitude */
-    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_HIGHEST);
-
     SetThreadName(-1, "PILNexus ");
 
     /* perform the wait loop forever */
@@ -1081,9 +1072,6 @@ void PilServer::nexusWriteThread()
     }
 
     SetThreadName(-1, "PILNxsWrt");
-
-    /* Give us a tiny attitude */
-    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_HIGHEST);
 
     /* perform the wait loop forever */
     for( ; ! bServerClosing ; )

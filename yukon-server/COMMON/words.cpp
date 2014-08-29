@@ -117,7 +117,7 @@ INT IM_EX_CTIBASE C_Words (unsigned char * CWords,             /* results */
 
 /* Routine to decode "D1" type Message */
 
-INT IM_EX_CTIBASE D1_Word (const unsigned char *DWord,  /* D word to be decoded */
+YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
                            PBYTE Mess,            /* result */
                            PUSHORT RepVar,        /* returned repeater variable bits */
                            PULONG Address,        /* returned lsb 13 bits of address */
@@ -157,10 +157,11 @@ INT IM_EX_CTIBASE D1_Word (const unsigned char *DWord,  /* D word to be decoded 
 
 /* Routine to decode a "D2" or "D3" type word */
 
-INT IM_EX_CTIBASE D23_Word(const unsigned char *DWord,  /* d word to be decoded */
-                           PBYTE Mess,            /* resulting message bytes */
-                           PUSHORT S1,            /* flag spare1 */
-                           PUSHORT S2)            /* flag spare2 */
+YukonError_t D23_Word(
+        const unsigned char *DWord,  /* d word to be decoded */
+        PBYTE Mess,            /* resulting message bytes */
+        PUSHORT S1,            /* flag spare1 */
+        PUSHORT S2)            /* flag spare2 */
 {
    if( ! isBchValid(DWord) )
    {
@@ -193,13 +194,15 @@ INT IM_EX_CTIBASE D23_Word(const unsigned char *DWord,  /* d word to be decoded 
 
 /* Routine to decode a group of "D" words */
 
-INT IM_EX_CTIBASE D_Words (const unsigned char *DWords, /* D words to decode */
-                           USHORT Num,         /* DWord count */
-                           USHORT CCU,         /* CCU number */
-                           DSTRUCT *DSt,       /* D word structure */
-                           ESTRUCT *ESt)       /* E word structure in case one is found */
+YukonError_t D_Words (
+        const unsigned char *DWords, /* D words to decode */
+        USHORT Num,         /* DWord count */
+        USHORT CCU,         /* CCU number */
+        DSTRUCT *DSt,       /* D word structure */
+        ESTRUCT *ESt)       /* E word structure in case one is found */
 {
-   USHORT Code, Dummy, Nack;
+   YukonError_t Code;
+   USHORT Dummy, Nack;
 
    DSt->Length = 0;
    DSt->Alarm = 0;
@@ -323,8 +326,9 @@ INT IM_EX_CTIBASE D_Words (const unsigned char *DWords, /* D words to decode */
 
 
 /* Routine to decode "E" word */
-int IM_EX_CTIBASE E_Word (const unsigned char *EWord,   /* E word to be decoded */
-                          ESTRUCT *ESt)        /* E word structure */
+YukonError_t E_Word (
+        const unsigned char *EWord,   /* E word to be decoded */
+        ESTRUCT *ESt)        /* E word structure */
 {
    if( ! isBchValid(EWord) )
    {
@@ -404,9 +408,10 @@ bool isNackPadded (const unsigned char *Message,  /* Message to check */
 
 /* Routine checks if character is proper ACK or NACK */
 
-INT IM_EX_CTIBASE NackTst (BYTE Reply,           /* character to be tested */
-                           PUSHORT NAck,         /* result: 0 == ACK, 1 == NACK */
-                           USHORT CCU)           /* CCU number to use in test */
+YukonError_t NackTst (
+        BYTE Reply,           /* character to be tested */
+        PUSHORT NAck,         /* result: 0 == ACK, 1 == NACK */
+        USHORT CCU)           /* CCU number to use in test */
 {
    /* check for proper parity */
    if(Reply != (BYTE)Parity_C(Reply))
