@@ -3812,7 +3812,6 @@ INT Mct470Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     bool demand_defined = false;
     point_info pi;
 
-    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -3896,7 +3895,6 @@ INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS *InMessage, CtiTime &T
     point_info  pi, pi_time;
     CtiTime     pointTime;
 
-    INT ErrReturn = InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
@@ -4748,7 +4746,6 @@ INT Mct470Device::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    INT ErrReturn  =  InMessage->ErrorCode;
     const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi

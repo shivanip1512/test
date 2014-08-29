@@ -289,13 +289,12 @@ INT CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
 INT CtiDeviceLMI::ResultDecode( const INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT ErrReturn = InMessage->ErrorCode;
     list<CtiPointDataMsg*> points;
 
     string resultString, info;
     CtiReturnMsg *retMsg;
 
-    if( !ErrReturn && !_lmi.recvCommResult(InMessage, outList) )
+    if( !InMessage->ErrorCode && !_lmi.recvCommResult(InMessage, outList) )
     {
         resetScanFlag();
 

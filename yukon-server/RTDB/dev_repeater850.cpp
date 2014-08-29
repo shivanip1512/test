@@ -87,7 +87,6 @@ INT Repeater850Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &Ti
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->ErrorCode;
     const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);

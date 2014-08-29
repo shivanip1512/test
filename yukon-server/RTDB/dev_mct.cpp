@@ -3168,8 +3168,6 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
     bool expectMore = false;
 
-    INT ErrReturn = InMessage->ErrorCode;
-
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

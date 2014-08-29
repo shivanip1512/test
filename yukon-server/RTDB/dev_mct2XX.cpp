@@ -115,7 +115,6 @@ INT Mct2xxDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, l
 {
     INT status = NORMAL;
 
-    INT ErrReturn =  InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
@@ -189,7 +188,6 @@ INT Mct2xxDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
 {
     INT status = NORMAL;
 
-    INT ErrReturn =  InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
@@ -445,7 +443,6 @@ INT Mct2xxDevice::decodeGetConfigOptions(const INMESS *InMessage, CtiTime &TimeN
 {
     INT status = NORMAL;
 
-    INT ErrReturn         = InMessage->ErrorCode;
     const unsigned char *optBuf = InMessage->Buffer.DSt.Message;
 
     string options;

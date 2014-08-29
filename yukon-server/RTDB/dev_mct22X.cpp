@@ -97,7 +97,6 @@ INT Mct22xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
 {
     INT status = NORMAL;
 
-    INT ErrReturn =  InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )

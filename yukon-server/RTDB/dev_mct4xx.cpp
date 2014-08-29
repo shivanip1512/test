@@ -2098,8 +2098,6 @@ INT Mct4xxDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, Cti
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
-    INT ErrReturn = InMessage->ErrorCode;
-
     switch( InMessage->Sequence )
     {
         case EmetconProtocol::PutConfig_Install:
@@ -2731,7 +2729,6 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS *InMessage, CtiTime &Ti
 {
     INT status = NORMAL;
 
-    INT ErrReturn =  InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string resultString;
@@ -3088,7 +3085,6 @@ INT Mct4xxDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNo
 {
     INT status = NORMAL;
 
-    INT ErrReturn =  InMessage->ErrorCode;
     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string         val_report;

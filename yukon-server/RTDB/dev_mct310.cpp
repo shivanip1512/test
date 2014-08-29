@@ -1370,7 +1370,6 @@ INT Mct310Device::decodeGetConfigOptions(const INMESS *InMessage, CtiTime &TimeN
 {
     INT status = NORMAL;
 
-    INT ErrReturn = InMessage->ErrorCode;
     const unsigned char *optBuf  = InMessage->Buffer.DSt.Message;
 
     string options;

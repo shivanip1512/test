@@ -542,7 +542,7 @@ void ModbusDevice::processPoints( Protocol::Interface::pointlist_t &points )
 
 INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT ErrReturn = InMessage->ErrorCode;
+    const INT ErrReturn = InMessage->ErrorCode;
 
     CtiReturnMsg *retMsg;
 
@@ -604,8 +604,6 @@ INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
 
 INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
-    INT retCode = NORMAL;
-
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                               string(InMessage.Return.CommandStr),
@@ -649,7 +647,7 @@ INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return retCode;
+    return NORMAL;
 }
 
 

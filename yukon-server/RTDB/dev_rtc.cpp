@@ -182,7 +182,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT ErrReturn = InMessage->ErrorCode;
+    const INT ErrReturn = InMessage->ErrorCode;
 
     string resultString;
 
