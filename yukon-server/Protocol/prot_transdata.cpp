@@ -169,23 +169,23 @@ CtiTime CtiProtocolTransdata::getLastLoadProfileTime( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
+YukonError_t CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 {
    if( _billingDone )
    {
 //      memcpy( InMessage->Buffer.InMessage + sizeof( ULONG ), _billingBytes, _numBilling );
       memcpy( InMessage->Buffer.InMessage + sizeof( llp ), _billingBytes, _numBilling );
       InMessage->InLength = _numBilling + sizeof( llp );
-      InMessage->EventCode = NORMAL;
+      InMessage->ErrorCode = NORMAL;
       _numBytes = 0;
    }
    else
    {
-      InMessage->EventCode = NOTNORMAL;
+      InMessage->ErrorCode = NOTNORMAL;
       InMessage->InLength = 0;   //matt says this is the way to know failure
    }
 
-   return( NORMAL );
+   return NORMAL;
 }
 
 //=====================================================================================================================

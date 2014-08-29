@@ -185,7 +185,7 @@ void CtiProtocolSeriesV::getInboundPoints( list< CtiPointDataMsg* > &pointList )
 }
 
 
-int CtiProtocolSeriesV::recvCommRequest( OUTMESS *OutMessage )
+YukonError_t CtiProtocolSeriesV::recvCommRequest( OUTMESS *OutMessage )
 {
     seriesv_outmess_struct &request = *((seriesv_outmess_struct *)OutMessage->Buffer.OutMessage);
 
@@ -198,11 +198,11 @@ int CtiProtocolSeriesV::recvCommRequest( OUTMESS *OutMessage )
         setCommand(request.command);
     }
 
-    return 0;
+    return NoError;
 }
 
 
-int CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
+YukonError_t CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
 {
     int offset = 0;
 
@@ -220,7 +220,7 @@ int CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
 
     InMessage->InLength = sizeof(seriesv_inmess_struct) + (sizeof(seriesv_pointdata) * response.num_points);
 
-    return 0;
+    return NoError;
 }
 
 
@@ -230,13 +230,13 @@ bool CtiProtocolSeriesV::isTransactionComplete( void ) const
 }
 
 
-int CtiProtocolSeriesV::generate( CtiXfer &xfer )
+YukonError_t CtiProtocolSeriesV::generate( CtiXfer &xfer )
 {
     unsigned char opcode = Opcode_Invalid,
                   param1 = 0,
                   param2 = 0,
                   points_requested = 0;
-    int retval = NoError;
+    YukonError_t retval = NoError;
 
     if( !_configRead )
     {
@@ -556,9 +556,9 @@ void CtiProtocolSeriesV::setRange( int point_count, int point_min, int point_max
 
 
 
-int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
+YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retval = NoError;
+    YukonError_t retval = NoError;
     seriesv_pointdata pd;
     CtiTime Now;
     unsigned long in_actual = xfer.getInCountActual();

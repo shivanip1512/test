@@ -101,7 +101,7 @@ void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, b
     _app_layer.setConfigData(_config.get());
 }
 
-int DNPInterface::generate( CtiXfer &xfer )
+YukonError_t DNPInterface::generate( CtiXfer &xfer )
 {
     if( _app_layer.isTransactionComplete() )
     {
@@ -370,9 +370,9 @@ int DNPInterface::generate( CtiXfer &xfer )
 }
 
 
-int DNPInterface::decode( CtiXfer &xfer, int status )
+YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int  retVal;
+    YukonError_t retVal;
     bool final = true;
 
     retVal = _app_layer.decode(xfer, status);
@@ -1052,7 +1052,7 @@ DNPSlaveInterface::DNPSlaveInterface()
 }
 
 
-int DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
+YukonError_t DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
 {
     if( xfer.getOutBuffer()[10] & 0x80 )
     {
@@ -1060,7 +1060,7 @@ int DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
         return NoError;
     }
 
-    return getApplicationLayer().decode(xfer, 0);
+    return getApplicationLayer().decode(xfer, NoError);
 }
 
 int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )

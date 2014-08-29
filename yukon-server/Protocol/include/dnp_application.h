@@ -108,7 +108,7 @@ private:
         //  DNP slave state
         SendFirstResponse,
         SendResponse,
-        
+
         Complete,
         Failed
 
@@ -163,8 +163,8 @@ public:
     void initUnsolicited( void );
 
     //  comm functions
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    YukonError_t generate( CtiXfer &xfer );
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     //  checking completion
     bool isTransactionComplete( void ) const;

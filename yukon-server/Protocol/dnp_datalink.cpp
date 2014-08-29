@@ -144,9 +144,9 @@ void DatalinkLayer::setToInput( void )
 }
 
 
-int DatalinkLayer::generate( CtiXfer &xfer )
+YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( isControlPending() )
     {
@@ -206,9 +206,9 @@ int DatalinkLayer::generate( CtiXfer &xfer )
 }
 
 
-int DatalinkLayer::decode( CtiXfer &xfer, int status )
+YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
     int toCopy, srcLen, packetSize;
     unsigned char *dst, *src;
 
@@ -685,9 +685,9 @@ bool DatalinkLayer::processControl( const DatalinkLayer::packet_t &packet )
 }
 
 
-int DatalinkLayer::generateControl( CtiXfer &xfer )
+YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     switch( _control_state )
     {
@@ -773,9 +773,9 @@ int DatalinkLayer::generateControl( CtiXfer &xfer )
 }
 
 
-int DatalinkLayer::decodeControl( CtiXfer &xfer, int status )
+YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( status )
     {

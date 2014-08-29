@@ -337,15 +337,15 @@ public:
 
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
 
-    int setCommand(int command, const byte_buffer_t payload=byte_buffer_t(), unsigned in_expected=0, unsigned priority=0, unsigned char stages=0, unsigned char dlc_parms=0);
+    YukonError_t setCommand(int command, const byte_buffer_t payload=byte_buffer_t(), unsigned in_expected=0, unsigned priority=0, unsigned char stages=0, unsigned char dlc_parms=0);
 
     Command getCommand() const;
 
     std::vector<queue_result_t> getQueuedResults();
     byte_buffer_t getDTranResult();
 
-    int generate(CtiXfer &xfer);
-    int decode  (CtiXfer &xfer, int status);
+    YukonError_t generate(CtiXfer &xfer);
+    YukonError_t decode(CtiXfer &xfer, YukonError_t status);
 
     bool isTransactionComplete(void) const;
 

@@ -83,8 +83,8 @@ private:
 
     bool isControlPending( void ) const;
     bool processControl( const packet_t &p );
-    int  generateControl( CtiXfer &xfer );
-    int  decodeControl  ( CtiXfer &xfer, int status );
+    YukonError_t generateControl( CtiXfer &xfer );
+    YukonError_t decodeControl  ( CtiXfer &xfer, YukonError_t status );
     int  decodePacket   ( CtiXfer &xfer, packet_t &p, unsigned long received );
 
     void constructPrimaryControlPacket  ( packet_t &p, PrimaryControlFunction   function, bool fcv, bool fcb );
@@ -147,8 +147,8 @@ public:
     void setToOutput( unsigned char *buf, unsigned int len );
     void setToInput ( void );
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    YukonError_t generate( CtiXfer &xfer );
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     bool isTransactionComplete( void );
     bool errorCondition( void );

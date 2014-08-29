@@ -111,11 +111,11 @@ private:
         ControlResult_Retransmit
     };
 
-    bool process_inbound( CtiXfer &xfer, int status );  //  returns completeFrame & crcValid & direction
-    int  process_control( frame in_frame );
+    bool process_inbound( CtiXfer &xfer, YukonError_t status );  //  returns completeFrame & crcValid & direction
+    YukonError_t process_control( frame in_frame );
 
-    int generate_control( CtiXfer &xfer );
-    int decode_control  ( CtiXfer &xfer, int status );
+    YukonError_t generate_control( CtiXfer &xfer );
+    YukonError_t decode_control( CtiXfer &xfer, YukonError_t status );
 
     bool control_pending( void );
 
@@ -159,8 +159,8 @@ public:
 
     void setAddress( unsigned short address );
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    YukonError_t generate( CtiXfer &xfer );
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     virtual bool isTransactionComplete( void ) const;
     virtual bool errorCondition( void ) const;

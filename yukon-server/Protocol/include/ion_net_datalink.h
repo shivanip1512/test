@@ -137,8 +137,8 @@ public:
     void setToOutput( CtiIONSerializable &payload );
     void setToInput( void );
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    YukonError_t generate( CtiXfer &xfer );
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     void putPayload( unsigned char *buf );
     int  getPayloadLength( void );

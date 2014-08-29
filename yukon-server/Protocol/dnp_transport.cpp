@@ -118,9 +118,9 @@ int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 }
 
 
-int TransportLayer::generate( CtiXfer &xfer )
+YukonError_t TransportLayer::generate( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( _datalink.isTransactionComplete() )
     {
@@ -171,9 +171,9 @@ int TransportLayer::generate( CtiXfer &xfer )
 }
 
 
-int TransportLayer::decode( CtiXfer &xfer, int status )
+YukonError_t TransportLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( retVal = _datalink.decode(xfer, status) )
     {

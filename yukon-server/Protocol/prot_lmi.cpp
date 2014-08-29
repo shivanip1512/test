@@ -248,7 +248,7 @@ void CtiProtocolLMI::getInboundData( std::list< CtiPointDataMsg* > &pointList, s
 }
 
 
-int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
+YukonError_t CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 {
     _comm_end_time = 0UL;
     _preload_sequence = false;
@@ -321,11 +321,11 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
     _in_count = 0;
     _in_total = 0;
 
-    return 0;
+    return NoError;
 }
 
 
-int CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
+YukonError_t CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
 {
     int offset = 0;
     INMESS seriesv_inmess;
@@ -360,7 +360,7 @@ int CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
     //  store the total length
     InMessage->InLength = offset;
 
-    return 0;
+    return NoError;
 }
 
 
@@ -506,9 +506,9 @@ void CtiProtocolLMI::getStatuses(pointlist_t &points)
 }
 
 
-int CtiProtocolLMI::generate( CtiXfer &xfer )
+YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 {
-    int retval = NoError;
+    YukonError_t retval = NoError;
     bool reply_expected = true;
     CtiTime NowTime;
     CtiDate NowDate;
@@ -843,7 +843,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             }
                             else
                             {
-                                retval = !NORMAL;
+                                retval = NOTNORMAL;
                             }
                         }
 
@@ -898,9 +898,9 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 }
 
 
-int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
+YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retval = NoError;
+    YukonError_t retval = NoError;
     unsigned long  tmp_crc, inbound_crc;
     CtiXfer seriesv_xfer;
     unsigned long seriesv_incount_actual;
@@ -1158,7 +1158,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                     }
                                     else
                                     {
-                                        retval = !NORMAL;
+                                        retval = NOTNORMAL;
                                     }
                                 }
 

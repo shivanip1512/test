@@ -257,9 +257,9 @@ bool IDLC::isCompleteFrame(const frame &f, unsigned bytes_received)
 }
 
 
-int IDLC::generate( CtiXfer &xfer )
+YukonError_t IDLC::generate( CtiXfer &xfer )
 {
-    int retval = NoError;
+    YukonError_t retval = NoError;
 
     if( control_pending() )
     {
@@ -289,7 +289,7 @@ int IDLC::generate( CtiXfer &xfer )
 }
 
 
-int IDLC::generate_control( CtiXfer &xfer )
+YukonError_t IDLC::generate_control( CtiXfer &xfer )
 {
     switch( _control_state )
     {
@@ -308,9 +308,9 @@ int IDLC::generate_control( CtiXfer &xfer )
 }
 
 
-int IDLC::decode( CtiXfer &xfer, int status )
+YukonError_t IDLC::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retval = NoError;
+    YukonError_t retval = NoError;
     _in_data.clear();
 
     if( control_pending() )
@@ -407,7 +407,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
         }
         else
         {
-            retval = !NORMAL;
+            retval = NOTNORMAL;
         }
     }
 
@@ -415,9 +415,9 @@ int IDLC::decode( CtiXfer &xfer, int status )
 }
 
 
-int IDLC::decode_control( CtiXfer &xfer, int status )
+YukonError_t IDLC::decode_control( CtiXfer &xfer, YukonError_t status )
 {
-    int retval = NoError;
+    YukonError_t retval = NoError;
 
     switch( _control_state )
     {
@@ -465,9 +465,9 @@ int IDLC::decode_control( CtiXfer &xfer, int status )
     return retval;
 }
 
-int IDLC::process_control( frame in_frame )
+YukonError_t IDLC::process_control( frame in_frame )
 {
-    int retval = NoError;
+    YukonError_t retval = NoError;
 
     if( in_frame.header.control.code == ControlCode_ResetAcknowledge )
     {
@@ -506,7 +506,7 @@ int IDLC::process_control( frame in_frame )
 }
 
 
-bool IDLC::process_inbound( CtiXfer &xfer, int status )
+bool IDLC::process_inbound( CtiXfer &xfer, YukonError_t status )
 {
     bool valid_frame = false;
 

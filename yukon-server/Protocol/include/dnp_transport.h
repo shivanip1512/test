@@ -66,8 +66,8 @@ public:
     int initForOutput( unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr );
     int initForInput ( unsigned char *buf, unsigned len );
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    YukonError_t generate( CtiXfer &xfer );
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     bool isTransactionComplete( void );
     bool errorCondition( void );

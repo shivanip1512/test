@@ -168,9 +168,9 @@ int CtiIONDatalinkLayer::getPayloadLength( void )
 }
 
 
-int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
+YukonError_t CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     _inActual = 0;
 
@@ -412,9 +412,9 @@ void CtiIONDatalinkLayer::generateOutputNack( ion_output_frame *out_frame, const
 }
 
 
-int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
+YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retVal = NoError, possibleError = NoError;
+    YukonError_t retVal = NoError, possibleError = NoError;
     int offset;
 
     if( status != NORMAL )

@@ -173,9 +173,9 @@ void CtiProtocolION::setConfigRead( bool read )
 }
 
 
-int CtiProtocolION::generate( CtiXfer &xfer )
+YukonError_t CtiProtocolION::generate( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( _appLayer.isTransactionComplete() )
     {
@@ -257,11 +257,9 @@ int CtiProtocolION::generate( CtiXfer &xfer )
 }
 
 
-int CtiProtocolION::decode( CtiXfer &xfer, int status )
+YukonError_t CtiProtocolION::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int alStatus;
-
-    alStatus = _appLayer.decode(xfer, status);
+    const YukonError_t alStatus = _appLayer.decode(xfer, status);
 
     if( _appLayer.errorCondition() )
     {
@@ -2444,9 +2442,9 @@ bool CtiProtocolION::areEventLogsComplete( void )
 
 //  porter-side functions
 
-int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
+YukonError_t CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
     ion_outmess_struct tmpOM;
 
     memcpy(&tmpOM, OutMessage->Buffer.OutMessage, sizeof(tmpOM));
@@ -2470,13 +2468,13 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-int CtiProtocolION::sendCommResult( INMESS *InMessage )
+YukonError_t CtiProtocolION::sendCommResult( INMESS *InMessage )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( _ionState == State_Abort )
     {
-        InMessage->EventCode = _abortStatus;
+        InMessage->ErrorCode = _abortStatus;
         InMessage->InLength = 0;
     }
     else if( resultSize() < sizeof( InMessage->Buffer ) )

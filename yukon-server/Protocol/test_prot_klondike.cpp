@@ -27,12 +27,12 @@ public:
     virtual bool recv( void )  {  sent.clear();  received.clear();  return true;  };
     virtual bool init( void )  {  sent.clear();  received.clear();  return true;  };
 
-    virtual int generate(CtiXfer &xfer)
+    virtual YukonError_t generate(CtiXfer &xfer)
     {
         return NoError;
     };
 
-    virtual int decode(CtiXfer &xfer, int status)
+    virtual YukonError_t decode(CtiXfer &xfer, YukonError_t status)
     {
         return NoError;
     };
@@ -73,7 +73,7 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_buffer 
         outbound.begin(),
         outbound.end());
 
-    BOOST_CHECK_EQUAL(tk.decode(xfer, 0), NoError);
+    BOOST_CHECK_EQUAL(tk.decode(xfer, NoError), NoError);
     BOOST_CHECK(!tk.errorCondition());
 
     tw.sent.clear();
@@ -90,7 +90,7 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_buffer 
         inbound.begin(),
         inbound.end());
 
-    BOOST_CHECK_EQUAL(tk.decode(xfer, 0), NoError);
+    BOOST_CHECK_EQUAL(tk.decode(xfer, NoError), NoError);
     BOOST_CHECK(!tk.errorCondition());
 
     tw.sent.clear();

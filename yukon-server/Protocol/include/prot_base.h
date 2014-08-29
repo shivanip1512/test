@@ -43,15 +43,15 @@ public:
     virtual void getInboundStrings( stringlist_t &string_list );
 
     //  porter-side (portfield, specificially) functions
-    virtual int recvCommRequest( OUTMESS *OutMessage );
+    virtual YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
     virtual bool isTransactionComplete( void ) const;
     virtual bool errorCondition( void ) const;
 
-    virtual int generate( CtiXfer &xfer );
-    virtual int decode  ( CtiXfer &xfer, int status );
+    virtual YukonError_t generate( CtiXfer &xfer );
+    virtual YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
-    virtual int sendCommResult( INMESS  *InMessage  );
+    virtual YukonError_t sendCommResult( INMESS  *InMessage  );
 
     virtual void setName( const std::string &name );
 };

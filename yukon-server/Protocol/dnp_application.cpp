@@ -369,9 +369,9 @@ bool ApplicationLayer::errorCondition( void ) const
 }
 
 
-int ApplicationLayer::generate( CtiXfer &xfer )
+YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     if( _transport.isTransactionComplete() )
     {
@@ -436,10 +436,9 @@ int ApplicationLayer::generate( CtiXfer &xfer )
 }
 
 
-int ApplicationLayer::decode( CtiXfer &xfer, int status )
+YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retVal = NoError;
-
+    YukonError_t retVal = NoError;
 
     if( retVal = _transport.decode(xfer, status) )
     {

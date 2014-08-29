@@ -8,14 +8,14 @@
 namespace Cti {
 namespace Protocol {
 
-int Interface::generate( CtiXfer &xfer )              {   return NoMethod;   }
-int Interface::decode( CtiXfer &xfer, int status )    {   return NoMethod;   }
+YukonError_t Interface::generate( CtiXfer &xfer )                       {   return NoMethod;   }
+YukonError_t Interface::decode  ( CtiXfer &xfer, YukonError_t status )  {   return NoMethod;   }
 
 int Interface::sendCommRequest( OUTMESS *&OutMessage,    std::list< OUTMESS* > &outList )   {   return NoMethod;    }
 int Interface::recvCommResult ( const INMESS *InMessage, std::list< OUTMESS* > &outList )   {   return NoMethod;    }
 
-int Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMethod;    }
-int Interface::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;    }
+YukonError_t Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMethod;    }
+YukonError_t Interface::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;    }
 
 bool Interface::isTransactionComplete( void ) const {   return true;    }
 bool Interface::errorCondition       ( void ) const {   return false;   }

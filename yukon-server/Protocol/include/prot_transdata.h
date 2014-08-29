@@ -40,7 +40,7 @@ private:
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
 
-      int sendCommResult( INMESS *InMessage );
+      YukonError_t sendCommResult( INMESS *InMessage );
       int recvOutbound( OUTMESS *OutMessage );
 
       bool isTransactionComplete( void ) const;

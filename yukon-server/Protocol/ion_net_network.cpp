@@ -157,9 +157,9 @@ void CtiIONNetworkLayer::setToInput( void )
 }
 
 
-int CtiIONNetworkLayer::generate( CtiXfer &xfer )
+YukonError_t CtiIONNetworkLayer::generate( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    YukonError_t retVal = NoError;
 
     switch( _ioState )
     {
@@ -192,11 +192,9 @@ int CtiIONNetworkLayer::generate( CtiXfer &xfer )
 }
 
 
-int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
+YukonError_t CtiIONNetworkLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    int retVal = -1;
-
-    retVal = _datalinkLayer.decode( xfer, status );
+    const YukonError_t retVal = _datalinkLayer.decode( xfer, status );
 
     if( _datalinkLayer.errorCondition() )
     {

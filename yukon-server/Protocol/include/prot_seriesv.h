@@ -248,26 +248,13 @@ public:
     void getInboundPoints( std::list< CtiPointDataMsg* > &pointList );
 
     //  porter-side (portfield, specificially) functions
-    int recvCommRequest( OUTMESS *OutMessage );
-    int sendCommResult ( INMESS  *InMessage );
+    YukonError_t recvCommRequest( OUTMESS *OutMessage );
+    YukonError_t sendCommResult ( INMESS  *InMessage );
 
     bool isTransactionComplete( void ) const;
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
-
-    int generateLoopback( CtiXfer &xfer );
-    int decodeLoopback( CtiXfer &xfer, int status );
-    int generateScanAccumulator( CtiXfer &xfer );
-    int decodeScanAccumulator( CtiXfer &xfer, int status );
-/*    int generateScanException( CtiXfer &xfer );
-    int decodeScanException( CtiXfer &xfer, int status );
-    int generateScanIntegrity( CtiXfer &xfer );
-    int decodeScanIntegrity( CtiXfer &xfer, int status );*/
-    int generateControl( CtiXfer &xfer );
-    int decodeControl( CtiXfer &xfer, int status );
-    int generateAnalogSetpoint( CtiXfer &xfer );
-    int decodeAnalogSetpoint( CtiXfer &xfer, int status );
+    YukonError_t  generate( CtiXfer &xfer );
+    YukonError_t  decode  ( CtiXfer &xfer, YukonError_t status );
 
     enum
     {

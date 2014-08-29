@@ -230,8 +230,8 @@ public:
     void getInboundData(std::list< CtiPointDataMsg* > &pointList, std::string &info);
 
     //  porter-side (portfield, specificially) functions
-    int recvCommRequest(OUTMESS *OutMessage);
-    int sendCommResult (INMESS  *InMessage);
+    YukonError_t recvCommRequest(OUTMESS *OutMessage);
+    YukonError_t sendCommResult (INMESS  *InMessage);
 
     void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
     void getStatuses(pointlist_t &points);
@@ -247,8 +247,8 @@ public:
 
     bool isTransactionComplete() const;
 
-    int generate(CtiXfer &xfer);
-    int decode  (CtiXfer &xfer, int status);
+    YukonError_t generate(CtiXfer &xfer);
+    YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
 
     void decodeStatuses(lmi_status statuses);
 };

@@ -204,7 +204,7 @@ void KlondikeProtocol::setAddresses( unsigned short slaveAddress, unsigned short
 
 
 //  this is only called from recvCommRequest, so only one thread should be able to call this at once
-int KlondikeProtocol::setCommand( int command, byte_buffer_t payload, unsigned in_expected, unsigned priority, unsigned char stages, unsigned char dlc_parms )
+YukonError_t KlondikeProtocol::setCommand( int command, byte_buffer_t payload, unsigned in_expected, unsigned priority, unsigned char stages, unsigned char dlc_parms )
 {
     sync_guard_t guard(_sync);
 
@@ -252,16 +252,14 @@ int KlondikeProtocol::setCommand( int command, byte_buffer_t payload, unsigned i
     {
         return NoMethod;
     }
-    else
-    {
-        _io_state = IO_Output;
-        _error    = Error_None;
-        _wrap_errors = 0;
 
-        _wrap->init();
+    _io_state = IO_Output;
+    _error    = Error_None;
+    _wrap_errors = 0;
 
-        return NoError;
-    }
+    _wrap->init();
+
+    return NoError;
 }
 
 
@@ -315,7 +313,7 @@ string KlondikeProtocol::describeCurrentStatus( void ) const
 }
 
 
-int KlondikeProtocol::generate( CtiXfer &xfer )
+YukonError_t KlondikeProtocol::generate( CtiXfer &xfer )
 {
     sync_guard_t guard(_sync);
 
@@ -548,11 +546,11 @@ bool KlondikeProtocol::responseExpected( CommandCode command_code )
 }
 
 
-int KlondikeProtocol::decode( CtiXfer &xfer, int status )
+YukonError_t KlondikeProtocol::decode( CtiXfer &xfer, YukonError_t status )
 {
     sync_guard_t guard(_sync);
 
-    int decode_status = _wrap->decode(xfer, status);
+    YukonError_t decode_status = _wrap->decode(xfer, status);
 
     if( _wrap->isTransactionComplete() )
     {

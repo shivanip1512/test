@@ -103,8 +103,8 @@ public:
 
     void setInternalRetries( unsigned retries ) const;
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    YukonError_t generate( CtiXfer &xfer );
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     bool isTransactionComplete( void ) const;
 
@@ -208,7 +208,7 @@ public:
     bool setSlaveCommand( Command command );
     void setOptions( int options, int seqNumber=0 );
 
-    int slaveDecode( CtiXfer &xfer );
+    YukonError_t slaveDecode( CtiXfer &xfer );
     int slaveGenerate( CtiXfer &xfer );
     void slaveTransactionComplete();
 

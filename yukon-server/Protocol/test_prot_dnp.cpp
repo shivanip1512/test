@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
     }
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
     }
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -439,7 +439,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -578,7 +578,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -600,7 +600,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -625,7 +625,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -768,7 +768,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -791,7 +791,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -817,7 +817,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -845,7 +845,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -868,7 +868,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -894,7 +894,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -922,7 +922,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -1065,7 +1065,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1087,7 +1087,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1112,7 +1112,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -1225,7 +1225,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1247,7 +1247,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1272,7 +1272,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -1385,7 +1385,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1407,7 +1407,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1432,7 +1432,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1460,7 +1460,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -1574,7 +1574,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1597,7 +1597,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1623,7 +1623,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1651,7 +1651,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1674,7 +1674,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1700,7 +1700,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1728,7 +1728,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -1866,7 +1866,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1892,7 +1892,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -1920,7 +1920,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -2026,7 +2026,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     }
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2049,7 +2049,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2074,7 +2074,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2103,7 +2103,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     }
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2126,7 +2126,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2150,7 +2150,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2186,7 +2186,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     }
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2211,7 +2211,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
     }
 
     {
@@ -2231,7 +2231,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
     }
@@ -2351,7 +2351,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2373,7 +2373,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2396,7 +2396,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -2465,7 +2465,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
             expected.end());
     }
     {
-        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2487,7 +2487,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(NoError, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
     }
@@ -2510,7 +2510,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
             xfer.setInCountActual(response.size());
         }
 
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, 0));
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, NoError));
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 

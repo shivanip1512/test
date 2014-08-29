@@ -27,7 +27,7 @@ private:
     IONStates _ionState, _retryState;
 
     unsigned int _protocolErrors;
-    int _abortStatus;
+    YukonError_t _abortStatus;
 
     CtiIONApplicationLayer _appLayer;
 
@@ -358,8 +358,8 @@ public:
     void setEventLogLastPosition( unsigned long lastRecord );
     unsigned long getEventLogLastPosition( void );
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    YukonError_t generate( CtiXfer &xfer );
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     bool inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream &ds );
 
@@ -368,8 +368,8 @@ public:
     int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
     int recvCommResult ( const INMESS   *InMessage,  std::list< OUTMESS* > &outList );
 
-    int recvCommRequest( OUTMESS *OutMessage );
-    int sendCommResult ( INMESS  *InMessage  );
+    YukonError_t recvCommRequest( OUTMESS *OutMessage );
+    YukonError_t sendCommResult ( INMESS  *InMessage  );
 
     void getInboundData( std::list< CtiPointDataMsg* > &pointList, std::list< CtiSignalMsg* > &signalList, std::string &returnedInfo );
     void clearInboundData( void );
