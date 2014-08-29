@@ -120,13 +120,21 @@
                             <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                         </td>
                         <td>
+                            <cti:url var="cancelUrl" value="/stars/operator/program/optOut/cancelOptOut">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="eventId" value="${optOut.eventId}"/>
+                            </cti:url>
                             <cti:icon nameKey="cancelOptOut" id="cancel${optOut.eventId}" icon="icon-cross" classes="cp"
-                                data-href="/stars/operator/program/optOut/cancelOptOut?accountId=${accountId}&eventId=${optOut.eventId}"/>
+                                data-href="${cancelUrl}"/>
                             <d:confirm on="#cancel${optOut.eventId}" nameKey="confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
                             <c:choose>
                                 <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
+                                    <cti:url var="resendUrl" value="/stars/operator/program/optOut/resend">
+                                        <cti:param name="accountId" value="${accountId}"/>
+                                        <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}"/>
+                                    </cti:url>
                                     <cti:icon nameKey="resendOptOut" id="resend${optOut.eventId}" icon="icon-control-repeat-blue" classes="cp"
-                                        data-href="/stars/operator/program/optOut/resend?accountId=${accountId}&inventoryId=${optOut.inventory.inventoryId}"/>
+                                        data-href="${resendUrl}"/>
                                     <d:confirm on="#resend${optOut.eventId}" nameKey="confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
                                 </c:when>
                                 <c:otherwise>
@@ -180,13 +188,21 @@
                         </td>
                         <td>
                             <c:if test="${!noOptOutLimits}">
+                                <cti:url var="allowAnotherUrl" value="/stars/operator/program/optOut/allowAnother">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="inventoryId" value="${inventory.inventoryId}"/>
+                                </cti:url>
                                 <cti:icon nameKey="allowOne" id="allowOne${inventory.inventoryId}" icon="icon-gray-add"
-                                    data-href="/stars/operator/program/optOut/allowAnother?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
+                                    data-href="${allowAnotherUrl}"/>
                                 <d:confirm on="#allowOne${inventory.inventoryId}" nameKey="confirmAllowOne" argument="${inventory.displayName}"/>
 
                                 <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
+                                    <cti:url var="decrementAllowancesUrl" value="/stars/operator/program/optOut/decrementAllowances">
+                                        <cti:param name="accountId" value="${accountId}"/>
+                                        <cti:param name="inventoryId" value="${inventory.inventoryId}"/>
+                                    </cti:url>
                                     <cti:icon nameKey="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" icon="icon-gray-subtract"
-                                        data-href="/stars/operator/program/optOut/decrementAllowances?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
+                                        data-href="${decrementAllowancesUrl}"/>
                                     <d:confirm on="#decrementAllowance${inventory.inventoryId}" nameKey="confirmDecrementAllowance" argument="${inventory.displayName}"/>
                                 </c:if>
                                 <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
@@ -198,8 +214,12 @@
                                         <cti:icon nameKey="resetToLimitDisabled" icon="icon-arrow-undo" classes="disabled"/>
                                      </c:when>
                                      <c:otherwise>
+                                        <cti:url var="resetToLimitUrl" value="/stars/operator/program/optOut/resetToLimit">
+                                            <cti:param name="accountId" value="${accountId}"/>
+                                            <cti:param name="inventoryId" value="${inventory.inventoryId}"/>
+                                        </cti:url>
                                         <cti:icon nameKey="resetToLimit" id="resetToLimit${inventory.inventoryId}" icon="icon-arrow-undo"
-                                            data-href="/stars/operator/program/optOut/resetToLimit?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
+                                            data-href="${resetToLimitUrl}"/>
                                         <d:confirm on="#resetToLimit${inventory.inventoryId}" nameKey="confirmResetToLimit" argument="${inventory.displayName}"/>
                                       </c:otherwise>
                                  </c:choose>
