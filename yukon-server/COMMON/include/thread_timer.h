@@ -9,8 +9,8 @@ class CtiThreadTimer: public CtiThread
     // Declare copy ctor and assignment operator private with no implementation
     // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
     // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiThreadTimer(const CtiPortShareIP&);
-    CtiThreadTimer& operator=(const CtiPortShareIP&);
+    CtiThreadTimer(const CtiThreadTimer&);
+    CtiThreadTimer& operator=(const CtiThreadTimer&);
 
 private:
 
