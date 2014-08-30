@@ -22,14 +22,14 @@ yukon.ami.billing = (function() {
         _is_valid_billing_group = function() {
             var formatId = $('#MForm [name=fileFormat] :selected').val();
             var itronTypeId = $('#in_formatType_itronEvent').val();
-            var bgVal = $('#billGroup').val();
+            var bgVal = $('#row-billing-group :hidden').val();
             var anyBillingGroup = bgVal != null && bgVal != undefined && bgVal.length > 0;
     
             var hasError = !anyBillingGroup && formatId != itronTypeId;
             var err = $('#txt_selectGroup');
             if (hasError) {
                 err.remove();
-                $('#row_billing_group .value').append(err);
+                $('#row-billing-group .value').append(err);
                 err.show();
                 return false;
             }

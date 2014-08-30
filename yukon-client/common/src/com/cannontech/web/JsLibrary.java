@@ -59,6 +59,7 @@ public enum JsLibrary {
     YUKON("/JavaScript/yukon.js"),
     YUKON_ALERTS("/JavaScript/yukon.alerts.js"),
     YUKON_FAVORITES("/JavaScript/yukon.favorites.js"),
+    YUKON_DEVICE_GROUP_PICKER("/resources/js/tags/yukon.device.group.picker.js"),
     YUKON_CONFIRM("/JavaScript/yukon.dialog.confirm.js"),
     YUKON_SURVEYS_LIST("/JavaScript/yukon.surveys.list.js"),
     YUKON_SURVEYS_EDIT("/JavaScript/yukon.surveys.edit.js"),

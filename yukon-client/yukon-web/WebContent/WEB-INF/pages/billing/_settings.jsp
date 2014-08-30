@@ -58,9 +58,8 @@
                 </tags:nameValue>
 
                 <cti:msg key="yukon.web.billing.billingGroup" var="billingGroup" />
-                <tags:nameValue name="${billingGroup}" id="row_billing_group" nameClass="vat">
-                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
-                    <tags:deviceGroupNameSelector fieldName="billGroup" fieldValue="${billGroup}" dataJson="${dataJson}" classes="fl"/>
+                <tags:nameValue name="${billingGroup}" id="row-billing-group" nameClass="vat">
+                    <tags:deviceGroupPicker inputName="billGroup" multi="true" inputValue="${billingBean.billGroup}"/>
                 </tags:nameValue>
 
             </tags:nameValueContainer>

@@ -43,7 +43,8 @@ public class BillingController {
         log.debug("START BillingController.home(..)");
 
         // 1st tab: Generation
-        modelMap.addAttribute("billingBean", new BillingBean());
+        BillingBean billingBean = new BillingBean();
+        modelMap.addAttribute("billingBean", billingBean);
         modelMap.addAttribute("formatMap", FileFormatTypes.getValidFormats());
         modelMap.addAttribute("TYPE_CURTAILMENT_EVENTS_ITRON", FileFormatTypes.CURTAILMENT_EVENTS_ITRON);
 

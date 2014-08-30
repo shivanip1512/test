@@ -13,7 +13,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.apache.commons.lang3.StringUtils;
@@ -108,6 +107,7 @@ public class LayoutController {
         builder.add("/JavaScript/yukon.dialog.js");
         builder.add("/JavaScript/yukon.analytics.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
+        builder.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath());
 
         layoutScriptFiles = builder.build();
     }

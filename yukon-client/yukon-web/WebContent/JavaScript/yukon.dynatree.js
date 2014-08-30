@@ -7,7 +7,7 @@ yukon.namespace('yukon.dynatree');
  * @requires JQUERY
  * @requires jquery.dynatree.js
  */
-yukon.dynatree = (function() {
+yukon.dynatree = (function () {
     
     'use strict';
     
@@ -15,7 +15,7 @@ yukon.dynatree = (function() {
     _initialized = false,
     _timeout = null,
     
-    _search = function(input) {
+    _search = function (input) {
         var
         hits = [],
         search = $(input),
@@ -26,7 +26,7 @@ yukon.dynatree = (function() {
         $('.found', tree).removeClass('found');
 
         if (match.length > 0) {
-            tree.dynatree('getRoot').visit(function(node) {
+            tree.dynatree('getRoot').visit(function (node) {
                 if (node.data.title.toLowerCase().match(match)) {
                     node.makeVisible();   //show this guy
                     if (node.span) {
@@ -46,26 +46,26 @@ yukon.dynatree = (function() {
     _mod = {
         
         /** Initialize the module registering the event handlers for the Expand/Collapse buttons and search inputs. */
-        init: function() {
+        init: function () {
             
             if (!_initialized) {
                 
                 /** Expand / collapse toggle link. */
-                $(document).on('click', '.open-all, .close-all', function(ev) {
-                     $('#' + $(ev.currentTarget).attr('data-tree-id')).dynatree('getRoot').visit(function(node){
+                $(document).on('click', '.open-all, .close-all', function (ev) {
+                     $(this).closest('.inline-tree').find('.tree-canvas').dynatree('getRoot').visit(function (node) {
                          node.expand($(ev.currentTarget).hasClass('open-all'));
                      });
                 });
                 
-                $(document).on('keyup', 'input.tree-search', function(ev) {
+                $(document).on('keyup', 'input.tree-search', function (ev) {
                     // Only search when the user has paused typing (275ms).
                     var input = $(ev.currentTarget);
                     clearTimeout(_timeout);
                     input.removeClass('error');
-                    _timeout = setTimeout(function() {_search(input);}, 275);
+                    _timeout = setTimeout(function () { _search(input); }, 275);
                 });
                 
-                $(document).on('blur', 'input.tree-search', function(ev) {
+                $(document).on('blur', 'input.tree-search', function (ev) {
                     var search = $(ev.currentTarget);
                     if (search.val() == '') {
                         search.removeClass('error');
@@ -77,7 +77,7 @@ yukon.dynatree = (function() {
             _initialized = true;
         },
         
-        redirectOnActivate: function(node) {
+        redirectOnActivate: function (node) {
             if (node.data && node.data.href) {
                 window.location = node.data.href;
             }

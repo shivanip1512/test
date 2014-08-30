@@ -160,7 +160,7 @@
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigLabel">Verify Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigDescription">Verify settings between the device and the assigned configuration.</entry>
 
-    <entry key="yukon.common.device.bulk.collectionActions.header.pointActions">Add/Remove/Update Points</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.header.pointActions">Points</entry>
     <entry key="yukon.common.device.bulk.collectionActions.addPointsLabel">Add Points</entry>
     <entry key="yukon.common.device.bulk.collectionActions.addPointsDescription">Add points to multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.updatePointsLabel">Update Points</entry>
