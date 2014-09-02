@@ -25,6 +25,11 @@ var yg = {
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>'
     },
-    dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true'
+    dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true',
+
+    highcharts_global: {
+        useUTC: false,
+        timezoneOffset : new Date().getTimezoneOffset()
+    }
 };
 </script>
