@@ -86,25 +86,26 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
         
         @Override
         public RfnGatewayData get(PaoIdentifier key) throws ExecutionException {
-            if (cacheMap.containsKey(key)) {
-                //return cached data
-                return cacheMap.get(key);
-            } else {
-                //Prepare the request
-                RfnIdentifier rfnIdentifier = rfnDeviceDao.getDeviceForId(key.getPaoId()).getRfnIdentifier();
-                GatewayDataRequest request = new GatewayDataRequest();
-                request.setRfnIdentifier(rfnIdentifier);
-                
-                //Send the request and wait for the response
-                RfnGatewayDataReplyHandler replyHandler = new RfnGatewayDataReplyHandler();
-                requestTemplate.send(request, replyHandler);
-                GatewayDataResponse response = replyHandler.waitForCompletion();
-                RfnGatewayData data = new RfnGatewayData(response);
-                
-                //Update the cache and return the data
-                cacheMap.put(key, data);
+            //return cached data, if present
+            RfnGatewayData data = cacheMap.get(key);
+            if (data != null) {
                 return data;
             }
+            
+            //Prepare the request
+            RfnIdentifier rfnIdentifier = rfnDeviceDao.getDeviceForId(key.getPaoId()).getRfnIdentifier();
+            GatewayDataRequest request = new GatewayDataRequest();
+            request.setRfnIdentifier(rfnIdentifier);
+            
+            //Send the request and wait for the response
+            RfnGatewayDataReplyHandler replyHandler = new RfnGatewayDataReplyHandler();
+            requestTemplate.send(request, replyHandler);
+            GatewayDataResponse response = replyHandler.waitForCompletion();
+            data = new RfnGatewayData(response);
+            
+            //Update the cache and return the data
+            cacheMap.put(key, data);
+            return data;
         }
         
         @Override
