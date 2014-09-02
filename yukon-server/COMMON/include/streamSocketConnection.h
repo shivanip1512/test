@@ -41,7 +41,7 @@ public:
 
     // virtual methods inherited from StreamConnection
     virtual bool   isValid () const                                                          override;
-    virtual size_t write   (void *buf, int len, const Chrono& timeout)                       override;
+    virtual size_t write   (const void *buf, int len, const Chrono& timeout)                 override;
     virtual size_t read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
     virtual size_t peek    (void *buf, int len)                                              override;
 
@@ -58,7 +58,7 @@ private:
 
     typedef std::vector<char> buffer_t;
     buffer_t _readBuffer;
-    
+
     // locks are acquired in the following order
     // a) _socketMux only         (isValid, open, close)
     // b) _readMux  -> _socketMux (read, peek, flushInput, swap)

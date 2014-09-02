@@ -628,7 +628,7 @@ void PilServer::resultThread()
             {
                 InMessQueue_t::auto_type InMessage = pendingInMessages.pop_front();
 
-                handleInMessageResult(InMessage.get());
+                handleInMessageResult(*InMessage);
             }
 
             while( !bServerClosing && !pendingRfnResultQueue.empty() )
@@ -674,7 +674,7 @@ struct InMessageResultProcessor : Devices::DeviceHandler
 
     int execute(CtiDeviceBase &dev)
     {
-        return dev.ProcessResult(&im, CtiTime::now(), vgList, retList, outList);
+        return dev.ProcessResult(im, CtiTime::now(), vgList, retList, outList);
     }
 
     int execute(Devices::RfnDevice &dev)
@@ -688,15 +688,15 @@ struct InMessageResultProcessor : Devices::DeviceHandler
 };
 
 
-void PilServer::handleInMessageResult(const INMESS *InMessage)
+void PilServer::handleInMessageResult(const INMESS &InMessage)
 {
-    LONG id = InMessage->TargetID;
+    LONG id = InMessage.TargetID;
 
     // Checking the sequence since we will actually want the system device 0 for the Phase Detect cases
-    if(id == 0 && !(InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear ||
-                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetect))
+    if(id == 0 && !(InMessage.Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear ||
+                    InMessage.Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetect))
     {
-        id = InMessage->DeviceID;
+        id = InMessage.DeviceID;
     }
 
     CtiDeviceBase::CtiMessageList vgList;
@@ -709,23 +709,23 @@ void PilServer::handleInMessageResult(const INMESS *InMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
-            dout << " Port listed as                                   : " << InMessage->Port     << endl;
-            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+            dout << "InMessage received from unknown device.  Device ID: " << InMessage.DeviceID << endl;
+            dout << " Port listed as                                   : " << InMessage.Port     << endl;
+            dout << " Remote listed as                                 : " << InMessage.Remote   << endl;
         }
 
         std::auto_ptr<CtiReturnMsg> idnf_msg(
             new CtiReturnMsg(
-                    InMessage->DeviceID,
-                    InMessage->Return.CommandStr,
-                    "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage->DeviceID),
+                    InMessage.DeviceID,
+                    InMessage.Return.CommandStr,
+                    "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage.DeviceID),
                     IDNF,
-                    InMessage->Return.RouteID,
-                    InMessage->Return.RetryMacroOffset,
-                    InMessage->Return.Attempt,
-                    InMessage->Return.GrpMsgID,
-                    InMessage->Return.UserID,
-                    InMessage->Return.SOE));
+                    InMessage.Return.RouteID,
+                    InMessage.Return.RetryMacroOffset,
+                    InMessage.Return.Attempt,
+                    InMessage.Return.GrpMsgID,
+                    InMessage.Return.UserID,
+                    InMessage.Return.SOE));
 
         retList.push_back(idnf_msg.release());
     }
@@ -735,10 +735,10 @@ void PilServer::handleInMessageResult(const INMESS *InMessage)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
-            dout << " at priority " << InMessage->Priority << endl;
+            dout << " at priority " << InMessage.Priority << endl;
         }
 
-        InMessageResultProcessor imrp(*InMessage, vgList, retList);
+        InMessageResultProcessor imrp(InMessage, vgList, retList);
 
         try
         {
@@ -771,15 +771,15 @@ void PilServer::handleInMessageResult(const INMESS *InMessage)
             dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
         }
 
-        string cmdstr(InMessage->Return.CommandStr);
+        string cmdstr(InMessage.Return.CommandStr);
         CtiCommandParser parse( cmdstr );
         if(parse.getFlags() & CMD_FLAG_UPDATE)
         {
             for each( CtiMessage *pMsg in retList )
             {
-                if(InMessage->Priority > 0)
+                if(InMessage.Priority > 0)
                 {
-                    pMsg->setMessagePriority(InMessage->Priority);
+                    pMsg->setMessagePriority(InMessage.Priority);
                 }
 
                 if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
@@ -790,7 +790,7 @@ void PilServer::handleInMessageResult(const INMESS *InMessage)
         }
     }
 
-    sendResults(vgList, retList, InMessage->Priority, InMessage->Return.Connection);
+    sendResults(vgList, retList, InMessage.Priority, InMessage.Return.Connection);
 }
 
 

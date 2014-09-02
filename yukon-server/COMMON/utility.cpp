@@ -465,30 +465,30 @@ BOOL InEchoToOut(const INMESS &In, OUTMESS *Out)
 
     return bRet;
 }
-BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
+BOOL OutEchoToIN(const OUTMESS *Out, INMESS &In)
 {
     BOOL bRet = FALSE;
 
     // Clear it...
-    ::memset(In, 0, sizeof(INMESS));
+    ::memset(&In, 0, sizeof(INMESS));
 
     /* Lotsa stuff requires the InMessage to be loaded so load it */
-    ::memcpy(&(In->Return), &(Out->Request), sizeof(PIL_ECHO));
+    ::memcpy(&(In.Return), &(Out->Request), sizeof(PIL_ECHO));
     //  save this for the macro routes
-    In->Priority = Out->Priority;
+    In.Priority = Out->Priority;
 
-    In->DeviceID            = Out->DeviceID;
-    In->TargetID            = Out->TargetID;
+    In.DeviceID            = Out->DeviceID;
+    In.TargetID            = Out->TargetID;
 
-    In->Remote              = Out->Remote;
-    In->Port                = Out->Port;
-    In->Sequence            = Out->Sequence;
-    In->ReturnNexus         = Out->ReturnNexus;
-    In->Priority            = Out->Priority;
-    In->MessageFlags        = Out->MessageFlags;
+    In.Remote              = Out->Remote;
+    In.Port                = Out->Port;
+    In.Sequence            = Out->Sequence;
+    In.ReturnNexus         = Out->ReturnNexus;
+    In.Priority            = Out->Priority;
+    In.MessageFlags        = Out->MessageFlags;
 
-    In->DeviceIDofLMGroup   = Out->DeviceIDofLMGroup;
-    In->TrxID               = Out->TrxID;
+    In.DeviceIDofLMGroup   = Out->DeviceIDofLMGroup;
+    In.TrxID               = Out->TrxID;
 
     return bRet;
 }

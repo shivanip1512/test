@@ -73,7 +73,7 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    static void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
 
-   void handleInMessageResult(const INMESS *InMessage);
+   void handleInMessageResult(const INMESS &InMessage);
    void handleRfnDeviceResult(const RfnDeviceResult &result);
 
    void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle);

@@ -40,7 +40,7 @@ public:
 
     // The pure virtuals below make this an abstract class
     virtual bool   isValid () const = 0;
-    virtual size_t write   (void *buf, int len, const Chrono& timeout) = 0;
+    virtual size_t write   (const void *buf, int len, const Chrono& timeout) = 0;
     virtual size_t read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) = 0;
     virtual size_t peek    (void *buf, int len) = 0;
 

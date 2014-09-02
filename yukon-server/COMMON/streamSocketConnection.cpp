@@ -202,7 +202,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
 //-----------------------------------------------------------------------------
 //  Socket write with milliseconds timeout
 //-----------------------------------------------------------------------------
-size_t StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
+size_t StreamSocketConnection::write(const void *buf, int len, const Chrono& timeout)
 {
     CtiLockGuard<CtiCriticalSection> guard(_writeMux);
 
@@ -210,14 +210,14 @@ size_t StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
     {
         logErrorAndThrowException(__FILE__, __LINE__, "Write attempted to an invalid socket handle");
     }
-    
+
     try
     {
         SOCKET sock = getSocket();
 
         int   bytesWritten = 0;
         int   bytesToSend  = len;
-        char *bptr         = reinterpret_cast<char*>(buf);
+        const char *bptr   = reinterpret_cast<const char*>(buf);
 
         unsigned long remainingMillis = timeout ? timeout.milliseconds() : ULONG_MAX;
 
@@ -309,12 +309,12 @@ size_t StreamSocketConnection::write(void *buf, int len, const Chrono& timeout)
 size_t StreamSocketConnection::read(void *buf, int len, const Chrono& timeout, const HANDLE *hAbort)
 {
     CtiLockGuard<CtiCriticalSection> guard(_readMux);
-    
+
     if( ! isValid() )
     {
         logErrorAndThrowException(__FILE__, __LINE__, "Read attempted on an invalid socket handle");
     }
-    
+
     return readFromSocket(buf, len, timeout, hAbort, MessageRead);
 }
 
@@ -324,12 +324,12 @@ size_t StreamSocketConnection::read(void *buf, int len, const Chrono& timeout, c
 size_t StreamSocketConnection::peek(void *buf, int len)
 {
     CtiLockGuard<CtiCriticalSection> guard(_readMux);
-    
+
     if( ! isValid() )
     {
         logErrorAndThrowException(__FILE__, __LINE__, "Peek attempted on an invalid socket handle");
     }
-    
+
     return readFromSocket(buf, len, Chrono::milliseconds(0), NULL, MessagePeek);
 }
 

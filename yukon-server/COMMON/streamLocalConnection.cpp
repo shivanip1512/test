@@ -53,7 +53,7 @@ StreamLocalConnection<Outbound, Inbound>::~StreamLocalConnection()
 }
 
 template <class Outbound, class Inbound>
-size_t StreamLocalConnection<Outbound, Inbound>::write(void *buf, int len, const Chrono& timeout)
+size_t StreamLocalConnection<Outbound, Inbound>::write(const void *buf, int len, const Chrono& timeout)
 {
     if( ! isValid() )
     {
@@ -71,7 +71,7 @@ size_t StreamLocalConnection<Outbound, Inbound>::write(void *buf, int len, const
     {
         CtiLockGuard< CtiCriticalSection > guard(_outQueueMux);
 
-        _outQueue.insert(new Outbound(*(static_cast<Outbound*>(buf))));
+        _outQueue.insert(new Outbound(*(static_cast<const Outbound*>(buf))));
 
         if( ! SetEvent(_dataAvailableEvent) )
         {

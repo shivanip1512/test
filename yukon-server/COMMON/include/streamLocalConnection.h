@@ -45,8 +45,8 @@ public:
     virtual ~StreamLocalConnection();
 
     // virtual methods inherited from StreamConnection
-    virtual bool   isValid () const                                                             override;
-    virtual size_t write   (void *buf, int len, const Chrono& timeout)                       override;
+    virtual bool   isValid () const                                                          override;
+    virtual size_t write   (const void *buf, int len, const Chrono& timeout)                 override;
     virtual size_t read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
     virtual size_t peek    (void *buf, int len)                                              override;
 
