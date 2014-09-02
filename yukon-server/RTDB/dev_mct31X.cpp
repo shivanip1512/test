@@ -442,11 +442,11 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 }
 
 
-INT Mct31xDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case EmetconProtocol::Scan_General:
         case EmetconProtocol::GetStatus_External:
@@ -543,13 +543,13 @@ INT Mct31xDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
 }
 
 
-INT Mct31xDevice::decodeStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
+INT Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
 {
     INT status = NORMAL;
     USHORT SaveCount;
     string resultString;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     DOUBLE Value;
 
@@ -565,7 +565,7 @@ INT Mct31xDevice::decodeStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
     setScanFlag(ScanRateGeneral, false);  //resetScanFlag(ScanPending);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -575,14 +575,14 @@ INT Mct31xDevice::decodeStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     //  the only status points we really care about - comm status is handled higher up by porter
     for( int i = 1; i <= 8; i++ )
     {
         if( (pPoint = getDevicePointOffsetTypeEqual(i, StatusPointType)) )
         {
-            Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), InMessage->Buffer.DSt.Message);
+            Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), InMessage.Buffer.DSt.Message);
 
             if( Value == STATE_INVALID )
             {
@@ -616,13 +616,13 @@ INT Mct31xDevice::decodeStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
     return status;
 }
 
 
-INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -630,9 +630,9 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, 
 
     ULONG lValue;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse( InMessage->Return.CommandStr );
+    CtiCommandParser parse( InMessage.Return.CommandStr );
 
     DOUBLE demandValue, Value;
     CtiTime timestamp;
@@ -648,7 +648,7 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, 
         dout << CtiTime() << " **** IED GetStatus Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -656,7 +656,7 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, 
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int i;
     for( i = 0; i < 12; i++ )
@@ -675,7 +675,7 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, 
     }
     else
     {
-        switch( InMessage->Sequence )
+        switch( InMessage.Sequence )
         {
             case EmetconProtocol::GetStatus_IEDLink:
             {
@@ -885,26 +885,26 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS *InMessage, CtiTime &TimeNow, 
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage.Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct31xDevice::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     string resultString;
 
     std::auto_ptr<DSTRUCT> DSt(
-        new DSTRUCT(InMessage->Buffer.DSt));
+        new DSTRUCT(InMessage.Buffer.DSt));
 
-    CtiCommandParser parse( InMessage->Return.CommandStr );
+    CtiCommandParser parse( InMessage.Return.CommandStr );
 
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -914,7 +914,7 @@ INT Mct31xDevice::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
         dout << CtiTime() << " **** IED GetConfig Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -922,9 +922,9 @@ INT Mct31xDevice::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetConfig_IEDTime:
         {
@@ -1144,17 +1144,17 @@ INT Mct31xDevice::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage.Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct31xDevice::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -1163,9 +1163,9 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
     ULONG lValue;
 
     std::auto_ptr<DSTRUCT> DSt(
-        new DSTRUCT(InMessage->Buffer.DSt));
+        new DSTRUCT(InMessage.Buffer.DSt));
 
-    CtiCommandParser parse( InMessage->Return.CommandStr );
+    CtiCommandParser parse( InMessage.Return.CommandStr );
 
     DOUBLE Value = 0.0;
     CtiTime timestamp;
@@ -1181,7 +1181,7 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
         dout << CtiTime() << " **** IED GetValue Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -1189,7 +1189,7 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int i;
     for( i = 0; i < 12; i++ )
@@ -1986,13 +1986,13 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
 
     ReturnMsg->setResultString( resultString );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct31xDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pid;
@@ -2000,14 +2000,14 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
 
     ULONG accums[3];
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     DOUBLE Value;
     CtiPointSPtr    pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
+    if( InMessage.Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
@@ -2018,7 +2018,7 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2026,9 +2026,9 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    decodeAccumulators(accums, 3, InMessage->Buffer.DSt.Message);
+    decodeAccumulators(accums, 3, InMessage.Buffer.DSt.Message);
 
     CtiTime pointTime;
     pointTime -= pointTime.seconds() % 300;
@@ -2071,13 +2071,13 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct31xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -2085,7 +2085,7 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     INT pid;
     string resultString;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     int demand_rate;
     unsigned long pulses;
@@ -2107,7 +2107,7 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
 
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2119,7 +2119,7 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
 
     demand_rate = getDemandInterval();
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     pointTime -= pointTime.seconds() % getDemandInterval();
 
@@ -2183,7 +2183,7 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     {
         if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().size() > 0)
         {
-            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+            retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
             //  retList.push_back( ReturnMsg );
         }
         else
@@ -2200,13 +2200,13 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
 }
 
 
-INT Mct31xDevice::decodeGetValuePeak(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int       status = NORMAL;
     double    Value;
     string resultString;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiPointSPtr         pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -2221,7 +2221,7 @@ INT Mct31xDevice::decodeGetValuePeak(const INMESS *InMessage, CtiTime &TimeNow, 
     resetScanFlag(ScanRateGeneral);
 
     /* this means we are getting NON-demand accumulator points */
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2229,7 +2229,7 @@ INT Mct31xDevice::decodeGetValuePeak(const INMESS *InMessage, CtiTime &TimeNow, 
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for( int i = 0; i < 6; i++ )
     {
@@ -2251,7 +2251,7 @@ INT Mct31xDevice::decodeGetValuePeak(const INMESS *InMessage, CtiTime &TimeNow, 
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                      boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
-            if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenPeakDemand )
+            if( InMessage.Sequence == EmetconProtocol::GetValue_FrozenPeakDemand )
             {
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
                 if(pData != NULL)
@@ -2275,17 +2275,17 @@ INT Mct31xDevice::decodeGetValuePeak(const INMESS *InMessage, CtiTime &TimeNow, 
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string val_report, result_string;
 
@@ -2296,7 +2296,7 @@ INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNo
     unsigned long pulses, timestamp, current_block_start, retrieved_block_start;
     PointQuality_t quality;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     CtiPointNumericSPtr point;
     CtiReturnMsg    *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
@@ -2308,7 +2308,7 @@ INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNo
         dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2316,7 +2316,7 @@ INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNo
         return MEMORY;
     }
 
-    return_msg->setUserMessageId(InMessage->Return.UserID);
+    return_msg->setUserMessageId(InMessage.Return.UserID);
 
     if( (retrieved_channel   = parse.getiValue("scan_loadprofile_channel", 0)) &&
         (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
@@ -2369,7 +2369,7 @@ INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNo
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage->Return.CommandStr << endl;
+                    dout << InMessage.Return.CommandStr << endl;
                 }
 
                 result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
@@ -2380,7 +2380,7 @@ INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNo
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage->Return.CommandStr << endl;
+                    dout << InMessage.Return.CommandStr << endl;
                     dout << "retrieved_block_num = " << retrieved_block_num << endl;
                     dout << "retrieved_channel = " << retrieved_channel << endl;
                     dout << "retrieved_block_start = " << retrieved_block_start << endl;
@@ -2455,17 +2455,17 @@ INT Mct31xDevice::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNo
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage.Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         result_string  = "scan_loadprofile tokens not found in command string \"";
-        result_string += InMessage->Return.CommandStr;
+        result_string += InMessage.Return.CommandStr;
         result_string += "\" - cannot proceed with decode, aborting";
     }
 
     return_msg->setResultString(result_string);
 
-    retMsgHandler(InMessage->Return.CommandStr, status, return_msg, vgList, retList);
+    retMsgHandler(InMessage.Return.CommandStr, status, return_msg, vgList, retList);
 
     return status;
 }

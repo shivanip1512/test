@@ -107,23 +107,23 @@ protected:
     int parseLoadValue(CtiCommandParser &parse);
     int parsePreviousValue(CtiCommandParser &parse);
 
-    virtual INT ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
-    INT decodeGetValueTransmitPower        ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueTemperature          ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueIntervalLast         ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValuePropCount            ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueHistoricalTime       ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueControlTime          ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueXfmrHistoricalRuntime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueDutyCycle            ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueTransmitPower        ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueTemperature          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueIntervalLast         ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValuePropCount            ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueHistoricalTime       ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueControlTime          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueDutyCycle            ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
-    INT decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
-    INT decodeGetConfigRaw       ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigSoftspec  ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigAddressing( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigTime      ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigRaw       ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigSoftspec  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigAddressing( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigTime      ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
     void decodeMessageXfmrHistoricalRuntime( const DSTRUCT DSt, std::vector<point_info> &runtimeHours);
     void decodeMessageDutyCycle            ( const BYTE Message[], int &dutyCycle, int &transformer );
@@ -134,7 +134,7 @@ protected:
     void decodeMessageTime                 ( const BYTE Message[], CtiTime &time);
     void decodeMessageTransmitPower        ( const BYTE Message[], int &transmitPower );
 
-    virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, std::list<CtiMessage*>& retList);
+    virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList& retList);
 
 public:
 

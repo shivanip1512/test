@@ -820,20 +820,15 @@ bool Mct440_213xBDevice::sspecValid(const unsigned sspec, const unsigned rev) co
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::ModelDecode(const INMESS    *InMessage,
-                                    CtiTime         &TimeNow,
+INT Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
+                                    const CtiTime    TimeNow,
                                     CtiMessageList  &vgList,
                                     CtiMessageList  &retList,
                                     OutMessageList  &outList)
 {
-    if( !InMessage )
-    {
-        return MEMORY;
-    }
-
     INT status = NORMAL;
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case EmetconProtocol::GetValue_InstantLineData:
             status = decodeGetValueInstantLineData(InMessage, TimeNow, vgList, retList, outList);
@@ -897,7 +892,7 @@ INT Mct440_213xBDevice::ModelDecode(const INMESS    *InMessage,
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
             break;
     }
@@ -921,18 +916,18 @@ INT Mct440_213xBDevice::ModelDecode(const INMESS    *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    *InMessage,
-                                                      CtiTime         &TimeNow,
+INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &InMessage,
+                                                      const CtiTime    TimeNow,
                                                       CtiMessageList  &vgList,
                                                       CtiMessageList  &retList,
                                                       OutMessageList  &outList)
 {
     INT status   = NORMAL;
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const int phase_count = getPhaseCount();
 
@@ -1021,7 +1016,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    *InMessage
                               CtiTime());
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -1042,23 +1037,23 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    *InMessage
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    *InMessage,
-                                             CtiTime         &TimeNow,
+INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage,
+                                             const CtiTime    TimeNow,
                                              CtiMessageList  &vgList,
                                              CtiMessageList  &retList,
                                              OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const unsigned char *freeze_counter = 0;
 
-    if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenTOUkWh ||
-        InMessage->Sequence == EmetconProtocol::GetValue_FrozenTOUkWhReverse)
+    if( InMessage.Sequence == EmetconProtocol::GetValue_FrozenTOUkWh ||
+        InMessage.Sequence == EmetconProtocol::GetValue_FrozenTOUkWhReverse)
     {
         string freeze_error;
 
@@ -1079,13 +1074,13 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    *InMessage,
         {
             int offset = (rate_nbr * 3);
 
-            if( InMessage->Sequence == EmetconProtocol::GetValue_TOUkWh ||
-                InMessage->Sequence == EmetconProtocol::GetValue_TOUkWhReverse)
+            if( InMessage.Sequence == EmetconProtocol::GetValue_TOUkWh ||
+                InMessage.Sequence == EmetconProtocol::GetValue_TOUkWhReverse)
             {
                 pi = getAccumulatorData(DSt->Message + offset, 3, 0);
             }
-            else if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenTOUkWh ||
-                     InMessage->Sequence == EmetconProtocol::GetValue_FrozenTOUkWhReverse)
+            else if( InMessage.Sequence == EmetconProtocol::GetValue_FrozenTOUkWh ||
+                     InMessage.Sequence == EmetconProtocol::GetValue_FrozenTOUkWhReverse)
             {
                 pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
 
@@ -1116,7 +1111,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    *InMessage,
             string point_name;
             int    point_offset = -1;
 
-            switch (InMessage->Sequence)
+            switch (InMessage.Sequence)
             {
                 case EmetconProtocol::GetValue_TOUkWh:
                     point_offset = (rate_nbr * PointOffset_RateOffset) + 1 + PointOffset_PulseAcc_TOUBaseFwd;
@@ -1155,7 +1150,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    *InMessage,
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -1175,15 +1170,15 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    *InMessage,
-                                                CtiTime         &TimeNow,
+INT Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMessage,
+                                                const CtiTime    TimeNow,
                                                 CtiMessageList  &vgList,
                                                 CtiMessageList  &retList,
                                                 OutMessageList  &outList)
 {
     INT status = NORMAL;
 
-    const int offset = InMessage->Return.ProtocolInfo.Emetcon.Function - Memory_EventLogBasePos;
+    const int offset = InMessage.Return.ProtocolInfo.Emetcon.Function - Memory_EventLogBasePos;
 
     if( offset < 0 || offset > Memory_EventLogMaxOffset )
     {
@@ -1193,7 +1188,7 @@ INT Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    *InMessage,
         return TYNF;
     }
 
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     const unsigned long timestamp = ( DSt.Message[0] << 24 ) |
                                     ( DSt.Message[1] << 16 ) |
@@ -1227,18 +1222,18 @@ INT Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    *InMessage,
         resultString += resolvedArgument + "\n";
     }
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg( CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr ));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg( CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr ));
 
-    ReturnMsg->setUserMessageId( InMessage->Return.UserID );
+    ReturnMsg->setUserMessageId( InMessage.Return.UserID );
     ReturnMsg->setResultString( resultString );
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ))
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ))
     {
         ReturnMsg->setExpectMore(true);
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -1844,8 +1839,8 @@ void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&time
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    *InMessage,
-                                                      CtiTime         &TimeNow,
+INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &InMessage,
+                                                      const CtiTime    TimeNow,
                                                       CtiMessageList  &vgList,
                                                       CtiMessageList  &retList,
                                                       OutMessageList  &outList)
@@ -1855,9 +1850,9 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    *InMessage
     string resultString;
     bool expectMore = false;
 
-    const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT * const DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     int channel = 1;
     int month   = DSt->Message[9] & 0x0f;
@@ -1956,10 +1951,10 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    *InMessage
         resultString = ReturnMsg->ResultString() + "\n" + resultString;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList, expectMore );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList, expectMore );
 
     return status;
 }
@@ -2376,16 +2371,16 @@ string Mct440_213xBDevice::describeStatusAndEvents(const unsigned char *buf)
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct440_213xBDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status    = NORMAL;
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     string resultString;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Internal Status:\n";
 
@@ -2437,7 +2432,7 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( const INMESS *InMessage, CtiTim
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -2458,16 +2453,16 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( const INMESS *InMessage, CtiTim
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS   *InMessage,
-                                                          CtiTime        &TimeNow,
+INT Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS   &InMessage,
+                                                          const CtiTime   TimeNow,
                                                           CtiMessageList &vgList,
                                                           CtiMessageList &retList,
                                                           OutMessageList &outList)
 {
     INT status    = NORMAL;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString;
 
@@ -2477,10 +2472,10 @@ INT Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS   *InMess
     resultString  = getName() + " / Phase loss threshold: " + CtiNumStr(phase_loss_percent) + string(" %");
     resultString += " duration: " + CtiNumStr(phase_loss_seconds) + string(" seconds\n");
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -2649,23 +2644,23 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
-                                           CtiTime         &TimeNow,
+INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
+                                           const CtiTime    TimeNow,
                                            CtiMessageList  &vgList,
                                            CtiMessageList  &retList,
                                            OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     string resultString;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ))
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ))
     {
         ReturnMsg->setExpectMore(true);
     }
@@ -2683,8 +2678,8 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
         const int function_part2 = (schedulenum < 2) ? FuncRead_TOUSwitchSchedule12Part2Pos : FuncRead_TOUSwitchSchedule34Part2Pos;
 
                                                                 /* check that function must is part 1 or part 2         */
-        if( InMessage->Return.ProtocolInfo.Emetcon.Function != function_part1 &&
-            InMessage->Return.ProtocolInfo.Emetcon.Function != function_part2 )
+        if( InMessage.Return.ProtocolInfo.Emetcon.Function != function_part1 &&
+            InMessage.Return.ProtocolInfo.Emetcon.Function != function_part2 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2692,7 +2687,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
             return TYNF;
         }
 
-        const bool first_part = ( InMessage->Return.ProtocolInfo.Emetcon.Function == function_part1 );
+        const bool first_part = ( InMessage.Return.ProtocolInfo.Emetcon.Function == function_part1 );
 
         resultString = getName() + " / Received TOU schedule " + CtiNumStr(schedulenum) + " and " + CtiNumStr(schedulenum + 1)
                                  + (( first_part ) ? " switch time 1-5" : " switch time 6-9") + "\n";
@@ -2705,12 +2700,12 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
             {
                 if( offset == 0 )
                 {
-                    rates_raw   = ((InMessage->Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage->Buffer.DSt.Message[6];
+                    rates_raw   = ((InMessage.Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage.Buffer.DSt.Message[6];
                     byte_offset = 0;
                 }
                 else
                 {
-                    rates_raw   = ((InMessage->Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage->Buffer.DSt.Message[12];
+                    rates_raw   = ((InMessage.Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage.Buffer.DSt.Message[12];
                     byte_offset = 7;
                 }
 
@@ -2727,12 +2722,12 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
             {
                 if( offset == 0 )
                 {
-                    rates_raw   = InMessage->Buffer.DSt.Message[4];
+                    rates_raw   = InMessage.Buffer.DSt.Message[4];
                     byte_offset = 0;
                 }
                 else
                 {
-                    rates_raw   = InMessage->Buffer.DSt.Message[9];
+                    rates_raw   = InMessage.Buffer.DSt.Message[9];
                     byte_offset = 5;
                 }
 
@@ -2746,7 +2741,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
 
             for( int switchtime = 0; switchtime < switch_count; switchtime++ )
             {
-                times[offset][switchtime] = InMessage->Buffer.DSt.Message[byte_offset + switchtime];
+                times[offset][switchtime] = InMessage.Buffer.DSt.Message[byte_offset + switchtime];
             }
         }
 
@@ -2836,53 +2831,53 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
     {
         resultString = getName() + " / TOU Status:\n\n";
 
-        unsigned long timestamp = InMessage->Buffer.DSt.Message[6] << 24 |
-                                  InMessage->Buffer.DSt.Message[7] << 16 |
-                                  InMessage->Buffer.DSt.Message[8] <<  8 |
-                                  InMessage->Buffer.DSt.Message[9];
+        unsigned long timestamp = InMessage.Buffer.DSt.Message[6] << 24 |
+                                  InMessage.Buffer.DSt.Message[7] << 16 |
+                                  InMessage.Buffer.DSt.Message[8] <<  8 |
+                                  InMessage.Buffer.DSt.Message[9];
 
         resultString += "Current time: " + CtiTime(timestamp).asString() + "\n";
 
-        int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
+        int tz_offset = (char)InMessage.Buffer.DSt.Message[10] * 15;
 
         resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
 
-        if( InMessage->Buffer.DSt.Message[3] & 0x80 )
+        if( InMessage.Buffer.DSt.Message[3] & 0x80 )
         {
             resultString += "Critical peak active\n";
         }
-        if( InMessage->Buffer.DSt.Message[4] & 0x80 )
+        if( InMessage.Buffer.DSt.Message[4] & 0x80 )
         {
             resultString += "Holiday active\n";
         }
-        if( InMessage->Buffer.DSt.Message[4] & 0x40 )
+        if( InMessage.Buffer.DSt.Message[4] & 0x40 )
         {
             resultString += "DST active\n";
         }
 
-        resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
+        resultString += "Current rate: " + string(1, (char)('A' + (InMessage.Buffer.DSt.Message[3] & 0x7f))) + "\n";
 
-        resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
+        resultString += "Current schedule: " + CtiNumStr((int)(InMessage.Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
 
 
         resultString += "Current switch time: ";
-        if( InMessage->Buffer.DSt.Message[5] == 0xff )
+        if( InMessage.Buffer.DSt.Message[5] == 0xff )
         {
             resultString += "not active\n";
         }
         else
         {
-            resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
+            resultString += CtiNumStr((int)InMessage.Buffer.DSt.Message[5]) + "\n";
         }
 /*
         resultString += "Default rate: ";
-        if( InMessage->Buffer.DSt.Message[2] == 0xff )
+        if( InMessage.Buffer.DSt.Message[2] == 0xff )
         {
             resultString += "No TOU active\n";
         }
         else
         {
-            resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
+            resultString += string(1, (char)('A' + InMessage.Buffer.DSt.Message[2])) + "\n";
         }
 */
         resultString += "Day table: \n";
@@ -2891,10 +2886,10 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
 
         long schedules[4];
 
-        schedules[0] = ((InMessage->Buffer.DSt.Message[1] >> 0) & 0x03) + 1;  // Sunday
-        schedules[1] = ((InMessage->Buffer.DSt.Message[1] >> 2) & 0x03) + 1;  // Monday-Friday
-        schedules[2] = ((InMessage->Buffer.DSt.Message[0] >> 4) & 0x03) + 1;  // Saturday
-        schedules[3] = ((InMessage->Buffer.DSt.Message[0] >> 6) & 0x03) + 1;  // Holiday
+        schedules[0] = ((InMessage.Buffer.DSt.Message[1] >> 0) & 0x03) + 1;  // Sunday
+        schedules[1] = ((InMessage.Buffer.DSt.Message[1] >> 2) & 0x03) + 1;  // Monday-Friday
+        schedules[2] = ((InMessage.Buffer.DSt.Message[0] >> 4) & 0x03) + 1;  // Saturday
+        schedules[3] = ((InMessage.Buffer.DSt.Message[0] >> 6) & 0x03) + 1;  // Holiday
 
         for( int day_nbr = 0; day_nbr < 4; day_nbr++ )
         {
@@ -2902,10 +2897,10 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
         }
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -2926,15 +2921,15 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-int Mct440_213xBDevice::decodeGetConfigModel(const INMESS   *InMessage,
-                                             CtiTime        &TimeNow,
+int Mct440_213xBDevice::decodeGetConfigModel(const INMESS   &InMessage,
+                                             const CtiTime   TimeNow,
                                              CtiMessageList &vgList,
                                              CtiMessageList &retList,
                                              OutMessageList &outList)
 {
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     const unsigned revision = DSt.Message[0];
     const unsigned sspec    = DSt.Message[1] << 8 |
@@ -2948,10 +2943,10 @@ int Mct440_213xBDevice::decodeGetConfigModel(const INMESS   *InMessage,
     descriptor += CtiNumStr(((double)revision) / 10.0, 1);
     descriptor += "\n";
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
-    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, InMessage->MessageFlags & MessageFlag_ExpectMore );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
 
     return NoError;
 }
@@ -2972,16 +2967,16 @@ int Mct440_213xBDevice::decodeGetConfigModel(const INMESS   *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    *InMessage,
-                                              CtiTime         &TimeNow,
+INT Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    &InMessage,
+                                              const CtiTime    TimeNow,
                                               CtiMessageList  &vgList,
                                               CtiMessageList  &retList,
                                               OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString = getName() + " / Freeze status:\n";
 
@@ -3007,10 +3002,10 @@ INT Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    *InMessage,
     resultString += ((getCurrentFreezeCounter() % 2)?("two"):("one"));
     resultString += "\n";
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3031,26 +3026,26 @@ INT Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    *InMessage,
-                                                 CtiTime         &TimeNow,
+INT Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    &InMessage,
+                                                 const CtiTime    TimeNow,
                                                  CtiMessageList  &vgList,
                                                  CtiMessageList  &retList,
                                                  OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString;
 
     resultString  = getName() + " / Demand Interval:       " + CtiNumStr(DSt->Message[0]) + string(" minutes\n");
     resultString += getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[1]) + string(" minutes\n");
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3123,16 +3118,16 @@ INT Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
 * Note(s)     :
 *********************************************************************************************************
 */
-int Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    *InMessage,
-                                                 CtiTime         &TimeNow,
+int Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    &InMessage,
+                                                 const CtiTime    TimeNow,
                                                  CtiMessageList  &vgList,
                                                  CtiMessageList  &retList,
                                                  OutMessageList  &outList)
 {
     INT status    = NORMAL;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString;
 
@@ -3150,10 +3145,10 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    *InMessage,
     resultString += string("Internal error ")               + ((DSt->Message[4] & 0x02) ? "enabled" : "disabled") + "\n";
     resultString += string("Out of voltage ")               + ((DSt->Message[4] & 0x01) ? "enabled" : "disabled") + "\n\n";
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3330,18 +3325,18 @@ void Mct440_213xBDevice::createTOUScheduleConfig(const long     (&daySchedule)[8
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
-                                          CtiTime        &TimeNow,
+INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
+                                          const CtiTime   TimeNow,
                                           CtiMessageList &vgList,
                                           CtiMessageList &retList,
                                           OutMessageList &outList)
 {
     INT status    = NORMAL;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -3349,14 +3344,14 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
+    if( InMessage.Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
 
     const unsigned char *p_freeze_counter = 0;
 
-    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+    if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
     {
         string freeze_error_str;
 
@@ -3373,7 +3368,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
         int channels = ChannelCount;
 
         //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
-        if( stringContainsIgnoreCase(InMessage->Return.CommandStr, " kwh") )
+        if( stringContainsIgnoreCase(InMessage.Return.CommandStr, " kwh") )
         {
             channels = 1;
         }
@@ -3387,12 +3382,12 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
 
             if( !chan_nbr || getDevicePointOffsetTypeEqual(chan_nbr + 1, PulseAccumulatorPointType) )
             {
-                if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
-                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
+                if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
+                    InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                 {
                     pi = getAccumulatorData(DSt->Message + offset, 3, 0);
                 }
-                else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+                else if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                 {
                     if( chan_nbr ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
 
@@ -3425,7 +3420,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
                 string point_name;
                 int    point_offset = -1;
 
-                switch( InMessage->Sequence )
+                switch( InMessage.Sequence )
                 {
                     case Cti::Protocols::EmetconProtocol::GetValue_KWH:
                          point_offset = chan_nbr + PointOffset_PulseAcc_BaseMRead;
@@ -3463,7 +3458,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3484,20 +3479,20 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   *InMessage,
-                                                  CtiTime        &TimeNow,
+INT Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   &InMessage,
+                                                  const CtiTime   TimeNow,
                                                   CtiMessageList &vgList,
                                                   CtiMessageList &retList,
                                                   OutMessageList &outList)
 {
     INT status    = NORMAL, state = 0;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string stateName;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     if( DSt->Message[0] & 0x01 )
     {
@@ -3525,7 +3520,7 @@ INT Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   *InMessage,
                           1.0,
                           TAG_POINT_MUST_ARCHIVE);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3546,18 +3541,18 @@ INT Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   *InMessage,
-                                                  CtiTime        &TimeNow,
+INT Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   &InMessage,
+                                                  const CtiTime   TimeNow,
                                                   CtiMessageList &vgList,
                                                   CtiMessageList &retList,
                                                   OutMessageList &outList)
 {
     INT status    = NORMAL, state = 0;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string resultStr, stateName;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     if( DSt->Message[0] & 0x01 )
     {
@@ -3589,10 +3584,10 @@ INT Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   *InMessage,
 
     resultStr += decodeDisconnectStatus(*DSt);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultStr);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3652,16 +3647,16 @@ unsigned Mct440_213xBDevice::getDisconnectReadDelay() const
 * Note(s)     :
 *********************************************************************************************************
 */
-int Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  *InMessage,
-                                                 CtiTime        &TimeNow,
+int Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  &InMessage,
+                                                 const CtiTime   TimeNow,
                                                  CtiMessageList &vgList,
                                                  CtiMessageList &retList,
                                                  OutMessageList &outList)
 {
     INT status   = NORMAL;
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     long bronze     =  DSt->Message[0];
     long lead       = (DSt->Message[1] << 8) | DSt->Message[2];
@@ -3675,10 +3670,10 @@ int Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  *InMessage,
     resultStr += "Meter Collection Address: " + (CtiNumStr(collection).hex().zpad(4)).toString() + "\n";
     resultStr += "Service Provider ID: "      + (CtiNumStr(spid      ).hex().zpad(2)).toString() + "\n\n";
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultStr);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3699,23 +3694,23 @@ int Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-int Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS   *InMessage,
-                                                           CtiTime        &TimeNow,
+int Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS   &InMessage,
+                                                           const CtiTime   TimeNow,
                                                            CtiMessageList &vgList,
                                                            CtiMessageList &retList,
                                                            OutMessageList &outList)
 {
     INT status   = NORMAL;
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultStr = getName() + " / Time Adjustment Tolerance: " + CtiNumStr(DSt->Message[0]) + " seconds\n\n";
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultStr);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     return status;
 }
@@ -3736,16 +3731,16 @@ int Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS   *InMes
 * Note(s)     :
 *********************************************************************************************************
 */
-int Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   *InMessage,
-                                               CtiTime        &TimeNow,
+int Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessage,
+                                               const CtiTime   TimeNow,
                                                CtiMessageList &vgList,
                                                CtiMessageList &retList,
                                                OutMessageList &outList)
 {
     INT status   = NORMAL;
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultStr = getName() + " / MCT Configuration:\n";
 
@@ -3753,10 +3748,10 @@ int Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   *InMessage,
     resultStr += (DSt->Message[6] & 0x02) ? "LED test enabled\n" : "LED test disabled\n";
     resultStr += (DSt->Message[6] & 0x01) ? "DST enabled\n" : "DST disabled\n";
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultStr);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
     if( InstallDstPending.is_pending )
     {
@@ -3772,15 +3767,15 @@ int Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   *InMessage,
         // create putconfig install request
         std::auto_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
                                                                      putconfig_cmd,
-                                                                     InMessage->Return.UserID,
-                                                                     InMessage->Return.GrpMsgID,
-                                                                     InMessage->Return.RouteID,
+                                                                     InMessage.Return.UserID,
+                                                                     InMessage.Return.GrpMsgID,
+                                                                     InMessage.Return.RouteID,
                                                                      MacroOffset::none,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
                                                                      0,
-                                                                     InMessage->Return.OptionsField,
-                                                                     InMessage->Priority));
+                                                                     InMessage.Return.OptionsField,
+                                                                     InMessage.Priority));
 
-        newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+        newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
         retList.push_back(newReq.release()); // re-add request to do a putconfig
     }
@@ -4318,8 +4313,8 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
-                                        CtiTime        &TimeNow,
+INT Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
                                         CtiMessageList &vgList,
                                         CtiMessageList &retList,
                                         OutMessageList &outList)
@@ -4327,13 +4322,13 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
     INT status = NoError;
 
                                                                 /* ---------------- PUTCONFIG INSTALL ----------------- */
-    if( InMessage->Sequence == EmetconProtocol::PutConfig_Install )
+    if( InMessage.Sequence == EmetconProtocol::PutConfig_Install )
     {
         string resultString;
 
-        std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+        std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-        CtiCommandParser parse(InMessage->Return.CommandStr);
+        CtiCommandParser parse(InMessage.Return.CommandStr);
 
         string config_part = parse.getsValue("installvalue");
 
@@ -4348,8 +4343,8 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
         }
 
         // make sure we dont receive a read value
-        if( InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
-            InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
+        if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
+            InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Invalid InMessage IO  received for config part \"" << config_part << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -4357,8 +4352,8 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
         }
 
         // note that at the moment only putconfig install will ever have a group message count.
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-        if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ))
+        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+        if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ))
         {
             ReturnMsg->setExpectMore(true);
         }
@@ -4367,7 +4362,7 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
 
         // check for exception not to do a read back
         if( config_part == Mct4xxDevice::PutConfigPart_tou &&
-            InMessage->Return.ProtocolInfo.Emetcon.Function != FuncWrite_TOUSchedule4Pos )
+            InMessage.Return.ProtocolInfo.Emetcon.Function != FuncWrite_TOUSchedule4Pos )
         {
             do_readback = false; // putconfig install tou read only done for schedule 4
         }
@@ -4380,15 +4375,15 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
 
             std::auto_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
                                                                          getconfig_cmd,
-                                                                         InMessage->Return.UserID,
-                                                                         InMessage->Return.GrpMsgID,
-                                                                         InMessage->Return.RouteID,
+                                                                         InMessage.Return.UserID,
+                                                                         InMessage.Return.GrpMsgID,
+                                                                         InMessage.Return.RouteID,
                                                                          MacroOffset::none,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
                                                                          0,
-                                                                         InMessage->Return.OptionsField,
-                                                                         InMessage->Priority));
+                                                                         InMessage.Return.OptionsField,
+                                                                         InMessage.Priority));
 
-            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
             // the master can overwrite the default delay
             const unsigned long delay = gConfigParms.getValueAsULong("PORTER_MCT440_INSTALL_READ_DELAY", DEFAULT_INSTALL_READ_DELAY);
@@ -4403,10 +4398,10 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
             retList.push_back(newReq.release());
         }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setUserMessageId(InMessage.Return.UserID);
         ReturnMsg->setResultString(resultString);
 
-        retMsgHandler(InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
+        retMsgHandler(InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
     }
 
                                                                 /* -------------- INHERITED FROM MCT-420 -------------- */

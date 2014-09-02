@@ -661,21 +661,16 @@ DlcBaseDevice::DlcCommandAutoPtr Mct420Device::makeHourlyReadCommand(const CtiDa
 
 /**
  * Calls the corresponding decode method for the function stored
- * in InMessage->Sequence. All EmetconProtocol commands
+ * in InMessage.Sequence. All EmetconProtocol commands
  * supported by the MCT-420 that aren't supported by a parent of
  * the MCT-420 must be represented in this function. Virtual
  * decode calls will be made from the parent ModelDecode calls,
  * so any decode that is supported by a parent class should be
  * omitted from this function.
  */
-INT Mct420Device::ModelDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct420Device::ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    if( !InMessage )
-    {
-        return MEMORY;
-    }
-
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case EmetconProtocol::GetConfig_Options:
         {
@@ -694,18 +689,18 @@ INT Mct420Device::ModelDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiMes
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+        dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
     }
 
     return status;
 }
 
-int Mct420Device::decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+int Mct420Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     int status = NoError;
     string resultString;
 
-    switch ( InMessage->Sequence )
+    switch ( InMessage.Sequence )
     {
         case EmetconProtocol::PutConfig_Channel2NetMetering:
         {
@@ -722,40 +717,40 @@ int Mct420Device::decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, Ct
 
     // Handle the return message.
     {
-        std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+        std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-        ReturnMsg->setUserMessageId( InMessage->Return.UserID );
+        ReturnMsg->setUserMessageId( InMessage.Return.UserID );
         ReturnMsg->setResultString ( resultString );
 
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
 
-        if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+        if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection)!=0 )
         {
             ReturnMsg->setExpectMore(true);
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+        retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
     }
 
     return status;
 }
 
 
-int Mct420Device::decodePutConfigChannel2NetMetering( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+int Mct420Device::decodePutConfigChannel2NetMetering( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     // Execute a read to get the configuration data to be stored in dynamic pao info.
     {
         std::auto_ptr<CtiRequestMsg> pReq(
             new CtiRequestMsg(
-                InMessage->TargetID,
+                InMessage.TargetID,
                 "getconfig configuration",
-                InMessage->Return.UserID,
-                InMessage->Return.GrpMsgID,
-                InMessage->Return.RouteID,
-                selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                InMessage->Return.Attempt));
+                InMessage.Return.UserID,
+                InMessage.Return.GrpMsgID,
+                InMessage.Return.RouteID,
+                selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                InMessage.Return.Attempt));
 
-        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+        if( strstr(InMessage.Return.CommandStr, "noqueue") )
         {
             pReq->setCommandString(pReq->CommandString() + " noqueue");
         }
@@ -786,9 +781,9 @@ string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt) const
 }
 
 
-int Mct420Device::decodeGetConfigMeterParameters(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+int Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     string resultString = getName() + " / Meter Parameters:\n";
 
@@ -819,20 +814,20 @@ int Mct420Device::decodeGetConfigMeterParameters(const INMESS *InMessage, CtiTim
 
     resultString += "Transformer ratio: " + CtiNumStr(DSt->Message[1]) + "\n";
 
-    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList );
 
     return NoError;
 }
 
 
-int Mct420Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+int Mct420Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     const unsigned revision = DSt.Message[0];
     const unsigned sspec    = DSt.Message[1] << 8 |
@@ -858,19 +853,19 @@ int Mct420Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow
 
     descriptor += "\n";
 
-    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
-    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage->MessageFlags & MessageFlag_ExpectMore );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
 
     return NoError;
 }
 
-int Mct420Device::decodeGetConfigOptions( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+int Mct420Device::decodeGetConfigOptions( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     const unsigned configuration  = DSt.Message[0];
     const unsigned eventMask      = DSt.Message[1] << 8 | DSt.Message[2];
@@ -932,18 +927,18 @@ int Mct420Device::decodeGetConfigOptions( const INMESS *InMessage, CtiTime &Time
         descriptor += "Channel 3: No meter attached\n";
     }
 
-    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
-    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage->MessageFlags & MessageFlag_ExpectMore );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
 
     return NoError;
 }
 
 
-int Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+int Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 

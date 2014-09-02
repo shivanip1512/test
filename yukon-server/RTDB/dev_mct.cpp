@@ -726,10 +726,10 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     //  extract the DynamicPaoInfo first so we have it during the decode
-    extractDynamicPaoInfo(*InMessage);
+    extractDynamicPaoInfo(InMessage);
 
     INT status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
@@ -742,11 +742,11 @@ INT MctDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessag
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+        dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
     }
 
-    if( InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
-        InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
+    if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
+        InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
     {
         CtiPointStatusSPtr point_powerfail    = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(PointOffset_Status_Powerfail,    StatusPointType));
         CtiPointStatusSPtr point_generalalarm = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(PointOffset_Status_GeneralAlarm, StatusPointType));
@@ -759,10 +759,10 @@ INT MctDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
             if( point_powerfail )
             {
-                pointResult = getName() + " / " + point_powerfail->getName() + ": " + ResolveStateName(point_powerfail->getStateGroupID(), InMessage->Buffer.DSt.Power);
+                pointResult = getName() + " / " + point_powerfail->getName() + ": " + ResolveStateName(point_powerfail->getStateGroupID(), InMessage.Buffer.DSt.Power);
 
                 std::auto_ptr<CtiPointDataMsg> pData(
-                   new CtiPointDataMsg(point_powerfail->getPointID(), InMessage->Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult));
+                   new CtiPointDataMsg(point_powerfail->getPointID(), InMessage.Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult));
 
                 pData->setTime(TimeNow);
 
@@ -771,10 +771,10 @@ INT MctDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
             if( point_generalalarm )
             {
-                pointResult = getName() + " / " + point_generalalarm->getName() + ": " + ResolveStateName(point_generalalarm->getStateGroupID(), InMessage->Buffer.DSt.Alarm);
+                pointResult = getName() + " / " + point_generalalarm->getName() + ": " + ResolveStateName(point_generalalarm->getStateGroupID(), InMessage.Buffer.DSt.Alarm);
 
                 std::auto_ptr<CtiPointDataMsg> pData(
-                   new CtiPointDataMsg(point_generalalarm->getPointID(), InMessage->Buffer.DSt.Alarm, NormalQuality, StatusPointType, pointResult));
+                   new CtiPointDataMsg(point_generalalarm->getPointID(), InMessage.Buffer.DSt.Alarm, NormalQuality, StatusPointType, pointResult));
 
                 pData->setTime(TimeNow);
 
@@ -789,11 +789,11 @@ INT MctDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 }
 
 
-INT MctDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::PutConfig_ARMC:
         case EmetconProtocol::PutConfig_ARML:
@@ -2568,7 +2568,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::decodeLoopback(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -2577,7 +2577,7 @@ INT MctDevice::decodeLoopback(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2585,22 +2585,22 @@ INT MctDevice::decodeLoopback(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString = getName( ) + " / successful ping";
     ReturnMsg->setResultString( resultString );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT MctDevice::decodeGetValue(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg  *pData     = NULL;
@@ -2609,7 +2609,7 @@ INT MctDevice::decodeGetValue(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
     double Value;
     string resultStr;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2617,9 +2617,9 @@ INT MctDevice::decodeGetValue(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetValue_PFCount:
         {
@@ -2655,18 +2655,18 @@ INT MctDevice::decodeGetValue(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT MctDevice::decodeGetConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    const DSTRUCT &DSt   = InMessage.Buffer.DSt;
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     int min, sec, channel;
     unsigned long multnum;  //  multiplier numerator - the value returned is multiplier * 1000
@@ -2676,7 +2676,7 @@ INT MctDevice::decodeGetConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2684,9 +2684,9 @@ INT MctDevice::decodeGetConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         //  needs to be moved to the 4xx base class when the inheritance gets reworked
         case EmetconProtocol::GetConfig_Holiday:
@@ -2844,11 +2844,11 @@ INT MctDevice::decodeGetConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
             minute  = (ticper5min * 5) % 60;    //  find out how many minutes have passed
             minute += (ticper15sec * 15) / 60;  //    add on the 15 second timer - divide by 4 to get minutes
 
-            if( InMessage->Sequence == EmetconProtocol::GetConfig_Time )
+            if( InMessage.Sequence == EmetconProtocol::GetConfig_Time )
             {
                 resultStr = getName() + " / time:  ";
             }
-            else if( InMessage->Sequence == EmetconProtocol::GetConfig_TSync )
+            else if( InMessage.Sequence == EmetconProtocol::GetConfig_TSync )
             {
                 resultStr = getName() + " / time sync:  ";
             }
@@ -2901,17 +2901,17 @@ INT MctDevice::decodeGetConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
@@ -2920,7 +2920,7 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeN
     double    Value;
     string resultStr, defaultStateName;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2928,7 +2928,7 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeN
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     Value = STATE_CLOSED;
 
@@ -3032,37 +3032,37 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS *InMessage, CtiTime &TimeN
         ReturnMsg->setResultString(resultStr);
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT MctDevice::decodeControl(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeControl(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
-       new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+       new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( getName( ) + " / control sent" );
 
-    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
 
     return NoError;
 }
 
 
-INT MctDevice::decodeControlDisconnect(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodeControlDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
-       new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+       new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     std::string resultString = getName( ) + " / control sent";
 
     std::string getstatusDisconnect_commandString =
-        strstr(InMessage->Return.CommandStr, " noqueue")
+        strstr(InMessage.Return.CommandStr, " noqueue")
         ? "getstatus disconnect noqueue"
         : "getstatus disconnect";
 
@@ -3070,15 +3070,15 @@ INT MctDevice::decodeControlDisconnect(const INMESS *InMessage, CtiTime &TimeNow
         new CtiRequestMsg(
                 getID(),
                 getstatusDisconnect_commandString,
-                InMessage->Return.UserID,
-                InMessage->Return.GrpMsgID,
+                InMessage.Return.UserID,
+                InMessage.Return.GrpMsgID,
                 getRouteID(),
                 MacroOffset::none,
                 0,
-                InMessage->Return.OptionsField,
-                InMessage->Priority));
+                InMessage.Return.OptionsField,
+                InMessage.Priority));
 
-    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+    newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
     if( const unsigned delay = getDisconnectReadDelay() )
     {
@@ -3093,7 +3093,7 @@ INT MctDevice::decodeControlDisconnect(const INMESS *InMessage, CtiTime &TimeNow
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true );
 
     return NoError;
 }
@@ -3111,23 +3111,23 @@ bool MctDevice::disconnectRequiresCollar() const
 }
 
 
-INT MctDevice::decodePutValue(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodePutValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
-        new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+        new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     ReturnMsg->setResultString(
        getName( ) + " / command complete");
 
-    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
 
     return NoError;
 }
 
 
-INT MctDevice::decodePutStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3136,7 +3136,7 @@ INT MctDevice::decodePutStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3144,31 +3144,31 @@ INT MctDevice::decodePutStatus(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString = getName( ) + " / command complete";
     ReturnMsg->setResultString( resultString );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   status = NORMAL;
     ULONG pfCount = 0;
     string resultString;
     OUTMESS *OutTemplate;
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiRequestMsg *pReq;
 
     bool expectMore = false;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3176,7 +3176,7 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         return MEMORY;
     }
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::PutConfig_Parameters:                 resultString = getName() + " / Meter parameters sent";  break;
 
@@ -3265,14 +3265,14 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
                 OutTemplate = CTIDBG_new OUTMESS;
 
-                InEchoToOut( *InMessage, OutTemplate );
+                InEchoToOut( InMessage, OutTemplate );
 
                 //  reset the meter
-                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putstatus reset", InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);
 
                 if( pReq != NULL )
                 {
-                    if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                    if( strstr(InMessage.Return.CommandStr, "noqueue") )
                     {
                         pReq->setCommandString(pReq->CommandString() + " noqueue");
                     }
@@ -3284,11 +3284,11 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
                 }
 
                 //  enable group addressing
-                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putconfig emetcon group enable", InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);
 
                 if( pReq != NULL )
                 {
-                    if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                    if( strstr(InMessage.Return.CommandStr, "noqueue") )
                     {
                         pReq->setCommandString(pReq->CommandString() + " noqueue");
                     }
@@ -3302,11 +3302,11 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
                 //  put the load profile interval if it's a lp device
                 if( isLoadProfile(getType()) )
                 {
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putconfig emetcon interval lp", InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);
 
                     if( pReq != NULL )
                     {
-                        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                        if( strstr(InMessage.Return.CommandStr, "noqueue") )
                         {
                             pReq->setCommandString(pReq->CommandString() + " noqueue");
                         }
@@ -3321,11 +3321,11 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
                 //  put the demand interval
                 if( hasVariableDemandRate(getType(), sspec) )
                 {
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putconfig emetcon interval li", InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);
 
                     if( pReq != NULL )
                     {
-                        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                        if( strstr(InMessage.Return.CommandStr, "noqueue") )
                         {
                             pReq->setCommandString(pReq->CommandString() + " noqueue");
                         }
@@ -3341,11 +3341,11 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
                 {
                     if( _mpkh[0] > 0 )
                     {
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);
 
                         if( pReq != NULL )
                         {
-                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                            if( strstr(InMessage.Return.CommandStr, "noqueue") )
                             {
                                 pReq->setCommandString(pReq->CommandString() + " noqueue");
                             }
@@ -3385,11 +3385,11 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
                     if( _wireConfig[1] != WireConfigTwoWire )   config_byte |= 0x10;
                     if( _wireConfig[2] != WireConfigTwoWire )   config_byte |= 0x20;
 
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);
 
                     if( pReq != NULL )
                     {
-                        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                        if( strstr(InMessage.Return.CommandStr, "noqueue") )
                         {
                             pReq->setCommandString(pReq->CommandString() + " noqueue");
                         }
@@ -3403,11 +3403,11 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
                     {
                         if( _mpkh[i] > 0 )
                         {
-                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                            pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);
 
                             if( pReq != NULL )
                             {
-                                if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                                if( strstr(InMessage.Return.CommandStr, "noqueue") )
                                 {
                                     pReq->setCommandString(pReq->CommandString() + " noqueue");
                                 }
@@ -3448,17 +3448,17 @@ INT MctDevice::decodePutConfig(const INMESS *InMessage, CtiTime &TimeNow, CtiMes
         }
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( resultString );
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
 
-    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+    if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection)!=0 )
     {
         ReturnMsg->setExpectMore(true);
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

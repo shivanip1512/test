@@ -897,14 +897,9 @@ Mct410Device::DecodeMapping Mct410Device::initDecodeLookup()
 const Mct410Device::DecodeMapping Mct410Device::_decodeMethods = Mct410Device::initDecodeLookup();
 
 
-INT Mct410Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    if( !InMessage )
-    {
-        return MEMORY;
-    }
-
-    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage->Sequence);
+    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage.Sequence);
 
     if( itr != _decodeMethods.end() )
     {
@@ -915,10 +910,10 @@ INT Mct410Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMess
 
     //  Special case, takes InMessage by const reference.
     //    All decode methods will do this in the near future, then this can be moved above.
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case EmetconProtocol::GetConfig_DailyReadInterest:
-            return decodeGetConfigDailyReadInterest(*InMessage, TimeNow, vgList, retList, outList);
+            return decodeGetConfigDailyReadInterest(InMessage, TimeNow, vgList, retList, outList);
     }
 
     return Parent::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -2594,13 +2589,13 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
 }
 
 
-INT Mct410Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     CtiTime pointTime;
     bool valid_data = true;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     point_info pi, pi_freezecount;
 
@@ -2613,12 +2608,12 @@ INT Mct410Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
+    if( InMessage.Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2626,11 +2621,11 @@ INT Mct410Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const unsigned char *freeze_counter = 0;
 
-    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+    if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
     {
         string freeze_error;
 
@@ -2647,7 +2642,7 @@ INT Mct410Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         int channels = ChannelCount;
 
         //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
-        if( stringContainsIgnoreCase(InMessage->Return.CommandStr, " kwh") )
+        if( stringContainsIgnoreCase(InMessage.Return.CommandStr, " kwh") )
         {
             channels = 1;
         }
@@ -2658,14 +2653,14 @@ INT Mct410Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
 
             if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
             {
-                if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
-                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
+                if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
+                    InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                 {
                     pi = getAccumulatorData(DSt->Message + offset, 3, 0);
 
                     pointTime -= pointTime.seconds() % 60;
                 }
-                else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+                else if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                 {
                     if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
 
@@ -2715,25 +2710,25 @@ INT Mct410Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct410Device::decodeGetValueTOUkWh(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     CtiTime pointTime;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     point_info pi, pi_freezecount;
 
     CtiPointSPtr   pPoint;
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2741,11 +2736,11 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS *InMessage, CtiTime &TimeNow
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const unsigned char *freeze_counter = 0;
 
-    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
+    if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
     {
         string freeze_error;
 
@@ -2763,13 +2758,13 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS *InMessage, CtiTime &TimeNow
         {
             int offset = (i * 3);
 
-            if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_TOUkWh )
+            if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_TOUkWh )
             {
                 pi = getAccumulatorData(DSt->Message + offset, 3, 0);
 
                 pointTime -= pointTime.seconds() % 60;
             }
-            else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
+            else if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
             {
                 pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
 
@@ -2812,19 +2807,19 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS *InMessage, CtiTime &TimeNow
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct410Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
     point_info pi;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     CtiPointSPtr    pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -2839,7 +2834,7 @@ INT Mct410Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2847,7 +2842,7 @@ INT Mct410Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for( int i = 1; i <= 3; i++ )
     {
@@ -2880,17 +2875,17 @@ INT Mct410Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
                           ReturnMsg, pi, "Blink Counter");
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct410Device::decodeGetValueVoltage( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     point_info pi, max_volt_info, min_volt_info;
 
@@ -2898,7 +2893,7 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS *InMessage, CtiTime &TimeN
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2906,7 +2901,7 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS *InMessage, CtiTime &TimeN
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     max_volt_info = getData(DSt->Message, 2, ValueType_Voltage);
     pi = Mct4xxDevice::getData(DSt->Message + 2, 4, ValueType_Raw);
@@ -2917,7 +2912,7 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS *InMessage, CtiTime &TimeN
     pi = Mct4xxDevice::getData(DSt->Message + 8, 4, ValueType_Raw);
     minTime = CtiTime((unsigned long)pi.value);
 
-    if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenVoltage )
+    if( InMessage.Sequence == EmetconProtocol::GetValue_FrozenVoltage )
     {
         insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax,
                               ReturnMsg, max_volt_info, "Frozen Maximum Voltage", maxTime, 0.1);
@@ -2934,19 +2929,19 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS *InMessage, CtiTime &TimeN
                               ReturnMsg, min_volt_info, "Minimum Voltage", minTime, 0.1);
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct410Device::decodeGetValueOutage( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    const unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
+    const unsigned char   *msgbuf = InMessage.Buffer.DSt.Message;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointSPtr    pPoint;
     CtiPointDataMsg *pData = NULL;
@@ -2958,9 +2953,9 @@ INT Mct410Device::decodeGetValueOutage( const INMESS *InMessage, CtiTime &TimeNo
     string pointString, resultString, timeString;
     CtiTime outageTime;
 
-    ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
     {
@@ -3120,34 +3115,34 @@ INT Mct410Device::decodeGetValueOutage( const INMESS *InMessage, CtiTime &TimeNo
         ReturnMsg->setResultString(getName() + " / Sspec not stored, could not reliably decode outages; try read again");
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct410Device::decodeGetValueFreezeCounter( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct410Device::decodeGetValueFreezeCounter( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
-    const unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
+    const unsigned char   *msgbuf = InMessage.Buffer.DSt.Message;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     ReturnMsg->setResultString(getName() + " / Freeze counter: " + CtiNumStr(msgbuf[0]));
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    long requestId = InMessage->Return.OptionsField;
+    long requestId = InMessage.Return.OptionsField;
 
     if( ! _llpPeakInterest.tryContinueRequest(requestId) )
     {
@@ -3158,7 +3153,7 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS *InMessage
         return NoError;
     }
 
-    unsigned long peak_time = ntohl(*reinterpret_cast<const unsigned long *>(InMessage->Buffer.DSt.Message + 3));
+    unsigned long peak_time = ntohl(*reinterpret_cast<const unsigned long *>(InMessage.Buffer.DSt.Message + 3));
 
     unsigned new_range   = _llpPeakInterest.range;
     unsigned new_channel = _llpPeakInterest.channel + 1;
@@ -3180,11 +3175,11 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS *InMessage
 
         std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID()));
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
         ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Resetting automatically, please retry command.");
 
-        retMsgHandler( InMessage->Return.CommandStr, ErrorNeedsDateRangeReset, ReturnMsg.release(), vgList, retList );
+        retMsgHandler( InMessage.Return.CommandStr, ErrorNeedsDateRangeReset, ReturnMsg.release(), vgList, retList );
     }
 
     stringstream request;
@@ -3195,24 +3190,24 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS *InMessage
     request << " date "    << new_date.asStringUSFormat();
     request << " range "   << new_range;
 
-    if( strstr(InMessage->Return.CommandStr, " noqueue") )
+    if( strstr(InMessage.Return.CommandStr, " noqueue") )
     {
         request << " noqueue";
     }
 
     CtiRequestMsg newReq(getID(),
                          request.str(),
-                         InMessage->Return.UserID,
-                         InMessage->Return.GrpMsgID,
+                         InMessage.Return.UserID,
+                         InMessage.Return.GrpMsgID,
                          0,
                          MacroOffset::none,
                          0,
                          requestId,
-                         InMessage->Priority);
+                         InMessage.Priority);
 
     if( ! overlap )
     {
-        newReq.setConnectionHandle(InMessage->Return.Connection);
+        newReq.setConnectionHandle(InMessage.Return.Connection);
     }
 
     beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
@@ -3221,9 +3216,9 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS *InMessage
 }
 
 
-INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    long requestId = InMessage->Return.OptionsField;
+    long requestId = InMessage.Return.OptionsField;
 
     if( ! _llpPeakInterest.tryContinueRequest(requestId) )
     {
@@ -3236,7 +3231,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, C
 
     INT status = NORMAL;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string result_string;
     int       interval_len;
@@ -3245,7 +3240,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, C
 
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3257,7 +3252,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, C
              DSt->Message[1] <<  8 |
              DSt->Message[2];
 
-    if( InMessage->Return.ProtocolInfo.Emetcon.Function == FuncRead_LLPPeakDayPos )
+    if( InMessage.Return.ProtocolInfo.Emetcon.Function == FuncRead_LLPPeakDayPos )
     {
         //  daily usage is in 0.1 kWH units
         max_usage = (double)pulses / 10;
@@ -3289,7 +3284,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, C
 
     const double avg_daily_difference = std::abs(expected_avg_daily - avg_daily);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     result_string  = getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1) + string(" Load Profile Report\n");
     result_string += "Report range: " + (_llpPeakInterest.end_date - _llpPeakInterest.range).asStringUSFormat() + " - " +
@@ -3313,7 +3308,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, C
     }
     else
     {
-        switch( InMessage->Return.ProtocolInfo.Emetcon.Function )
+        switch( InMessage.Return.ProtocolInfo.Emetcon.Function )
         {
             case FuncRead_LLPPeakDayPos:
             {
@@ -3368,7 +3363,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, C
 
     ReturnMsg->setResultString(result_string);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     _llpPeakInterest.tryEndRequest(requestId);
 
@@ -3376,7 +3371,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS *InMessage, C
 }
 
 
-INT Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -3425,18 +3420,18 @@ void Mct410Device::tryVerifyDailyReadInterestDate(const unsigned interest_day, c
 }
 
 
-INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
     string resultString;
     bool expectMore = false;
 
-    const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT * const DSt  = &InMessage.Buffer.DSt;
 
-    CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
     {
@@ -3466,7 +3461,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
         if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
         {
             if( ! InterlockedCompareExchange(&_daily_read_info.request.in_progress, false, false)
-                || _daily_read_info.request.user_id != InMessage->Return.UserID )
+                || _daily_read_info.request.user_id != InMessage.Return.UserID )
             {
                 resultString = getName() + " / Daily read request cancelled\n";
             }
@@ -3577,20 +3572,20 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
                                             + " " + printDate(_daily_read_info.request.begin + 1)
                                             + " " + printDate(_daily_read_info.request.end);
 
-                        if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
+                        if( strstr(InMessage.Return.CommandStr, " noqueue") )  request_str += " noqueue";
 
                         expectMore = true;
                         CtiRequestMsg newReq(getID(),
                                              request_str,
-                                             InMessage->Return.UserID,
-                                             InMessage->Return.GrpMsgID,
-                                             InMessage->Return.RouteID,
-                                             selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                             InMessage.Return.UserID,
+                                             InMessage.Return.GrpMsgID,
+                                             InMessage.Return.RouteID,
+                                             selectInitialMacroRouteOffset(InMessage.Return.RouteID),
                                              0,
                                              0,
-                                             InMessage->Priority);
+                                             InMessage.Priority);
 
-                        newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+                        newReq.setConnectionHandle((void *)InMessage.Return.Connection);
 
                         //  same UserMessageID, no need to reset the in_progress flag
                         beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
@@ -3763,7 +3758,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
     return status;
 }
@@ -3807,17 +3802,17 @@ string Mct410Device::describeStatusAndEvents(const unsigned char *buf)
 }
 
 
-INT Mct410Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     string resultString;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3825,7 +3820,7 @@ INT Mct410Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &Tim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Internal Status:\n";
 
@@ -3886,17 +3881,17 @@ INT Mct410Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &Tim
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct410Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string resultString;
     unsigned long tmpTime;
@@ -3905,7 +3900,7 @@ INT Mct410Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3913,7 +3908,7 @@ INT Mct410Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString += getName() + " / Demand Load Profile Status:\n";
 
@@ -3950,16 +3945,16 @@ INT Mct410Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct410Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
      INT status = NORMAL;
 
-     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
      string resultString;
      unsigned long tmpTime;
@@ -3968,7 +3963,7 @@ INT Mct410Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeN
      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
      CtiPointDataMsg      *pData = NULL;
 
-     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
      {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3976,7 +3971,7 @@ INT Mct410Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeN
          return MEMORY;
      }
 
-     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
      resultString += getName() + " / Freeze status:\n";
 
@@ -4028,16 +4023,16 @@ INT Mct410Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeN
 
      ReturnMsg->setResultString(resultString);
 
-     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+     retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
      return status;
 }
 
-INT Mct410Device::decodeGetConfigIntervals(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
@@ -4057,7 +4052,7 @@ INT Mct410Device::decodeGetConfigIntervals(const INMESS *InMessage, CtiTime &Tim
 
     resultString += getName() + " / Voltage Profile Interval: " + CtiNumStr(DSt->Message[3]) + string(" minutes\n");
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4065,19 +4060,19 @@ INT Mct410Device::decodeGetConfigIntervals(const INMESS *InMessage, CtiTime &Tim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct410Device::decodeGetConfigThresholds(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
@@ -4100,7 +4095,7 @@ INT Mct410Device::decodeGetConfigThresholds(const INMESS *InMessage, CtiTime &Ti
         resultString += getName() + " / Outage threshold: disabled\n";
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4108,19 +4103,19 @@ INT Mct410Device::decodeGetConfigThresholds(const INMESS *InMessage, CtiTime &Ti
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct410Device::decodeGetConfigFreeze(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
@@ -4139,7 +4134,7 @@ INT Mct410Device::decodeGetConfigFreeze(const INMESS *InMessage, CtiTime &TimeNo
         resultString  = getName() + " / Scheduled day of freeze: (disabled)\n";
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4147,25 +4142,25 @@ INT Mct410Device::decodeGetConfigFreeze(const INMESS *InMessage, CtiTime &TimeNo
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct410Device::decodeGetConfigMeterParameters(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
     int transformer_ratio = -1;
 
-    if( InMessage->Sequence == EmetconProtocol::GetConfig_MeterParameters )
+    if( InMessage.Sequence == EmetconProtocol::GetConfig_MeterParameters )
     {
         resultString = getName() + " / Meter Parameters:\n";
 
@@ -4197,7 +4192,7 @@ INT Mct410Device::decodeGetConfigMeterParameters(const INMESS *InMessage, CtiTim
             transformer_ratio = DSt->Message[10];
         }
     }
-    else if( InMessage->Sequence == EmetconProtocol::GetConfig_Multiplier )
+    else if( InMessage.Sequence == EmetconProtocol::GetConfig_Multiplier )
     {
         transformer_ratio = DSt->Message[0];
     }
@@ -4207,7 +4202,7 @@ INT Mct410Device::decodeGetConfigMeterParameters(const INMESS *InMessage, CtiTim
         resultString += getName() + " / Transformer ratio: " + CtiNumStr(transformer_ratio);
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4215,27 +4210,27 @@ INT Mct410Device::decodeGetConfigMeterParameters(const INMESS *InMessage, CtiTim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
 
-INT Mct410Device::decodeGetConfigDisconnect(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL, state = 0;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     string resultStr;
 
-    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     switch( DSt->Message[0] & 0x03 )
     {
@@ -4261,7 +4256,7 @@ INT Mct410Device::decodeGetConfigDisconnect(const INMESS *InMessage, CtiTime &Ti
 
     ReturnMsg->setResultString(resultStr);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4417,11 +4412,11 @@ string Mct410Device::decodeDisconnectCyclingConfig(const boost::optional<int> co
 }
 
 
-INT Mct410Device::decodeGetConfigAddress(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     string resultStr;
 
@@ -4433,12 +4428,12 @@ INT Mct410Device::decodeGetConfigAddress(const INMESS *InMessage, CtiTime &TimeN
 
     resultStr  = getName() + " / Unique address: " + CtiNumStr(address);
 
-    if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
+    if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr))
     {
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setUserMessageId(InMessage.Return.UserID);
         ReturnMsg->setResultString(resultStr);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
     else
     {
@@ -4452,11 +4447,11 @@ INT Mct410Device::decodeGetConfigAddress(const INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     string resultStr;
 //Voltage Phase(byte0)
@@ -4468,7 +4463,7 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS *InMessage, CtiTime &T
     float first_interval_voltage, last_interval_voltage;
 
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4476,7 +4471,7 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS *InMessage, CtiTime &T
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
 //       Binary Values: 00 - Phase Unknown (default)
 //                      01 - Phase A
@@ -4521,7 +4516,7 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS *InMessage, CtiTime &T
     last_interval_voltage =  (DSt->Message[7] <<  8 |
                               DSt->Message[8] ) * 0.1;
 
-    if (InMessage->Sequence == EmetconProtocol::GetConfig_PhaseDetectArchive)
+    if (InMessage.Sequence == EmetconProtocol::GetConfig_PhaseDetectArchive)
     {
         insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
     }
@@ -4532,16 +4527,16 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS *InMessage, CtiTime &T
 
     ReturnMsg->setResultString(resultStr);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct410Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     string descriptor;
 
@@ -4620,7 +4615,7 @@ INT Mct410Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow
 
     descriptor += describeStatusAndEvents(DSt.Message + 5);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4628,16 +4623,16 @@ INT Mct410Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
     //  this is hackish, and should be handled in a more centralized manner...  retMsgHandler, for example
-    if( InMessage->MessageFlags & MessageFlag_ExpectMore )
+    if( InMessage.MessageFlags & MessageFlag_ExpectMore )
     {
         ReturnMsg->setExpectMore(true);
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4701,11 +4696,11 @@ bool Mct410Device::sspecValid(const unsigned sspec, const unsigned rev) const
     return sspec == Mct410Device::Sspec;
 }
 
-INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     unsigned duration = DSt->Message[0];
 
@@ -4745,21 +4740,21 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS *InMessage
     resultString += "\n";
 
 
-    CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     std::string resultString( getName() + " / Long Load Profile Allocation:\n" );
 
@@ -4769,12 +4764,12 @@ INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INMESS *InMes
     resultString += "Channel 4: " + CtiNumStr(DSt->Message[7]) + " days at 15 minute allocation\n";
 
 
-    CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

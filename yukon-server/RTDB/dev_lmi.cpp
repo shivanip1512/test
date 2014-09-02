@@ -287,14 +287,14 @@ INT CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceLMI::ResultDecode( const INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceLMI::ResultDecode( const INMESS &InMessage, const CtiTime Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     list<CtiPointDataMsg*> points;
 
     string resultString, info;
     CtiReturnMsg *retMsg;
 
-    if( !InMessage->ErrorCode && !_lmi.recvCommResult(InMessage, outList) )
+    if( !InMessage.ErrorCode && !_lmi.recvCommResult(InMessage, outList) )
     {
         resetScanFlag();
 
@@ -309,7 +309,7 @@ INT CtiDeviceLMI::ResultDecode( const INMESS *InMessage, CtiTime &Now, list< Cti
     return 0;
 }
 
-void CtiDeviceLMI::processInboundData(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info )
+void CtiDeviceLMI::processInboundData(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info )
 {
     CtiReturnMsg    *retMsg,
                     *vgMsg;
@@ -319,11 +319,11 @@ void CtiDeviceLMI::processInboundData(const INMESS *InMessage, CtiTime &TimeNow,
     string        resultString;
     CtiTime           Now;
 
-    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    retMsg->setUserMessageId(InMessage->Return.UserID);
-    vgMsg->setUserMessageId (InMessage->Return.UserID);
+    retMsg->setUserMessageId(InMessage.Return.UserID);
+    vgMsg->setUserMessageId (InMessage.Return.UserID);
 
     double tmpValue;
 

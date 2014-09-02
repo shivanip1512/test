@@ -144,7 +144,7 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
 //=====================================================================================================================
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::ResultDecode( const INMESS               *InMessage,
+INT CtiDeviceMarkV::ResultDecode( const INMESS               &InMessage,
                                   CtiTime                    &TimeNow,
                                   list< CtiMessage* > &vgList,
                                   list< CtiMessage* > &retList,
@@ -237,8 +237,8 @@ INT CtiDeviceMarkV::ErrorDecode( const INMESS        &InMessage,
 // point data messages and stick those into the retlist for shipping back to ... dispatch?
 //=====================================================================================================================
 
-int CtiDeviceMarkV::decodeResultScan( const INMESS               *InMessage,
-                                      CtiTime                    &TimeNow,
+int CtiDeviceMarkV::decodeResultScan( const INMESS               &InMessage,
+                                      const CtiTime               TimeNow,
                                       list< CtiMessage* > &vgList,
                                       list< CtiMessage* > &retList,
                                       vector<CtiTransdataData *> transVector)
@@ -250,14 +250,14 @@ int CtiDeviceMarkV::decodeResultScan( const INMESS               *InMessage,
    int               time_id;
    int               date_id;
    CtiReturnMsg      *pPIL = CTIDBG_new CtiReturnMsg( getID(),
-                                                       string(InMessage->Return.CommandStr),
+                                                       string(InMessage.Return.CommandStr),
                                                        string(),
-                                                       InMessage->ErrorCode,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.RetryMacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.GrpMsgID,
-                                                       InMessage->Return.UserID);
+                                                       InMessage.ErrorCode,
+                                                       InMessage.Return.RouteID,
+                                                       InMessage.Return.RetryMacroOffset,
+                                                       InMessage.Return.Attempt,
+                                                       InMessage.Return.GrpMsgID,
+                                                       InMessage.Return.UserID);
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
@@ -903,7 +903,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 //=====================================================================================================================
 //=====================================================================================================================
 
-YukonError_t CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
+YukonError_t CtiDeviceMarkV::sendCommResult( INMESS &InMessage )
 {
    CtiProtocolTransdata::llp  *lLP = NULL;
 
@@ -912,7 +912,7 @@ YukonError_t CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
    if( lLP != NULL )
    {
       //insert lastlptime struct into inmess
-      memcpy( InMessage->Buffer.InMessage, lLP, sizeof( CtiProtocolTransdata::llp ) );
+      memcpy( InMessage.Buffer.InMessage, lLP, sizeof( CtiProtocolTransdata::llp ) );
 
       _transdataProtocol.sendCommResult( InMessage );
 

@@ -47,7 +47,7 @@ protected:
         MCT210_ResetLen    =    3
     };
 
-    virtual INT ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    virtual INT ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
 public:
 

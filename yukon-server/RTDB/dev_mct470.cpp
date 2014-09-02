@@ -1530,14 +1530,9 @@ Mct470Device::DecodeMapping Mct470Device::initDecodeLookup()
 const Mct470Device::DecodeMapping Mct470Device::_decodeMethods = Mct470Device::initDecodeLookup();
 
 
-INT Mct470Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    if( !InMessage )
-    {
-        return MEMORY;
-    }
-
-    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage->Sequence);
+    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage.Sequence);
 
     if( itr != _decodeMethods.end() )
     {
@@ -3685,7 +3680,7 @@ int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList,
     return nRet;
 }
 
-INT Mct470Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -3695,21 +3690,21 @@ INT Mct470Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
+    if( InMessage.Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
 
-    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     CtiTime pointTime;
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     const unsigned char *freeze_counter = 0;
 
-    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+    if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
     {
         freeze_counter = DSt->Message + 3;
 
@@ -3751,13 +3746,13 @@ INT Mct470Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
             {
                 point_info pi;
 
-                if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
-                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
+                if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
+                    InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                 {
                     //  normal KWH read, nothing too special
                     pi = getAccumulatorData(DSt->Message + offset, 3, 0);
                 }
-                else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+                else if( InMessage.Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                 {
                     //  this is where the action is - frozen decode
                     if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
@@ -3800,19 +3795,19 @@ INT Mct470Device::decodeGetValueKWH(const INMESS *InMessage, CtiTime &TimeNow, C
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct470Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int  status = NORMAL, i;
     bool demand_defined = false;
     point_info pi;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3825,7 +3820,7 @@ INT Mct470Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3833,7 +3828,7 @@ INT Mct470Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for( i = 0; i < 8; i++ )
     {
@@ -3881,23 +3876,23 @@ INT Mct470Device::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
                           ReturnMsg, pi, "Blink Counter");
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ));
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection ));
 
     return status;
 }
 
 
-INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int         status = NORMAL, base_offset;
     point_info  pi, pi_time;
     CtiTime     pointTime;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3907,7 +3902,7 @@ INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS *InMessage, CtiTime &T
         dout << CtiTime() << " **** Min/Max Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -3915,7 +3910,7 @@ INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS *InMessage, CtiTime &T
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     base_offset = parse.getOffset();
 
@@ -3980,7 +3975,7 @@ INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS *InMessage, CtiTime &T
     insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MinOffset,
                           ReturnMsg, pi, pointname, pointTime);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3997,7 +3992,7 @@ void Mct470Device::reportPointData(const CtiPointType_t pointType, const int poi
 }
 
 
-INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int        status = NORMAL,
                frozen = 0,
@@ -4006,9 +4001,9 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
     point_info pi;
     string     point_string, resultString;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
@@ -4022,7 +4017,7 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4030,7 +4025,7 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     bool dataInvalid = true;
     int  ied_data_end;
@@ -4126,13 +4121,13 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
 
                 if( parse.getCommandStr().find(" kva") != string::npos )
                 {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
                 }
                 else
                 {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
                 }
             }
             else
@@ -4203,18 +4198,18 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
             resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
             status = ALPHABUFFERERROR;
 
-            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
-            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
+            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
+            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
 
             if( has_volts )
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
             }
             else
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
             }
         }
         else
@@ -4222,35 +4217,35 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
             //  get demand
             pi = getData(DSt->Message, 3, ValueType_IED);
 
-            reportPointData(AnalogPointType, PointOffset_TotalKW, *ReturnMsg, *InMessage, pi, "current kW");
+            reportPointData(AnalogPointType, PointOffset_TotalKW, *ReturnMsg, InMessage, pi, "current kW");
 
             //  get selectable metric (kM, kVAR, etc)
             pi = getData(DSt->Message + 3, 3, ValueType_IED);
 
-            reportPointData(AnalogPointType, PointOffset_TotalKM, *ReturnMsg, *InMessage, pi, "current kM");
+            reportPointData(AnalogPointType, PointOffset_TotalKM, *ReturnMsg, InMessage, pi, "current kM");
 
             if( has_volts )
             {
                 pi = getData(DSt->Message + 6, 2, ValueType_IED);
                 pi.value /= 100.0;
 
-                reportPointData(AnalogPointType, PointOffset_VoltsPhaseA, *ReturnMsg, *InMessage, pi, "Phase A Volts");
+                reportPointData(AnalogPointType, PointOffset_VoltsPhaseA, *ReturnMsg, InMessage, pi, "Phase A Volts");
 
                 pi = getData(DSt->Message + 8, 2, ValueType_IED);
                 pi.value /= 100.0;
 
-                reportPointData(AnalogPointType, PointOffset_VoltsPhaseB, *ReturnMsg, *InMessage, pi, "Phase B Volts");
+                reportPointData(AnalogPointType, PointOffset_VoltsPhaseB, *ReturnMsg, InMessage, pi, "Phase B Volts");
 
                 pi = getData(DSt->Message + 10, 2, ValueType_IED);
                 pi.value /= 100.0;
 
-                reportPointData(AnalogPointType, PointOffset_VoltsPhaseC, *ReturnMsg, *InMessage, pi, "Phase C Volts");
+                reportPointData(AnalogPointType, PointOffset_VoltsPhaseC, *ReturnMsg, InMessage, pi, "Phase C Volts");
             }
             else
             {
                 pi = getData(DSt->Message + 6, 2, ValueType_IED);
 
-                reportPointData(AnalogPointType, PointOffset_OutageCount, *ReturnMsg, *InMessage, pi, "Outage Count");
+                reportPointData(AnalogPointType, PointOffset_OutageCount, *ReturnMsg, InMessage, pi, "Outage Count");
             }
         }
     }
@@ -4262,8 +4257,8 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
             resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
             status = ALPHABUFFERERROR;
 
-            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
-            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
         }
         else
         {
@@ -4274,7 +4269,7 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
 
             if( pi.quality == InvalidQuality )
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
             }
 
             pi = getData(DSt->Message + 5, 5, ValueType_IED);
@@ -4284,7 +4279,7 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
 
             if( pi.quality == InvalidQuality )
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
             }
 
             pi = getData(DSt->Message + 10, 2, ValueType_IED);
@@ -4294,7 +4289,7 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
 
             if( pi.quality == InvalidQuality )
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
             }
         }
     }
@@ -4331,7 +4326,7 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
 
                 for( int byte = 0; byte < 6; byte++ )
                 {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
                 }
             }
         }
@@ -4359,7 +4354,7 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
 
                 for( int byte = 0; byte < 6; byte++ )
                 {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
                 }
             }
         }
@@ -4390,48 +4385,48 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
                 {
                     for( int bit = 0; bit < 8; bit++ )
                     {
-                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+(byte*8)+bit, StatusPointType);
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+(byte*8)+bit, StatusPointType);
                     }
                 }
             }
         }
         else if( parse.isKeyValid("dnp_crc") )
         {
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
-            resultString += "CRCs Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage.Buffer.DSt.Message[0]);
+            resultString += "CRCs Returned: " + CtiNumStr(InMessage.Buffer.DSt.Message[0]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[1]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage.Buffer.DSt.Message[1]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[1]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[2]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC, InMessage.Buffer.DSt.Message[2]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[2]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[3]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, InMessage.Buffer.DSt.Message[3]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[3]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[4]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, InMessage.Buffer.DSt.Message[4]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[4]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[5]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, InMessage.Buffer.DSt.Message[5]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[5]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[6]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, InMessage.Buffer.DSt.Message[6]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[6]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[7]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, InMessage.Buffer.DSt.Message[7]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[7]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[8]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, InMessage.Buffer.DSt.Message[8]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[8]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[9]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, InMessage.Buffer.DSt.Message[9]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[9]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[10]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, InMessage.Buffer.DSt.Message[10]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[10]);
 
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
-            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[11]);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, InMessage.Buffer.DSt.Message[11]);
+            resultString += ", " + CtiNumStr(InMessage.Buffer.DSt.Message[11]);
         }
     }
     else
@@ -4456,12 +4451,12 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
             else if( parse.getFlags() & CMD_FLAG_GV_RATEC )   rate = 2;
             else if( parse.getFlags() & CMD_FLAG_GV_RATED )   rate = 3;
 
-            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
-            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
+            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
+            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
             if( parse.getFlags() & CMD_FLAG_FROZEN && (offset + rate * 2) == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset), AnalogPointType);
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase +     PointOffset_FrozenPointOffset), AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset), AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase +     PointOffset_FrozenPointOffset), AnalogPointType);
             }
         }
         else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
@@ -4620,9 +4615,9 @@ INT Mct470Device::decodeGetValueIED(const INMESS *InMessage, CtiTime &TimeNow, C
     }
 
     ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection) );
 
     return status;
 }
@@ -4737,21 +4732,21 @@ unsigned long Mct470Device::convertTimestamp(const unsigned long timestamp, cons
 }
 
 
-INT Mct470Device::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
     point_info     pi;
     string         resultString;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4759,9 +4754,9 @@ INT Mct470Device::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetConfig_IEDTime:
         {
@@ -4924,7 +4919,7 @@ INT Mct470Device::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
 
             if( pi.quality == InvalidQuality )
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
             }
 
             break;
@@ -4969,25 +4964,25 @@ INT Mct470Device::decodeGetConfigIED(const INMESS *InMessage, CtiTime &TimeNow, 
 
     ReturnMsg->setResultString(resultString);
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection) );
 
     return status;
 }
 
 
-INT Mct470Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
-    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
 
     string resultString;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -4995,38 +4990,38 @@ INT Mct470Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &Tim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString += getName() + " / Internal Status:\n";
 
     //  Point offset 10
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x01)?"Power fail occurred\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x02)?"Electronic meter communication error\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x04)?"Stack overflow\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x08)?"Power fail carryover\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x10)?"RTC adjusted\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[1] & 0x80)?"Negative time sync occurred\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x01)?"Power fail occurred\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x02)?"Electronic meter communication error\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x04)?"Stack overflow\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x08)?"Power fail carryover\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x10)?"RTC adjusted\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[1] & 0x80)?"Negative time sync occurred\n":"";
 
     //  Point offset 20
-    resultString += (InMessage->Buffer.DSt.Message[2] & 0x01)?"Zero usage on channel 1 for 24 hours\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[2] & 0x02)?"Zero usage on channel 2 for 24 hours\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[2] & 0x04)?"Zero usage on channel 3 for 24 hours\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[2] & 0x08)?"Zero usage on channel 4 for 24 hours\n":"";
-    resultString += (InMessage->Buffer.DSt.Message[2] & 0x10)?"Address corruption\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[2] & 0x01)?"Zero usage on channel 1 for 24 hours\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[2] & 0x02)?"Zero usage on channel 2 for 24 hours\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[2] & 0x04)?"Zero usage on channel 3 for 24 hours\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[2] & 0x08)?"Zero usage on channel 4 for 24 hours\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[2] & 0x10)?"Address corruption\n":"";
     //  0x20-0x80 aren't used yet
 
-    const bool touDisabled = InMessage->Buffer.DSt.Message[0] & 0x10;
+    const bool touDisabled = InMessage.Buffer.DSt.Message[0] & 0x10;
 
     //  Point offset 30
-    resultString += (InMessage->Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+    resultString += (InMessage.Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
     //  0x02 is not used yet
-    resultString += (InMessage->Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
-    resultString += (InMessage->Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
+    resultString += (InMessage.Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
+    resultString += (InMessage.Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
     resultString += (touDisabled)?"TOU disabled\n":"TOU enabled\n";
-    resultString += (InMessage->Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
-    resultString += (InMessage->Buffer.DSt.Message[0] & 0x40)?"Critical peak active\n":"Critical peak inactive\n";
+    resultString += (InMessage.Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
+    resultString += (InMessage.Buffer.DSt.Message[0] & 0x40)?"Critical peak active\n":"Critical peak inactive\n";
     //  0x80 is used internally
 
     setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TouEnabled, ! touDisabled);
@@ -5049,7 +5044,7 @@ INT Mct470Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &Tim
             //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
             if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
             {
-                double value = (InMessage->Buffer.DSt.Message[i] >> j) & 0x01;
+                double value = (InMessage.Buffer.DSt.Message[i] >> j) & 0x01;
 
                 pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
 
@@ -5061,20 +5056,20 @@ INT Mct470Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &Tim
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct470Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL, lp_channel;
 
-    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     lp_channel = (parse.getiValue("loadprofile_offset") < 3)?1:3;
 
@@ -5084,7 +5079,7 @@ INT Mct470Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &
     CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg  *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -5092,7 +5087,7 @@ INT Mct470Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel) + " Status:\n";
 
@@ -5120,20 +5115,20 @@ INT Mct470Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct470Device::decodeGetStatusDNP( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL, lp_channel;
 
-    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     CtiString resultString;
     CtiTime errTime;
@@ -5141,7 +5136,7 @@ INT Mct470Device::decodeGetStatusDNP( const INMESS *InMessage, CtiTime &TimeNow,
     CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg  *pData = NULL;
 
-    if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
+    if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -5149,7 +5144,7 @@ INT Mct470Device::decodeGetStatusDNP( const INMESS *InMessage, CtiTime &TimeNow,
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int dnpStatus          = DSt->Message[0];
     int mctPoint           = DSt->Message[1];
@@ -5181,16 +5176,16 @@ INT Mct470Device::decodeGetStatusDNP( const INMESS *InMessage, CtiTime &TimeNow,
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct470Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Mct470Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
      INT status = NORMAL;
 
-     const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
      string resultString;
      unsigned long tmpTime;
@@ -5199,7 +5194,7 @@ INT Mct470Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeN
      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
      CtiPointDataMsg      *pData = NULL;
 
-     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
      {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -5207,7 +5202,7 @@ INT Mct470Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeN
          return MEMORY;
      }
 
-     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
      resultString += getName() + " / Freeze status:\n";
 
@@ -5235,17 +5230,17 @@ INT Mct470Device::decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeN
 
      ReturnMsg->setResultString(resultString);
 
-     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+     retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
 
      return status;
 }
 
-INT Mct470Device::decodeGetConfigIntervals(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
@@ -5269,7 +5264,7 @@ INT Mct470Device::decodeGetConfigIntervals(const INMESS *InMessage, CtiTime &Tim
     resultString += getName() + " / Precanned Meter Number: " + CtiNumStr(DSt->Message[4]) + "\n";
     resultString += getName() + " / Precanned Table Type: "   + CtiNumStr(DSt->Message[5]) + "\n";
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -5277,20 +5272,20 @@ INT Mct470Device::decodeGetConfigIntervals(const INMESS *InMessage, CtiTime &Tim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct470Device::decodeGetConfigIedDnpAddress(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigIedDnpAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
@@ -5303,12 +5298,12 @@ INT Mct470Device::decodeGetConfigIedDnpAddress(const INMESS *InMessage, CtiTime 
     resultString += getName() + " / IED DNP master address: " + CtiNumStr(master) + " (" + CtiNumStr(master).xhex(4) + ")\n";
     resultString += getName() + " / IED DNP outstation address: " + CtiNumStr(outstation) + " (" + CtiNumStr(outstation).xhex(4) + ")\n";
 
-    ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5386,11 +5381,11 @@ string Mct470Device::describeChannel(unsigned char channel_config) const
 }
 
 
-INT Mct470Device::decodeGetConfigChannelSetup(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string result_string, dynamic_info;
@@ -5406,7 +5401,7 @@ INT Mct470Device::decodeGetConfigChannelSetup(const INMESS *InMessage, CtiTime &
         result_string += describeChannel(DSt->Message[i]) + "\n";
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -5414,20 +5409,20 @@ INT Mct470Device::decodeGetConfigChannelSetup(const INMESS *InMessage, CtiTime &
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(result_string.c_str());
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Mct470Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     string sspec;
     string options;
@@ -5435,10 +5430,10 @@ INT Mct470Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
 
-    ssp  = InMessage->Buffer.DSt.Message[0];
-    ssp |= InMessage->Buffer.DSt.Message[4] << 8;
+    ssp  = InMessage.Buffer.DSt.Message[0];
+    ssp |= InMessage.Buffer.DSt.Message[4] << 8;
 
-    rev  = (unsigned)InMessage->Buffer.DSt.Message[1];
+    rev  = (unsigned)InMessage.Buffer.DSt.Message[1];
 
     //  convert 10 to 1.0, 24 to 2.4
     sspec  = "Software Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(((double)rev) / 10.0, 1);
@@ -5456,15 +5451,15 @@ INT Mct470Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow
 
     options += "Connected Meter: " + resolveIEDName(DSt->Message[3] >> 4) + "\n";
 
-    if( InMessage->Buffer.DSt.Message[3] & 0x04 )
+    if( InMessage.Buffer.DSt.Message[3] & 0x04 )
     {
         options += "Multiple electronic meters attached\n";
     }
 
     options += "DST ";
-    options += (InMessage->Buffer.DSt.Message[3] & 0x01)?"enabled\n":"disabled\n";
+    options += (InMessage.Buffer.DSt.Message[3] & 0x01)?"enabled\n":"disabled\n";
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -5472,26 +5467,26 @@ INT Mct470Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Mct470Device::decodeGetConfigMultiplier(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetConfigMultiplier(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     string descriptor;
 
-    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 
-    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     int channel = parse.getiValue("multchannel");
 
@@ -5523,16 +5518,16 @@ INT Mct470Device::decodeGetConfigMultiplier(const INMESS *InMessage, CtiTime &Ti
         }
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 //I hate to do this, we must ensure no one ever passes a null buffer into here...
-void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, const INMESS *InMessage)
+void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, const INMESS &InMessage)
 {
     point_info   pi;
     CtiPointSPtr tempPoint;
@@ -5566,7 +5561,7 @@ void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, str
             }
             else
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
             }
         }
 
@@ -5586,7 +5581,7 @@ void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, str
             }
             else
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
             }
         }
 
@@ -5606,7 +5601,7 @@ void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, str
             }
             else
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, analogoffset+i, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, analogoffset+i, AnalogPointType);
             }
         }
 
@@ -5625,7 +5620,7 @@ void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, str
             }
             else
             {
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, counteroffset+i, PulseAccumulatorPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, counteroffset+i, PulseAccumulatorPointType);
             }
         }
 
@@ -5633,13 +5628,13 @@ void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, str
 }
 
 
-INT Mct470Device::decodeGetValuePhaseCurrent(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct470Device::decodeGetValuePhaseCurrent(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT &DSt   = InMessage->Buffer.DSt;
+    const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 
-    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     point_info  pi;
     pi = getData(DSt.Message, 2, ValueType_IED);
@@ -5670,9 +5665,9 @@ INT Mct470Device::decodeGetValuePhaseCurrent(const INMESS *InMessage, CtiTime &T
     insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
                           ReturnMsg, pi, "Phase C Current");
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

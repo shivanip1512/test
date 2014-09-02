@@ -452,16 +452,16 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 }
 
 
-int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+int CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT ErrReturn = InMessage->ErrorCode;
+    INT ErrReturn = InMessage.ErrorCode;
     list<CtiPointDataMsg*> pointData;
     list<CtiSignalMsg*>    eventData;
     string returnInfo;
 
     bool expectMore = false;
 
-    string commandStr(InMessage->Return.CommandStr);
+    string commandStr(InMessage.Return.CommandStr);
 
     resetScanFlag(ScanRateGeneral);
 
@@ -469,7 +469,7 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
     {
         _ion.getInboundData(pointData, eventData, returnInfo);
 
-        switch( InMessage->Sequence )
+        switch( InMessage.Sequence )
         {
             case CtiProtocolION::Command_ExternalPulseTrigger:
             {
@@ -483,11 +483,11 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
                 CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                  "scan general post_control",
-                                                                 InMessage->Return.UserID,
-                                                                 InMessage->Return.GrpMsgID,
-                                                                 InMessage->Return.RouteID,
-                                                                 selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                                 InMessage->Return.Attempt);
+                                                                 InMessage.Return.UserID,
+                                                                 InMessage.Return.GrpMsgID,
+                                                                 InMessage.Return.RouteID,
+                                                                 selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                                                 InMessage.Return.Attempt);
 
                 if( findStringIgnoreCase(commandStr,"duke_issg_start") )
                 {
@@ -500,7 +500,7 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
                 newReq->setMessagePriority(MAXPRIORITY);
 
-                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
                 CtiCommandParser parse(newReq->CommandString());
 
@@ -524,15 +524,15 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_start",
-                                                                             InMessage->Return.UserID,
-                                                                             InMessage->Return.GrpMsgID,
-                                                                             InMessage->Return.RouteID,
-                                                                             selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                                             InMessage->Return.Attempt);
+                                                                             InMessage.Return.UserID,
+                                                                             InMessage.Return.GrpMsgID,
+                                                                             InMessage.Return.RouteID,
+                                                                             selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                                                             InMessage.Return.Attempt);
 
                             newReq->setMessagePriority(MAXPRIORITY);
 
-                            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
                             CtiCommandParser parse(newReq->CommandString());
 
@@ -552,15 +552,15 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_stop",
-                                                                             InMessage->Return.UserID,
-                                                                             InMessage->Return.GrpMsgID,
-                                                                             InMessage->Return.RouteID,
-                                                                             selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                                             InMessage->Return.Attempt);
+                                                                             InMessage.Return.UserID,
+                                                                             InMessage.Return.GrpMsgID,
+                                                                             InMessage.Return.RouteID,
+                                                                             selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                                                             InMessage.Return.Attempt);
 
                             newReq->setMessagePriority(MAXPRIORITY);
 
-                            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
                             CtiCommandParser parse(newReq->CommandString());
 
@@ -590,15 +590,15 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
                     CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                      "getstatus eventlog",
-                                                                     InMessage->Return.UserID,
-                                                                     InMessage->Return.GrpMsgID,
-                                                                     InMessage->Return.RouteID,
-                                                                     selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                                     InMessage->Return.Attempt);
+                                                                     InMessage.Return.UserID,
+                                                                     InMessage.Return.GrpMsgID,
+                                                                     InMessage.Return.RouteID,
+                                                                     selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                                                     InMessage.Return.Attempt);
 
                     newReq->setMessagePriority(MAXPRIORITY);
 
-                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                    newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
                     CtiCommandParser parse(newReq->CommandString());
 
@@ -614,11 +614,11 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
                     {
                         newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                           "putconfig timesync",
-                                                          InMessage->Return.UserID,
-                                                          InMessage->Return.GrpMsgID,
-                                                          InMessage->Return.RouteID,
-                                                          selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                          InMessage->Return.Attempt);
+                                                          InMessage.Return.UserID,
+                                                          InMessage.Return.GrpMsgID,
+                                                          InMessage.Return.RouteID,
+                                                          selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                                          InMessage.Return.Attempt);
 
                         newReq->setMessagePriority(MAXPRIORITY);
 
@@ -633,15 +633,15 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
                     newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                       "scan general",
-                                                      InMessage->Return.UserID,
-                                                      InMessage->Return.GrpMsgID,
-                                                      InMessage->Return.RouteID,
-                                                      selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                      InMessage->Return.Attempt);
+                                                      InMessage.Return.UserID,
+                                                      InMessage.Return.GrpMsgID,
+                                                      InMessage.Return.RouteID,
+                                                      selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                                      InMessage.Return.Attempt);
 
                     newReq->setMessagePriority(MAXPRIORITY);
 
-                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                    newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
                     beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
@@ -659,15 +659,15 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 
                 newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                   "scan general",
-                                                  InMessage->Return.UserID,
-                                                  InMessage->Return.GrpMsgID,
-                                                  InMessage->Return.RouteID,
-                                                  selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                  InMessage->Return.Attempt);
+                                                  InMessage.Return.UserID,
+                                                  InMessage.Return.GrpMsgID,
+                                                  InMessage.Return.RouteID,
+                                                  selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                                  InMessage.Return.Attempt);
 
                 newReq->setMessagePriority(MAXPRIORITY);
 
-                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                newReq->setConnectionHandle((void *)InMessage.Return.Connection);
 
                 beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
@@ -698,14 +698,14 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       string(InMessage->Return.CommandStr),
+                                                       string(InMessage.Return.CommandStr),
                                                        resultString,
                                                        ErrReturn,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.RetryMacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.GrpMsgID,
-                                                       InMessage->Return.UserID);
+                                                       InMessage.Return.RouteID,
+                                                       InMessage.Return.RetryMacroOffset,
+                                                       InMessage.Return.Attempt,
+                                                       InMessage.Return.GrpMsgID,
+                                                       InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }
@@ -714,18 +714,18 @@ int CtiDeviceION::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list<
 }
 
 
-void CtiDeviceION::processInboundData( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList,
+void CtiDeviceION::processInboundData( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList,
                                        list<CtiPointDataMsg*> &points, list<CtiSignalMsg*> &events, string &returnInfo, bool expectMore )
 {
     CtiReturnMsg *retMsg, *vgMsg;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    retMsg->setUserMessageId(InMessage->Return.UserID);
-    vgMsg->setUserMessageId (InMessage->Return.UserID);
+    retMsg->setUserMessageId(InMessage.Return.UserID);
+    vgMsg->setUserMessageId (InMessage.Return.UserID);
 
     while( !points.empty() )
     {
@@ -823,7 +823,7 @@ INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
 {
     INT retCode = NORMAL, ErrReturn = InMessage.ErrorCode;
 
-    //CtiCommandParser  parse(InMessage->Return.CommandStr);
+    //CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg;
     CtiCommandMsg    *pMsg;
     string         resultString;

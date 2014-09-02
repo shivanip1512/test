@@ -61,11 +61,11 @@ bool Mct22xDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct22xDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct22xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case (EmetconProtocol::GetValue_Demand):
         case (EmetconProtocol::Scan_Integrity):
@@ -82,7 +82,7 @@ INT Mct22xDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< C
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
             break;
         }
@@ -93,11 +93,11 @@ INT Mct22xDevice::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< C
 
 
 
-INT Mct22xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct22xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -116,7 +116,7 @@ INT Mct22xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
     CtiPointDataMsg *pData     = NULL;
     CtiPointSPtr    pPoint;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -124,7 +124,7 @@ INT Mct22xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     curead = (DSt->Message[3] << 16) |
              (DSt->Message[4] <<  8) |
@@ -173,7 +173,7 @@ INT Mct22xDevice::decodeGetValueDemand(const INMESS *InMessage, CtiTime &TimeNow
         ReturnMsg->setResultString(resultString);
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
    return status;
 }

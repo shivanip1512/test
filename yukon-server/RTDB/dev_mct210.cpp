@@ -69,11 +69,11 @@ bool Mct210Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct210Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct210Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case (EmetconProtocol::GetStatus_Disconnect):
         {
@@ -89,7 +89,7 @@ INT Mct210Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< C
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
             break;
         }

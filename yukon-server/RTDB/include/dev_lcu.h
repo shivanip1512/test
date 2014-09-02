@@ -103,7 +103,7 @@ public:
     virtual ~CtiDeviceLCU();
 
     bool           isLCULockedOut( ) const;
-    bool           isLCULockedOut( const INMESS *InMessage );
+    bool           isLCULockedOut( const INMESS &InMessage );
     BOOL           isStagedUp(const CtiTime &tRef);
     BOOL           isBusyByCommand(const CtiTime &aTime) const;
     bool           isGlobalLCU() const;
@@ -129,19 +129,19 @@ public:
 
     CtiLCUType_t   getLCUType() const;
 
-    INT            lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, std::list< CtiMessage* >  &vgList);
+    INT            lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList);
 
-    INT            lcuDecode(const INMESS*,CtiTime&, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    CtiReturnMsg*  lcuDecodeStatus(const INMESS *InMessage);
-    CtiReturnMsg*  lcuDecodeAnalogs(const INMESS *InMessage);
-    CtiReturnMsg*  lcuDecodeDigitalInputs(const INMESS *InMessage);
-    CtiReturnMsg*  lcuDecodeAccumulators(const INMESS *InMessage, std::list< OUTMESS* > &outList);
+    INT            lcuDecode(const INMESS&,const CtiTime, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
+    CtiReturnMsg*  lcuDecodeStatus(const INMESS &InMessage);
+    CtiReturnMsg*  lcuDecodeAnalogs(const INMESS &InMessage);
+    CtiReturnMsg*  lcuDecodeDigitalInputs(const INMESS &InMessage);
+    CtiReturnMsg*  lcuDecodeAccumulators(const INMESS &InMessage, OutMessageList &outList);
 
 
     CtiMutex& getLCUExclusionMux();
 
-    void           verifyControlLockoutState(const INMESS *InMessage);
-    bool           isLCUAlarmed(const INMESS *InMessage);
+    void           verifyControlLockoutState(const INMESS &InMessage);
+    bool           isLCUAlarmed(const INMESS &InMessage);
     OUTMESS*       lcuStage(OUTMESS *&OutMessage);
     OUTMESS*       lcuControl(OUTMESS *&OutMessage);
     INT            lcuScanAll(OUTMESS *&OutMessage);
@@ -162,12 +162,12 @@ public:
     INT            lcuReset(OUTMESS *&OutMessage);
     INT            lcuFreeze(OUTMESS *&OutMessage);
 
-    virtual INT    AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT    IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT    GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT    ResultDecode(const INMESS*,CtiTime&, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    virtual INT    ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    virtual INT    ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
+    virtual INT    AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT    IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT    GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT    ResultDecode(const INMESS&,const CtiTime, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT    ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT    ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList);
     virtual CtiTime selectCompletionTime() const;
 
     bool           exceedsDutyCycle(BYTE *bptr);

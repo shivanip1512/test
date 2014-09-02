@@ -179,7 +179,7 @@ INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
-INT CtiDeviceLCU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     return lcuDecode(InMessage, TimeNow, vgList, retList, outList);
 }
@@ -284,18 +284,18 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
     return(status);
 }
 
-INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT status = InMessage->ErrorCode;
+    INT status = InMessage.ErrorCode;
 
     if( status )
     {
         resetForScan(ScanRateGeneral);
     }
-    else if( InMessage->Buffer.InMessage[0] == 0x01 )
+    else if( InMessage.Buffer.InMessage[0] == 0x01 )
     {
         /* decode whatever message this is */
-        switch(InMessage->Buffer.InMessage[2])
+        switch(InMessage.Buffer.InMessage[2])
         {
         case MASTERFREEZE:
             {
@@ -306,7 +306,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
                     /* update the accumulator criteria for this RTU */
                     // Done in the reset... which zeros it out.  // setPrevFreezeTime(getLastFreezeTime());
-                    setLastFreezeTime( CtiTime(InMessage->Time) );
+                    setLastFreezeTime( CtiTime(InMessage.Time) );
                     resetScanFlag(ScanFreezeFailed);
 
                     setPrevFreezeNumber(getLastFreezeNumber());
@@ -317,8 +317,8 @@ INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(*InMessage, OutMessage);
-                        CtiCommandParser parse(InMessage->Return.CommandStr);
+                        InEchoToOut(InMessage, OutMessage);
+                        CtiCommandParser parse(InMessage.Return.CommandStr);
 
                         if((status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
                         {
@@ -349,8 +349,8 @@ INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getName() << " accumulator reset"  << endl;
                 }
-                setPrevFreezeTime(CtiTime(InMessage->Time));
-                setLastFreezeTime(CtiTime(InMessage->Time));
+                setPrevFreezeTime(CtiTime(InMessage.Time));
+                setLastFreezeTime(CtiTime(InMessage.Time));
                 resetScanFlag(ScanResetting);
                 /* LCU is unaware of these */
                 break;
@@ -417,14 +417,14 @@ INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
         case MASTERLOOPBACK:
             {
                 CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
-                                                                string(InMessage->Return.CommandStr),
+                                                                string(InMessage.Return.CommandStr),
                                                                 string(getName() + " / successful ping"),
-                                                                InMessage->ErrorCode,
-                                                                InMessage->Return.RouteID,
-                                                                InMessage->Return.RetryMacroOffset,
-                                                                InMessage->Return.Attempt,
-                                                                InMessage->Return.GrpMsgID,
-                                                                InMessage->Return.UserID);
+                                                                InMessage.ErrorCode,
+                                                                InMessage.Return.RouteID,
+                                                                InMessage.Return.RetryMacroOffset,
+                                                                InMessage.Return.Attempt,
+                                                                InMessage.Return.GrpMsgID,
+                                                                InMessage.Return.UserID);
 
                 if(pLoop != NULL)
                 {
@@ -462,7 +462,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 /* This should never happen so reset the scan */
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " Unknown Mastercom response " << __FILE__ << " (" << __LINE__ << ") " << hex << setw(2) << (int)(InMessage->Buffer.InMessage[2]) << endl;
+                    dout << CtiTime() << " " << getName() << " Unknown Mastercom response " << __FILE__ << " (" << __LINE__ << ") " << hex << setw(2) << (int)(InMessage.Buffer.InMessage[2]) << endl;
                 }
                 resetScanFlag();
                 setScanFlag(ScanStarting);
@@ -813,7 +813,7 @@ INT CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
 }
 
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS &InMessage)
 {
     ULONG      i;
     string  resultString;
@@ -829,17 +829,17 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
 
     if(_lcuType == LCU_T3026)
     {
-        if(InMessage->Buffer.InMessage[3] >= 4)
+        if(InMessage.Buffer.InMessage[3] >= 4)
         {
             pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                           string(InMessage->Return.CommandStr),
+                                           string(InMessage.Return.CommandStr),
                                            string("LCU status request complete"),
-                                           InMessage->ErrorCode,
-                                           InMessage->Return.RouteID,
-                                           InMessage->Return.RetryMacroOffset,
-                                           InMessage->Return.Attempt,
-                                           InMessage->Return.GrpMsgID,
-                                           InMessage->Return.UserID);
+                                           InMessage.ErrorCode,
+                                           InMessage.Return.RouteID,
+                                           InMessage.Return.RetryMacroOffset,
+                                           InMessage.Return.Attempt,
+                                           InMessage.Return.GrpMsgID,
+                                           InMessage.Return.UserID);
 
             /*
              *  Due to the T3026's unique nature of connector order determines data order, and a lack of any way to tell
@@ -854,7 +854,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
                 offset = 6;
             }
 
-            USHORT lcuDigital = MAKEUSHORT (InMessage->Buffer.InMessage[offset], InMessage->Buffer.InMessage[offset+1]);
+            USHORT lcuDigital = MAKEUSHORT (InMessage.Buffer.InMessage[offset], InMessage.Buffer.InMessage[offset+1]);
 
             for(i = 1; i <= 16; i++)
             {
@@ -896,7 +896,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
             }
 
         }
-        else if(InMessage->Buffer.InMessage[3] == 12)
+        else if(InMessage.Buffer.InMessage[3] == 12)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -904,7 +904,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
                 dout << "  That is likely not a T3026 LCU!" << endl;
             }
         }
-        else if(InMessage->Buffer.InMessage[3] != 2)
+        else if(InMessage.Buffer.InMessage[3] != 2)
         {
             // We have a very poor assumption here...
             {
@@ -917,17 +917,17 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
     else
     {
         pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                       string(InMessage->Return.CommandStr),
+                                       string(InMessage.Return.CommandStr),
                                        string("LCU status request complete"),
-                                       InMessage->ErrorCode,
-                                       InMessage->Return.RouteID,
-                                       InMessage->Return.RetryMacroOffset,
-                                       InMessage->Return.Attempt,
-                                       InMessage->Return.GrpMsgID,
-                                       InMessage->Return.UserID);
+                                       InMessage.ErrorCode,
+                                       InMessage.Return.RouteID,
+                                       InMessage.Return.RetryMacroOffset,
+                                       InMessage.Return.Attempt,
+                                       InMessage.Return.GrpMsgID,
+                                       InMessage.Return.UserID);
 
         /* Rebuild the status word */
-        USHORT lcuDigital = MAKEUSHORT (InMessage->Buffer.InMessage[6], InMessage->Buffer.InMessage[17]);
+        USHORT lcuDigital = MAKEUSHORT (InMessage.Buffer.InMessage[6], InMessage.Buffer.InMessage[17]);
 
         /* Now loop through and update remote processes as needed */
         for(i = 1; i <= 16; i++)
@@ -979,7 +979,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS *InMessage)
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS *InMessage)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS &InMessage)
 {
     ULONG      i;
     string  resultString;
@@ -993,14 +993,14 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS *InMessage)
     CtiPointDataMsg *pData = NULL;
 
     CtiReturnMsg    *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                                    string(InMessage->Return.CommandStr),
+                                                    string(InMessage.Return.CommandStr),
                                                     string("LCU status request complete"),
-                                                    InMessage->ErrorCode,
-                                                    InMessage->Return.RouteID,
-                                                    InMessage->Return.RetryMacroOffset,
-                                                    InMessage->Return.Attempt,
-                                                    InMessage->Return.GrpMsgID,
-                                                    InMessage->Return.UserID);
+                                                    InMessage.ErrorCode,
+                                                    InMessage.Return.RouteID,
+                                                    InMessage.Return.RetryMacroOffset,
+                                                    InMessage.Return.Attempt,
+                                                    InMessage.Return.GrpMsgID,
+                                                    InMessage.Return.UserID);
 
     switch(getLCUType())
     {
@@ -1010,7 +1010,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS *InMessage)
     case (CtiDeviceLCU::LCU_T3026):
         {
             //  Rebuild the status word
-            _lcuStatus = MAKEUSHORT (InMessage->Buffer.InMessage[4], InMessage->Buffer.InMessage[5]);
+            _lcuStatus = MAKEUSHORT (InMessage.Buffer.InMessage[4], InMessage.Buffer.InMessage[5]);
 
             //  Now loop through and update remote processes as needed
             for(i = 1; i <= 16; i++)
@@ -1069,7 +1069,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS *InMessage)
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS *InMessage, list< OUTMESS* > &outList)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS &InMessage, list< OUTMESS* > &outList)
 {
     ULONG      i;
     string  resultString;
@@ -1120,16 +1120,16 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS *InMessage, list<
     else if(isScanFlagSet(ScanFrozen))
     {
         pPIL  = CTIDBG_new CtiReturnMsg(getID(),
-                                        string(InMessage->Return.CommandStr),
+                                        string(InMessage.Return.CommandStr),
                                         string("LCU accumulator request complete"),
-                                        InMessage->ErrorCode,
-                                        InMessage->Return.RouteID,
-                                        InMessage->Return.RetryMacroOffset,
-                                        InMessage->Return.Attempt,
-                                        InMessage->Return.GrpMsgID,
-                                        InMessage->Return.UserID);
+                                        InMessage.ErrorCode,
+                                        InMessage.Return.RouteID,
+                                        InMessage.Return.RetryMacroOffset,
+                                        InMessage.Return.Attempt,
+                                        InMessage.Return.GrpMsgID,
+                                        InMessage.Return.UserID);
 
-        USHORT Value = MAKEUSHORT(InMessage->Buffer.InMessage[7], InMessage->Buffer.InMessage[8]);
+        USHORT Value = MAKEUSHORT(InMessage.Buffer.InMessage[7], InMessage.Buffer.InMessage[8]);
 
         if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)))
         {
@@ -1194,8 +1194,8 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS *InMessage, list<
 
         if(OutMessage != NULL)
         {
-            InEchoToOut(*InMessage, OutMessage);
-            CtiCommandParser parse(InMessage->Return.CommandStr);
+            InEchoToOut(InMessage, OutMessage);
+            CtiCommandParser parse(InMessage.Return.CommandStr);
             lcuReset(OutMessage);
 
             outList.push_back( OutMessage );
@@ -1206,7 +1206,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS *InMessage, list<
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS *InMessage)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS &InMessage)
 {
     ULONG      i;
     string  resultString;
@@ -1219,14 +1219,14 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS *InMessage)
 
     CtiPointDataMsg *pData = NULL;
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                                     string(InMessage->Return.CommandStr),
+                                                     string(InMessage.Return.CommandStr),
                                                      string("LCU analog request complete"),
-                                                     InMessage->ErrorCode,
-                                                     InMessage->Return.RouteID,
-                                                     InMessage->Return.RetryMacroOffset,
-                                                     InMessage->Return.Attempt,
-                                                     InMessage->Return.GrpMsgID,
-                                                     InMessage->Return.UserID);
+                                                     InMessage.ErrorCode,
+                                                     InMessage.Return.RouteID,
+                                                     InMessage.Return.RetryMacroOffset,
+                                                     InMessage.Return.Attempt,
+                                                     InMessage.Return.GrpMsgID,
+                                                     InMessage.Return.UserID);
 
 
     switch(_lcuType)
@@ -1235,7 +1235,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS *InMessage)
         {
             int offset = 4;
 
-            for(i = 1; i < 8 && (i * 2 <= InMessage->Buffer.InMessage[3]); i++)
+            for(i = 1; i < 8 && (i * 2 <= InMessage.Buffer.InMessage[3]); i++)
             {
                 /*
                  *  Since the T3026 can support multiple expansion modules, we will process any byte pairs as analogs if told to.
@@ -1248,13 +1248,13 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS *InMessage)
 
                     // A bit of BCD conversion here!
                     INT itemp = 0;
-                    itemp = (InMessage->Buffer.InMessage[offset + 1] >> 4) & 0x0f;
+                    itemp = (InMessage.Buffer.InMessage[offset + 1] >> 4) & 0x0f;
                     itemp *= 10;
-                    itemp += (InMessage->Buffer.InMessage[offset + 1]) & 0x0f;
+                    itemp += (InMessage.Buffer.InMessage[offset + 1]) & 0x0f;
                     itemp *= 10;
-                    itemp += (InMessage->Buffer.InMessage[offset] >> 4) & 0x0f;
+                    itemp += (InMessage.Buffer.InMessage[offset] >> 4) & 0x0f;
                     itemp *= 10;
-                    itemp += (InMessage->Buffer.InMessage[offset]) & 0x0f;
+                    itemp += (InMessage.Buffer.InMessage[offset]) & 0x0f;
 
                     PValue = pNum->computeValueForUOM( (DOUBLE) (itemp - gConfigParms.getValueAsInt("LCUT3026_ANALOG_SKEW", 500)) );
 
@@ -1309,7 +1309,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS *InMessage)
                     CtiPointNumericSPtr pNum = boost::static_pointer_cast<CtiPointNumeric>(PointRecord);
 
 
-                    Value = MAKEUSHORT(InMessage->Buffer.InMessage[i + 8], 0);
+                    Value = MAKEUSHORT(InMessage.Buffer.InMessage[i + 8], 0);
                     PValue = pNum->computeValueForUOM( (DOUBLE) Value );
 
                     if(isLCU(getType()))
@@ -1757,15 +1757,15 @@ CtiDeviceLCU::CtiLCUType_t   CtiDeviceLCU::getLCUType() const
  *  This method could stand some attention.  The behavior should be what was, but was that ever correct?  Will lockout happen on an inhibit?
  *  Does the database care about lockout?
  */
-void CtiDeviceLCU::verifyControlLockoutState(const INMESS *InMessage)
+void CtiDeviceLCU::verifyControlLockoutState(const INMESS &InMessage)
 {
     if(_lcuType == LCU_LANDG || _lcuType == LCU_STANDARD)
     {
-        if(((InMessage->Buffer.InMessage[5] & LCULOCKEDOUT) && !(getControlInhibit())) ||
-           (!(InMessage->Buffer.InMessage[5] & LCULOCKEDOUT) && (getControlInhibit())))
+        if(((InMessage.Buffer.InMessage[5] & LCULOCKEDOUT) && !(getControlInhibit())) ||
+           (!(InMessage.Buffer.InMessage[5] & LCULOCKEDOUT) && (getControlInhibit())))
         {
             /* Database disagrees */
-            if(InMessage->Buffer.InMessage[5] & LCULOCKEDOUT)
+            if(InMessage.Buffer.InMessage[5] & LCULOCKEDOUT)
             {
                 _lockedOut = true;
             }
@@ -1777,7 +1777,7 @@ void CtiDeviceLCU::verifyControlLockoutState(const INMESS *InMessage)
     }
     else if( _lcuType == LCU_EASTRIVER )
     {
-        if(InMessage->Buffer.InMessage[4] & MnA_TESTMODE && !(isFlagSet(LCUWASTRANSMITTING)) )
+        if(InMessage.Buffer.InMessage[4] & MnA_TESTMODE && !(isFlagSet(LCUWASTRANSMITTING)) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1789,33 +1789,33 @@ void CtiDeviceLCU::verifyControlLockoutState(const INMESS *InMessage)
     }
 }
 
-bool CtiDeviceLCU::isLCUAlarmed( const INMESS *InMessage )
+bool CtiDeviceLCU::isLCUAlarmed( const INMESS &InMessage )
 {
     bool bAlarmed = false;
 
     if( _lcuType == LCU_STANDARD )
     {
-        if(InMessage->Buffer.InMessage[4] & LCUCHECKBITALARM)
+        if(InMessage.Buffer.InMessage[4] & LCUCHECKBITALARM)
         {
             bAlarmed = true;
         }
     }
     else if( _lcuType == LCU_LANDG )
     {
-        if(InMessage->Buffer.InMessage[4] & LCUCHECKBITALARM)
+        if(InMessage.Buffer.InMessage[4] & LCUCHECKBITALARM)
         {
             bAlarmed = true;
         }
-        else if(InMessage->Buffer.InMessage[5] & LCUMINORALARM)
+        else if(InMessage.Buffer.InMessage[5] & LCUMINORALARM)
         {
             bAlarmed = true;
         }
     }
     else if( _lcuType == LCU_EASTRIVER )
     {
-        if(InMessage->Buffer.InMessage[4] & MnA_ANYALARM)
+        if(InMessage.Buffer.InMessage[4] & MnA_ANYALARM)
         {
-            dumpStatus( InMessage->Buffer.InMessage[4], InMessage->Buffer.InMessage[5] );
+            dumpStatus( InMessage.Buffer.InMessage[4], InMessage.Buffer.InMessage[5] );
             bAlarmed = true;
         }
     }
@@ -1832,13 +1832,13 @@ CtiMutex& CtiDeviceLCU::getLCUExclusionMux()
  *   This is a porter side decode used only when the OutMessage sent was RIPPLE'd and a control!
  *   It makes him pound the LCU into submission!
  */
-INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
+INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
 {
     INT status = NORMAL;
     CtiTime now;
 
     // Pretend for the simulated ports!
-    if(InMessage->ErrorCode == ErrPortSimulated)
+    if(InMessage.ErrorCode == ErrPortSimulated)
     {
         if(getNextCommandTime() > now)
         {
@@ -1862,11 +1862,11 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS *InMessag
         }
     }
 
-    if(InMessage->InLength > 0)
+    if(InMessage.InLength > 0)
     {
-        if( InMessage->Buffer.InMessage[0] == 0x01 )
+        if( InMessage.Buffer.InMessage[0] == 0x01 )
         {
-            switch( InMessage->Buffer.InMessage[2] )
+            switch( InMessage.Buffer.InMessage[2] )
             {
             case MASTERSCANALL:
             case MASTERSCANINT:
@@ -1892,7 +1892,7 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS *InMessag
                             resultCode = eLCUFastScan;
                         }
 
-                        if(InMessage->Buffer.InMessage[4] & LCUBUSYTRANSMITTING)       // Does the LCU indicate that he is busy
+                        if(InMessage.Buffer.InMessage[4] & LCUBUSYTRANSMITTING)       // Does the LCU indicate that he is busy
                         {
                             if( !(isInhibited()) )
                             {
@@ -2018,11 +2018,11 @@ bool CtiDeviceLCU::isLCULockedOut( ) const
     return (_lockedOut || getControlInhibit());
 }
 
-bool CtiDeviceLCU::isLCULockedOut( const INMESS *InMessage )
+bool CtiDeviceLCU::isLCULockedOut( const INMESS &InMessage )
 {
     if( _lcuType == LCU_LANDG || _lcuType == LCU_STANDARD )
     {
-        if(InMessage->Buffer.InMessage[5] & LCULOCKEDOUT)
+        if(InMessage.Buffer.InMessage[5] & LCULOCKEDOUT)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2037,7 +2037,7 @@ bool CtiDeviceLCU::isLCULockedOut( const INMESS *InMessage )
     }
     else if( _lcuType == LCU_EASTRIVER )
     {
-        if(InMessage->Buffer.InMessage[4] & MnA_TESTMODE && !isFlagSet(LCUWASTRANSMITTING))
+        if(InMessage.Buffer.InMessage[4] & MnA_TESTMODE && !isFlagSet(LCUWASTRANSMITTING))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

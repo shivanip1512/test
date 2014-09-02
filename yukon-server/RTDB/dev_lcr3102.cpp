@@ -37,11 +37,11 @@ INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, 
 }
 
 
-INT Lcr3102Device::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case EmetconProtocol::Scan_Integrity:
         case EmetconProtocol::GetValue_IntervalLast:
@@ -118,7 +118,7 @@ INT Lcr3102Device::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiM
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
 
             break;
@@ -127,20 +127,20 @@ INT Lcr3102Device::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiM
 
     if ( status == NoError )
     {
-        updateLastCommsTime( InMessage->Sequence, TimeNow );
+        updateLastCommsTime( InMessage.Sequence, TimeNow );
     }
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTemperature( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -148,7 +148,7 @@ INT Lcr3102Device::decodeGetValueTemperature( const INMESS *InMessage, CtiTime &
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int txTemp, boxTemp;
 
@@ -159,19 +159,19 @@ INT Lcr3102Device::decodeGetValueTemperature( const INMESS *InMessage, CtiTime &
 
     ReturnMsg->setResultString(results);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -179,7 +179,7 @@ INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS *InMessage, CtiTime
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int transmitPower;
 
@@ -189,19 +189,19 @@ INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS *InMessage, CtiTime
 
     ReturnMsg->setResultString(results);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -209,7 +209,7 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS *InMessage, CtiTime &Tim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     point_info pi;
     int dutyCycle, currentTransformer;
@@ -221,7 +221,7 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS *InMessage, CtiTime &Tim
        In the future we will probably still want to rely on the message decoding to get the CT
        back since the message from the LCR SHOULD return the correct CT... but for now this is a
        reasonable fix.                                                                              */
-    currentTransformer = InMessage->Return.ProtocolInfo.Emetcon.Function - FuncRead_DutyCyclePos + 1;
+    currentTransformer = InMessage.Return.ProtocolInfo.Emetcon.Function - FuncRead_DutyCyclePos + 1;
 
     int point_base = PointOffset_DutyCycleBase;
 
@@ -235,8 +235,8 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS *InMessage, CtiTime &Tim
 
         insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, pi.description);
 
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+        retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
     else
     {
@@ -249,14 +249,14 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS *InMessage, CtiTime &Tim
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -264,7 +264,7 @@ INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS *InMessage, CtiTime 
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     point_info pi;
     pi.freeze_bit = false;
@@ -325,7 +325,7 @@ INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS *InMessage, CtiTime 
 
     ReturnMsg->setResultString(results);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     resetScanFlag(ScanRateIntegrity);
 
@@ -333,14 +333,14 @@ INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS *InMessage, CtiTime 
 }
 
 //Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
-INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -348,22 +348,22 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int relay   = 0; // Relay is 1-4 here
     int readNum = 0; // Read 1-3, 1 = hr 0-16, ect..
-    int function = InMessage->Return.ProtocolInfo.Emetcon.Function;
+    int function = InMessage.Return.ProtocolInfo.Emetcon.Function;
     int point_base = 0;
     string identifier;
     const int relay_count = 4;
 
-    if( InMessage->Sequence == EmetconProtocol::GetValue_Shedtime )
+    if( InMessage.Sequence == EmetconProtocol::GetValue_Shedtime )
     {
         point_base = PointOffset_ShedtimeBase;
         function  -= FuncRead_ShedtimePos; // function is now 0-11
         identifier = "Shedtime";
     }
-    else if( InMessage->Sequence == EmetconProtocol::GetValue_Runtime )
+    else if( InMessage.Sequence == EmetconProtocol::GetValue_Runtime )
     {
         point_base = PointOffset_RuntimeBase;
         function  -= FuncRead_RuntimePos; // function is now 0-11
@@ -461,21 +461,21 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTim
         _dynamicComms.updateRelayRuntime( relay, *latestRuntimeTimestamp );
     }
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     BSTRUCT       BSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -483,15 +483,15 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS *InMessage,
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     // Assuming this is not a point, let's just dump the data to the screen for now.
 
     std::vector<point_info> runtimeHours;
 
-    decodeMessageXfmrHistoricalRuntime(InMessage->Buffer.DSt, runtimeHours);
+    decodeMessageXfmrHistoricalRuntime(InMessage.Buffer.DSt, runtimeHours);
 
-    int currentTransformer = InMessage->Return.ProtocolInfo.Emetcon.Function - FuncRead_XfmrHistoricalCT1Pos + 1;
+    int currentTransformer = InMessage.Return.ProtocolInfo.Emetcon.Function - FuncRead_XfmrHistoricalCT1Pos + 1;
 
     if(currentTransformer == 1 || currentTransformer == 2)
     {
@@ -533,7 +533,7 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS *InMessage,
         }
 
         ReturnMsg->setResultString(results);
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
     else
     {
@@ -546,14 +546,14 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS *InMessage,
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueControlTime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -561,7 +561,7 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS *InMessage, CtiTime &
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int relay = DSt->Message[0];
     if (!hasDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision))
@@ -610,8 +610,8 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS *InMessage, CtiTime &
 
         insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, identifier + " Relay " + CtiNumStr(relay));
 
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+        retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
     else
     {
@@ -624,14 +624,14 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS *InMessage, CtiTime &
     return status;
 }
 
-INT Lcr3102Device::decodeGetValuePropCount( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -639,7 +639,7 @@ INT Lcr3102Device::decodeGetValuePropCount( const INMESS *InMessage, CtiTime &Ti
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     point_info pi;
 
@@ -652,19 +652,19 @@ INT Lcr3102Device::decodeGetValuePropCount( const INMESS *InMessage, CtiTime &Ti
 
     ReturnMsg->setResultString(getName() + " / Propagation Counter: " + CtiNumStr(pi.value));
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -674,7 +674,7 @@ INT Lcr3102Device::decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, C
 
     string results;
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::PutConfig_Raw:
         {
@@ -687,24 +687,24 @@ INT Lcr3102Device::decodePutConfig( const INMESS *InMessage, CtiTime &TimeNow, C
         }
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigRaw( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -764,24 +764,24 @@ INT Lcr3102Device::decodeGetConfigRaw( const INMESS *InMessage, CtiTime &TimeNow
                 }
             }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -807,24 +807,24 @@ INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS *InMessage, CtiTime &Ti
     setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Spid,            (long)spid);
     setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_GeoAddress,      (long)geo);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigAddressing( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -833,7 +833,7 @@ INT Lcr3102Device::decodeGetConfigAddressing( const INMESS *InMessage, CtiTime &
     }
 
     string results;
-    int function = InMessage->Return.ProtocolInfo.Emetcon.Function;
+    int function = InMessage.Return.ProtocolInfo.Emetcon.Function;
 
     if(function == DataRead_AddressInfoPos)
     {
@@ -884,24 +884,24 @@ INT Lcr3102Device::decodeGetConfigAddressing( const INMESS *InMessage, CtiTime &
         return NOTNORMAL;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigTime( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+INT Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
-    const DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -916,10 +916,10 @@ INT Lcr3102Device::decodeGetConfigTime( const INMESS *InMessage, CtiTime &TimeNo
 
     results = getName() + " / Current Time: " + time.asString();
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

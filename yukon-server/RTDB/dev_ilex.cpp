@@ -140,7 +140,7 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT             status = NORMAL;
     CtiPointSPtr    PointRecord;
@@ -152,7 +152,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
     INT AIPointOffset;
 
     CtiPointDataMsg *pData = NULL;
-    CtiConnection   *Conn = ((CtiConnection*)InMessage->Return.Connection);
+    CtiConnection   *Conn = ((CtiConnection*)InMessage.Return.Connection);
     OUTMESS         *OutMessage = NULL;
 
 
@@ -178,16 +178,16 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
 
     try
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-        unsigned char firstByte = InMessage->Buffer.InMessage[0];
+        unsigned char firstByte = InMessage.Buffer.InMessage[0];
 
         /* decode whatever message this is */
         switch(firstByte & 0x07)
@@ -199,9 +199,9 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                     resetScanFlag(ScanFreezePending);
                     setScanFlag(ScanFrozen);
                     setPrevFreezeTime(getLastFreezeTime());
-                    setLastFreezeTime( CtiTime(InMessage->Time) );
+                    setLastFreezeTime( CtiTime(InMessage.Time) );
                     setPrevFreezeNumber( getLastFreezeNumber() );
-                    setLastFreezeNumber(InMessage->Buffer.InMessage[2]);
+                    setLastFreezeNumber(InMessage.Buffer.InMessage[2]);
                     resetScanFlag(ScanFreezeFailed);
 
                     /* then force a scan */
@@ -209,9 +209,9 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(*InMessage, OutMessage);
+                        InEchoToOut(InMessage, OutMessage);
 
-                        CtiCommandParser parse(InMessage->Return.CommandStr);
+                        CtiCommandParser parse(InMessage.Return.CommandStr);
 
                         if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
                         {
@@ -271,7 +271,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                     for(i=0; i < 64; i++)
                     {
                         if(i && !(i % 10)) dout << endl;
-                        dout << hex << setw(2) << (int)InMessage->Buffer.InMessage[i] << dec << " ";
+                        dout << hex << setw(2) << (int)InMessage.Buffer.InMessage[i] << dec << " ";
                     }
                     dout << endl << CtiTime() << " Ilex Data Complete" << endl;
                     dout.fill(oldfill);
@@ -284,7 +284,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(*InMessage, OutMessage);
+                        InEchoToOut(InMessage, OutMessage);
 
                         setIlexSequenceNumber( firstByte & 0x10 );
 
@@ -299,10 +299,10 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                     }
                 }
 
-                if(InMessage->Buffer.InMessage[2])
+                if(InMessage.Buffer.InMessage[2])
                 {
                     Offset      = 3;
-                    NumAnalogs  = InMessage->Buffer.InMessage[2];
+                    NumAnalogs  = InMessage.Buffer.InMessage[2];
                     NumStatusGroups   = 0;
                     NumAccum    = 0;
                     NumSOE      = 0;
@@ -311,18 +311,18 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                 {
                     /* How many of each type is here? */
                     Offset      = 5;
-                    NumAnalogs  = InMessage->Buffer.InMessage[3];
-                    NumStatusGroups   = InMessage->Buffer.InMessage[4] & 0x3f;
+                    NumAnalogs  = InMessage.Buffer.InMessage[3];
+                    NumStatusGroups   = InMessage.Buffer.InMessage[4] & 0x3f;
 
-                    if( InMessage->Buffer.InMessage[4] & 0x40 )
+                    if( InMessage.Buffer.InMessage[4] & 0x40 )
                     {
                         Offset  += 1;
-                        NumAccum = InMessage->Buffer.InMessage[5];
-                        if( InMessage->Buffer.InMessage[4] & 0x80 )
+                        NumAccum = InMessage.Buffer.InMessage[5];
+                        if( InMessage.Buffer.InMessage[4] & 0x80 )
                         {
                             Offset      += 2;
-                            NumAnalogs  += InMessage->Buffer.InMessage[6];
-                            NumSOE      = InMessage->Buffer.InMessage[7];
+                            NumAnalogs  += InMessage.Buffer.InMessage[6];
+                            NumSOE      = InMessage.Buffer.InMessage[7];
                         }
                         else
                             NumSOE      = 0;
@@ -330,11 +330,11 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                     else
                     {
                         NumAccum        = 0;
-                        if( InMessage->Buffer.InMessage[4] & 0x80 )
+                        if( InMessage.Buffer.InMessage[4] & 0x80 )
                         {
                             Offset      += 2;
-                            NumAnalogs  += InMessage->Buffer.InMessage[5];
-                            NumSOE      = InMessage->Buffer.InMessage[6];
+                            NumAnalogs  += InMessage.Buffer.InMessage[5];
+                            NumSOE      = InMessage.Buffer.InMessage[6];
                         }
                         else
                             NumSOE      = 0;
@@ -357,18 +357,18 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                     for(i = 0; i < NumStatusGroups; i++)
                     {
                         //  offset is nonzero, so we don't need to use firstByte
-                        StartStatus = InMessage->Buffer.InMessage[Offset] * 16;
+                        StartStatus = InMessage.Buffer.InMessage[Offset] * 16;
 
                         if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             char oldfill = dout.fill('0');
 
-                            dout << CtiTime() << " Indication Group Number " << (int)InMessage->Buffer.InMessage[Offset] << ": Start status offset = " << StartStatus << endl;
+                            dout << CtiTime() << " Indication Group Number " << (int)InMessage.Buffer.InMessage[Offset] << ": Start status offset = " << StartStatus << endl;
 
                             for(j = 0; j < 7; j++)
                             {
-                                dout << "0x" << hex << setw(2) << (int)InMessage->Buffer.InMessage[Offset + j] << " " << dec;
+                                dout << "0x" << hex << setw(2) << (int)InMessage.Buffer.InMessage[Offset + j] << " " << dec;
                             }
                             dout << endl;
 
@@ -391,15 +391,15 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                                 /* more usecs down the drain */
                                 if(j <= 8)
                                 {
-                                    State1 = InMessage->Buffer.InMessage[Offset + 1] >> (j - 1) & 0x0001;
-                                    State2 = InMessage->Buffer.InMessage[Offset + 3] >> (j - 1) & 0x0001;
-                                    State3 = InMessage->Buffer.InMessage[Offset + 5] >> (j - 1) & 0x0001;
+                                    State1 = InMessage.Buffer.InMessage[Offset + 1] >> (j - 1) & 0x0001;
+                                    State2 = InMessage.Buffer.InMessage[Offset + 3] >> (j - 1) & 0x0001;
+                                    State3 = InMessage.Buffer.InMessage[Offset + 5] >> (j - 1) & 0x0001;
                                 }
                                 else
                                 {
-                                    State1 = InMessage->Buffer.InMessage[Offset + 2] >> (j - 9) & 0x0001;
-                                    State2 = InMessage->Buffer.InMessage[Offset + 4] >> (j - 9) & 0x0001;
-                                    State3 = InMessage->Buffer.InMessage[Offset + 6] >> (j - 9) & 0x0001;
+                                    State1 = InMessage.Buffer.InMessage[Offset + 2] >> (j - 9) & 0x0001;
+                                    State2 = InMessage.Buffer.InMessage[Offset + 4] >> (j - 9) & 0x0001;
+                                    State3 = InMessage.Buffer.InMessage[Offset + 6] >> (j - 9) & 0x0001;
                                 }
 
                                 /* Update the records */
@@ -439,9 +439,9 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
 
                                 if(OutMessage != NULL)
                                 {
-                                    InEchoToOut(*InMessage, OutMessage);
+                                    InEchoToOut(InMessage, OutMessage);
 
-                                    // CtiCommandParser parse(InMessage->Return.CommandStr);
+                                    // CtiCommandParser parse(InMessage.Return.CommandStr);
                                     setIlexSequenceNumber( firstByte & 0x10 );
 
                                     if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
@@ -459,9 +459,9 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
 
                     /* Check the freeze number */
                     if(
-                      ((getLastFreezeNumber() != InMessage->Buffer.InMessage[Offset]) && isScanFlagSet(ScanFrozen)) ||
-                      (isScanFlagSet(ScanFreezeFailed) && getPrevFreezeNumber() + 1 != 0 && getPrevFreezeNumber() + 1 != InMessage->Buffer.InMessage[Offset]) ||
-                      (isScanFlagSet(ScanFreezeFailed) && getPrevFreezeNumber() + 1 == 0 && getPrevFreezeNumber() + 2 != InMessage->Buffer.InMessage[Offset])
+                      ((getLastFreezeNumber() != InMessage.Buffer.InMessage[Offset]) && isScanFlagSet(ScanFrozen)) ||
+                      (isScanFlagSet(ScanFreezeFailed) && getPrevFreezeNumber() + 1 != 0 && getPrevFreezeNumber() + 1 != InMessage.Buffer.InMessage[Offset]) ||
+                      (isScanFlagSet(ScanFreezeFailed) && getPrevFreezeNumber() + 1 == 0 && getPrevFreezeNumber() + 2 != InMessage.Buffer.InMessage[Offset])
                       )
                     {
                         /* Process wrong freeze number */
@@ -483,14 +483,14 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                     {
                         /* mark the freeze as valid */
                         if(isScanFlagSet(ScanFreezeFailed))
-                            setLastFreezeNumber(InMessage->Buffer.InMessage[Offset]);
+                            setLastFreezeNumber(InMessage.Buffer.InMessage[Offset]);
 
                         /* Calculate the part of an hour involved here */
                         PartHour = (FLOAT) (getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
                         PartHour /= (3600.0);
 
                         /* Loop through the accumulator records */
-                        StartAccum = InMessage->Buffer.InMessage[Offset + 1];
+                        StartAccum = InMessage.Buffer.InMessage[Offset + 1];
                         EndAccum = StartAccum + NumAccum;
                         Offset += 2;
 
@@ -502,7 +502,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                         for(AIPointOffset = StartAccum + 1; AIPointOffset <= EndAccum; AIPointOffset++)
                         {
                             // get the current pulse count
-                            ULONG curPulseValue = MAKEUSHORT(InMessage->Buffer.InMessage[Offset], InMessage->Buffer.InMessage[Offset + 1]);
+                            ULONG curPulseValue = MAKEUSHORT(InMessage.Buffer.InMessage[Offset], InMessage.Buffer.InMessage[Offset + 1]);
 
                             if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(AIPointOffset, DemandAccumulatorPointType)))
                             {
@@ -642,14 +642,14 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
                     {
                         if(i & 0x01)
                         {
-                            AIPointOffset = InMessage->Buffer.InMessage[Offset + 4] + 1;
-                            Value = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 3], InMessage->Buffer.InMessage[Offset + 2] & 0x0f);
+                            AIPointOffset = InMessage.Buffer.InMessage[Offset + 4] + 1;
+                            Value = MAKEUSHORT (InMessage.Buffer.InMessage[Offset + 3], InMessage.Buffer.InMessage[Offset + 2] & 0x0f);
                             Offset += 5;
                         }
                         else
                         {
-                            AIPointOffset = InMessage->Buffer.InMessage[Offset] + 1;
-                            Value = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], (InMessage->Buffer.InMessage[Offset + 2] & 0xf0) >> 4);
+                            AIPointOffset = InMessage.Buffer.InMessage[Offset] + 1;
+                            Value = MAKEUSHORT (InMessage.Buffer.InMessage[Offset + 1], (InMessage.Buffer.InMessage[Offset + 2] & 0xf0) >> 4);
                         }
 
                         Value = Value << 4;
@@ -696,9 +696,9 @@ INT CtiDeviceILEX::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(*InMessage, OutMessage);
+                        InEchoToOut(InMessage, OutMessage);
 
-                        CtiCommandParser parse(InMessage->Return.CommandStr);
+                        CtiCommandParser parse(InMessage.Return.CommandStr);
                         if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NORMAL)
                         {
                             if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)

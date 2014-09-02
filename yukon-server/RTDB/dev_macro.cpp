@@ -160,7 +160,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                  */
                 //Switching from index 'for' loop to iterator while loop. Back to front
                 //for(int i = newvglistsize; i > vglistsize; i-- )
-                std::list< CtiMessage* >::reverse_iterator itr = vgList.rbegin();
+                CtiMessageList::reverse_iterator itr = vgList.rbegin();
                 while( itr != vgList.rend() )
                 {
                     CtiMessage *&pMsg = *itr;

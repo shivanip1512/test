@@ -21,7 +21,7 @@ private:
     typedef Mct410Device Self;
     typedef Mct4xxDevice Parent;
 
-    typedef int (Self::*DecodeMethod)(const INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
+    typedef int (Self::*DecodeMethod)(const INMESS &, const CtiTime, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
     typedef std::map<int, DecodeMethod> DecodeMapping;
 
@@ -55,7 +55,7 @@ private:
         SspecRev_BetaHi =  200,  //  rev 20.0
     };
 
-    void readSspec(const OUTMESS &OutMessage, std::list<OUTMESS *> &outList) const;
+    void readSspec(const OUTMESS &OutMessage, OutMessageList &outList) const;
 
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 
@@ -398,36 +398,36 @@ protected:
     virtual const ValueMapping *getMemoryMap() const;
     virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
 
-    virtual INT ModelDecode( const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );
-    virtual INT SubmitRetry( const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList );
+    virtual INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT SubmitRetry( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
     virtual void handleCommandResult(const Commands::Mct410Command &command);
     virtual void handleCommandResult(const Commands::Mct410DisconnectConfigurationCommand &command);
 
-    INT decodeGetValueKWH          ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueTOUkWh       ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueDemand       ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueVoltage      ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueOutage       ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueFreezeCounter( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueLoadProfilePeakReport( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueDailyRead    ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    virtual INT decodeGetStatusInternal    ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetStatusLoadProfile ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    virtual INT decodeGetStatusFreeze      ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    virtual INT decodeGetConfigIntervals   ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigThresholds  ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigFreeze      ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    virtual INT decodeGetConfigDisconnect  ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigAddress     ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigPhaseDetect ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    virtual INT decodeGetConfigDailyReadInterest( const INMESS &InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    INT decodeGetConfigWaterMeterReadInterval( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigLongLoadProfileStorageDays( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    int decodeGetConfigLoadProfileExistingPeak(const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT decodeGetValueKWH          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueTOUkWh       ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueDemand       ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueVoltage      ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueOutage       ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueFreezeCounter( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueLoadProfilePeakReport( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueDailyRead    ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetStatusInternal    ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetStatusLoadProfile ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetStatusFreeze      ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetConfigIntervals   ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigThresholds  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigFreeze      ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetConfigDisconnect  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigAddress     ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigPhaseDetect ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetConfigDailyReadInterest( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigLongLoadProfileStorageDays( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    int decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    virtual int decodeGetConfigMeterParameters( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    virtual int decodeGetConfigModel          ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual int decodeGetConfigMeterParameters( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual int decodeGetConfigModel          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
     static bool isDailyReadVulnerableToAliasing(const CtiDate &date, const CtiTime &now);
     void tryVerifyDailyReadInterestDate(const unsigned interest_day, const unsigned interest_month, const CtiTime TimeNow);

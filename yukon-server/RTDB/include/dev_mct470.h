@@ -20,7 +20,7 @@ private:
     typedef Mct4xxDevice Inherited;
 
     typedef Mct470Device Self;
-    typedef int (Self::*DecodeMethod)(const INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
+    typedef int (Self::*DecodeMethod)(const INMESS &, const CtiTime, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
     typedef std::map<int, DecodeMethod> DecodeMapping;
 
@@ -177,7 +177,7 @@ private:
 
     long _lastConfigRequest;
 
-    void decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, std::string &resultString, CtiReturnMsg *ReturnMsg, const INMESS *InMessage);
+    void decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, std::string &resultString, CtiReturnMsg *ReturnMsg, const INMESS &InMessage);
     void getBytesFromString(std::string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
     int sendDNPConfigMessages(int startMCTID,  OutMessageList &outList, OUTMESS *&OutMessage, std::string &dataA, std::string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly);
 
@@ -480,7 +480,7 @@ protected:
     virtual const ValueMapping *getMemoryMap() const;
     virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
 
-    virtual INT ModelDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList);
 
     virtual INT executeScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
@@ -500,21 +500,21 @@ protected:
 
     void reportPointData(const CtiPointType_t pointType, const int pointOffset, CtiReturnMsg &ReturnMsg, const INMESS &InMessage, const point_info &pi, const std::string pointName="");
 
-    INT decodeGetValueKWH           ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueDemand        ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueMinMaxDemand  ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValueIED           ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetValuePhaseCurrent  ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigIED          ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetStatusInternal     ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetStatusLoadProfile  ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetStatusDNP          ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetStatusFreeze       ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigIntervals    ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigChannelSetup ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigMultiplier   ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigModel        ( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigIedDnpAddress( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueKWH           ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueDemand        ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueMinMaxDemand  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValueIED           ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetValuePhaseCurrent  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigIED          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetStatusInternal     ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetStatusLoadProfile  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetStatusDNP          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetStatusFreeze       ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigIntervals    ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigChannelSetup ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigMultiplier   ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigModel        ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT decodeGetConfigIedDnpAddress( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
     int decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const std::string &demand_name, const unsigned consumption_offset, const std::string &consumption_name, CtiReturnMsg *ReturnMsg);
 
