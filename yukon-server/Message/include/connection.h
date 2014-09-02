@@ -71,8 +71,9 @@ protected:
     typedef Lock::reader_lock_guard_t  ReaderGuard;
     typedef Lock::writer_lock_guard_t  WriterGuard;
 
-    mutable Lock     _connLock;
-    mutable CtiMutex _peerMutex;
+    mutable Lock               _connMux;
+    mutable CtiCriticalSection _peerMux;
+    mutable CtiCriticalSection _advisoryMux;
 
     // State Descriptions:
     union

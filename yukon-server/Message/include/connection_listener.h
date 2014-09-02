@@ -22,7 +22,7 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
     typedef Lock::reader_lock_guard_t  ReaderGuard;
     typedef Lock::writer_lock_guard_t  WriterGuard;
 
-    mutable Lock _connLock;
+    mutable Lock _connMux;
 
     bool _closed;
     bool _valid;

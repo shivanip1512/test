@@ -58,7 +58,7 @@ void CtiListenerConnection::start()
             // release resources and reset the connection
             //
             {
-                WriterGuard guard(_connLock);
+                WriterGuard guard(_connMux);
 
                 if( _closed )
                 {
@@ -77,7 +77,7 @@ void CtiListenerConnection::start()
             // connect to the broker
             //
             {
-                ReaderGuard guard(_connLock);
+                ReaderGuard guard(_connMux);
 
                 if( _connection )
                 {
@@ -89,7 +89,7 @@ void CtiListenerConnection::start()
             // create session and consumer
             //
             {
-                WriterGuard guard(_connLock);
+                WriterGuard guard(_connMux);
 
                 if( _closed )
                 {
@@ -132,7 +132,7 @@ void CtiListenerConnection::start()
 void CtiListenerConnection::close()
 {
     {
-        ReaderGuard guard(_connLock);
+        ReaderGuard guard(_connMux);
 
         if( _closed )
         {
@@ -156,7 +156,7 @@ void CtiListenerConnection::close()
     }
 
     {
-        WriterGuard guard(_connLock);
+        WriterGuard guard(_connMux);
         releaseResources();
     }
 
@@ -169,7 +169,7 @@ void CtiListenerConnection::close()
  */
 bool CtiListenerConnection::verifyConnection()
 {
-    ReaderGuard guard(_connLock);
+    ReaderGuard guard(_connMux);
 
     if( !_connection || !_connection->verifyConnection() || _closed )
     {
@@ -185,7 +185,7 @@ bool CtiListenerConnection::verifyConnection()
  */
 bool CtiListenerConnection::acceptClient()
 {
-    ReaderGuard guard(_connLock);
+    ReaderGuard guard(_connMux);
 
     if( !_valid || _closed )
     {
@@ -257,7 +257,7 @@ bool CtiListenerConnection::validateRequest( const string &replyTo )
  */
 boost::shared_ptr<ManagedConnection> CtiListenerConnection::getConnection() const
 {
-    ReaderGuard guard(_connLock);
+    ReaderGuard guard(_connMux);
 
     return _connection;
 }

@@ -64,7 +64,7 @@ void CtiConnection::start()
     try
     {
         {
-            WriterGuard guard( _connLock );
+            WriterGuard guard(_connMux);
 
             if( _connectCalled )
             {
@@ -331,8 +331,14 @@ void CtiConnection::onAdvisoryMessage( const cms::Message* message )
 
     triggerReconnect();
 
-     // unset the message listener since we dont need it anymore
-    _advisoryConsumer->setMessageListener( NULL );
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
+        if( _advisoryConsumer )
+        {
+            // un-register the message listener since we dont need it anymore
+            _advisoryConsumer->setMessageListener(NULL);
+        }
+    }
 }
 
 /**
@@ -340,13 +346,15 @@ void CtiConnection::onAdvisoryMessage( const cms::Message* message )
  */
 void CtiConnection::setupAdvisoryListener()
 {
+    CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
+
     // create advisory topic consumer to monitor if the outbound destination has only 1 message consumer
     _advisoryConsumer.reset( createTopicConsumer(
             *_sessionOut,
             "ActiveMQ.Advisory.Producer.Queue." + _consumer->getDestPhysicalName(),
             "producerCount <> 1" ));
 
-    _advisoryConsumer->setMessageListener( _advisoryListener.get() );
+    _advisoryConsumer->setMessageListener(_advisoryListener.get());
 }
 
 /**
@@ -387,7 +395,7 @@ void CtiConnection::close()
 {
     try
     {
-        WriterGuard guard( _connLock );
+        WriterGuard guard(_connMux);
 
         if( _closed )
         {
@@ -536,7 +544,7 @@ int CtiConnection::verifyConnection()
     try
     {
         {
-            ReaderGuard guard( _connLock );
+            ReaderGuard guard(_connMux);
 
             if( ! isViable() || ! _connectCalled )
             {
@@ -550,7 +558,7 @@ int CtiConnection::verifyConnection()
         }
 
         {
-            WriterGuard guard( _connLock );
+            WriterGuard guard(_connMux);
 
             if( ! isViable() )
             {
@@ -727,9 +735,14 @@ string CtiConnection::getPeer() const
         return "not connected";
     }
 
-    CtiLockGuard<CtiMutex> guard(_peerMutex);
+    CtiLockGuard<CtiCriticalSection> guard(_peerMux);
 
-    return _peerName + " (" + _peerConnectTime.asString() + ")";
+    string peer = _peerName;
+    peer += " (";
+    peer += _peerConnectTime.asString();
+    peer += ")";
+
+    return peer;
 }
 
 /**
@@ -738,10 +751,9 @@ string CtiConnection::getPeer() const
  */
 void CtiConnection::resetPeer( const string &peerName )
 {
-    CtiLockGuard<CtiMutex> guard(_peerMutex);
+    CtiLockGuard<CtiCriticalSection> guard(_peerMux);
     
-    _peerName = peerName;
-    
+    _peerName        = peerName;
     _peerConnectTime = CtiTime::now();
 }
 
@@ -869,7 +881,10 @@ void CtiConnection::releaseResources()
     _consumer.reset();
     _producer.reset();
 
-    _advisoryConsumer.reset();
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_advisoryMux);
+        _advisoryConsumer.reset();
+    }
 
     _sessionIn.reset();
     _sessionOut.reset();
