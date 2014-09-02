@@ -44,14 +44,14 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                           CtiCommandParser               &parse,
                           OUTMESS                        *&OutMessage,
-                          std::list< CtiMessage* >      &vgList,
-                          std::list< CtiMessage* >      &retList,
-                          std::list< OUTMESS* >         &outList);
+                          CtiMessageList      &vgList,
+                          CtiMessageList      &retList,
+                          OutMessageList         &outList);
 
    bool isTransactionComplete();
 
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
-   YukonError_t sendCommResult(INMESS *InMessage);
+   YukonError_t sendCommResult(INMESS &InMessage);
 
    enum CommandState
    {

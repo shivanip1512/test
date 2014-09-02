@@ -240,14 +240,14 @@ INT CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse
 }
 
 
-INT CtiDeviceSeriesV::ResultDecode( const INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceSeriesV::ResultDecode( const INMESS &InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     list<CtiPointDataMsg*> seriesvPoints;
 
     string resultString;
     CtiReturnMsg *retMsg;
 
-    if( !InMessage->ErrorCode && !_seriesv.recvCommResult(InMessage, outList) )
+    if( !InMessage.ErrorCode && !_seriesv.recvCommResult(InMessage, outList) )
     {
         if( _seriesv.hasInboundPoints() )
         {

@@ -2289,7 +2289,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
 
     //  try the decode with no points and no IED config
     {
-        dev.ResultDecode(&im, CtiTime(), vg_list, ret_list, om_list);
+        dev.ResultDecode(im, CtiTime(), vg_list, ret_list, om_list);
 
         BOOST_CHECK_EQUAL(1, ret_list.size());
 

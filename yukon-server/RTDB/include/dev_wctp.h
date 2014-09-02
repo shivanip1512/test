@@ -92,22 +92,22 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg                 *pReq,
                               CtiCommandParser              &parse,
                               OUTMESS                       *&OutMessage,
-                              std::list< CtiMessage* >      &vgList,
-                              std::list< CtiMessage* >      &retList,
-                              std::list< OUTMESS* >         &outList);
+                              CtiMessageList      &vgList,
+                              CtiMessageList      &retList,
+                              OutMessageList         &outList);
 
    std::string getDescription(const CtiCommandParser & parse) const;
 
-   virtual YukonError_t generateCommand(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommand(CtiXfer  &Transfer, CtiMessageList &traceList);
+   virtual YukonError_t decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
 
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT freeDataBins();
 
    virtual CtiDeviceIED& setInitialState(const LONG oldid);
 
-   INT traceOut(PCHAR Message, ULONG Count, std::list< CtiMessage* > &traceList);
-   INT traceIn(PCHAR Message, ULONG Count, std::list< CtiMessage* > &traceList, BOOL CompletedMessage = FALSE);
+   INT traceOut(PCHAR Message, ULONG Count, CtiMessageList &traceList);
+   INT traceIn(PCHAR Message, ULONG Count, CtiMessageList &traceList, BOOL CompletedMessage = FALSE);
 
    CtiDeviceWctpTerminal& setSendFiller(bool yesno);
    bool getSendFiller() const;

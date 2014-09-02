@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     InMessage.Buffer.DSt.Message[3] = relay_2_watts >> 8;
     InMessage.Buffer.DSt.Message[4] = relay_2_watts;
 
-    test_device.decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValueIntervalLast(InMessage, now, vgList, retList, outList);
 
     test_Lcr3102Device::point_info pi;
 
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     pi = test_device.test_getPointResults(PointOffest_intervals_relay_3);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
 
-    test_device.decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValueIntervalLast(InMessage, now, vgList, retList, outList);
 
     pi = test_device.test_getPointResults(PointOffest_intervals_relay_3);
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_4);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
 
-    test_device_2.decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
+    test_device_2.decodeGetValueIntervalLast(InMessage, now, vgList, retList, outList);
 
     pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_2);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
 
     InMessage.Buffer.DSt.Message[0] = propcount;
 
-    test_device.decodeGetValuePropCount(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValuePropCount(InMessage, now, vgList, retList, outList);
 
     test_Lcr3102Device::point_info pi;
 
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
 
     InMessage.Buffer.DSt.Message[0] = propcount;
 
-    test_device.decodeGetValuePropCount(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValuePropCount(InMessage, now, vgList, retList, outList);
 
     pi = test_device.test_getPointResults(PointOffest_Propcount);
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
     {
         test_device.setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision, 10);
 
-        test_device.decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
+        test_device.decodeGetValueControlTime(InMessage, now, vgList, retList, outList);
 
         test_Lcr3102Device::point_info pi = test_device.test_getPointResults(PointOffset_controltime_relay_1);
 
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
     {
         test_device.setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision, 11);
 
-        test_device.decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
+        test_device.decodeGetValueControlTime(InMessage, now, vgList, retList, outList);
 
         test_Lcr3102Device::point_info pi = test_device.test_getPointResults(PointOffset_controltime_relay_2);
 

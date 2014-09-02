@@ -1652,13 +1652,13 @@ YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
     return retCode;
 }
 
-INT CtiDeviceVectron::decodeResultScan (const INMESS *InMessage,
-                                        CtiTime &TimeNow,
+INT CtiDeviceVectron::decodeResultScan (const INMESS &InMessage,
+                                        const CtiTime TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
                                         list< OUTMESS* > &outList)
 {
-    char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
     CHAR     temp[100], buffer[60];
 
@@ -1675,22 +1675,22 @@ INT CtiDeviceVectron::decodeResultScan (const INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    const DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    const DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST      *DupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY        *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
 
 
     CtiPointDataMsg     *pData    = NULL;
     CtiPointNumericSPtr  pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
     const VectronScanData_t  *vsd = (const VectronScanData_t*) DUPRep->Message;
     CtiTime peakTime;
@@ -1701,7 +1701,7 @@ INT CtiDeviceVectron::decodeResultScan (const INMESS *InMessage,
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            InMessage->ErrorCode)
+            InMessage.ErrorCode)
         {
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -1713,8 +1713,8 @@ INT CtiDeviceVectron::decodeResultScan (const INMESS *InMessage,
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
                 pMsg->insert(
-                        InMessage->ErrorCode
-                            ? InMessage->ErrorCode
+                        InMessage.ErrorCode
+                            ? InMessage.ErrorCode
                             : GeneralScanAborted);
             }
 
@@ -1779,15 +1779,15 @@ INT CtiDeviceVectron::decodeResultScan (const INMESS *InMessage,
 
 
 
-INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS *InMessage,
-                                               CtiTime &TimeNow,
+INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS &InMessage,
+                                               const CtiTime TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
 
-    const DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    const DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST                 *dupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY                   *dupRep = &InMessage.Buffer.DUPSt.DUPRep;
 
     const VectronLoadProfileMessage_t   *vectronLProfile = (const VectronLoadProfileMessage_t*)&dupRep->Message;
     const VectronMMConfig_t             *vectronMMConfig = (const VectronMMConfig_t *)&vectronLProfile->MMConfig;
@@ -1821,14 +1821,14 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS *InMessage,
     CtiPointNumericSPtr   pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
     // initialize
     currentInterval   = (INT)vectronMMConfig->Real.currentInterval;
     intervalLength    = (INT)vectronMMConfig->Real.intervalLength;
@@ -1972,10 +1972,10 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS *InMessage,
 }
 
 // Routine to display or print the message
-INT CtiDeviceVectron::ResultDisplay (const INMESS *InMessage)
+INT CtiDeviceVectron::ResultDisplay (const INMESS &InMessage)
 
 {
-    const VectronScanData_t  *vsd = (const VectronScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
+    const VectronScanData_t  *vsd = (const VectronScanData_t*) InMessage.Buffer.DUPSt.DUPRep.Message;
     CHAR workString[10];
     CHAR buffer[200];
 

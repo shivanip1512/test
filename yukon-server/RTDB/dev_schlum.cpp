@@ -458,7 +458,7 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     return retCode;
 }
 
-INT CtiDeviceSchlumberger::ResultDecode(const INMESS *InMessage,
+INT CtiDeviceSchlumberger::ResultDecode(const INMESS &InMessage,
                                         CtiTime &TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
@@ -471,8 +471,8 @@ INT CtiDeviceSchlumberger::ResultDecode(const INMESS *InMessage,
     *
     *****************************
     */
-    char tmpCurrentCommand = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0];
-    char tmpCurrentState   = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentCommand = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[0];
+    char tmpCurrentState   = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
     if( !_dstFlagValid )
     {

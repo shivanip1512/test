@@ -36,10 +36,10 @@ public:
    INT WelCoReset       (OUTMESS *OutMessage, INT Priority);
    INT WelCoTimeSync    (OUTMESS *OutMessage, INT Priority);
 
-   INT WelCoDeadBands   (OUTMESS *OutMessage, std::list< OUTMESS* > &outList, INT Priority);
+   INT WelCoDeadBands   (OUTMESS *OutMessage, OutMessageList &outList, INT Priority);
 
-   INT WelCoDeadBands   (const INMESS  *InMessage,  std::list< OUTMESS* > &outList, INT Priority);
-   INT WelCoTimeSync    (const INMESS  *InMessage,  std::list< OUTMESS* > &outList, INT Priority);
+   INT WelCoDeadBands   (const INMESS  &InMessage,  OutMessageList &outList, INT Priority);
+   INT WelCoTimeSync    (const INMESS  &InMessage,  OutMessageList &outList, INT Priority);
 
    bool getDeadbandsSent() const;
    void incDeadbandsSent();
@@ -52,43 +52,43 @@ public:
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           std::list< CtiMessage* > &vgList,
-                           std::list< CtiMessage* > &retList,
-                           std::list< OUTMESS* > &outList,
+                           CtiMessageList &vgList,
+                           CtiMessageList &retList,
+                           OutMessageList &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT AccumulatorScan(CtiRequestMsg *pReq,
                                CtiCommandParser &parse,
                                OUTMESS *&OutMessage,
-                               std::list< CtiMessage* > &vgList,
-                               std::list< CtiMessage* > &retList,
-                               std::list< OUTMESS* > &outList,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList,
                                INT ScanPriority = MAXPRIORITY - 3);
    virtual INT IntegrityScan(CtiRequestMsg *pReq,
                              CtiCommandParser &parse,
                              OUTMESS *&OutMessage,
-                             std::list< CtiMessage* > &vgList,
-                             std::list< CtiMessage* > &retList,
-                             std::list< OUTMESS* > &outList,
+                             CtiMessageList &vgList,
+                             CtiMessageList &retList,
+                             OutMessageList &outList,
                              INT ScanPriority = MAXPRIORITY - 4);
 
    virtual INT ErrorDecode(const INMESS      &InMessage,
                            const CtiTime      TimeNow,
-                           std::list<CtiMessage*> &retList);
+                           CtiMessageList &retList);
 
-   virtual INT ResultDecode(const INMESS*,
-                            CtiTime&,
-                            std::list< CtiMessage* >   &vgList,
-                            std::list< CtiMessage* > &retList,
-                            std::list< OUTMESS* > &outList);
+   virtual INT ResultDecode(const INMESS&,
+                            const CtiTime,
+                            CtiMessageList   &vgList,
+                            CtiMessageList &retList,
+                            OutMessageList &outList);
 
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              std::list< CtiMessage* >      &vgList,
-                              std::list< CtiMessage* >      &retList,
-                              std::list< OUTMESS* >         &outList);
+                              CtiMessageList      &vgList,
+                              CtiMessageList      &retList,
+                              OutMessageList         &outList);
 
-   virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
    virtual bool clearedForScan(int scantype);
    virtual void resetForScan(int scantype);

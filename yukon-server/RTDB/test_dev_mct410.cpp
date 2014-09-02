@@ -497,7 +497,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         strcpy(im.Return.CommandStr, "control connect");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(&im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -552,7 +552,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(&im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -910,7 +910,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(&im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {
@@ -989,7 +989,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(&im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {
@@ -1063,7 +1063,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1175,7 +1175,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1287,7 +1287,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1399,7 +1399,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1510,7 +1510,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1612,7 +1612,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1714,7 +1714,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1798,7 +1798,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1865,7 +1865,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( ErrorInvalidTimestamp , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ErrorInvalidTimestamp , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1930,7 +1930,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -2005,7 +2005,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xfe;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 3;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
             BOOST_CHECK(outList.empty());
@@ -2729,7 +2729,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
 
             readMsgPriority = om->Priority;
-            OutEchoToIN(om, &im);
+            OutEchoToIN(om, im);
         }
 
         // This validates the read-after-write behavior... write message has higher priority
@@ -2745,7 +2745,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) );
 
-            BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(&im, CtiTime(), vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(im, CtiTime(), vgList, retList, outList) );
 
             double threshold = 0.0;
 

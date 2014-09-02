@@ -583,7 +583,7 @@ INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
     return nRet;
 }
 
-YukonError_t RDSTransmitter::sendCommResult(INMESS *InMessage)
+YukonError_t RDSTransmitter::sendCommResult(INMESS &InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.

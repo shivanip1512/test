@@ -308,7 +308,7 @@ bool MctBroadcastDevice::getOperation( const UINT &cmd, USHORT &function, USHORT
     return found;
 }
 
-INT MctBroadcastDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 

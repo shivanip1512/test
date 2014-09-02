@@ -621,7 +621,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                 im.Buffer.DSt.Length = 10;
                 im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-                BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyReadRecent(&im, timenow, vgList, retList, outList) );
+                BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyReadRecent(im, timenow, vgList, retList, outList) );
 
                 BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -759,7 +759,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueOutage(&im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {
@@ -835,7 +835,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
 
         strcpy(im.Return.CommandStr, "control connect");
 
-        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(&im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -889,7 +889,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(&im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -2255,7 +2255,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2289,7 +2289,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2330,7 +2330,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2371,7 +2371,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2412,7 +2412,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 3";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2453,7 +2453,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 3";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2502,7 +2502,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
         InMessage.Return.UserID = 0;
         InMessage.Sequence      = EmetconProtocol::GetValue_KWH;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2545,7 +2545,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
         InMessage.Return.UserID = 0;
         InMessage.Sequence      = EmetconProtocol::GetValue_KWH;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2612,7 +2612,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
         test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2659,7 +2659,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
         test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2731,7 +2731,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
     test_Mct440_213xB test_dev;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2808,7 +2808,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
     test_Mct440_213xB test_dev;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2888,7 +2888,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
     test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2967,7 +2967,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
     test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3043,7 +3043,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3076,7 +3076,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3109,7 +3109,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3142,7 +3142,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3400,7 +3400,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3452,7 +3452,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd1;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3504,7 +3504,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd2;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3568,7 +3568,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_CHECK( outList.empty() );
 
@@ -3947,7 +3947,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 0;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_CHECK( vgList.empty() );
             BOOST_CHECK( retList.empty() );
@@ -3984,7 +3984,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4036,7 +4036,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd1;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4088,7 +4088,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd2;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4613,7 +4613,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x50; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4644,7 +4644,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x59; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4676,7 +4676,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4712,7 +4712,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4747,7 +4747,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4782,7 +4782,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 

@@ -31,7 +31,7 @@ public:
 
     virtual std::string getSQLCoreStatement() const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-    virtual INT  ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    virtual INT  ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual LONG getAddress() const;
 
     static bool isPacketValid(const unsigned char *buf, const size_t len);
@@ -111,7 +111,7 @@ protected:
 
     void printAcknowledgmentError   (unsigned char error);
 
-    virtual YukonError_t sendCommResult      (INMESS *InMessage);
+    virtual YukonError_t sendCommResult      (INMESS &InMessage);
 
     bool isTwoWay();
     bool isOdaConfigSendNeeded();

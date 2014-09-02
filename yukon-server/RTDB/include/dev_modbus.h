@@ -68,22 +68,22 @@ public:
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
+    int sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList );
     YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
     virtual YukonError_t generate(CtiXfer &xfer);
     virtual YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
     void sendDispatchResults(CtiConnection &vg_connection);
-    YukonError_t sendCommResult(INMESS *InMessage);
+    YukonError_t sendCommResult(INMESS &InMessage);
 
     //  virtual in case devices need to form up different Modbus requests for the same command ("control open", for example)
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4);
+    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList);
+    INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList);
 };
 
 }

@@ -1828,8 +1828,8 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( const QuantumRawScan
 }
 
 
-INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
-                                        CtiTime &TimeNow,
+INT CtiDeviceQuantum::decodeResultScan( const INMESS &InMessage,
+                                        const CtiTime TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
                                         list< OUTMESS* > &outList )
@@ -1837,7 +1837,7 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
     CHAR     temp[100],
              buffer[60];
 
-    char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
     /* Misc. definitions */
     ULONG    i,
@@ -1850,21 +1850,21 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    const DIALUPREQUEST   *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    const DIALUPREPLY     *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST   *DupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY     *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
 
     CtiPointDataMsg    *pData         = NULL;
     CtiPointNumericSPtr pNumericPoint;
 
     CtiReturnMsg    *pPIL          = CTIDBG_new CtiReturnMsg( getID( ),
-                                                       string( InMessage->Return.CommandStr ),
+                                                       string( InMessage.Return.CommandStr ),
                                                        string( ),
-                                                       InMessage->ErrorCode,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.RetryMacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.GrpMsgID,
-                                                       InMessage->Return.UserID );
+                                                       InMessage.ErrorCode,
+                                                       InMessage.Return.RouteID,
+                                                       InMessage.Return.RetryMacroOffset,
+                                                       InMessage.Return.Attempt,
+                                                       InMessage.Return.GrpMsgID,
+                                                       InMessage.Return.UserID );
 
     const QuantumRawScanData_t *rawScanData = (const QuantumRawScanData_t *)DUPRep->Message;
     QuantumScanData_t    *processedScanData;
@@ -1890,7 +1890,7 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
             //  if we bombed, we need an error condition and to plug values
             if( (tmpCurrentState == StateScanAbort)      ||
                 (tmpCurrentState == StateHandshakeAbort) ||
-                InMessage->ErrorCode )
+                InMessage.ErrorCode )
             {
                 CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
 
@@ -1902,8 +1902,8 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
                     pMsg->insert( ScanRateGeneral );    // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
                     pMsg->insert(
-                            InMessage->ErrorCode
-                                ? InMessage->ErrorCode
+                            InMessage.ErrorCode
+                                ? InMessage.ErrorCode
                                 : GeneralScanAborted );
                 }
 
@@ -1990,14 +1990,14 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS *InMessage,
 
 
 
-INT CtiDeviceQuantum::decodeResultLoadProfile (const INMESS *InMessage,
-                                               CtiTime &TimeNow,
+INT CtiDeviceQuantum::decodeResultLoadProfile (const INMESS &InMessage,
+                                               const CtiTime TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
-    const DIALUPREQUEST         *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    const DIALUPREPLY           *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST         *dupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY           *dupRep = &InMessage.Buffer.DUPSt.DUPRep;
 
     QuantumConfigData_t         lpCfg;
     //  these pointers clean up a bunch of silly casts
@@ -2018,14 +2018,14 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (const INMESS *InMessage,
     CtiPointNumericSPtr         *pNumericPoint;
     CtiTime                      peakTime;
     CtiReturnMsg                *pPIL = CTIDBG_new CtiReturnMsg( getID( ),
-                                                          string( InMessage->Return.CommandStr ),
+                                                          string( InMessage.Return.CommandStr ),
                                                           string( ),
-                                                          InMessage->ErrorCode,
-                                                          InMessage->Return.RouteID,
-                                                          InMessage->Return.RetryMacroOffset,
-                                                          InMessage->Return.Attempt,
-                                                          InMessage->Return.GrpMsgID,
-                                                          InMessage->Return.UserID );
+                                                          InMessage.ErrorCode,
+                                                          InMessage.Return.RouteID,
+                                                          InMessage.Return.RetryMacroOffset,
+                                                          InMessage.Return.Attempt,
+                                                          InMessage.Return.GrpMsgID,
+                                                          InMessage.Return.UserID );
     int                         i, j;
 
 

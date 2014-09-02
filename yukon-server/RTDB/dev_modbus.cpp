@@ -356,7 +356,7 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-YukonError_t ModbusDevice::sendCommResult(INMESS *InMessage)
+YukonError_t ModbusDevice::sendCommResult(INMESS &InMessage)
 {
     char *buf;
     int offset;
@@ -364,7 +364,7 @@ YukonError_t ModbusDevice::sendCommResult(INMESS *InMessage)
     ModbusProtocol::stringlist_t strings;
     ModbusProtocol::stringlist_t::iterator itr;
 
-    buf = reinterpret_cast<char *>(InMessage->Buffer.InMessage);
+    buf = reinterpret_cast<char *>(InMessage.Buffer.InMessage);
     offset = 0;
 
     _modbus.getInboundStrings(strings);
@@ -399,7 +399,7 @@ YukonError_t ModbusDevice::sendCommResult(INMESS *InMessage)
         _string_results.pop_back();
     }
 
-    if( result_string.size() >= sizeof(InMessage->Buffer.InMessage) )
+    if( result_string.size() >= sizeof(InMessage.Buffer.InMessage) )
     {
         //  make sure we complain about it so we know the magnitude of the problem when people bring it up...
         //    one possible alternative is to send multple InMessages across with the string data - although,
@@ -412,16 +412,16 @@ YukonError_t ModbusDevice::sendCommResult(INMESS *InMessage)
         string cropped("\n---cropped---");
 
         //  erase the end chunk so we can append the "cropped" string in
-        result_string.erase(sizeof(InMessage->Buffer.InMessage) - cropped.size() - 1, result_string.size());
+        result_string.erase(sizeof(InMessage.Buffer.InMessage) - cropped.size() - 1, result_string.size());
         result_string += cropped;
     }
 
-    InMessage->InLength = result_string.size() + 1;
+    InMessage.InLength = result_string.size() + 1;
 
     //  make sure we don't overrun the buffer, even though we just checked above
-    strncpy(buf, result_string.c_str(), sizeof(InMessage->Buffer.InMessage) - 1);
+    strncpy(buf, result_string.c_str(), sizeof(InMessage.Buffer.InMessage) - 1);
     //  and mark the end with a null, again, just to be sure
-    InMessage->Buffer.InMessage[sizeof(InMessage->Buffer.InMessage) - 1] = 0;
+    InMessage.Buffer.InMessage[sizeof(InMessage.Buffer.InMessage) - 1] = 0;
 
     return NoError;
 }
@@ -439,7 +439,7 @@ void ModbusDevice::sendDispatchResults(CtiConnection &vg_connection)
     Protocol::Interface::pointlist_t points;
     Protocol::Interface::pointlist_t::iterator itr;
 
-    vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage->Return.CommandStr
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage.Return.CommandStr
 
     double tmpValue;
 
@@ -540,9 +540,9 @@ void ModbusDevice::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    const INT ErrReturn = InMessage->ErrorCode;
+    const INT ErrReturn = InMessage.ErrorCode;
 
     CtiReturnMsg *retMsg;
 
@@ -550,30 +550,30 @@ INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
     {
         string result_string;
 
-        unsigned long length = InMessage->InLength;
+        unsigned long length = InMessage.InLength;
         //  safety first
-        if( InMessage->InLength > sizeof(InMessage->Buffer.InMessage) )
+        if( InMessage.InLength > sizeof(InMessage.Buffer.InMessage) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint InMessage.InLength > sizeof(InMessage.Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            length = sizeof(InMessage->Buffer.InMessage);
+            length = sizeof(InMessage.Buffer.InMessage);
         }
 
-        result_string.assign(InMessage->Buffer.InMessage,
-                             InMessage->Buffer.InMessage + length);
+        result_string.assign(InMessage.Buffer.InMessage,
+                             InMessage.Buffer.InMessage + length);
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         string(InMessage->Return.CommandStr),
+                                         string(InMessage.Return.CommandStr),
                                          result_string.data(),
-                                         InMessage->ErrorCode,
-                                         InMessage->Return.RouteID,
-                                         InMessage->Return.RetryMacroOffset,
-                                         InMessage->Return.Attempt,
-                                         InMessage->Return.GrpMsgID,
-                                         InMessage->Return.UserID);
+                                         InMessage.ErrorCode,
+                                         InMessage.Return.RouteID,
+                                         InMessage.Return.RetryMacroOffset,
+                                         InMessage.Return.Attempt,
+                                         InMessage.Return.GrpMsgID,
+                                         InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }
@@ -586,14 +586,14 @@ INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         string(InMessage->Return.CommandStr),
+                                         string(InMessage.Return.CommandStr),
                                          resultString,
-                                         InMessage->ErrorCode,
-                                         InMessage->Return.RouteID,
-                                         InMessage->Return.RetryMacroOffset,
-                                         InMessage->Return.Attempt,
-                                         InMessage->Return.GrpMsgID,
-                                         InMessage->Return.UserID);
+                                         InMessage.ErrorCode,
+                                         InMessage.Return.RouteID,
+                                         InMessage.Return.RetryMacroOffset,
+                                         InMessage.Return.Attempt,
+                                         InMessage.Return.GrpMsgID,
+                                         InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }

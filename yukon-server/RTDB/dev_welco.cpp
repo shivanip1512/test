@@ -52,9 +52,9 @@ CtiDeviceWelco::CtiDeviceWelco()
 INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
                                     CtiCommandParser &parse,
                                     OUTMESS *&OutMessage,
-                                    list< CtiMessage* > &vgList,
-                                    list< CtiMessage* > &retList,
-                                    list< OUTMESS* > &outList,
+                                    CtiMessageList &vgList,
+                                    CtiMessageList &retList,
+                                    OutMessageList &outList,
                                     INT ScanPriority)
 {
     /*
@@ -305,7 +305,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     bool continue_required = false;             // This is not the last report from this device for the previous request.
     bool accums_spill_frame = false;            // The accumulator block spills across this frame into the next one.
@@ -342,30 +342,30 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
 /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanFlag(ScanRateGeneral);
 
-    if(InMessage->InLength == 0)
+    if(InMessage.InLength == 0)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << TimeNow << " Message returned for " << getName() << " is zero bytes in length " << endl;
         return READTIMEOUT;
     }
 
-    MyInMessage = InMessage->Buffer.InMessage - 2;
+    MyInMessage = InMessage.Buffer.InMessage - 2;
 
     /* Check if we need to do a continue */
-    if(!((*(InMessage->Buffer.InMessage - 3)) & 0x01))      // This must be the IDLC header frame STATUS byte.  LSB is the FIN bit.
+    if(!((*(InMessage.Buffer.InMessage - 3)) & 0x01))      // This must be the IDLC header frame STATUS byte.  LSB is the FIN bit.
     {
         continue_required = true;
     }
 
     /* Check to see if this is a null response */
-    if((*(InMessage->Buffer.InMessage - 3)) & 0x80)
+    if((*(InMessage.Buffer.InMessage - 3)) & 0x80)
     {
         // CtiLockGuard<CtiLogger> doubt_guard(dout);
         // dout << TimeNow << " " << getName() << " No exceptions.. " << endl;
         return(NORMAL);
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -373,7 +373,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     /* Walk through the sectins */
     do
@@ -406,7 +406,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(*InMessage, OutMessage);
+                        InEchoToOut(InMessage, OutMessage);
 
                         /* This is the Big E so reset the RTU, download the deadbands and clear the demand accums */
                         if((i = WelCoReset(OutMessage, MAXPRIORITY)) != NORMAL)
@@ -465,7 +465,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                     if(useScanFlags())
                     {
                         setPrevFreezeTime(getLastFreezeTime());
-                        setLastFreezeTime( CtiTime(InMessage->Time) );
+                        setLastFreezeTime( CtiTime(InMessage.Time) );
                         resetScanFlag(ScanFreezeFailed);
                         setPrevFreezeNumber(getLastFreezeNumber());
                         setLastFreezeNumber(TRUE);
@@ -476,9 +476,9 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(*InMessage, OutMessage);
+                        InEchoToOut(InMessage, OutMessage);
 
-                        CtiCommandParser parse(InMessage->Return.CommandStr);
+                        CtiCommandParser parse(InMessage.Return.CommandStr);
 
                         int welcofreezedelay = gConfigParms.getValueAsInt("WELCO_FREEZE_TO_SCAN_MSEC_DELAY", 0);
                         if(welcofreezedelay)
@@ -988,7 +988,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                 resetScanFlag(ScanRateIntegrity);
                 StartPoint = MAKEUSHORT (MyInMessage[2], MyInMessage[3]) + 1;
 
-                if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
+                if((*(InMessage.Buffer.InMessage - 3)) & 0x08)
                 {
                     /* This is a 16 bit analog */
                     FinishPoint = StartPoint  + (MyInMessage[1] - 2) / 2 - 1;
@@ -1010,7 +1010,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                     if(NumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)))
                     {
                         /* update the point data */
-                        if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
+                        if((*(InMessage.Buffer.InMessage - 3)) & 0x08)
                         {
                             /* This is a 16 bit analog */
                             Value = MAKEUSHORT (MyInMessage[((PointOffset - StartPoint) * 2) + 4],
@@ -1060,7 +1060,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                 // PointRecord.PointType = ANALOGPOINT;
 
                 /* FinishPoint is used as count for analog exceptions */
-                if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
+                if((*(InMessage.Buffer.InMessage - 3)) & 0x08)
                 {
                     /* 16 bit analogs pack 2 to 7 bytes */
                     FinishPoint = (MyInMessage[1] * 2) / 7;
@@ -1074,7 +1074,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                 /* StartPoint is used as the counter */
                 for(StartPoint = 0; StartPoint < FinishPoint; StartPoint++)
                 {
-                    if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
+                    if((*(InMessage.Buffer.InMessage - 3)) & 0x08)
                     {
                         if(StartPoint & 0x01)
                         {
@@ -1098,7 +1098,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
                     /* Now Update the Record if it exists */
                     if(NumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)))
                     {
-                        if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
+                        if((*(InMessage.Buffer.InMessage - 3)) & 0x08)
                         {
                             if(StartPoint & 0x01)
                             {
@@ -1172,7 +1172,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
 
         if(OutMessage != NULL)
         {
-            InEchoToOut(*InMessage, OutMessage);
+            InEchoToOut(InMessage, OutMessage);
 
             if((i = WelCoContinue (OutMessage, MAXPRIORITY - 4)) != NORMAL)
             {
@@ -1275,7 +1275,7 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
 
 }
 
-INT CtiDeviceWelco::WelCoTimeSync(const INMESS *InMessage, list< OUTMESS* > &outList, INT Priority)
+INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, list< OUTMESS* > &outList, INT Priority)
 {
     INT   status = NORMAL;
 
@@ -1283,7 +1283,7 @@ INT CtiDeviceWelco::WelCoTimeSync(const INMESS *InMessage, list< OUTMESS* > &out
 
     if(OutMessage != NULL)
     {
-        InEchoToOut(*InMessage, OutMessage);
+        InEchoToOut(InMessage, OutMessage);
         status = WelCoTimeSync(OutMessage, MAXPRIORITY - 1);
 
         if(status == NORMAL)
@@ -1355,7 +1355,7 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 }
 
 
-INT CtiDeviceWelco::WelCoDeadBands(const INMESS *InMessage, list< OUTMESS* > &outList, INT Priority)
+INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, list< OUTMESS* > &outList, INT Priority)
 {
     INT status = NORMAL;
 
@@ -1363,7 +1363,7 @@ INT CtiDeviceWelco::WelCoDeadBands(const INMESS *InMessage, list< OUTMESS* > &ou
 
     if(OutMessage != NULL)
     {
-        InEchoToOut(*InMessage, OutMessage);
+        InEchoToOut(InMessage, OutMessage);
 
         status = WelCoDeadBands(OutMessage, outList, MAXPRIORITY - 1);
     }

@@ -818,23 +818,23 @@ void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-INT CtiDeviceSystem::ProcessResult(const INMESS* InMessage, CtiTime& TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSystem::ProcessResult(const INMESS& InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     string resultString;
     string commandType;
 
-    CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-    if (InMessage->ErrorCode)
+    if (InMessage.ErrorCode)
     {
-        resultString = "Error (" + CtiNumStr(InMessage->ErrorCode) + ") / ";
+        resultString = "Error (" + CtiNumStr(InMessage.ErrorCode) + ") / ";
     }
     else
     {
         resultString = "Sent Successfully / ";
     }
 
-    switch (InMessage->Sequence)
+    switch (InMessage.Sequence)
     {
         case Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear:
             commandType = "Broadcast / Phase Detect flag clear";
@@ -847,7 +847,7 @@ INT CtiDeviceSystem::ProcessResult(const INMESS* InMessage, CtiTime& TimeNow, li
             break;
     }
 
-    retMsg->setUserMessageId(InMessage->Return.UserID);
+    retMsg->setUserMessageId(InMessage.Return.UserID);
     retMsg->setResultString(resultString + commandType);
 
     retList.push_back(retMsg);

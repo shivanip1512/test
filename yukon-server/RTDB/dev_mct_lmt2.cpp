@@ -256,11 +256,11 @@ bool Lmt2Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *
 }
 
 
-INT Lmt2Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case (EmetconProtocol::Scan_LoadProfile):
         {
@@ -294,7 +294,7 @@ INT Lmt2Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
             break;
         }
@@ -304,11 +304,11 @@ INT Lmt2Device::ModelDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
 }
 
 
-INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
-    const DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string val_report, result_string;
 
@@ -319,7 +319,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow,
     unsigned long pulses, timestamp, current_block_start, retrieved_block_start;
     PointQuality_t quality;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     CtiPointNumericSPtr point;
     CtiReturnMsg    *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
@@ -331,7 +331,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow,
         dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -339,7 +339,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow,
         return MEMORY;
     }
 
-    return_msg->setUserMessageId(InMessage->Return.UserID);
+    return_msg->setUserMessageId(InMessage.Return.UserID);
 
     if( (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
     {
@@ -391,7 +391,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage->Return.CommandStr << endl;
+                    dout << InMessage.Return.CommandStr << endl;
                 }
 
                 result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
@@ -402,7 +402,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage->Return.CommandStr << endl;
+                    dout << InMessage.Return.CommandStr << endl;
                     dout << "retrieved_block_num = " << retrieved_block_num << endl;
                     dout << "retrieved_block_start = " << retrieved_block_start << endl;
                     dout << "lastLPTime = " << getLastLPTime()  << endl;
@@ -476,35 +476,35 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS *InMessage, CtiTime &TimeNow,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage.Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         result_string  = "scan_loadprofile tokens not found in command string \"";
-        result_string += InMessage->Return.CommandStr;
+        result_string += InMessage.Return.CommandStr;
         result_string += "\" - cannot proceed with decode, aborting";
     }
 
     return_msg->setResultString(result_string);
 
-    retMsgHandler(InMessage->Return.CommandStr, status, return_msg, vgList, retList);
+    retMsgHandler(InMessage.Return.CommandStr, status, return_msg, vgList, retList);
 
     return status;
 }
 
 
-INT Lmt2Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    const unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
 
     ULONG pulseCount = 0;
     string resultString;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -512,7 +512,7 @@ INT Lmt2Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeN
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Internal Status:\n";
 
@@ -544,22 +544,22 @@ INT Lmt2Device::decodeGetStatusInternal( const INMESS *InMessage, CtiTime &TimeN
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
 
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -567,7 +567,7 @@ INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &Ti
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Load Survey Control Parameters:\n";
     resultString += "Demand Interval : " + CtiNumStr((int)(DSt->Message[2] * 5)) + string("\n");
@@ -576,17 +576,17 @@ INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS *InMessage, CtiTime &Ti
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Lmt2Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
-   const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+   const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
   INT ssp;
   char rev;
@@ -596,12 +596,12 @@ INT Lmt2Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, 
 
   CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-  ssp = InMessage->Buffer.DSt.Message[0];
-  rev = 64 + InMessage->Buffer.DSt.Message[1];
+  ssp = InMessage.Buffer.DSt.Message[0];
+  rev = 64 + InMessage.Buffer.DSt.Message[1];
 
   sspec = "\nSoftware Specification " + CtiNumStr(ssp) + string("  Rom Revision ") + rev + "\n";
 
-  if(InMessage->Buffer.DSt.Message[2] & 0x01)
+  if(InMessage.Buffer.DSt.Message[2] & 0x01)
   {
      options+= string("  Latched relay\n");
   }
@@ -610,7 +610,7 @@ INT Lmt2Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, 
      options+= string("  No latched relay\n");
   }
 
-  if(InMessage->Buffer.DSt.Message[2] & 0x04)
+  if(InMessage.Buffer.DSt.Message[2] & 0x04)
   {
      options+= string("  No encoding meter\n");
   }
@@ -619,7 +619,7 @@ INT Lmt2Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, 
      options+= string("  Encoding meter\n");
   }
 
-  if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+  if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
   {
      {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -629,10 +629,10 @@ INT Lmt2Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, 
      return MEMORY;
   }
 
-  ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+  ReturnMsg->setUserMessageId(InMessage.Return.UserID);
   ReturnMsg->setResultString( sspec + options );
 
-  retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+  retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
    return status;
 }

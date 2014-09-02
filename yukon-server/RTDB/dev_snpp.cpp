@@ -673,7 +673,7 @@ void CtiDeviceSnppPagingTerminal::resetStates()
     _command = Normal;
 }
 
-YukonError_t CtiDeviceSnppPagingTerminal::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDeviceSnppPagingTerminal::sendCommResult(INMESS &InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.

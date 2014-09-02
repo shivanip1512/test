@@ -23,12 +23,12 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              std::list< CtiMessage* >      &vgList,
-                              std::list< CtiMessage* >      &retList,
-                              std::list< OUTMESS* >         &outList);
+                              CtiMessageList      &vgList,
+                              CtiMessageList      &retList,
+                              OutMessageList         &outList);
 
    virtual std::string getDescription(const CtiCommandParser &parse) const;
 
-   virtual INT  ProcessResult(const INMESS*, CtiTime&, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT  ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
 };

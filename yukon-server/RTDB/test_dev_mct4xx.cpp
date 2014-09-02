@@ -23,7 +23,7 @@ struct test_Mct4xxDevice : Cti::Devices::Mct4xxDevice
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
     long getLoadProfileInterval(unsigned channel)
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
-    INT decodeGetStatusFreeze( const INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+    INT decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
     ConfigPartsList getPartsList()
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return ConfigPartsList();  }
@@ -339,7 +339,7 @@ struct putConfig_helper
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE( test_dev_mct4xx_tou, putConfig_helper ) 
+BOOST_FIXTURE_TEST_SUITE( test_dev_mct4xx_tou, putConfig_helper )
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     BOOST_AUTO_TEST_CASE( test_midnight_only_schedules )
     {

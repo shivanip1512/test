@@ -844,18 +844,19 @@ void ResultThread (void *Arg)
 
             while( !ScannerQuit && !pendingInQueue.empty() )
             {
-                boost::ptr_deque<INMESS>::auto_type InMessage = pendingInQueue.pop_front();
+                boost::ptr_deque<INMESS>::auto_type pInMessage = pendingInQueue.pop_front();
+                INMESS &InMessage = *pInMessage;
 
                 LastPorterInTime = LastPorterInTime.now();
 
                 CtiDeviceManager::coll_type::reader_lock_guard_t guard(ScannerDeviceManager.getLock());
 
                 // Find the device..
-                LONG id = InMessage->TargetID;
+                LONG id = InMessage.TargetID;
 
                 if(id == 0)
                 {
-                    id = InMessage->DeviceID;
+                    id = InMessage.DeviceID;
                 }
 
                 CtiDeviceSPtr pBase = (CtiDeviceSPtr )ScannerDeviceManager.getDeviceByID(id);
@@ -863,7 +864,7 @@ void ResultThread (void *Arg)
                 if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " InMessage from " << pBase->getName() << " " << GetErrorString(InMessage->ErrorCode) << endl;
+                    dout << CtiTime() << " InMessage from " << pBase->getName() << " " << GetErrorString(InMessage.ErrorCode) << endl;
                 }
 
                 if(pBase && pBase->isSingle())
@@ -878,7 +879,7 @@ void ResultThread (void *Arg)
                     list< CtiMessage* > vgList;
 
                     // Do some device dependent work on this Inbound message!
-                    pSingle->ProcessResult(InMessage.get(), TimeNow, vgList, retList, outList);
+                    pSingle->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
                     // Send any new porter requests to porter
                     if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.size() > 0)
@@ -922,10 +923,10 @@ void ResultThread (void *Arg)
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Unknown device scanned.  Device ID: " << InMessage->DeviceID << endl;
-                    dout << " Port listed as                   : " << InMessage->Port     << endl;
-                    dout << " Remote listed as                 : " << InMessage->Remote   << endl;
-                    dout << " Target Remote                    : " << InMessage->TargetID   << endl;
+                    dout << "Unknown device scanned.  Device ID: " << InMessage.DeviceID << endl;
+                    dout << " Port listed as                   : " << InMessage.Port     << endl;
+                    dout << " Remote listed as                 : " << InMessage.Remote   << endl;
+                    dout << " Target Remote                    : " << InMessage.TargetID   << endl;
                 }
             }
         }

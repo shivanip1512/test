@@ -697,7 +697,7 @@ YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
     return retval;
 }
 
-YukonError_t CtiDeviceSingle::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDeviceSingle::sendCommResult(INMESS &InMessage)
 {
     YukonError_t retval = NOTNORMAL;
     Protocol::Interface *prot = getProtocol();
@@ -777,13 +777,13 @@ std::string CtiDeviceSingle::eWordReport(const ESTRUCT &ESt, Cti::Optional<repea
 }
 
 
-INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
-                                   CtiTime &TimeNow,
+INT CtiDeviceSingle::ProcessResult(const INMESS &InMessage,
+                                   const CtiTime TimeNow,
                                    list< CtiMessage* >   &vgList,
                                    list< CtiMessage* > &retList,
                                    list< OUTMESS* > &outList)
 {
-    INT   nRet = InMessage->ErrorCode;
+    INT   nRet = InMessage.ErrorCode;
     INT   status = 0;
     bool  bLastFail = false;
 
@@ -796,9 +796,9 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
     {
         string CmdStr("Unknown");
 
-        if(InMessage->Return.CommandStr[0] != '\0')
+        if(InMessage.Return.CommandStr[0] != '\0')
         {
-            CmdStr = string(InMessage->Return.CommandStr);
+            CmdStr = string(InMessage.Return.CommandStr);
             std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
         }
 
@@ -806,40 +806,40 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
         {
             OUTMESS *OutTemplate = CTIDBG_new OUTMESS;
 
-            InEchoToOut( *InMessage, OutTemplate );
+            InEchoToOut( InMessage, OutTemplate );
 
-            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID,
-                                                           string(InMessage->Return.CommandStr),
-                                                           InMessage->Return.UserID,
-                                                           InMessage->Return.GrpMsgID,
-                                                           InMessage->Return.RouteID,
-                                                           InMessage->Return.RetryMacroOffset,
-                                                           InMessage->Return.Attempt,
-                                                           InMessage->Return.OptionsField,
-                                                           InMessage->Priority);
+            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID,
+                                                           string(InMessage.Return.CommandStr),
+                                                           InMessage.Return.UserID,
+                                                           InMessage.Return.GrpMsgID,
+                                                           InMessage.Return.RouteID,
+                                                           InMessage.Return.RetryMacroOffset,
+                                                           InMessage.Return.Attempt,
+                                                           InMessage.Return.OptionsField,
+                                                           InMessage.Priority);
 
-            pReq->setConnectionHandle( InMessage->Return.Connection );
+            pReq->setConnectionHandle( InMessage.Return.Connection );
 
             {
                 string msg;
                 CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(getID(),
                                                             CmdStr,
-                                                            string("Macro offset ") + CtiNumStr(*InMessage->Return.RetryMacroOffset - 1) + string(" failed. Attempting next offset."),
+                                                            string("Macro offset ") + CtiNumStr(*InMessage.Return.RetryMacroOffset - 1) + string(" failed. Attempting next offset."),
                                                             nRet,
-                                                            InMessage->Return.RouteID,
-                                                            InMessage->Return.RetryMacroOffset,
-                                                            InMessage->Return.Attempt,
-                                                            InMessage->Return.GrpMsgID,
-                                                            InMessage->Return.UserID,
-                                                            InMessage->Return.SOE,
+                                                            InMessage.Return.RouteID,
+                                                            InMessage.Return.RetryMacroOffset,
+                                                            InMessage.Return.Attempt,
+                                                            InMessage.Return.GrpMsgID,
+                                                            InMessage.Return.UserID,
+                                                            InMessage.Return.SOE,
                                                             CtiMultiMsg_vec());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + GetErrorString(nRet);
 
-                if( nRet == EWORDRCV && InMessage->Buffer.RepeaterError.ESt )
+                if( nRet == EWORDRCV && InMessage.Buffer.RepeaterError.ESt )
                 {
                     msg += "\n";
-                    msg += eWordReport(*(InMessage->Buffer.RepeaterError.ESt), InMessage->Buffer.RepeaterError.Details);
+                    msg += eWordReport(*(InMessage.Buffer.RepeaterError.ESt), InMessage.Buffer.RepeaterError.Details);
                 }
 
                 Ret->setResultString( msg );
@@ -867,7 +867,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
             else
             {
                 // if blastfail is not set, we need to decrement the message we are retrying here.
-                decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+                decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
             }
 
             delete pReq;
@@ -893,36 +893,36 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
         if(bLastFail)
         {
             /* something went wrong so start by printing error */
-            if( InMessage->ErrorCode != ErrPortSimulated)
+            if( InMessage.ErrorCode != ErrPortSimulated)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " Error (" << InMessage->ErrorCode << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
+                dout << TimeNow << " Error (" << InMessage.ErrorCode << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
             }
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(getID(),
                                                         CmdStr,
                                                         GetErrorString(nRet),
                                                         nRet,
-                                                        InMessage->Return.RouteID,
-                                                        InMessage->Return.RetryMacroOffset,
-                                                        InMessage->Return.Attempt,
-                                                        InMessage->Return.GrpMsgID,
-                                                        InMessage->Return.UserID,
-                                                        InMessage->Return.SOE,
+                                                        InMessage.Return.RouteID,
+                                                        InMessage.Return.RetryMacroOffset,
+                                                        InMessage.Return.Attempt,
+                                                        InMessage.Return.GrpMsgID,
+                                                        InMessage.Return.UserID,
+                                                        InMessage.Return.SOE,
                                                         CtiMultiMsg_vec());
 
-            if( nRet == EWORDRCV && InMessage->Buffer.RepeaterError.ESt )
+            if( nRet == EWORDRCV && InMessage.Buffer.RepeaterError.ESt )
             {
                 string msg = Ret->ResultString();
 
                 msg += "\n";
-                msg += eWordReport(*(InMessage->Buffer.RepeaterError.ESt), InMessage->Buffer.RepeaterError.Details);
+                msg += eWordReport(*(InMessage.Buffer.RepeaterError.ESt), InMessage.Buffer.RepeaterError.Details);
 
                 Ret->setResultString( msg );
             }
 
-            decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-            if(getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)>0)
+            decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
+            if(getGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection)>0)
             {
                 Ret->setExpectMore(true);
             }
@@ -931,7 +931,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
 
             const unsigned outList_size = outList.size();
 
-            SubmitRetry(*InMessage, TimeNow, vgList, retList, outList);
+            SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
 
             if( outList.size() != outList_size )
             {
@@ -947,7 +947,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
             }
             else
             {
-                ErrorDecode(*InMessage, TimeNow, retList);
+                ErrorDecode(InMessage, TimeNow, retList);
             }
         }
     }
@@ -1772,7 +1772,7 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
     return dispatchTime;
 }
 
-bool CtiDeviceSingle::processAdditionalRoutes( const INMESS *InMessage, int nRet ) const
+bool CtiDeviceSingle::processAdditionalRoutes( const INMESS &InMessage, int nRet ) const
 {
     return false;
 }

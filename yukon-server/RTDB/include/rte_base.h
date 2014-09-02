@@ -92,7 +92,7 @@ public:
     std::string getName() const;
     INT getType() const;
 
-    virtual bool processAdditionalRoutes( const INMESS *InMessage ) const;
+    virtual bool processAdditionalRoutes( const INMESS &InMessage ) const;
 
 protected:
 
@@ -180,7 +180,7 @@ public:
 inline LONG CtiRouteBase::getRouteID() const { return _tblPAO.getID(); }
 inline std::string CtiRouteBase::getName() const { return _tblPAO.getName(); }
 inline INT CtiRouteBase::getType() const { return _tblPAO.getType(); }
-inline bool CtiRouteBase::processAdditionalRoutes( const INMESS *InMessage ) const { return false; }
+inline bool CtiRouteBase::processAdditionalRoutes( const INMESS &InMessage ) const { return false; }
 
 typedef CtiRouteBase CtiRoute;
 

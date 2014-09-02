@@ -48,17 +48,17 @@ _retryTime(second_clock::universal_time())
     resetStates(true);
 }
 
-INT CtiDevicePagingReceiver::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDevicePagingReceiver::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     //So far I am doing nothing with the result...
     resetScanFlag();
     return NORMAL;
 }
 
-YukonError_t CtiDevicePagingReceiver::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDevicePagingReceiver::sendCommResult(INMESS &InMessage)
 {
-    InMessage->ErrorCode = NoError;
-    InMessage->DeviceID = getID();
+    InMessage.ErrorCode = NoError;
+    InMessage.DeviceID = getID();
     return NoError;
 }
 

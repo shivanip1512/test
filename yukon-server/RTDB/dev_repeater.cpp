@@ -456,12 +456,12 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg                  *pReq,
 }
 
 
-INT Repeater900Device::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case (EmetconProtocol::Scan_General):
         case (EmetconProtocol::Command_Loop):
@@ -502,7 +502,7 @@ INT Repeater900Device::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, l
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
             status = NoMethod;
             break;
@@ -513,20 +513,20 @@ INT Repeater900Device::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT Repeater900Device::decodeLoopback(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     resetScanFlag(ScanRateGeneral);
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -534,28 +534,28 @@ INT Repeater900Device::decodeLoopback(const INMESS *InMessage, CtiTime &TimeNow,
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     ReturnMsg->setResultString( getName() + " / successful ping" );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Repeater900Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -563,7 +563,7 @@ INT Repeater900Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &Ti
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int  sspec;
     char revision;
@@ -581,19 +581,19 @@ INT Repeater900Device::decodeGetConfigModel(const INMESS *InMessage, CtiTime &Ti
 
     ReturnMsg->setResultString( modelStr );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Repeater900Device::decodeGetConfigRole(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
     int   rolenum;
     const unsigned char *buf;
@@ -602,7 +602,7 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS *InMessage, CtiTime &Tim
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -610,12 +610,12 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS *InMessage, CtiTime &Tim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
 
     rolenum = parse.getiValue( "rolenum" );
     rolenum -= (rolenum - 1) % 6;
-    buf = InMessage->Buffer.DSt.Message;
+    buf = InMessage.Buffer.DSt.Message;
 
     for( int i = 0; i < 6; i++ )
     {
@@ -630,17 +630,17 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS *InMessage, CtiTime &Tim
 
     ReturnMsg->setResultString( roleStr );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 
-INT Repeater900Device::decodePutConfigRole(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     INT   j;
     ULONG pfCount = 0;
@@ -649,7 +649,7 @@ INT Repeater900Device::decodePutConfigRole(const INMESS *InMessage, CtiTime &Tim
 
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -657,9 +657,9 @@ INT Repeater900Device::decodePutConfigRole(const INMESS *InMessage, CtiTime &Tim
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    CtiString cmdStr = InMessage->Return.CommandStr;
+    CtiString cmdStr = InMessage.Return.CommandStr;
     //This should look like "putconfig emetcon mrole 1 2 3 4.... : 6 3 4 5 5 .... : 12 3 4 1 4...
     //We want to grab the numbers after the leading : then remove the leading :
 
@@ -671,16 +671,16 @@ INT Repeater900Device::decodePutConfigRole(const INMESS *InMessage, CtiTime &Tim
             //We stripped one, another still exists. We need to re-submit this.
             CtiRequestMsg *newReq = new CtiRequestMsg( getID(),
                                                       cmdStr,
-                                                      InMessage->Return.UserID,
-                                                      InMessage->Return.GrpMsgID,
-                                                      InMessage->Return.RouteID,
-                                                      selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                                      InMessage.Return.UserID,
+                                                      InMessage.Return.GrpMsgID,
+                                                      InMessage.Return.RouteID,
+                                                      selectInitialMacroRouteOffset(InMessage.Return.RouteID),
                                                       0,
                                                       0,
-                                                      InMessage->Priority);
+                                                      InMessage.Priority);
 
             newReq->setMessageTime(CtiTime::now().seconds() + 5);
-            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+            newReq->setConnectionHandle((void *)InMessage.Return.Connection);
             retList.push_back(newReq);
             expectMore = true;
 
@@ -698,21 +698,21 @@ INT Repeater900Device::decodePutConfigRole(const INMESS *InMessage, CtiTime &Tim
 
     ReturnMsg->setResultString( resultString );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
     return status;
 }
 
-INT Repeater900Device::decodeGetConfigRaw( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    CtiCommandParser parse(InMessage->Return.CommandStr);
+    CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -750,22 +750,22 @@ INT Repeater900Device::decodeGetConfigRaw( const INMESS *InMessage, CtiTime &Tim
         }
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
-INT Repeater900Device::decodePutConfigRaw( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
-    const DSTRUCT *DSt = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -775,7 +775,7 @@ INT Repeater900Device::decodePutConfigRaw( const INMESS *InMessage, CtiTime &Tim
 
     string results;
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::PutConfig_Raw:
         {
@@ -788,10 +788,10 @@ INT Repeater900Device::decodePutConfigRaw( const INMESS *InMessage, CtiTime &Tim
         }
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

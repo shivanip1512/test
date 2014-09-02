@@ -118,8 +118,8 @@ INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg *pReq,
 }
 
 
-INT CtiDeviceTCU::ResultDecode(const INMESS *InMessage,
-                               CtiTime &TimeNow,
+INT CtiDeviceTCU::ResultDecode(const INMESS &InMessage,
+                               const CtiTime TimeNow,
                                list< CtiMessage* > &vgList,
                                list< CtiMessage* > &retList,
                                list< OUTMESS* > &outList)
@@ -153,7 +153,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
 }
 
 /* Routine to decode returned TCU message and update database */
-INT CtiDeviceTCU::TCUDecode (const INMESS *InMessage, CtiTime &ScanTime, list< CtiMessage* > &retList)
+INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, list< CtiMessage* > &retList)
 {
    /* Misc. definitions */
    ULONG i;
@@ -171,7 +171,7 @@ INT CtiDeviceTCU::TCUDecode (const INMESS *InMessage, CtiTime &ScanTime, list< C
    CtiPointDataMsg   *pData    = NULL;
 
    /* decode whatever message this is */
-   switch(InMessage->Buffer.InMessage[2])
+   switch(InMessage.Buffer.InMessage[2])
    {
    case MASTERFREEZE:
    case MASTERSCANALL:
@@ -226,14 +226,14 @@ INT CtiDeviceTCU::TCUDecode (const INMESS *InMessage, CtiTime &ScanTime, list< C
    case MASTERLOOPBACK:
       {
          CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
-                                                  string(InMessage->Return.CommandStr),
+                                                  string(InMessage.Return.CommandStr),
                                                   string(getName() + " / successful ping"),
-                                                  InMessage->ErrorCode,
-                                                  InMessage->Return.RouteID,
-                                                  InMessage->Return.RetryMacroOffset,
-                                                  InMessage->Return.Attempt,
-                                                  InMessage->Return.GrpMsgID,
-                                                  InMessage->Return.UserID);
+                                                  InMessage.ErrorCode,
+                                                  InMessage.Return.RouteID,
+                                                  InMessage.Return.RetryMacroOffset,
+                                                  InMessage.Return.Attempt,
+                                                  InMessage.Return.GrpMsgID,
+                                                  InMessage.Return.UserID);
 
 
          if(pLoop != NULL)
@@ -476,7 +476,7 @@ INT CtiDeviceTCU::TCULoop(OUTMESS* OutMessage)
 }
 
 
-CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS *InMessage)
+CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS &InMessage)
 {
    ULONG       i;
    char        temp[80];
@@ -491,20 +491,20 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS *InMessage)
    CtiPointDataMsg   *pData    = NULL;
 
    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                           string(InMessage->Return.CommandStr),
+                                           string(InMessage.Return.CommandStr),
                                            string("TCU status request complete"),
-                                           InMessage->ErrorCode,
-                                           InMessage->Return.RouteID,
-                                           InMessage->Return.RetryMacroOffset,
-                                           InMessage->Return.Attempt,
-                                           InMessage->Return.GrpMsgID,
-                                           InMessage->Return.UserID);
+                                           InMessage.ErrorCode,
+                                           InMessage.Return.RouteID,
+                                           InMessage.Return.RetryMacroOffset,
+                                           InMessage.Return.Attempt,
+                                           InMessage.Return.GrpMsgID,
+                                           InMessage.Return.UserID);
 
    /* update the scan time */
    // FIX FIX FIX 091499 CGP ?????  DeviceRecord->LastFullScan = TimeB->time;
 
    /* Rebuild the status word */
-   TCUStatus = MAKEUSHORT (InMessage->Buffer.InMessage[4], InMessage->Buffer.InMessage[5]);
+   TCUStatus = MAKEUSHORT (InMessage.Buffer.InMessage[4], InMessage.Buffer.InMessage[5]);
 
    /* Now loop through and update remote processes as needed */
    for(i = 1; i <= 16; i++)

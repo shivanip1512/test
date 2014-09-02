@@ -57,12 +57,12 @@ bool Repeater800Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 }
 
 
-INT Repeater800Device::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case (EmetconProtocol::GetValue_PFCount):
         {
@@ -77,7 +77,7 @@ INT Repeater800Device::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, l
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
             break;
         }
@@ -87,11 +87,11 @@ INT Repeater800Device::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT Repeater800Device::decodeGetValuePFCount(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater800Device::decodeGetValuePFCount(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
-    const DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     INT   j;
     ULONG pfCount = 0;
@@ -99,7 +99,7 @@ INT Repeater800Device::decodeGetValuePFCount(const INMESS *InMessage, CtiTime &T
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -107,11 +107,11 @@ INT Repeater800Device::decodeGetValuePFCount(const INMESS *InMessage, CtiTime &T
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for(j = 0; j < 2; j++)
     {
-        pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[j];
+        pfCount = (pfCount << 8) + InMessage.Buffer.DSt.Message[j];
     }
 
     {
@@ -141,7 +141,7 @@ INT Repeater800Device::decodeGetValuePFCount(const INMESS *InMessage, CtiTime &T
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

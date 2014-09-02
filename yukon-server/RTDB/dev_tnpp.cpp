@@ -786,7 +786,7 @@ string CtiDeviceTnppPagingTerminal::getFunctionCode()
 
 }
 
-YukonError_t CtiDeviceTnppPagingTerminal::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDeviceTnppPagingTerminal::sendCommResult(INMESS &InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.

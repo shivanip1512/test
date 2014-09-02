@@ -290,42 +290,42 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
+INT CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
                                 list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
     string inMsgResultString = "";
 
-    inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
+    inMsgResultString = string((const char*)InMessage.Buffer.InMessage, InMessage.InLength);
 
     if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset) //demand Reset
     {
-        //if (InMessage->EventCode == NORMAL)
+        //if (InMessage.EventCode == NORMAL)
         if (findStringIgnoreCase(inMsgResultString, "successful"))
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            InMessage->Return.CommandStr,
+                                            InMessage.Return.CommandStr,
                                             //string(),
                                             getName() + " / demand reset successful",
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
         }
         else
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            InMessage->Return.CommandStr,
+                                            InMessage.Return.CommandStr,
                                             //string(),
                                             getName() + " / demand reset failed",
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
         }
     }
     else
@@ -335,28 +335,28 @@ INT CtiDeviceSentinel::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, 
             if (findStringIgnoreCase(inMsgResultString, "successful") )
             {
                 retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                InMessage->Return.CommandStr,
+                                                InMessage.Return.CommandStr,
                                                 //string(),
                                                 getName() + " / general scan successful : \n" + _result_string.c_str(),
-                                                InMessage->ErrorCode,
-                                                InMessage->Return.RouteID,
-                                                InMessage->Return.RetryMacroOffset,
-                                                InMessage->Return.Attempt,
-                                                InMessage->Return.GrpMsgID,
-                                                InMessage->Return.UserID);
+                                                InMessage.ErrorCode,
+                                                InMessage.Return.RouteID,
+                                                InMessage.Return.RetryMacroOffset,
+                                                InMessage.Return.Attempt,
+                                                InMessage.Return.GrpMsgID,
+                                                InMessage.Return.UserID);
             }
             else
             {
                  retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                InMessage->Return.CommandStr,
+                                                InMessage.Return.CommandStr,
                                                 //string(),
                                                 getName() + " / general scan failed",
-                                                InMessage->ErrorCode,
-                                                InMessage->Return.RouteID,
-                                                InMessage->Return.RetryMacroOffset,
-                                                InMessage->Return.Attempt,
-                                                InMessage->Return.GrpMsgID,
-                                                InMessage->Return.UserID);
+                                                InMessage.ErrorCode,
+                                                InMessage.Return.RouteID,
+                                                InMessage.Return.RetryMacroOffset,
+                                                InMessage.Return.Attempt,
+                                                InMessage.Return.GrpMsgID,
+                                                InMessage.Return.UserID);
             }
 
 
@@ -364,11 +364,11 @@ INT CtiDeviceSentinel::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, 
         }
         else if (useScanFlags())
         {
-            //if (InMessage->EventCode == NORMAL)
+            //if (InMessage.EventCode == NORMAL)
             //if (findStringIgnoreCase(inMsgResultString, "successful"))
             {
                 const unsigned long *lastLpTime;
-                lastLpTime =  (const unsigned long *)InMessage->Buffer.InMessage;
+                lastLpTime =  (const unsigned long *)InMessage.Buffer.InMessage;
 
                 try
                 {
@@ -420,23 +420,23 @@ INT CtiDeviceSentinel::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, 
 
     return( 0 ); //just a val
 }
-YukonError_t CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
+YukonError_t CtiDeviceSentinel::sendCommResult( INMESS &InMessage)
 {
     if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset) //demand Reset
     {
-        if( ! InMessage->ErrorCode )
+        if( ! InMessage.ErrorCode )
         {
             string returnString("demand reset successful");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-            InMessage->InLength = sizeOfReturnString;
+            memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+            InMessage.InLength = sizeOfReturnString;
         }
         else
         {
             string returnString("demand reset failed");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-            InMessage->InLength = sizeOfReturnString;
+            memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+            InMessage.InLength = sizeOfReturnString;
         }
     }
     else //general Scan
@@ -444,13 +444,13 @@ YukonError_t CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 
         //if (useScanFlags())
 
-        if( ! InMessage->ErrorCode )
+        if( ! InMessage.ErrorCode )
         {
             if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == CtiProtocolANSI::generalScan) //scanner
             {
                 ULONG lptime = getANSIProtocol().getlastLoadProfileTime();
-                memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
-                InMessage->InLength = sizeof (unsigned long);
+                memcpy( InMessage.Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
+                InMessage.InLength = sizeof (unsigned long);
 
                 if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
@@ -463,21 +463,21 @@ YukonError_t CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 
                 string returnString("general scan successful");
                 int sizeOfReturnString = returnString.length();
-                memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-                InMessage->InLength = sizeOfReturnString;
+                memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+                InMessage.InLength = sizeOfReturnString;
             }
         }
         else
         {
             string returnString("general scan failed");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-            InMessage->InLength = sizeOfReturnString;
+            memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+            InMessage.InLength = sizeOfReturnString;
         }
 
     }
 
-    return InMessage->ErrorCode;
+    return InMessage.ErrorCode;
 }
 
 

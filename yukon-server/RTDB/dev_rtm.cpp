@@ -196,9 +196,9 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceRTM::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTM::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    const INT ErrReturn = InMessage->ErrorCode;
+    const INT ErrReturn = InMessage.ErrorCode;
 
     string resultString;
 
@@ -209,14 +209,14 @@ INT CtiDeviceRTM::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         resetScanFlag();
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       string(InMessage->Return.CommandStr),
-                                                       getName() + " / scan successful, " + CtiNumStr(InMessage->Buffer.InMessage[0]) + " codes returned",
-                                                       InMessage->ErrorCode,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.RetryMacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.GrpMsgID,
-                                                       InMessage->Return.UserID);
+                                                       string(InMessage.Return.CommandStr),
+                                                       getName() + " / scan successful, " + CtiNumStr(InMessage.Buffer.InMessage[0]) + " codes returned",
+                                                       InMessage.ErrorCode,
+                                                       InMessage.Return.RouteID,
+                                                       InMessage.Return.RetryMacroOffset,
+                                                       InMessage.Return.Attempt,
+                                                       InMessage.Return.GrpMsgID,
+                                                       InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }
@@ -227,14 +227,14 @@ INT CtiDeviceRTM::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       string(InMessage->Return.CommandStr),
+                                                       string(InMessage.Return.CommandStr),
                                                        resultString,
                                                        ErrReturn,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.RetryMacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.GrpMsgID,
-                                                       InMessage->Return.UserID);
+                                                       InMessage.Return.RouteID,
+                                                       InMessage.Return.RetryMacroOffset,
+                                                       InMessage.Return.Attempt,
+                                                       InMessage.Return.GrpMsgID,
+                                                       InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }
@@ -298,9 +298,9 @@ YukonError_t CtiDeviceRTM::recvCommRequest(OUTMESS *OutMessage)
     return NoError;
 }
 
-YukonError_t CtiDeviceRTM::sendCommResult(INMESS *InMessage)
+YukonError_t CtiDeviceRTM::sendCommResult(INMESS &InMessage)
 {
-    InMessage->Buffer.InMessage[0] = _codes_received;
+    InMessage.Buffer.InMessage[0] = _codes_received;
 
     return NoError;
 }

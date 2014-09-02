@@ -246,14 +246,14 @@ void CtiRouteMacro::DecodeMacroReader(Cti::RowReader &rdr)
     RouteList.insert(MacroRoute);
 }
 
-bool CtiRouteMacro::processAdditionalRoutes( const INMESS *InMessage ) const
+bool CtiRouteMacro::processAdditionalRoutes( const INMESS &InMessage ) const
 {
-    if( ! InMessage->Return.RetryMacroOffset )
+    if( ! InMessage.Return.RetryMacroOffset )
     {
         return false;
     }
 
-    return (*InMessage->Return.RetryMacroOffset < getRoutePtrList().entries());
+    return (*InMessage.Return.RetryMacroOffset < getRoutePtrList().entries());
 }
 
 CtiMutex& CtiRouteMacro::getRouteListMux()

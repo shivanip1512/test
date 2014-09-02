@@ -180,24 +180,24 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTC::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    const INT ErrReturn = InMessage->ErrorCode;
+    const INT ErrReturn = InMessage.ErrorCode;
 
     string resultString;
 
     if( !ErrReturn )
     {
-        if(InMessage->InLength >= 7 && InMessage->Buffer.InMessage[1] == 0x23)  // This is the STATUS POLL RESPONSE.
+        if(InMessage.InLength >= 7 && InMessage.Buffer.InMessage[1] == 0x23)  // This is the STATUS POLL RESPONSE.
         {
-            BYTE relayStatus = InMessage->Buffer.InMessage[2] & 0x3f;           // Bit 0 is relay 1 Bit 5 is relay 6.
-            BYTE statusInput = (InMessage->Buffer.InMessage[3] & 0x0c) >> 2;    // Bit 0 is input 1, Bit 1 is input 2.
-            BYTE latchedStatusInput = (InMessage->Buffer.InMessage[3] & 0x03);  // Bit 0 is input 1, Bit 1 is input 2.
-            bool timeSlotAbort = (InMessage->Buffer.InMessage[3] & 0x10);       // true if the key-up aborted due to LBT.  Cleared by successful keyup.
-            BYTE statusChanged = (InMessage->Buffer.InMessage[3] & 0x60) >> 5;  // Bit 0 is input 1, Bit 1 is input 2.
+            BYTE relayStatus = InMessage.Buffer.InMessage[2] & 0x3f;           // Bit 0 is relay 1 Bit 5 is relay 6.
+            BYTE statusInput = (InMessage.Buffer.InMessage[3] & 0x0c) >> 2;    // Bit 0 is input 1, Bit 1 is input 2.
+            BYTE latchedStatusInput = (InMessage.Buffer.InMessage[3] & 0x03);  // Bit 0 is input 1, Bit 1 is input 2.
+            bool timeSlotAbort = (InMessage.Buffer.InMessage[3] & 0x10);       // true if the key-up aborted due to LBT.  Cleared by successful keyup.
+            BYTE statusChanged = (InMessage.Buffer.InMessage[3] & 0x60) >> 5;  // Bit 0 is input 1, Bit 1 is input 2.
 
         }
-        else if(InMessage->InLength == 2 && ((InMessage->Buffer.InMessage[0] & 0x0f) == getAddress()))
+        else if(InMessage.InLength == 2 && ((InMessage.Buffer.InMessage[0] & 0x0f) == getAddress()))
         {
             // This is quite likely a MESSAGE ACKNOWLEGEMENT.
             {
@@ -216,14 +216,14 @@ INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
 
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       string(InMessage->Return.CommandStr),
+                                                       string(InMessage.Return.CommandStr),
                                                        getName() + " / operation complete",
-                                                       InMessage->ErrorCode,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.RetryMacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.GrpMsgID,
-                                                       InMessage->Return.UserID);
+                                                       InMessage.ErrorCode,
+                                                       InMessage.Return.RouteID,
+                                                       InMessage.Return.RetryMacroOffset,
+                                                       InMessage.Return.Attempt,
+                                                       InMessage.Return.GrpMsgID,
+                                                       InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }
@@ -234,14 +234,14 @@ INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       string(InMessage->Return.CommandStr),
+                                                       string(InMessage.Return.CommandStr),
                                                        resultString,
                                                        ErrReturn,
-                                                       InMessage->Return.RouteID,
-                                                       InMessage->Return.RetryMacroOffset,
-                                                       InMessage->Return.Attempt,
-                                                       InMessage->Return.GrpMsgID,
-                                                       InMessage->Return.UserID);
+                                                       InMessage.Return.RouteID,
+                                                       InMessage.Return.RetryMacroOffset,
+                                                       InMessage.Return.Attempt,
+                                                       InMessage.Return.GrpMsgID,
+                                                       InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }

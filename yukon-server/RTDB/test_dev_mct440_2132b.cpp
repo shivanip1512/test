@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(test_mct440_2132b_decodeGetValueInstantLineData)
 
     test_Mct440_2132B test_dev;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueInstantLineData(&InMessage, t, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueInstantLineData(InMessage, t, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 

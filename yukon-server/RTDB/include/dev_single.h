@@ -118,12 +118,12 @@ protected:
 
     virtual INT  SubmitRetry(const INMESS &InMessage,
                              const CtiTime TimeNow,
-                             std::list< CtiMessage * > &vgList,
-                             std::list< CtiMessage * > &retList,
-                             std::list< OUTMESS * > &outList);
+                             CtiMessageList &vgList,
+                             CtiMessageList &retList,
+                             OutMessageList &outList);
 
     // Places error onto the retlist, DELETES OUT MESSAGE
-    void returnErrorMessage( int retval, OUTMESS *&om, std::list< CtiMessage* > &retList, const std::string &error ) const;
+    void returnErrorMessage( int retval, OUTMESS *&om, CtiMessageList &retList, const std::string &error ) const;
 
 private:
 
@@ -192,29 +192,29 @@ public:
     virtual YukonError_t generate(CtiXfer &xfer);
     virtual YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
     virtual YukonError_t recvCommRequest(OUTMESS *OutMessage);
-    virtual YukonError_t sendCommResult(INMESS *InMessage);
+    virtual YukonError_t sendCommResult(INMESS &InMessage);
     virtual bool isTransactionComplete();
     virtual void sendDispatchResults(CtiConnection &vg_connection);
 
     virtual void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
     virtual void getQueuedResults(std::vector<queued_result_t> &results);
 
-    virtual INT  ProcessResult(const INMESS*,
-                               CtiTime&,
-                               std::list< CtiMessage* > &vgList,
-                               std::list< CtiMessage* > &retList,
-                               std::list< OUTMESS* > &outList);
+    virtual INT  ProcessResult(const INMESS&,
+                               const CtiTime,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList);
 
     virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
     CtiTime         firstScan( const CtiTime &When, INT rate );
     void           validateScanTimes(bool force = false);
 
     INT         doDeviceInit(void);
-    INT         initiateGeneralScan    (std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_General);
-    INT         initiateIntegrityScan  (std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Integrity);
-    INT         initiateAccumulatorScan(std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Accumulator);
+    INT         initiateGeneralScan    (OutMessageList &outList, INT ScanPriority = ScanPriority_General);
+    INT         initiateIntegrityScan  (OutMessageList &outList, INT ScanPriority = ScanPriority_Integrity);
+    INT         initiateAccumulatorScan(OutMessageList &outList, INT ScanPriority = ScanPriority_Accumulator);
     //  Load Profile gets a low priority so it doesn't butt heads so hard with other reads
-    INT         initiateLoadProfileScan(std::list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_LoadProfile);
+    INT         initiateLoadProfileScan(OutMessageList &outList, INT ScanPriority = ScanPriority_LoadProfile);
 
     bool isScanDataValid() const;
     BOOL isWindowOpen(CtiTime &aNow=CtiTime(), CtiTime &opensAt = CtiTime(), CtiDeviceWindow_t windowType = DeviceWindowScan) const;
@@ -249,7 +249,7 @@ public:
 
     virtual bool clearedForScan(int scantype);
     virtual void resetForScan(int scantype);
-    virtual bool processAdditionalRoutes( const INMESS *InMessage, int nRet ) const;
+    virtual bool processAdditionalRoutes( const INMESS &InMessage, int nRet ) const;
     virtual bool hasLongScanRate(const std::string &cmd) const;
 
     CtiTime getNextWindowOpen() const;

@@ -29,36 +29,36 @@ public:
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
-                           std::list< CtiMessage* >  &vgList,
-                           std::list< CtiMessage* >  &retList,
-                           std::list< OUTMESS* >     &outList,
+                           CtiMessageList  &vgList,
+                           CtiMessageList  &retList,
+                           OutMessageList     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
                     OUTMESS *&OutMessage,
-                    std::list< CtiMessage* > &vgList,
-                    std::list< CtiMessage* > &retList,
-                    std::list< OUTMESS* > &outList,
+                    CtiMessageList &vgList,
+                    CtiMessageList &retList,
+                    OutMessageList &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
 
-   virtual INT ResultDecode(const INMESS                    *InMessage,
-                            CtiTime                    &TimeNow,
-                            std::list< CtiMessage* > &vgList,
-                            std::list< CtiMessage* > &retList,
-                            std::list< OUTMESS* >    &outList);
+   virtual INT ResultDecode(const INMESS             &InMessage,
+                            const CtiTime             TimeNow,
+                            CtiMessageList &vgList,
+                            CtiMessageList &retList,
+                            OutMessageList    &outList);
 
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,
-                       std::list< CtiMessage* >  &vgList,
-                       std::list< CtiMessage* >  &retList,
-                       std::list< OUTMESS* >     &outList );
+                       CtiMessageList  &vgList,
+                       CtiMessageList  &retList,
+                       OutMessageList     &outList );
 
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
-   YukonError_t sendCommResult( INMESS *InMessage);
+   YukonError_t sendCommResult( INMESS &InMessage);
 
    struct WANTS_HEADER
    {

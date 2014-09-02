@@ -58,7 +58,7 @@ public:
                               std::list< CtiMessage* >      &retList,
                               std::list< OUTMESS* >         &outList);
 
-   virtual bool processAdditionalRoutes( const INMESS *InMessage ) const;
+   virtual bool processAdditionalRoutes( const INMESS &InMessage ) const;
 
 };
 

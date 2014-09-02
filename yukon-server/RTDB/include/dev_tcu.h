@@ -37,8 +37,8 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   INT               TCUDecode(const INMESS *InMessage, CtiTime &ScanTime, std::list< CtiMessage* > &retList);
-   CtiReturnMsg*  TCUDecodeStatus(const INMESS *InMessage);
+   INT               TCUDecode(const INMESS &InMessage, const CtiTime ScanTime, CtiMessageList &retList);
+   CtiReturnMsg*  TCUDecodeStatus(const INMESS &InMessage);
 
    INT               TCUControl(OUTMESS*, VSTRUCT*);
    INT               TCUScanAll(OUTMESS*);
@@ -47,29 +47,29 @@ public:
    virtual INT IntegrityScan(CtiRequestMsg *pReq,
                              CtiCommandParser &parse,
                              OUTMESS *&OutMessage,
-                             std::list< CtiMessage* > &vgList,
-                             std::list< CtiMessage* > &retList,
-                             std::list< OUTMESS* > &outList,
+                             CtiMessageList &vgList,
+                             CtiMessageList &retList,
+                             OutMessageList &outList,
                              INT ScanPriority = MAXPRIORITY - 4);
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           std::list< CtiMessage* > &vgList,
-                           std::list< CtiMessage* > &retList,
-                           std::list< OUTMESS* > &outList,
+                           CtiMessageList &vgList,
+                           CtiMessageList &retList,
+                           OutMessageList &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
-   virtual INT ResultDecode(const INMESS*,
-                            CtiTime&,
-                            std::list< CtiMessage* >   &vgList,
-                            std::list< CtiMessage* > &retList,
-                            std::list< OUTMESS* > &outList);
+   virtual INT ResultDecode(const INMESS&,
+                            const CtiTime,
+                            CtiMessageList   &vgList,
+                            CtiMessageList &retList,
+                            OutMessageList &outList);
 
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              std::list< CtiMessage* >      &vgList,
-                              std::list< CtiMessage* >      &retList,
-                              std::list< OUTMESS* >         &outList);
+                              CtiMessageList      &vgList,
+                              CtiMessageList      &retList,
+                              OutMessageList         &outList);
 
    CtiDeviceTCU& setSendFiller(bool yesno);
    bool getSendFiller() const;

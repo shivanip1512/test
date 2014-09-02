@@ -1706,7 +1706,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     return status;
 }
 
-INT  CtiDeviceSixnet::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT  CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1715,8 +1715,8 @@ INT  CtiDeviceSixnet::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, li
     *  intialize these parameters to match the porter side's last settings.
     *
     *****************************/
-    char tmpCurrentCommand = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0],
-                             tmpCurrentState   = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentCommand = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[0],
+                             tmpCurrentState   = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
     switch (tmpCurrentCommand)
     {
@@ -1830,13 +1830,13 @@ void CtiDeviceSixnet::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 
 
-INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
 
-    int recCnt = *((const int*)&InMessage->Buffer.DUPSt.DUPRep.Message);
-    const BYTE *bpcurr = (const BYTE *)&InMessage->Buffer.DUPSt.DUPRep.Message;
+    int recCnt = *((const int*)&InMessage.Buffer.DUPSt.DUPRep.Message);
+    const BYTE *bpcurr = (const BYTE *)&InMessage.Buffer.DUPSt.DUPRep.Message;
 
     bpcurr += sizeof(int);  // get past the count.
 
@@ -1844,14 +1844,14 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &
     ULONG lastLPTime = getLastLPTime().seconds();  // OK I think, this IS a scanner side value..
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
     CtiReturnMsg *pRetMsg = NULL;
 
@@ -1891,14 +1891,14 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &
                 }
 
                 pRetMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                  string(InMessage->Return.CommandStr),
+                                                  string(InMessage.Return.CommandStr),
                                                   resString,
-                                                  InMessage->ErrorCode,
-                                                  InMessage->Return.RouteID,
-                                                  InMessage->Return.RetryMacroOffset,
-                                                  InMessage->Return.Attempt,
-                                                  InMessage->Return.GrpMsgID,
-                                                  InMessage->Return.UserID);
+                                                  InMessage.ErrorCode,
+                                                  InMessage.Return.RouteID,
+                                                  InMessage.Return.RetryMacroOffset,
+                                                  InMessage.Return.Attempt,
+                                                  InMessage.Return.GrpMsgID,
+                                                  InMessage.Return.UserID);
 
                 //create a new data message
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString, TAG_POINT_LOAD_PROFILE_DATA);
@@ -1965,7 +1965,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &
 
 
 
-INT CtiDeviceSixnet::decodeResultScan(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSixnet::decodeResultScan(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     resetScanFlag(ScanForced);
     resetScanFlag(ScanRateGeneral);

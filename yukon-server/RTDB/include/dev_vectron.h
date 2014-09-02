@@ -323,37 +323,37 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4);
 
    // interrogation routines
-   virtual YukonError_t generateCommandHandshake   (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t generateCommand            (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t generateCommandScan        (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t generateCommandSelectMeter (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t generateCommandHandshake   (CtiXfer &Transfer, CtiMessageList &traceList);
+   virtual YukonError_t generateCommand            (CtiXfer &Transfer, CtiMessageList &traceList);
+   virtual YukonError_t generateCommandScan        (CtiXfer &Transfer, CtiMessageList &traceList);
+   virtual YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, CtiMessageList &traceList);
+   virtual YukonError_t generateCommandSelectMeter (CtiXfer &Transfer, CtiMessageList &traceList);
 
-   virtual YukonError_t decodeResponse            (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t decodeResponseHandshake   (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t decodeResponseScan        (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t decodeResponseSelectMeter (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList );
-   virtual YukonError_t decodeResponseLoadProfile (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponse            (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+   virtual YukonError_t decodeResponseHandshake   (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+   virtual YukonError_t decodeResponseScan        (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+   virtual YukonError_t decodeResponseSelectMeter (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList );
+   virtual YukonError_t decodeResponseLoadProfile (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
 
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
 
    virtual INT allocateDataBins (OUTMESS *outMess);
 
-   virtual INT decodeResultScan ( const INMESS *InMessage,
-                          CtiTime &TimeNow,
-                          std::list< CtiMessage* >   &vgList,
-                          std::list< CtiMessage* > &retList,
-                          std::list< OUTMESS* > &outList);
+   virtual INT decodeResultScan ( const INMESS &InMessage,
+                          const CtiTime TimeNow,
+                          CtiMessageList   &vgList,
+                          CtiMessageList &retList,
+                          OutMessageList &outList);
 
-   virtual INT decodeResultLoadProfile ( const INMESS *InMessage,
-                                 CtiTime &TimeNow,
-                                 std::list< CtiMessage* >   &vgList,
-                                 std::list< CtiMessage* > &retList,
-                                 std::list< OUTMESS* > &outList);
+   virtual INT decodeResultLoadProfile ( const INMESS &InMessage,
+                                 const CtiTime TimeNow,
+                                 CtiMessageList   &vgList,
+                                 CtiMessageList &retList,
+                                 OutMessageList &outList);
 
    INT decodeResultMMConfig (VectronMMConfig_t *config);
    INT decodeResultRealTime (VectronRealTimeRegister_t *localTimeDate);
@@ -366,6 +366,6 @@ public:
    BOOL getRateValueFromRegister2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
    BOOL getRateValueFromRegister3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
    BOOL getRateValueFromRegister4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const VectronScanData_t *data);
-   INT ResultDisplay (const INMESS *InMessage);
+   INT ResultDisplay (const INMESS &InMessage);
 
 };

@@ -599,7 +599,7 @@ struct control_helper : beginExecuteRequest_helper
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(&im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -673,7 +673,7 @@ struct control_helper : beginExecuteRequest_helper
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(&im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -901,7 +901,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1013,7 +1013,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1125,7 +1125,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1236,7 +1236,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1338,7 +1338,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1440,7 +1440,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1524,7 +1524,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1591,7 +1591,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( ErrorInvalidTimestamp , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ErrorInvalidTimestamp , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1656,7 +1656,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1727,7 +1727,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueOutage(&im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {
