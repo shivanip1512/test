@@ -25,7 +25,7 @@ using Cti::Timing::MillisecondTimer;
 
 extern CtiClientConnection VanGoghConnection;
 
-extern YukonError_t ReturnResultMessage(YukonError_t CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
+extern YukonError_t ReturnResultMessage(YukonError_t CommResult, INMESS &InMessage, OUTMESS *&OutMessage);
 extern bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, const CtiDeviceSPtr &Device);
 
 namespace Cti {
@@ -432,8 +432,8 @@ void UnsolicitedHandler::handleDeviceError(OUTMESS *om, const YukonError_t error
 {
     //  return an error - this deletes the OM
     INMESS im;
-    OutEchoToIN(om, &im);
-    ReturnResultMessage(error, &im, om);
+    OutEchoToIN(om, im);
+    ReturnResultMessage(error, im, om);
     _port->incQueueProcessed();
 }
 
@@ -1205,10 +1205,10 @@ void Cti::Porter::UnsolicitedHandler::sendResult(device_record *dr)
 
             INMESS im;
 
-            OutEchoToIN(om, &im);
+            OutEchoToIN(om, im);
 
             //  ignoring the result of this for now - DeviceDnp always returns NoError
-            dr->device->sendCommResult(&im);
+            dr->device->sendCommResult(im);
 
             if( dr->device_status && om->Retry > 0 )
             {
@@ -1230,7 +1230,7 @@ void Cti::Porter::UnsolicitedHandler::sendResult(device_record *dr)
                 }
 
                 //  This method may delete the OM!
-                ReturnResultMessage(dr->device_status, &im, om);
+                ReturnResultMessage(dr->device_status, im, om);
 
                 _port->incQueueProcessed();
 

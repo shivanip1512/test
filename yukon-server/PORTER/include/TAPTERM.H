@@ -23,6 +23,6 @@
 #define CHAR_RS         0x1e
 
 int TAPTermHandShake (OUTMESS *OutMessage,
-                      INMESS *InMessage,
+                      INMESS &InMessage,
                       CtiPort *PortRecord,
                       CtiDeviceBase *RemoteRecord);

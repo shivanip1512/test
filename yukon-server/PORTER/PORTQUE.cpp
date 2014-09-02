@@ -69,7 +69,7 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d);
 void cancelOutMessages(void *doSendError, void* om);
 int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
 
-void blitzNexusFromQueue(HCTIQUEUE q, StreamConnection *&Nexus)
+void blitzNexusFromQueue(HCTIQUEUE q, const StreamConnection *Nexus)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -78,7 +78,7 @@ void blitzNexusFromQueue(HCTIQUEUE q, StreamConnection *&Nexus)
     CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
 }
 
-void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, StreamConnection *&Nexus)
+void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, const StreamConnection *Nexus)
 {
     if(Device && !isForeignCcuPort(Device->getPortID()) && Device->getType() == TYPE_CCU711)
     {
@@ -273,7 +273,7 @@ void QueueThread (void *Arg)
 
 
 /* Routine to process results from CCU's */
-YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
+YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 {
     extern INT LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
@@ -292,20 +292,20 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
     CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 
-    YukonError_t ErrorReturnCode = InMessage->ErrorCode;
+    YukonError_t ErrorReturnCode = InMessage.ErrorCode;
 
-    bool foreignCCU = isForeignCcuPort(InMessage->Port);
+    bool foreignCCU = isForeignCcuPort(InMessage.Port);
 
     //  if this is a foreign CCU, we're not allowed to touch the queues
     if( !foreignCCU )
     {
         if(ErrorReturnCode                          &&
-           InMessage->Sequence & 0x8000 &&
+           InMessage.Sequence & 0x8000 &&
            (ErrorReturnCode != REQACK || OutMessage->Retry == 0))
         {
             return DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
         }
-        else if(InMessage->Sequence & 0x8000)
+        else if(InMessage.Sequence & 0x8000)
         {
             bool detected = false;
             /* loop through queue entry slots and mark those that are now in the ccu */
@@ -313,7 +313,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
             {
                 if(pInfo->QueTable[i].InUse)
                 {
-                    if(pInfo->QueTable[i].QueueEntrySequence == InMessage->Sequence)
+                    if(pInfo->QueTable[i].QueueEntrySequence == InMessage.Sequence)
                     {
                         pInfo->QueTable[i].InUse |= INCCU;
                         pInfo->QueTable[i].TimeSent = LongTime();
@@ -326,7 +326,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Orphaned CCU queue entry response on device \"" << Dev->getName() << "\".  It will be ignored.  InMessage->Sequence 0x" << hex << (int)InMessage->Sequence << dec << endl;
+                    dout << CtiTime() << " Orphaned CCU queue entry response on device \"" << Dev->getName() << "\".  It will be ignored.  InMessage.Sequence 0x" << hex << (int)InMessage.Sequence << dec << endl;
                     dout << "  Not found in any queue slot" << endl;
                 }
             }
@@ -343,7 +343,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
     if( !foreignCCU )
     {
         /* check the RCONT flag in the returned message */
-        if(InMessage->IDLCStat[2] & 0x10)
+        if(InMessage.IDLCStat[2] & 0x10)
         {
             pInfo->clearStatus(INRCONT);
         }
@@ -356,13 +356,13 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
     /* Decode the important contents of message header */
 
     /* Check if we have a new power fail */
-    if(InMessage->IDLCStat[6] & STAT_POWER)
+    if(InMessage.IDLCStat[6] & STAT_POWER)
     {
         if(!(pInfo->getStatus(POWERFAILED)))
         {
             pInfo->setStatus (POWERFAILED);
 
-            _snprintf(tempstr, 99,"Power Fail Detected on Port: %2hd Remote: %3hd... Resetting\n", InMessage->Port, InMessage->Remote);
+            _snprintf(tempstr, 99,"Power Fail Detected on Port: %2hd Remote: %3hd... Resetting\n", InMessage.Port, InMessage.Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
@@ -384,12 +384,12 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
     if( !foreignCCU )
     {
         /* Check if we need to issue a time sync to this guy */
-        if(InMessage->IDLCStat[7] & STAT_BADTIM)
+        if(InMessage.IDLCStat[7] & STAT_BADTIM)
         {
             if(!(pInfo->getStatus(TIMESYNCED)))
             {
                 pInfo->setStatus(TIMESYNCED);
-                _snprintf(tempstr, 99,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage->Port, InMessage->Remote);
+                _snprintf(tempstr, 99,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage.Port, InMessage.Remote);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << tempstr << endl;
@@ -399,8 +399,8 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 if(TimeSyncMessage != NULL)
                 {
                     /* send a time sync to this guy */
-                    TimeSyncMessage->Port = InMessage->Port;
-                    TimeSyncMessage->Remote = InMessage->Remote;
+                    TimeSyncMessage->Port = InMessage.Port;
+                    TimeSyncMessage->Remote = InMessage.Remote;
                     TimeSyncMessage->TimeOut = TIMEOUT;
                     TimeSyncMessage->Retry = 0;
                     TimeSyncMessage->OutLength = 10;
@@ -412,11 +412,11 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     TimeSyncMessage->Priority = MAXPRIORITY;
                     TimeSyncMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC | RCONT;
 
-                    if(QueueHandle(InMessage->Port) != NULL)
+                    if(QueueHandle(InMessage.Port) != NULL)
                     {
                         if(PortManager.writeQueue(TimeSyncMessage))
                         {
-                            _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
+                            _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage.Port);
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " " << tempstr << endl;
@@ -444,12 +444,12 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
 
     /* Check if we need to issue a Bad Battery Message */
-    if(InMessage->IDLCStat[7] & STAT_BATTRY)
+    if(InMessage.IDLCStat[7] & STAT_BATTRY)
     {
         if(!(pInfo->getStatus(LOWBATTRY)))
         {
             pInfo->setStatus(LOWBATTRY);
-            _snprintf(tempstr, 99,"Low Battery Detected on Port: %2hd Remote: %3hd... Replace Logic Card\n", InMessage->Port, InMessage->Remote);
+            _snprintf(tempstr, 99,"Low Battery Detected on Port: %2hd Remote: %3hd... Replace Logic Card\n", InMessage.Port, InMessage.Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
@@ -467,7 +467,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
 
     /* Check if we have need to re-download this ccu********  Logic needs improvement */
-    if(InMessage->IDLCStat[6] & (STAT_FAULTC | STAT_DEADMN | STAT_COLDST))
+    if(InMessage.IDLCStat[6] & (STAT_FAULTC | STAT_DEADMN | STAT_COLDST))
     {
         if( foreignCCU )
         {
@@ -475,19 +475,19 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
             map< long, CtiPortShare * >::iterator ps_itr;
 
-            if( (ps_itr = PortShareManager.find(InMessage->Port)) != PortShareManager.end() )
+            if( (ps_itr = PortShareManager.find(InMessage.Port)) != PortShareManager.end() )
             {
                 //  set cold start for this CCU on this port's port share
 
-                ps_itr->second->setSharedCCUError(Dev->getAddress(), InMessage->IDLCStat[6]);
+                ps_itr->second->setSharedCCUError(Dev->getAddress(), InMessage.IDLCStat[6]);
             }
         }
 
-        if(!(InMessage->IDLCStat[6] & STAT_COLDST) && pInfo->getLastColdStartTime() + gConfigParms.getValueAsInt("COLD_START_FREQUENCY", 300) < CtiTime::now().seconds()
+        if(!(InMessage.IDLCStat[6] & STAT_COLDST) && pInfo->getLastColdStartTime() + gConfigParms.getValueAsInt("COLD_START_FREQUENCY", 300) < CtiTime::now().seconds()
            && !(pInfo->FreeSlots < MAXQUEENTRIES && !pInfo->PortQueueEnts))
         {
             /* Issue a cold start */
-            _snprintf(tempstr, 99,"Reset Needed on Port: %2hd Remote: %3hd... Cold Starting\n", InMessage->Port, InMessage->Remote);
+            _snprintf(tempstr, 99,"Reset Needed on Port: %2hd Remote: %3hd... Cold Starting\n", InMessage.Port, InMessage.Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
@@ -505,9 +505,9 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         else if(!(pInfo->getStatus(RESETTING)))
         {
             pInfo->setStatus(RESETTING);
-            if(InMessage->IDLCStat[6] & STAT_FAULTC)
+            if(InMessage.IDLCStat[6] & STAT_FAULTC)
             {
-                printf ("Fault Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
+                printf ("Fault Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage.Port, InMessage.Remote);
 
                 /* Yup */
                 IDLCFunction(Dev, 0, DEST_BASE, CLFLT);
@@ -520,9 +520,9 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 }
             }
 
-            if(InMessage->IDLCStat[6] & STAT_COLDST)
+            if(InMessage.IDLCStat[6] & STAT_COLDST)
             {
-                _snprintf(tempstr, 99,"Cold Start Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
+                _snprintf(tempstr, 99,"Cold Start Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage.Port, InMessage.Remote);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << tempstr << endl;
@@ -543,9 +543,9 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 }
             }
 
-            if(InMessage->IDLCStat[6] & STAT_DEADMN)
+            if(InMessage.IDLCStat[6] & STAT_DEADMN)
             {
-                _snprintf(tempstr, 99,"Dead Man Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
+                _snprintf(tempstr, 99,"Dead Man Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage.Port, InMessage.Remote);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << tempstr << endl;
@@ -594,7 +594,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
 
     /* Check the various algorithm status's and correct as neccessary */
-    if(IDLCAlgStat (&InMessage->IDLCStat[8], AlgStatus))
+    if(IDLCAlgStat (&InMessage.IDLCStat[8], AlgStatus))
     {
         if(!(pInfo->getStatus(SETSLIST)))  /* Check if we are in the process of doing this */
         {
@@ -669,12 +669,12 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
     /* Now decode pertinant STATD information */
     /* Check for persistent DLC fault */
-    if(InMessage->IDLCStat[10] & STAT_DLCFLT)
+    if(InMessage.IDLCStat[10] & STAT_DLCFLT)
     {
         if(!(pInfo->getStatus(DLCFAULT)))
         {
             pInfo->setStatus(DLCFAULT);
-            _snprintf(tempstr, 99,"Persistent DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
+            _snprintf(tempstr, 99,"Persistent DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage.Port, InMessage.Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
@@ -690,9 +690,9 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
     if( !foreignCCU )
     {
         /* Load the CCU's interpretation of queue Info available */
-        pInfo->ReadyN = InMessage->IDLCStat[12];
-        pInfo->NCsets = InMessage->IDLCStat[13];
-        pInfo->NCOcts = MAKEUSHORT (InMessage->IDLCStat[15],InMessage->IDLCStat[14]);
+        pInfo->ReadyN = InMessage.IDLCStat[12];
+        pInfo->NCsets = InMessage.IDLCStat[13];
+        pInfo->NCOcts = MAKEUSHORT (InMessage.IDLCStat[15],InMessage.IDLCStat[14]);
 
         //  this is more data than we can ever receive in a single packet - the CCU is confused
         if( pInfo->NCsets == 1 && pInfo->NCOcts > 241 )
@@ -711,9 +711,9 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
     /* Need checks on STATP here <<<<<<<<<---------<<<<<<<<<<< */
 
-    if(InMessage->IDLCStat[6] & STAT_REQACK)
+    if(InMessage.IDLCStat[6] & STAT_REQACK)
     {
-        _snprintf(tempstr,99,"REQACK Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
+        _snprintf(tempstr,99,"REQACK Detected on Port: %2hd Remote: %3hd\n", InMessage.Port, InMessage.Remote);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << tempstr << endl;
@@ -722,19 +722,19 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         if( !foreignCCU )
         {
             /* Check to see what we were up to */
-            if((InMessage->IDLCStat[5] & 0x7f) == CMND_RCOLQ)
+            if((InMessage.IDLCStat[5] & 0x7f) == CMND_RCOLQ)
             {
                 /* Some moron put a wrong chip in the CCU */
                 if(pInfo->RColQMin == 0)
                 {
-                    if(InMessage->IDLCStat[3] - 14 < 15)
+                    if(InMessage.IDLCStat[3] - 14 < 15)
                     {
                         pInfo->RColQMin = 15;
                         /* Now send a message to logger */
                         _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust ", Dev->getName().c_str());
                         SendTextToLogger ("Inf", Message);
                     }
-                    else if(InMessage->IDLCStat[3] - 14 < 61)
+                    else if(InMessage.IDLCStat[3] - 14 < 61)
                     {
                         pInfo->RColQMin = 61;
                         _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
@@ -743,7 +743,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 }
                 else if(pInfo->RColQMin == 15)
                 {
-                    if(InMessage->IDLCStat[3] - 14 >= 15 && InMessage->IDLCStat[3] - 14 < 61)
+                    if(InMessage.IDLCStat[3] - 14 >= 15 && InMessage.IDLCStat[3] - 14 < 61)
                     {
                         pInfo->RColQMin = 61;
                         _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
@@ -805,14 +805,14 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
     if( !foreignCCU )
     {
         /* Check if this was a related reply */
-        if(InMessage->InLength && !ErrorReturnCode)
+        if(InMessage.InLength && !ErrorReturnCode)
         {
             /* This is a queue entry reply so loop through and get results */
 
             /* set the initial pointer into the result field */
             Offset = 0;
 
-            while(setL = InMessage->Buffer.InMessage[Offset++])
+            while(setL = InMessage.Buffer.InMessage[Offset++])
             {
                 /* This many bytes no longer needed in return message */
                 if(pInfo->NCOcts >= setL)
@@ -830,8 +830,8 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 }
 
                 /* Find out which queue entry this is */
-                // 20020703 CGP. // if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
-                if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0)) > MAXQUEENTRIES - 1)
+                // 20020703 CGP. // if((QueTabEnt = MAKEUSHORT (InMessage.Buffer.InMessage[Offset + 1], InMessage.Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
+                if((QueTabEnt = MAKEUSHORT (InMessage.Buffer.InMessage[Offset], 0)) > MAXQUEENTRIES - 1)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -843,7 +843,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
                 Offset += 1;
 
-                USHORT OriginalOutMessageSequence = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0);
+                USHORT OriginalOutMessageSequence = MAKEUSHORT (InMessage.Buffer.InMessage[Offset], 0);
 
                 Offset += 1;
 
@@ -859,7 +859,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 }
 
                 /* then kinda double check this guy */
-                if(pInfo->QueTable[QueTabEnt].QueueEntrySequence != MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset]) ||
+                if(pInfo->QueTable[QueTabEnt].QueueEntrySequence != MAKEUSHORT (InMessage.Buffer.InMessage[Offset + 1], InMessage.Buffer.InMessage[Offset]) ||
                    LOBYTE(pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence) != OriginalOutMessageSequence)
                 {
                     /* Things are screwed up beyond all recognition */
@@ -878,8 +878,8 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 {
                     ResultMessage.ErrorCode           = NORMAL;
 
-                    ResultMessage.DeviceID        = InMessage->DeviceID;
-                    ResultMessage.MessageFlags    = InMessage->MessageFlags;
+                    ResultMessage.DeviceID        = InMessage.DeviceID;
+                    ResultMessage.MessageFlags    = InMessage.MessageFlags;
 
                     /* Load up the info out of the CCUInfo Structure */
                     ResultMessage.TargetID        = pInfo->QueTable[QueTabEnt].TargetID;
@@ -891,8 +891,8 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     ResultMessage.Return          = pInfo->QueTable[QueTabEnt].Request;
 
 
-                    ResultMessage.Port            = InMessage->Port;
-                    ResultMessage.Remote          = InMessage->Remote;
+                    ResultMessage.Port            = InMessage.Port;
+                    ResultMessage.Remote          = InMessage.Remote;
 
 
                     if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)
@@ -901,7 +901,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     }
 
                     /* Check if queue entry completed successfully */
-                    if((InMessage->Buffer.InMessage[Offset++] >> 4) != 15)
+                    if((InMessage.Buffer.InMessage[Offset++] >> 4) != 15)
                     {
                         /* Nope */
                         ResultMessage.ErrorCode = QUEUEEXEC;
@@ -911,9 +911,9 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     {
                         /* this is a completed message */
                         /* get the time this guy was actually read */
-                        TimeAdder = MidNightWas (LongTime (), (USHORT)DSTFlag ()) + (28800 * (InMessage->Buffer.InMessage[Offset++] % 3));
-                        ResultMessage.Time = InMessage->Buffer.InMessage[Offset++] << 8;
-                        ResultMessage.Time |= InMessage->Buffer.InMessage[Offset++];
+                        TimeAdder = MidNightWas (LongTime (), (USHORT)DSTFlag ()) + (28800 * (InMessage.Buffer.InMessage[Offset++] % 3));
+                        ResultMessage.Time = InMessage.Buffer.InMessage[Offset++] << 8;
+                        ResultMessage.Time |= InMessage.Buffer.InMessage[Offset++];
                         ResultMessage.Time += TimeAdder;
 
                         /* Just in case this wasn't today */
@@ -933,11 +933,11 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
                         /* decode number of functions that came back */
                         ResultMessage.InLength = 0;
-                        switch(InMessage->Buffer.InMessage[Offset++])
+                        switch(InMessage.Buffer.InMessage[Offset++])
                         {
                         case 3:
                             /* Not implemented but we will work on it any way */
-                            switch(InMessage->Buffer.InMessage[Offset++] >> 6)
+                            switch(InMessage.Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
                                 ResultMessage.ErrorCode = NOATTEMPT;
@@ -956,10 +956,10 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                             Offset++;
 
                             /* Update the length */
-                            ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
+                            ResultMessage.InLength += InMessage.Buffer.InMessage[Offset++];
 
                         case 2:
-                            switch(InMessage->Buffer.InMessage[Offset++] >> 6)
+                            switch(InMessage.Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
                                 ResultMessage.ErrorCode = NOATTEMPT;
@@ -977,10 +977,10 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                             Offset++;
 
                             /* Update the length */
-                            ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
+                            ResultMessage.InLength += InMessage.Buffer.InMessage[Offset++];
 
                         case 1:
-                            switch(InMessage->Buffer.InMessage[Offset++] >> 6)
+                            switch(InMessage.Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
                                 ResultMessage.ErrorCode = NOATTEMPT;
@@ -998,31 +998,31 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                             Offset++;
 
                             /* Update the length */
-                            ResultMessage.InLength += InMessage->Buffer.InMessage[Offset++];
+                            ResultMessage.InLength += InMessage.Buffer.InMessage[Offset++];
                         }
 
                         /* if this was a read pick up alarm bits and data */
                         if(ResultMessage.InLength)
                         {
                             /* Check for device alarm */
-                            if(InMessage->Buffer.InMessage[Offset] & 0x0001)
+                            if(InMessage.Buffer.InMessage[Offset] & 0x0001)
                                 ResultMessage.Buffer.DSt.Alarm = 1;
                             else
                                 ResultMessage.Buffer.DSt.Alarm = 0;
 
                             /* Check for device power fail */
-                            if(InMessage->Buffer.InMessage[Offset] & 0x0002)
+                            if(InMessage.Buffer.InMessage[Offset] & 0x0002)
                                 ResultMessage.Buffer.DSt.Power = 1;
                             else
                                 ResultMessage.Buffer.DSt.Power = 0;
 
                             /* Check for device in Time Sync */
-                            if(InMessage->Buffer.InMessage[Offset] & 0x0008)
+                            if(InMessage.Buffer.InMessage[Offset] & 0x0008)
                                 ResultMessage.Buffer.DSt.TSync = 1;
                             else
                                 ResultMessage.Buffer.DSt.TSync = 0;
 
-                            if(InMessage->Buffer.InMessage[Offset] & 0x0040)
+                            if(InMessage.Buffer.InMessage[Offset] & 0x0040)
                             {
                                 ResultMessage.ErrorCode = EWORDRCV;
                                 //  The CCU doesn't pass along the E word, so make sure the optional repeater info fields are cleared out
@@ -1030,7 +1030,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                                 ResultMessage.Buffer.RepeaterError.Details = 0;
                             }
 
-                            if(InMessage->Buffer.InMessage[Offset++] & 0x0080)
+                            if(InMessage.Buffer.InMessage[Offset++] & 0x0080)
                                 ResultMessage.ErrorCode = DLCTIMEOUT;
 
                             Offset++;
@@ -1040,7 +1040,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                                 ResultMessage.Buffer.DSt.Length = (USHORT)ResultMessage.InLength;
                                 for(i = 0; i < ResultMessage.InLength; i++)
                                 {
-                                    ResultMessage.Buffer.DSt.Message[i] = InMessage->Buffer.InMessage[Offset++];
+                                    ResultMessage.Buffer.DSt.Message[i] = InMessage.Buffer.InMessage[Offset++];
                                 }
                             }
                         }
@@ -1112,8 +1112,8 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
             }
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Port: " << InMessage->Port <<
-                "  Remote: " << InMessage->Remote <<
+                dout << "Port: " << InMessage.Port <<
+                "  Remote: " << InMessage.Remote <<
                 "  FreeSlots: " << pInfo->FreeSlots <<
                 "  PortQueEnts: " << pInfo->PortQueueEnts <<
                 "  PortQueueConts: " << pInfo->PortQueueConts << endl;
@@ -1121,7 +1121,7 @@ YukonError_t CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         }
 #endif
 
-        if((InMessage->IDLCStat[5] & 0x007f) == CMND_RCOLQ)
+        if((InMessage.IDLCStat[5] & 0x007f) == CMND_RCOLQ)
         {
             pInfo->clearStatus(INRCOLQ);
         }
@@ -1808,7 +1808,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 
 /* Routine to take messages off because of errant LGRPQ */
 /* Dequeues only those entries marked as having QueueEntrySequence equal to the inbound message sequence*/
-YukonError_t DeQueue (INMESS *InMessage)
+YukonError_t DeQueue (INMESS &InMessage)
 {
     YukonError_t status = NORMAL;
     struct timeb TimeB;
@@ -1817,20 +1817,20 @@ YukonError_t DeQueue (INMESS *InMessage)
 
     /* set the time */
     UCTFTime (&TimeB);
-    InMessage->Time = TimeB.time;
-    InMessage->MilliTime = TimeB.millitm;
+    InMessage.Time = TimeB.time;
+    InMessage.MilliTime = TimeB.millitm;
     if(TimeB.dstflag)
     {
-        InMessage->MilliTime |= DSTACTIVE;
+        InMessage.MilliTime |= DSTACTIVE;
     }
 
     /* Make sure this is one of em */
-    if(!(InMessage->Sequence & 0x8000))
+    if(!(InMessage.Sequence & 0x8000))
     {
         return NOTNORMAL;
     }
 
-    CtiDeviceSPtr TransmitterDev = DeviceManager.getDeviceByID(InMessage->DeviceID);
+    CtiDeviceSPtr TransmitterDev = DeviceManager.getDeviceByID(InMessage.DeviceID);
 
     if(TransmitterDev)
     {
@@ -1841,21 +1841,21 @@ YukonError_t DeQueue (INMESS *InMessage)
         {
             if(pInfo->QueTable[i].InUse)
             {
-                if(pInfo->QueTable[i].QueueEntrySequence == InMessage->Sequence)
+                if(pInfo->QueTable[i].QueueEntrySequence == InMessage.Sequence)
                 {
                     if(pInfo->QueTable[i].EventCode & RESULT)
                     {
-                        ResultMessage.Port = InMessage->Port;
-                        ResultMessage.Remote = InMessage->Remote;
+                        ResultMessage.Port = InMessage.Port;
+                        ResultMessage.Remote = InMessage.Remote;
                         ResultMessage.TargetID = pInfo->QueTable[i].TargetID;
                         ResultMessage.Sequence = pInfo->QueTable[i].OriginalOutMessageSequence;
                         ResultMessage.Priority = pInfo->QueTable[i].Priority;
                         ResultMessage.ReturnNexus = pInfo->QueTable[i].ReturnNexus;
                         ResultMessage.Return = pInfo->QueTable[i].Request;
                         ResultMessage.MessageFlags = pInfo->QueTable[i].MessageFlags;
-                        ResultMessage.ErrorCode = InMessage->ErrorCode;
-                        ResultMessage.Time = InMessage->Time;
-                        ResultMessage.MilliTime = InMessage->MilliTime;
+                        ResultMessage.ErrorCode = InMessage.ErrorCode;
+                        ResultMessage.Time = InMessage.Time;
+                        ResultMessage.MilliTime = InMessage.MilliTime;
                         if(pInfo->QueTable[i].EventCode & BWORD)
                         {
                             ResultMessage.Buffer.DSt.Address = pInfo->QueTable[i].Address;
@@ -1864,7 +1864,7 @@ YukonError_t DeQueue (INMESS *InMessage)
                         //We had a comm error and need to report it.
                         addCommResult(ResultMessage.TargetID, ResultMessage.ErrorCode, false);
 
-                        PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.ErrorCode, ResultMessage.MessageFlags );
+                        PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage.DeviceID, ResultMessage.TargetID, ResultMessage.ErrorCode, ResultMessage.MessageFlags );
 
                         /* Now send it back */
                         int bytesWritten = 0;

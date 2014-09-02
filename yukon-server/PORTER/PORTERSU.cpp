@@ -74,20 +74,14 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
     /* create and send return message if calling process expects it */
     if(ErrorCode == PORTINHIBITED || OutMessage->EventCode & RESULT)
     {
-        INMESS *InMessage;
-
         INMESS DefaultInMessage;
 
-        if( PassedInMessage )
-        {
-            InMessage = PassedInMessage;
-        }
-        else
+        if( ! PassedInMessage )
         {
             //  They didn't pass in an inmessage, so we have to make one
             DefaultInMessage.DeviceID = PORTERSU_DEVID;
 
-            OutEchoToIN( OutMessage, &DefaultInMessage );
+            OutEchoToIN( OutMessage, DefaultInMessage );
 
             DefaultInMessage.InLength  = 0;
             DefaultInMessage.ErrorCode     = ErrorCode;
@@ -106,9 +100,12 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
                 DefaultInMessage.Buffer.DSt.Time = DefaultInMessage.Time;
                 DefaultInMessage.Buffer.DSt.DSTFlag = DefaultInMessage.MilliTime & DSTACTIVE;
             }
-
-            InMessage = &DefaultInMessage;
         }
+
+        const INMESS & InMessage =
+                PassedInMessage
+                    ? *PassedInMessage
+                    : DefaultInMessage;
 
         if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
         {
@@ -122,14 +119,14 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
         }
 
         /* send message back to originating process */
-        if( InMessage->ReturnNexus != NULL )
+        if( InMessage.ReturnNexus != NULL )
         {
             int bytesWritten = 0;
             boost::optional<std::string> errorReason;
 
             try
             {
-                bytesWritten = InMessage->ReturnNexus->write(InMessage, sizeof(INMESS), Chrono::seconds(30));
+                bytesWritten = InMessage.ReturnNexus->write(&InMessage, sizeof(INMESS), Chrono::seconds(30));
             }
             catch( const StreamConnectionException &ex )
             {
@@ -138,11 +135,11 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
 
             if( bytesWritten != sizeof(INMESS) )
             {
-                if( ! InMessage->ReturnNexus->isValid() )
+                if( ! InMessage.ReturnNexus->isValid() )
                 {
-                    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, StreamConnection *&Nexus);
+                    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, const StreamConnection *Nexus);
                     CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->DeviceID);
-                    blitzNexusFromCCUQueue( tempDev, InMessage->ReturnNexus );
+                    blitzNexusFromCCUQueue( tempDev, InMessage.ReturnNexus );
                 }
                 // 111901 CGP.  You better not close this.. It is the OutMessage's!
 

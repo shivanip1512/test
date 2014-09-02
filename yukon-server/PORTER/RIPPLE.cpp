@@ -349,7 +349,7 @@ BOOL Block;
 BOOL OverRetry;
 
 /* Routine to decode result of LCU handshake */
-YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS *InMessage, CtiDeviceSPtr Dev, YukonError_t Result, bool mayqueuescans)
+YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiDeviceSPtr Dev, YukonError_t Result, bool mayqueuescans)
 {
     YukonError_t status = Result;
 

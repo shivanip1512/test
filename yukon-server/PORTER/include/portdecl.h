@@ -40,9 +40,9 @@ bool RemoteReset (CtiDeviceSPtr &Device, const CtiPortSPtr &pPort);
 
 /* Prototypes from PORTQUE.C */
 void QueueThread (PVOID);
-YukonError_t CCUResponseDecode (INMESS *, CtiDeviceSPtr , OUTMESS *OutMessage);
+YukonError_t CCUResponseDecode (INMESS &, CtiDeviceSPtr , OUTMESS *OutMessage);
 void KickerThread (PVOID);
-YukonError_t DeQueue(INMESS *);
+YukonError_t DeQueue(INMESS &);
 INT QueueFlush       (CtiDeviceSPtr Dev);
 INT BuildLGrpQ       (CtiDeviceSPtr Dev);
 INT BuildActinShed   (CtiDeviceSPtr Dev);
@@ -74,6 +74,6 @@ INT IDLCRCont(CtiDeviceSPtr &pDev);
 
 /* Prototypes from RIPPLE.C */
 INT LCUPreSend (OUTMESS *&, CtiDeviceSPtr );
-YukonError_t LCUResultDecode (OUTMESS *, const INMESS *, CtiDeviceSPtr , YukonError_t, bool mayqueuescans);
+YukonError_t LCUResultDecode (OUTMESS *, const INMESS &, CtiDeviceSPtr , YukonError_t, bool mayqueuescans);
 INT MPCPointSet( int status, CtiDeviceBase *dev, bool setter );
 
