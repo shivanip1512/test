@@ -11,7 +11,7 @@ yukon.trends = (function() {
     var mod = {
         
         init: function (trendId) {
-            Highcharts.setOptions(yg.highcharts_global);
+            Highcharts.setOptions(yg.highcharts_options);
             yukon.ui.elementGlass.show('[data-trend]');
             $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function(trend) {
                 

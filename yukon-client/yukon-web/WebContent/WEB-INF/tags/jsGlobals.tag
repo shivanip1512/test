@@ -27,9 +27,11 @@ var yg = {
     },
     dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true',
 
-    highcharts_global: {
-        useUTC: false,
-        timezoneOffset : new Date().getTimezoneOffset()
+    highcharts_options: {
+        global: {
+            useUTC: false,
+            timezoneOffset : new Date().getTimezoneOffset()
+        }
     }
 };
 </script>
