@@ -2210,7 +2210,7 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &out
 }
 
 
-int CtiProtocolION::recvCommResult( const INMESS *InMessage, list< OUTMESS* > &outList )
+int CtiProtocolION::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
 
@@ -2227,58 +2227,51 @@ int CtiProtocolION::recvCommResult( const INMESS *InMessage, list< OUTMESS* > &o
 
     _eventLogsComplete = false;
 
-    if( InMessage != NULL )
+    buf = InMessage.Buffer.InMessage;
+    len = InMessage.InLength;
+    offset = 0;
+
+    if( sizeof(header) <= len )
     {
-        buf = InMessage->Buffer.InMessage;
-        len = InMessage->InLength;
-        offset = 0;
+        memcpy(&header, buf + offset, sizeof(header));
+        offset += sizeof(header);
 
-        if( sizeof(header) <= len )
+        tmpStr = CTIDBG_new char[header.resultDescriptorStringLength];
+        memcpy(tmpStr, buf + offset, header.resultDescriptorStringLength);
+        tmpStr[header.resultDescriptorStringLength-1] = 0;
+        _returnedInfoString = tmpStr;
+        delete [] tmpStr;
+        offset += header.resultDescriptorStringLength;
+
+        points = (const ion_pointdata_struct *)(buf + offset);
+
+        for( int i = 0; i < header.numPoints; i++ )
         {
-            memcpy(&header, buf + offset, sizeof(header));
-            offset += sizeof(header);
-
-            tmpStr = CTIDBG_new char[header.resultDescriptorStringLength];
-            memcpy(tmpStr, buf + offset, header.resultDescriptorStringLength);
-            tmpStr[header.resultDescriptorStringLength-1] = 0;
-            _returnedInfoString = tmpStr;
-            delete [] tmpStr;
-            offset += header.resultDescriptorStringLength;
-
-            points = (const ion_pointdata_struct *)(buf + offset);
-
-            for( int i = 0; i < header.numPoints; i++ )
-            {
-                _returnedPointData.push_back(points[i]);
-                offset += sizeof(ion_pointdata_struct);
-            }
-
-            _eventLogsComplete = header.eventLogsComplete;
-
-            tmpDS.initialize(buf + offset, header.eventLogLength);
-
-            while( !tmpDS.empty() )
-            {
-                if( tmpDS.itemIsType(0, CtiIONStructArray::StructArrayType_LogArray) )
-                {
-                    _returnedEventLogs.push_back((CtiIONLogArray *)tmpDS.at(0));
-                }
-                else
-                {
-                    delete tmpDS.at(0);
-                }
-
-                tmpDS.erase(0);
-            }
+            _returnedPointData.push_back(points[i]);
+            offset += sizeof(ion_pointdata_struct);
         }
-        else
+
+        _eventLogsComplete = header.eventLogsComplete;
+
+        tmpDS.initialize(buf + offset, header.eventLogLength);
+
+        while( !tmpDS.empty() )
         {
-            retVal = -1;  //  make this an error code sometime?
+            if( tmpDS.itemIsType(0, CtiIONStructArray::StructArrayType_LogArray) )
+            {
+                _returnedEventLogs.push_back((CtiIONLogArray *)tmpDS.at(0));
+            }
+            else
+            {
+                delete tmpDS.at(0);
+            }
+
+            tmpDS.erase(0);
         }
     }
     else
     {
-        retVal = MemoryError;
+        retVal = -1;  //  make this an error code sometime?
     }
 
     return retVal;
@@ -2468,19 +2461,19 @@ YukonError_t CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-YukonError_t CtiProtocolION::sendCommResult( INMESS *InMessage )
+YukonError_t CtiProtocolION::sendCommResult( INMESS &InMessage )
 {
     YukonError_t retVal = NoError;
 
     if( _ionState == State_Abort )
     {
-        InMessage->ErrorCode = _abortStatus;
-        InMessage->InLength = 0;
+        InMessage.ErrorCode = _abortStatus;
+        InMessage.InLength = 0;
     }
-    else if( resultSize() < sizeof( InMessage->Buffer ) )
+    else if( resultSize() < sizeof( InMessage.Buffer ) )
     {
-        putResult( InMessage->Buffer.InMessage );
-        InMessage->InLength = resultSize();
+        putResult( InMessage.Buffer.InMessage );
+        InMessage.InLength = resultSize();
     }
     else
     {
@@ -2491,7 +2484,7 @@ YukonError_t CtiProtocolION::sendCommResult( INMESS *InMessage )
             dout << "Not sending!!" << endl;
         }
 
-        InMessage->InLength = 0;
+        InMessage.InLength = 0;
 
         //  oh well, closest thing to reality - not enough room in outmess
         retVal = MemoryError;

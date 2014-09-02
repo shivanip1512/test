@@ -146,10 +146,10 @@ int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > 
 }
 
 
-int CtiProtocolSeriesV::recvCommResult( const INMESS *InMessage, list< OUTMESS* > &outList )
+int CtiProtocolSeriesV::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &outList )
 {
-    const seriesv_inmess_struct &response = *((const seriesv_inmess_struct *)InMessage->Buffer.InMessage);
-    const seriesv_pointdata *pd = (const seriesv_pointdata *)(InMessage->Buffer.InMessage + sizeof(seriesv_inmess_struct));
+    const seriesv_inmess_struct &response = *((const seriesv_inmess_struct *)InMessage.Buffer.InMessage);
+    const seriesv_pointdata *pd = (const seriesv_pointdata *)(InMessage.Buffer.InMessage + sizeof(seriesv_inmess_struct));
 
     for( int i = 0; i < response.num_points; i++ )
     {
@@ -202,12 +202,12 @@ YukonError_t CtiProtocolSeriesV::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-YukonError_t CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
+YukonError_t CtiProtocolSeriesV::sendCommResult( INMESS &InMessage )
 {
     int offset = 0;
 
-    seriesv_inmess_struct &response = *((seriesv_inmess_struct *)InMessage->Buffer.InMessage);
-    seriesv_pointdata *pd = (seriesv_pointdata *)(InMessage->Buffer.InMessage + sizeof(seriesv_inmess_struct));
+    seriesv_inmess_struct &response = *((seriesv_inmess_struct *)InMessage.Buffer.InMessage);
+    seriesv_pointdata *pd = (seriesv_pointdata *)(InMessage.Buffer.InMessage + sizeof(seriesv_inmess_struct));
 
     response.num_points = _collected_points.size();
 
@@ -218,7 +218,7 @@ YukonError_t CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
         _collected_points.pop();
     }
 
-    InMessage->InLength = sizeof(seriesv_inmess_struct) + (sizeof(seriesv_pointdata) * response.num_points);
+    InMessage.InLength = sizeof(seriesv_inmess_struct) + (sizeof(seriesv_pointdata) * response.num_points);
 
     return NoError;
 }

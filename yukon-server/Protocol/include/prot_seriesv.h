@@ -242,14 +242,14 @@ public:
 
     //  client-side (Scanner, PIL) functions
     int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
-    int recvCommResult ( const INMESS   *InMessage,  std::list< OUTMESS* > &outList );
+    int recvCommResult ( const INMESS   &InMessage,  std::list< OUTMESS* > &outList );
 
     bool hasInboundPoints( void );
     void getInboundPoints( std::list< CtiPointDataMsg* > &pointList );
 
     //  porter-side (portfield, specificially) functions
     YukonError_t recvCommRequest( OUTMESS *OutMessage );
-    YukonError_t sendCommResult ( INMESS  *InMessage );
+    YukonError_t sendCommResult ( INMESS  &InMessage );
 
     bool isTransactionComplete( void ) const;
 

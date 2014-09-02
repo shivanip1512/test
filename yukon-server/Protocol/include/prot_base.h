@@ -37,7 +37,7 @@ public:
 
     //  client-side (Scanner, PIL) functions
     virtual int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
-    virtual int recvCommResult ( const INMESS   *InMessage,  std::list< OUTMESS* > &outList );
+    virtual int recvCommResult ( const INMESS   &InMessage,  std::list< OUTMESS* > &outList );
 
     virtual void getInboundPoints ( pointlist_t  &point_list );
     virtual void getInboundStrings( stringlist_t &string_list );
@@ -51,7 +51,7 @@ public:
     virtual YukonError_t generate( CtiXfer &xfer );
     virtual YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
-    virtual YukonError_t sendCommResult( INMESS  *InMessage  );
+    virtual YukonError_t sendCommResult( INMESS  &InMessage  );
 
     virtual void setName( const std::string &name );
 };

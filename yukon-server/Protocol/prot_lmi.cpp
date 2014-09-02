@@ -168,12 +168,12 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* >
 }
 
 
-int CtiProtocolLMI::recvCommResult( const INMESS *InMessage, std::list< OUTMESS* > &outList )
+int CtiProtocolLMI::recvCommResult( const INMESS &InMessage, std::list< OUTMESS* > &outList )
 {
     int offset = 0;
-    const lmi_inmess_struct &lmi_in = *((const lmi_inmess_struct *)InMessage->Buffer.InMessage);
+    const lmi_inmess_struct &lmi_in = *((const lmi_inmess_struct *)InMessage.Buffer.InMessage);
     INMESS seriesv_inmess;
-    const unsigned char *buf = InMessage->Buffer.InMessage;
+    const unsigned char *buf = InMessage.Buffer.InMessage;
 
     offset += sizeof(lmi_in);
 
@@ -196,7 +196,7 @@ int CtiProtocolLMI::recvCommResult( const INMESS *InMessage, std::list< OUTMESS*
 
     //  ACH:  make sure to fill in any INMESS parameters the seriesv may need - i think it's
     //          pretty simple, but watch this space for breakage if it gets more complex
-    _seriesv.recvCommResult(&seriesv_inmess, outList);
+    _seriesv.recvCommResult(seriesv_inmess, outList);
 
     return 0;
 }
@@ -325,14 +325,14 @@ YukonError_t CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-YukonError_t CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
+YukonError_t CtiProtocolLMI::sendCommResult( INMESS  &InMessage )
 {
     int offset = 0;
     INMESS seriesv_inmess;
     lmi_inmess_struct lmi_in;
-    unsigned char *buf = InMessage->Buffer.InMessage;
+    unsigned char *buf = InMessage.Buffer.InMessage;
 
-    _seriesv.sendCommResult(&seriesv_inmess);
+    _seriesv.sendCommResult(seriesv_inmess);
 
     lmi_in.num_codes              = _retrieved_codes.size();
     lmi_in.transmitter_power      = _transmitter_power;
@@ -358,7 +358,7 @@ YukonError_t CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
     offset += seriesv_inmess.InLength;
 
     //  store the total length
-    InMessage->InLength = offset;
+    InMessage.InLength = offset;
 
     return NoError;
 }

@@ -169,20 +169,20 @@ CtiTime CtiProtocolTransdata::getLastLoadProfileTime( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-YukonError_t CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
+YukonError_t CtiProtocolTransdata::sendCommResult( INMESS &InMessage )
 {
    if( _billingDone )
    {
-//      memcpy( InMessage->Buffer.InMessage + sizeof( ULONG ), _billingBytes, _numBilling );
-      memcpy( InMessage->Buffer.InMessage + sizeof( llp ), _billingBytes, _numBilling );
-      InMessage->InLength = _numBilling + sizeof( llp );
-      InMessage->ErrorCode = NORMAL;
+//      memcpy( InMessage.Buffer.InMessage + sizeof( ULONG ), _billingBytes, _numBilling );
+      memcpy( InMessage.Buffer.InMessage + sizeof( llp ), _billingBytes, _numBilling );
+      InMessage.InLength = _numBilling + sizeof( llp );
+      InMessage.ErrorCode = NORMAL;
       _numBytes = 0;
    }
    else
    {
-      InMessage->ErrorCode = NOTNORMAL;
-      InMessage->InLength = 0;   //matt says this is the way to know failure
+      InMessage.ErrorCode = NOTNORMAL;
+      InMessage.InLength = 0;   //matt says this is the way to know failure
    }
 
    return NORMAL;
@@ -193,15 +193,15 @@ YukonError_t CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 //a vector, pass them back up to the device, and we're done from here down...
 //=====================================================================================================================
 
-vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( const INMESS *InMessage )
+vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( const INMESS &InMessage )
 {
    CtiTransdataData           *converted = NULL;
    const BYTE                 *ptr = NULL;
    const llp                  *lp = NULL;
    vector<CtiTransdataData *> transVector;
 
-   ptr = ( const unsigned char*)( InMessage->Buffer.InMessage );
-   const BYTE *pEND = (const BYTE*)( InMessage->Buffer.InMessage ) + sizeof(InMessage->Buffer.InMessage);   // 20060908 Don't decode beyond your DATA!
+   ptr = ( const unsigned char*)( InMessage.Buffer.InMessage );
+   const BYTE *pEND = (const BYTE*)( InMessage.Buffer.InMessage ) + sizeof(InMessage.Buffer.InMessage);   // 20060908 Don't decode beyond your DATA!
 
    lp = ( const llp *)ptr;
 

@@ -40,7 +40,7 @@ private:
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
 
-      YukonError_t sendCommResult( INMESS *InMessage );
+      YukonError_t sendCommResult( INMESS &InMessage );
       int recvOutbound( OUTMESS *OutMessage );
 
       bool isTransactionComplete( void ) const;
@@ -58,7 +58,7 @@ private:
       bool getDidProcess( void );
       CtiTime getLastLoadProfileTime( void );
 
-      std::vector<CtiTransdataData *> resultDecode( const INMESS *InMessage );
+      std::vector<CtiTransdataData *> resultDecode( const INMESS &InMessage );
 
 private:
 

@@ -12,10 +12,10 @@ YukonError_t Interface::generate( CtiXfer &xfer )                       {   retu
 YukonError_t Interface::decode  ( CtiXfer &xfer, YukonError_t status )  {   return NoMethod;   }
 
 int Interface::sendCommRequest( OUTMESS *&OutMessage,    std::list< OUTMESS* > &outList )   {   return NoMethod;    }
-int Interface::recvCommResult ( const INMESS *InMessage, std::list< OUTMESS* > &outList )   {   return NoMethod;    }
+int Interface::recvCommResult ( const INMESS &InMessage, std::list< OUTMESS* > &outList )   {   return NoMethod;    }
 
 YukonError_t Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMethod;    }
-YukonError_t Interface::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;    }
+YukonError_t Interface::sendCommResult ( INMESS   &InMessage  )   {   return NoMethod;    }
 
 bool Interface::isTransactionComplete( void ) const {   return true;    }
 bool Interface::errorCondition       ( void ) const {   return false;   }
