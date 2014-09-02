@@ -85,7 +85,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private final static Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
 
     @Autowired private AssignedProgramDao assignedProgramDao;
-    @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
@@ -97,6 +96,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private ProgramDao programDao;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
 
