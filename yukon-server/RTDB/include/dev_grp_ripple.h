@@ -35,9 +35,9 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-    virtual INT processTrxID( int trx, std::list< CtiMessage* >  &vgList );
-    virtual INT initTrxID( int trx, CtiCommandParser &parse, std::list< CtiMessage* >  &vgList );
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT processTrxID( int trx, CtiMessageList  &vgList );
+    virtual INT initTrxID( int trx, CtiCommandParser &parse, CtiMessageList  &vgList );
 
     virtual bool isShedProtocolParent(CtiDeviceBase *otherdev);
     virtual bool isRestoreProtocolParent(CtiDeviceBase *otherdev);

@@ -117,28 +117,28 @@ INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceCCU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanFlag(ScanRateGeneral);
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case Command_Loop:
         {
             char temp[10];
-            string cmd(InMessage->Return.CommandStr);
+            string cmd(InMessage.Return.CommandStr);
 
 
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                             cmd,
                                                             string(getName() + " / successful ping"),
-                                                            InMessage->ErrorCode,
-                                                            InMessage->Return.RouteID,
-                                                            InMessage->Return.RetryMacroOffset,
-                                                            InMessage->Return.Attempt,
-                                                            InMessage->Return.GrpMsgID,
-                                                            InMessage->Return.UserID);
+                                                            InMessage.ErrorCode,
+                                                            InMessage.Return.RouteID,
+                                                            InMessage.Return.RetryMacroOffset,
+                                                            InMessage.Return.Attempt,
+                                                            InMessage.Return.GrpMsgID,
+                                                            InMessage.Return.UserID);
 
 
             if( pLoop != NULL )
@@ -151,14 +151,14 @@ INT CtiDeviceCCU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
         case Command_Reset:
         {
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
-                                                            InMessage->Return.CommandStr,
+                                                            InMessage.Return.CommandStr,
                                                             string(getName() + " / reset submitted"),
-                                                            InMessage->ErrorCode,
-                                                            InMessage->Return.RouteID,
-                                                            InMessage->Return.RetryMacroOffset,
-                                                            InMessage->Return.Attempt,
-                                                            InMessage->Return.GrpMsgID,
-                                                            InMessage->Return.UserID);
+                                                            InMessage.ErrorCode,
+                                                            InMessage.Return.RouteID,
+                                                            InMessage.Return.RetryMacroOffset,
+                                                            InMessage.Return.Attempt,
+                                                            InMessage.Return.GrpMsgID,
+                                                            InMessage.Return.UserID);
 
 
             if( pLoop != NULL )
@@ -173,7 +173,7 @@ INT CtiDeviceCCU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** ACH. Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "InMessage->Sequence = " << InMessage->Sequence << endl;
+                dout << "InMessage.Sequence = " << InMessage.Sequence << endl;
             }
 
             break;

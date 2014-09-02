@@ -155,7 +155,7 @@ public:
     CtiDeviceDR87& setLogoffFunction (INT aFunc);
 
 
-    INT ResultDisplay (const INMESS *InMessage);
+    INT ResultDisplay (const INMESS &InMessage);
 
     /*
      *  These guys initiate a scan based upon the type requested.
@@ -164,31 +164,31 @@ public:
     virtual INT GeneralScan(CtiRequestMsg *pReq,
                             CtiCommandParser &parse,
                             OUTMESS *&OutMessage,
-                            std::list< CtiMessage* > &vgList,
-                            std::list< CtiMessage* > &retList,
-                            std::list< OUTMESS* > &outList,
+                            CtiMessageList &vgList,
+                            CtiMessageList &retList,
+                            OutMessageList &outList,
                             INT ScanPriority);
 
-    virtual INT ResultDecode(const INMESS *InMessage,
-                             CtiTime &TimeNow,
-                             std::list< CtiMessage* >   &vgList,
-                             std::list< CtiMessage* > &retList,
-                             std::list< OUTMESS* > &outList);
+    virtual INT ResultDecode(const INMESS &InMessage,
+                             const CtiTime TimeNow,
+                             CtiMessageList   &vgList,
+                             CtiMessageList &retList,
+                             OutMessageList &outList);
     virtual INT ErrorDecode(const INMESS      &InMessage,
                             const CtiTime      TimeNow,
-                            std::list<CtiMessage*> &retList);
+                            CtiMessageList &retList);
 
     // interrogation routines
-    virtual YukonError_t decodeResponseHandshake   (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t decodeResponse            (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t decodeResponseScan        (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t decodeResponseLoadProfile (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t decodeResponseHandshake   (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+    virtual YukonError_t decodeResponse            (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+    virtual YukonError_t decodeResponseScan        (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+    virtual YukonError_t decodeResponseLoadProfile (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
 
-    virtual YukonError_t generateCommandHandshake   (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t generateCommand            (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t generateCommandScan        (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-    virtual INT generateCommandTerminate   (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t generateCommandHandshake   (CtiXfer &Transfer, CtiMessageList &traceList);
+    virtual YukonError_t generateCommand            (CtiXfer &Transfer, CtiMessageList &traceList);
+    virtual YukonError_t generateCommandScan        (CtiXfer &Transfer, CtiMessageList &traceList);
+    virtual YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, CtiMessageList &traceList);
+    virtual INT generateCommandTerminate   (CtiXfer &Transfer, CtiMessageList &traceList);
 
     virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
     virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
@@ -196,17 +196,17 @@ public:
     virtual INT allocateDataBins (OUTMESS *outMess);
     virtual INT freeDataBins ();
 
-    virtual INT   decodeResultScan (const INMESS               *InMessage,
-                                    CtiTime                    &TimeNow,
-                                    std::list< CtiMessage* > &vgList,
-                                    std::list< CtiMessage* > &retList,
-                                    std::list< OUTMESS* >    &outList);
+    virtual INT   decodeResultScan (const INMESS               &InMessage,
+                                    const CtiTime               TimeNow,
+                                    CtiMessageList &vgList,
+                                    CtiMessageList &retList,
+                                    OutMessageList    &outList);
 
-    virtual INT decodeResultLoadProfile (const INMESS               *InMessage,
-                                         CtiTime                    &TimeNow,
-                                         std::list< CtiMessage* > &vgList,
-                                         std::list< CtiMessage* > &retList,
-                                         std::list< OUTMESS* >    &outList);
+    virtual INT decodeResultLoadProfile (const INMESS               &InMessage,
+                                         const CtiTime               TimeNow,
+                                         CtiMessageList &vgList,
+                                         CtiMessageList &retList,
+                                         OutMessageList    &outList);
     virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointID,
                                                DOUBLE        aValue,
                                                USHORT        aQuality,

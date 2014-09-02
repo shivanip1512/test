@@ -16,21 +16,21 @@ private:
 
     typedef CtiDeviceGroupBase Inherited;
     CtiTableExpresscomLoadGroup     _expresscomGroup;
-    
+
     typedef std::map< long, CtiDeviceGroupBaseWPtr > WPtrGroupMap;
     WPtrGroupMap _children;
 
 protected:
 
     // This method makes a gripe if any addressing level or load is predefined when submitting a request to a group
-    bool checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &retList );
-    void reportChildControlStart(int isshed, int shedtime, int reductionratio, std::list< CtiMessage* >  &vgList, std::string cmd, int controlPriority );
+    bool checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &retList );
+    void reportChildControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, std::string cmd, int controlPriority );
     std::string getAddressingAsString();
 
-    int extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::string &resultString);
-    void reportAndLogControlStart(CtiCommandParser &parse, std::list<CtiMessage *> &vgList, const std::string &commandString);
+    int extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, CtiMessageList &vgList, CtiMessageList &retList, std::string &resultString);
+    void reportAndLogControlStart(CtiCommandParser &parse, CtiMessageList &vgList, const std::string &commandString);
 
-public:    
+public:
     CtiDeviceGroupExpresscom();
 
     CtiTableExpresscomLoadGroup&       getExpresscomGroup();
@@ -41,9 +41,9 @@ public:
     virtual LONG getRouteID();
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual std::string getPutConfigAssignment(UINT modifier = 0);
-    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, std::list< CtiMessage* >  &vgList, std::string cmd = std::string(""), int priority = 0 );
+    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, std::string cmd = std::string(""), int priority = 0 );
 
     virtual ADDRESSING_COMPARE_RESULT compareAddressing(CtiDeviceGroupBaseSPtr otherGroup);
     bool compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup);

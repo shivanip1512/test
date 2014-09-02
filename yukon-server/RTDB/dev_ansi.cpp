@@ -302,13 +302,13 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
+INT CtiDeviceAnsi::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
                                 list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
     string inMsgResultString = "";
 
-    inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
+    inMsgResultString = string((const char*)InMessage.Buffer.InMessage, InMessage.InLength);
 
     if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset || getANSIProtocol().getScanOperation() == CtiProtocolANSI::loopBack)
     {
@@ -322,14 +322,14 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
             returnString += " failed";
         }
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                InMessage->Return.CommandStr,
+                InMessage.Return.CommandStr,
                 returnString,
-                InMessage->ErrorCode,
-                InMessage->Return.RouteID,
-                InMessage->Return.RetryMacroOffset,
-                InMessage->Return.Attempt,
-                InMessage->Return.GrpMsgID,
-                InMessage->Return.UserID);
+                InMessage.ErrorCode,
+                InMessage.Return.RouteID,
+                InMessage.Return.RetryMacroOffset,
+                InMessage.Return.Attempt,
+                InMessage.Return.GrpMsgID,
+                InMessage.Return.UserID);
     }
     else
     {
@@ -338,28 +338,28 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
             if (findStringIgnoreCase(inMsgResultString, "successful") )
             {
                 retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                InMessage->Return.CommandStr,
+                                                InMessage.Return.CommandStr,
                                                 //string(),
                                                 getName() + " / general scan successful : \n" + _result_string.c_str(),
-                                                InMessage->ErrorCode,
-                                                InMessage->Return.RouteID,
-                                                InMessage->Return.RetryMacroOffset,
-                                                InMessage->Return.Attempt,
-                                                InMessage->Return.GrpMsgID,
-                                                InMessage->Return.UserID);
+                                                InMessage.ErrorCode,
+                                                InMessage.Return.RouteID,
+                                                InMessage.Return.RetryMacroOffset,
+                                                InMessage.Return.Attempt,
+                                                InMessage.Return.GrpMsgID,
+                                                InMessage.Return.UserID);
             }
             else
             {
                  retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                InMessage->Return.CommandStr,
+                                                InMessage.Return.CommandStr,
                                                 //string(),
                                                 getName() + " / general scan failed",
-                                                InMessage->ErrorCode,
-                                                InMessage->Return.RouteID,
-                                                InMessage->Return.RetryMacroOffset,
-                                                InMessage->Return.Attempt,
-                                                InMessage->Return.GrpMsgID,
-                                                InMessage->Return.UserID);
+                                                InMessage.ErrorCode,
+                                                InMessage.Return.RouteID,
+                                                InMessage.Return.RetryMacroOffset,
+                                                InMessage.Return.Attempt,
+                                                InMessage.Return.GrpMsgID,
+                                                InMessage.Return.UserID);
             }
 
 
@@ -367,7 +367,7 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
         }
         else if (useScanFlags())
         {
-           const unsigned long *lastLpTime = (const unsigned long *)InMessage->Buffer.InMessage;
+           const unsigned long *lastLpTime = (const unsigned long *)InMessage.Buffer.InMessage;
 
            try
            {
@@ -417,36 +417,36 @@ INT CtiDeviceAnsi::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, list
 
     return( 0 ); //just a val
 }
-YukonError_t CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
+YukonError_t CtiDeviceAnsi::sendCommResult( INMESS &InMessage)
 {
     if (getANSIProtocol().getScanOperation() >= CtiProtocolANSI::demandReset ) //2= demand Reset, 3=loopback
     {
         string returnString = (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset ? "demand reset " : "loopback ");
-        if( ! InMessage->ErrorCode )
+        if( ! InMessage.ErrorCode )
         {
             returnString += "successful";
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-            InMessage->InLength = sizeOfReturnString;
+            memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+            InMessage.InLength = sizeOfReturnString;
         }
         else
         {
             returnString += "failed";
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-            InMessage->InLength = sizeOfReturnString;
+            memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+            InMessage.InLength = sizeOfReturnString;
         }
     }
     else //general Scan
     {
 
-        if( ! InMessage->ErrorCode )
+        if( ! InMessage.ErrorCode )
         {
             if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == CtiProtocolANSI::generalScan) //scanner
             {
                 ULONG lptime = getANSIProtocol().getlastLoadProfileTime();
-                memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
-                InMessage->InLength = sizeof (unsigned long);
+                memcpy( InMessage.Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
+                InMessage.InLength = sizeof (unsigned long);
 
                 if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
@@ -459,21 +459,21 @@ YukonError_t CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
 
                 string returnString("general scan successful");
                 int sizeOfReturnString = returnString.length();
-                memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-                InMessage->InLength = sizeOfReturnString;
+                memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+                InMessage.InLength = sizeOfReturnString;
             }
         }
         else
         {
             string returnString("general scan failed");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
-            InMessage->InLength = sizeOfReturnString;
+            memcpy( InMessage.Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
+            InMessage.InLength = sizeOfReturnString;
         }
 
     }
 
-    return InMessage->ErrorCode;
+    return InMessage.ErrorCode;
 }
 //=====================================================================================================================
 //=====================================================================================================================

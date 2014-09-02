@@ -18,7 +18,7 @@ private:
 public:
     Cbc8020Device() {};
 
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
 protected:
     typedef Cbc7020Device Inherited;
@@ -27,10 +27,10 @@ protected:
         PointOffset_FirmwareRevisionMajor = 3,
         PointOffset_FirmwareRevisionMinor = 4,
         /**
-         * Offset 9999 was chosen for the artificial Firmware Revision 
-         * point since negative offsets are not allowable. Analog 
-         * outputs start at 10000 and go up, so 9999 was a safe offset 
-         * choice for Firmware Revision point since analog inputs will 
+         * Offset 9999 was chosen for the artificial Firmware Revision
+         * point since negative offsets are not allowable. Analog
+         * outputs start at 10000 and go up, so 9999 was a safe offset
+         * choice for Firmware Revision point since analog inputs will
          * likely never reach that high and cause a conflict.
          */
         PointOffset_FirmwareRevision      = 9999

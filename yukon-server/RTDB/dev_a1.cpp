@@ -1714,13 +1714,13 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
 
 
 
-INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
-                                          CtiTime &TimeNow,
+INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS &InMessage,
+                                          const CtiTime TimeNow,
                                           list< CtiMessage* >   &vgList,
                                           list< CtiMessage* > &retList,
                                           list< OUTMESS* > &outList)
 {
-    char tmpCurrentState   = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentState   = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 //   SYSTEMLOGMESS LogMessage;
     CHAR     temp[100], buffer[100];
 
@@ -1737,25 +1737,25 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    const DIALUPREPLY  *DUPRep   = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY  *DUPRep   = &InMessage.Buffer.DUPSt.DUPRep;
 
     CtiPointDataMsg    *pData    = NULL;
     CtiPointNumericSPtr pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
     const AlphaA1ScanData_t *ptr = (const AlphaA1ScanData_t *)DUPRep->Message;
     CtiTime peakTime;
 
     // here is the class we requested
-    setReadClass (InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[2]);
+    setReadClass (InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[2]);
 
     //check scan pending
     if (isScanFlagSet(ScanRateGeneral))
@@ -1763,7 +1763,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
 
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            InMessage->ErrorCode )
+            InMessage.ErrorCode )
         {
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -1775,8 +1775,8 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
                 pMsg->insert(
-                        InMessage->ErrorCode
-                            ? InMessage->ErrorCode
+                        InMessage.ErrorCode
+                            ? InMessage.ErrorCode
                             : GeneralScanAborted);
             }
 
@@ -1887,15 +1887,15 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS *InMessage,
     return(NORMAL);
 }
 
-INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS *InMessage,
-                                               CtiTime &TimeNow,
+INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS &InMessage,
+                                               const CtiTime TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
 
     int retCode = NORMAL;
-    const DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
 
     const AlphaA1LoadProfile_t *ptr = (const AlphaA1LoadProfile_t *)DUPRep->Message;
 
@@ -1912,14 +1912,14 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS *InMessage,
     int               dataQuality = NormalQuality;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
     // alpha only supports 4 channels
     AlphaLPPointInfo_t   validLPPointInfo[4] = { {0,1.0,-1},
@@ -2082,9 +2082,9 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS *InMessage,
 }
 
 
-INT CtiDeviceAlphaA1::ResultDisplay(const INMESS *InMessage)
+INT CtiDeviceAlphaA1::ResultDisplay(const INMESS &InMessage)
 {
-    const DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
     const AlphaA1ScanData_t *ptr = (const AlphaA1ScanData_t *)DUPRep->Message;
     CHAR buffer[200];
     /**************************

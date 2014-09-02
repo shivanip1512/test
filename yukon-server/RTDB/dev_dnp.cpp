@@ -761,14 +761,14 @@ void DnpDevice::initUnsolicited()
 }
 
 
-YukonError_t DnpDevice::sendCommResult(INMESS *InMessage)
+YukonError_t DnpDevice::sendCommResult(INMESS &InMessage)
 {
     char *buf;
     string result_string;
     Protocol::DNPInterface::stringlist_t strings;
     Protocol::DNPInterface::stringlist_t::iterator itr;
 
-    buf = reinterpret_cast<char *>(InMessage->Buffer.InMessage);
+    buf = reinterpret_cast<char *>(InMessage.Buffer.InMessage);
 
     _dnp.getInboundStrings(strings);
 
@@ -788,12 +788,12 @@ YukonError_t DnpDevice::sendCommResult(INMESS *InMessage)
         strings.pop_back();
     }
 
-    InMessage->InLength = result_string.size() + 1;
+    InMessage.InLength = result_string.size() + 1;
 
     //  make sure we don't overrun the buffer, even though we just checked above
-    strncpy(buf, result_string.c_str(), sizeof(InMessage->Buffer.InMessage) - 1);
+    strncpy(buf, result_string.c_str(), sizeof(InMessage.Buffer.InMessage) - 1);
     //  and mark the end with a null, again, just to be sure
-    InMessage->Buffer.InMessage[sizeof(InMessage->Buffer.InMessage) - 1] = 0;
+    InMessage.Buffer.InMessage[sizeof(InMessage.Buffer.InMessage) - 1] = 0;
 
     return NoError;
 }
@@ -811,7 +811,7 @@ void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
     Protocol::Interface::pointlist_t points;
     Protocol::Interface::pointlist_t::iterator itr;
 
-    vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage->Return.CommandStr
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage.Return.CommandStr
 
     double tmpValue;
 
@@ -1012,75 +1012,75 @@ void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     CtiReturnMsg *retMsg;
 
-    if( ! InMessage->ErrorCode )
+    if( ! InMessage.ErrorCode )
     {
         string result_string;
 
-        unsigned long length = InMessage->InLength;
+        unsigned long length = InMessage.InLength;
 
         //  safety first
-        if( InMessage->InLength > sizeof(InMessage->Buffer.InMessage) )
+        if( InMessage.InLength > sizeof(InMessage.Buffer.InMessage) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - InMessage.InLength > sizeof(InMessage.Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            length = sizeof(InMessage->Buffer.InMessage);
+            length = sizeof(InMessage.Buffer.InMessage);
         }
 
-        result_string.assign(InMessage->Buffer.InMessage,
-                             InMessage->Buffer.InMessage + length);
+        result_string.assign(InMessage.Buffer.InMessage,
+                             InMessage.Buffer.InMessage + length);
 
-        if( strstr(InMessage->Return.CommandStr, "scan integrity") )
+        if( strstr(InMessage.Return.CommandStr, "scan integrity") )
         {
             //  case Protocol::DNPInterface::Command_Class1230Read:
             setScanFlag(ScanRateIntegrity, false);
         }
-        if( strstr(InMessage->Return.CommandStr, "scan general") )
+        if( strstr(InMessage.Return.CommandStr, "scan general") )
         {
             //  case Protocol::DNPInterface::Command_Class123Read:
             setScanFlag(ScanRateGeneral, false);
         }
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         string(InMessage->Return.CommandStr),
+                                         string(InMessage.Return.CommandStr),
                                          result_string.c_str(),
-                                         InMessage->ErrorCode,
-                                         InMessage->Return.RouteID,
-                                         InMessage->Return.RetryMacroOffset,
-                                         InMessage->Return.Attempt,
-                                         InMessage->Return.GrpMsgID,
-                                         InMessage->Return.UserID);
+                                         InMessage.ErrorCode,
+                                         InMessage.Return.RouteID,
+                                         InMessage.Return.RetryMacroOffset,
+                                         InMessage.Return.Attempt,
+                                         InMessage.Return.GrpMsgID,
+                                         InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }
     else
     {
-        const string error_str = GetErrorString(InMessage->ErrorCode);
+        const string error_str = GetErrorString(InMessage.ErrorCode);
 
         string resultString;
 
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(InMessage->ErrorCode).xhex().zpad(2)) + ")";
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(InMessage.ErrorCode).xhex().zpad(2)) + ")";
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         string(InMessage->Return.CommandStr),
+                                         string(InMessage.Return.CommandStr),
                                          resultString,
-                                         InMessage->ErrorCode,
-                                         InMessage->Return.RouteID,
-                                         InMessage->Return.RetryMacroOffset,
-                                         InMessage->Return.Attempt,
-                                         InMessage->Return.GrpMsgID,
-                                         InMessage->Return.UserID);
+                                         InMessage.ErrorCode,
+                                         InMessage.Return.RouteID,
+                                         InMessage.Return.RetryMacroOffset,
+                                         InMessage.Return.Attempt,
+                                         InMessage.Return.GrpMsgID,
+                                         InMessage.Return.UserID);
 
         retList.push_back(retMsg);
     }
 
-    return  InMessage->ErrorCode;
+    return  InMessage.ErrorCode;
 }
 
 

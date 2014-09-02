@@ -493,26 +493,26 @@ public:
    }
 
    // all routines required by base class dev_meter
-   virtual INT ResultDisplay (const INMESS *InMessage);
+   virtual INT ResultDisplay (const INMESS &InMessage);
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           std::list< CtiMessage* > &vgList,
-                           std::list< CtiMessage* > &retList,
-                           std::list< OUTMESS* > &outList,
+                           CtiMessageList &vgList,
+                           CtiMessageList &retList,
+                           OutMessageList &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
 
-   virtual YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, std::list< CtiMessage* > &traceList );
-   virtual YukonError_t generateCommandScan       (CtiXfer  &Transfer, std::list< CtiMessage* > &tListr );
+   virtual YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, CtiMessageList &traceList );
+   virtual YukonError_t generateCommandScan       (CtiXfer  &Transfer, CtiMessageList &tListr );
 
-   virtual YukonError_t decodeResponseScan        (CtiXfer  &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-   virtual YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+   virtual YukonError_t decodeResponseScan        (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+   virtual YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
 
-   virtual INT decodeResultLoadProfile (const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
-   virtual INT decodeResultScan        (const INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* >   &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+   virtual INT decodeResultLoadProfile (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
+   virtual INT decodeResultScan        (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
 
    INT   getA1ClassOffset(UINT Key, void *ptr);
    INT   getA1FuncOffset (UINT Key, void *ptr);

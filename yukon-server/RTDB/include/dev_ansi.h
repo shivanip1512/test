@@ -29,38 +29,38 @@ public:
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
-                           std::list< CtiMessage* >  &vgList,
-                           std::list< CtiMessage* >  &retList,
-                           std::list< OUTMESS* >     &outList,
+                           CtiMessageList  &vgList,
+                           CtiMessageList  &retList,
+                           OutMessageList     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT executeLoopback(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           std::list<CtiMessage*>&vgList,
-                           std::list<CtiMessage*>&retList,
-                           std::list<OUTMESS*>&outList);
+                           CtiMessageList&vgList,
+                           CtiMessageList&retList,
+                           OutMessageList&outList);
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
                     OUTMESS *&OutMessage,
-                    std::list< CtiMessage* > &vgList,
-                    std::list< CtiMessage* > &retList,
-                    std::list< OUTMESS* > &outList,
+                    CtiMessageList &vgList,
+                    CtiMessageList &retList,
+                    OutMessageList &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
 
-   virtual INT ResultDecode(const INMESS                    *InMessage,
-                            CtiTime                    &TimeNow,
-                            std::list< CtiMessage* > &vgList,
-                            std::list< CtiMessage* > &retList,
-                            std::list< OUTMESS* >    &outList);
+   virtual INT ResultDecode(const INMESS             &InMessage,
+                            const CtiTime             TimeNow,
+                            CtiMessageList &vgList,
+                            CtiMessageList &retList,
+                            OutMessageList    &outList);
 
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,
-                       std::list< CtiMessage* >  &vgList,
-                       std::list< CtiMessage* >  &retList,
-                       std::list< OUTMESS* >     &outList );
+                       CtiMessageList  &vgList,
+                       CtiMessageList  &retList,
+                       OutMessageList     &outList );
 
    virtual void processDispatchReturnMessage( std::list< CtiReturnMsg* > &retList, UINT archiveFlag );
    virtual unsigned long updateLastLpTime();
@@ -70,7 +70,7 @@ public:
    virtual int buildCommanderTableRequest (BYTE *ptr, UINT flags) = 0;
    virtual int buildSingleTableRequest(BYTE *ptr, UINT tableId = 0);
 
-   YukonError_t sendCommResult( INMESS *InMessage);
+   YukonError_t sendCommResult( INMESS &InMessage);
 
    struct WANTS_HEADER
    {

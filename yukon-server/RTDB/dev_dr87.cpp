@@ -1481,8 +1481,8 @@ INT CtiDeviceDR87::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 }
 
 
-INT  CtiDeviceDR87::ResultDecode(const INMESS *InMessage,
-                                 CtiTime &TimeNow,
+INT  CtiDeviceDR87::ResultDecode(const INMESS &InMessage,
+                                 const CtiTime TimeNow,
                                  list< CtiMessage* >   &vgList,
                                  list< CtiMessage* > &retList,
                                  list< OUTMESS* > &outList)
@@ -1495,8 +1495,8 @@ INT  CtiDeviceDR87::ResultDecode(const INMESS *InMessage,
     *
     *****************************
     */
-    char tmpCurrentCommand = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0],
-         tmpCurrentState   = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentCommand = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[0],
+         tmpCurrentState   = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
     if( !_dstFlagValid )
     {
@@ -1597,13 +1597,13 @@ INT CtiDeviceDR87::ErrorDecode (const INMESS        &InMessage,
 
 
 
-INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
-                                     CtiTime &TimeNow,
+INT CtiDeviceDR87::decodeResultScan (const INMESS &InMessage,
+                                     const CtiTime TimeNow,
                                      list< CtiMessage* >   &vgList,
                                      list< CtiMessage* > &retList,
                                      list< OUTMESS* > &outList)
 {
-    char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
     CHAR           temp[100], buffer[60];
 
@@ -1622,22 +1622,22 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
     DOUBLE   PValue;
     CtiTime    peakTime;
 
-    const DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    const DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST      *DupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY        *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
 
 
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumericSPtr pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
     const DR87ScanData_t  *scanData = (const DR87ScanData_t*) DUPRep->Message;
 
@@ -1646,7 +1646,7 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            InMessage->ErrorCode)
+            InMessage.ErrorCode)
         {
 
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -1659,8 +1659,8 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
                 pMsg->insert(
-                        InMessage->ErrorCode
-                            ? InMessage->ErrorCode
+                        InMessage.ErrorCode
+                            ? InMessage.ErrorCode
                             : GeneralScanAborted);
             }
 
@@ -1720,14 +1720,14 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS *InMessage,
 }
 
 
-INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS *InMessage,
-                                            CtiTime &TimeNow,
+INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS &InMessage,
+                                            const CtiTime TimeNow,
                                             list< CtiMessage* >   &vgList,
                                             list< CtiMessage* > &retList,
                                             list< OUTMESS* > &outList)
 {
     int retCode = NORMAL;
-    const DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREPLY        *DUPRep       = &InMessage.Buffer.DUPSt.DUPRep;
     const DR87LoadProfile_t  *ptr = (const DR87LoadProfile_t *)DUPRep->Message;
 
     BYTEUSHORT        flip;
@@ -1742,14 +1742,14 @@ INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS *InMessage,
     int               dataQuality = NormalQuality;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
     // alpha only supports 4 channels
     DR87LPPointInfo_t   validLPPointInfo[4] = { {0,1.0,-1},
@@ -2079,7 +2079,7 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, Cti
 }
 
 // Routine to display or print the message
-INT CtiDeviceDR87::ResultDisplay (const INMESS *InMessage)
+INT CtiDeviceDR87::ResultDisplay (const INMESS &InMessage)
 
 {
     return NORMAL;

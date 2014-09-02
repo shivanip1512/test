@@ -25,9 +25,9 @@ public:
 
     //  we need to transform "control open" and "control close" into "control open offset 1" and "control close offset 1"
     //  also, we now need to allow configs to be sent out.
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    //virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS* >&outList);
+    //virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList&vgList, CtiMessageList&retList, OutMessageList&outList);
 
 protected:
 
@@ -46,19 +46,19 @@ private:
     static const ConfigPartsList _config_parts;
     static ConfigPartsList initConfigParts();
 
-    int executePutConfigSingle        (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigVoltage       (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigCommsLost     (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigFaultDetection(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigTimeAndTemp1  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigTimeAndTemp2  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigControlTimes  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigDataLogging   (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    //int executePutConfigAddressing    (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigDNP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int executePutConfigUDP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,std::list< CtiMessage* >&vgList,std::list< CtiMessage* >&retList,std::list< OUTMESS* >   &outList);
-    int sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS* >   &outList);
+    int executePutConfigSingle        (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigVoltage       (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigCommsLost     (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigFaultDetection(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigTimeAndTemp1  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigTimeAndTemp2  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigControlTimes  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigDataLogging   (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    //int executePutConfigAddressing    (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigDNP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int executePutConfigUDP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    int sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, CtiMessageList&vgList, CtiMessageList&retList, OutMessageList   &outList);
 
     static const char *PutConfigPart_all;
     static const char *PutConfigPart_comms_lost;

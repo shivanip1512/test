@@ -1839,13 +1839,13 @@ YukonError_t CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
 }
 
 
-INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
-                                        CtiTime &TimeNow,
+INT CtiDeviceFulcrum::decodeResultScan (const INMESS &InMessage,
+                                        const CtiTime TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
                                         list< OUTMESS* > &outList)
 {
-    char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
     CHAR     temp[100], buffer[60];
 
     BOOL     bDoStatusCheck = FALSE;
@@ -1861,22 +1861,22 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
     FLOAT    PartHour;
     DOUBLE   PValue;
 
-    const DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    const DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST      *DupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY        *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
 
 
     CtiPointDataMsg     *pData    = NULL;
     CtiPointNumericSPtr  pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
     const FulcrumScanData_t  *Fsd = (const FulcrumScanData_t*) DUPRep->Message;
     CtiTime peakTime;
@@ -1887,7 +1887,7 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
             (tmpCurrentState == StateHandshakeAbort) ||
-            InMessage->ErrorCode)
+            InMessage.ErrorCode)
         {
             CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -1898,8 +1898,8 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
                 pMsg->insert(getID());             // The id (device or point which failed)
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
                 pMsg->insert(
-                        InMessage->ErrorCode
-                            ? InMessage->ErrorCode
+                        InMessage.ErrorCode
+                            ? InMessage.ErrorCode
                             : GeneralScanAborted);
             }
 
@@ -1955,15 +1955,15 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS *InMessage,
 
 
 
-INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS *InMessage,
-                                               CtiTime &TimeNow,
+INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS &InMessage,
+                                               const CtiTime TimeNow,
                                                list< CtiMessage* >   &vgList,
                                                list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
 
-    const DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
-    const DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;
+    const DIALUPREQUEST                 *dupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
+    const DIALUPREPLY                   *dupRep = &InMessage.Buffer.DUPSt.DUPRep;
 
     const FulcrumLoadProfileMessage_t   *fulcrumLProfile = (const FulcrumLoadProfileMessage_t*)&dupRep->Message;
     const FulcrumMMConfig_t             *fulcrumMMConfig = (const FulcrumMMConfig_t *)&fulcrumLProfile->MMConfig;
@@ -1997,14 +1997,14 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS *InMessage,
     CtiPointNumericSPtr   pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->ErrorCode,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.RetryMacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.ErrorCode,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.RetryMacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
     // initialize
     currentInterval   = (INT)fulcrumMMConfig->CurrentInterval;
@@ -2133,12 +2133,12 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS *InMessage,
 }
 
 // Routine to display or print the message
-INT CtiDeviceFulcrum::ResultDisplay (const INMESS *InMessage)
+INT CtiDeviceFulcrum::ResultDisplay (const INMESS &InMessage)
 
 {
     ULONG          i, j;
-    const DIALUPREPLY    *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
-    const FulcrumScanData_t  *Fsd = (const FulcrumScanData_t*) InMessage->Buffer.DUPSt.DUPRep.Message;
+    const DIALUPREPLY    *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
+    const FulcrumScanData_t  *Fsd = (const FulcrumScanData_t*) InMessage.Buffer.DUPSt.DUPRep.Message;
      CHAR buffer[200];
 
      /**************************

@@ -37,31 +37,31 @@ public:
     virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
                                CtiCommandParser               &parse,
                                OUTMESS                        *&OutMessage,
-                               std::list< CtiMessage* >      &vgList,
-                               std::list< CtiMessage* >      &retList,
-                               std::list< OUTMESS* >         &outList);
+                               CtiMessageList      &vgList,
+                               CtiMessageList      &retList,
+                               OutMessageList         &outList);
 
 
     INT executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                CtiCommandParser               &parse,
                                OUTMESS                        *&OutMessage,
-                               std::list< CtiMessage* >      &vgList,
-                               std::list< CtiMessage* >      &retList,
-                               std::list< OUTMESS* >         &outList);
+                               CtiMessageList      &vgList,
+                               CtiMessageList      &retList,
+                               OutMessageList         &outList);
 
     INT executeVersacomCBC(CtiRequestMsg                  *pReq,
                            CtiCommandParser               &parse,
                            OUTMESS                        *&OutMessage,
-                           std::list< CtiMessage* >      &vgList,
-                           std::list< CtiMessage* >      &retList,
-                           std::list< OUTMESS* >         &outList);
+                           CtiMessageList      &vgList,
+                           CtiMessageList      &retList,
+                           OutMessageList         &outList);
 
     INT executeExpresscomCBC(CtiRequestMsg                  *pReq,
                              CtiCommandParser               &parse,
                              OUTMESS                        *&OutMessage,
-                             std::list< CtiMessage* >      &vgList,
-                             std::list< CtiMessage* >      &retList,
-                             std::list< OUTMESS* >         &outList);
+                             CtiMessageList      &vgList,
+                             CtiMessageList      &retList,
+                             OutMessageList         &outList);
 
 
 };

@@ -191,7 +191,7 @@ public:
 
 
     // general generate functions
-    INT   generateCommandTerminate( CtiXfer  &Transfer, std::list< CtiMessage* > &traceList );
+    INT   generateCommandTerminate( CtiXfer  &Transfer, CtiMessageList &traceList );
 
     // general decode routines
 
@@ -204,26 +204,26 @@ public:
     virtual INT GeneralScan(CtiRequestMsg              *pReq,
                             CtiCommandParser           &parse,
                             OUTMESS                   *&OutMessage,
-                            std::list< CtiMessage* >  &vgList,
-                            std::list< CtiMessage* >  &retList,
-                            std::list< OUTMESS* >     &outList,
+                            CtiMessageList  &vgList,
+                            CtiMessageList  &retList,
+                            OutMessageList     &outList,
                             INT                         ScanPriority=MAXPRIORITY-4);
 
-    virtual INT ResultDecode(const INMESS               *InMessage,
-                             CtiTime                    &TimeNow,
-                             std::list< CtiMessage* > &vgList,
-                             std::list< CtiMessage* > &retList,
-                             std::list< OUTMESS* >    &outList);
+    virtual INT ResultDecode(const INMESS             &InMessage,
+                             const CtiTime             TimeNow,
+                             CtiMessageList &vgList,
+                             CtiMessageList &retList,
+                             OutMessageList    &outList);
     virtual INT ErrorDecode(const INMESS        &InMessage,
                             const CtiTime        TimeNow,
-                            std::list< CtiMessage* > &retList);
+                            CtiMessageList &retList);
 
     // all defined in dev_alpha.cpp
-    virtual YukonError_t generateCommand          (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t generateCommandHandshake (CtiXfer &Transfer, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t generateCommand          (CtiXfer &Transfer, CtiMessageList &traceList);
+    virtual YukonError_t generateCommandHandshake (CtiXfer &Transfer, CtiMessageList &traceList);
 
-    virtual YukonError_t decodeResponse          (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
-    virtual YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, std::list< CtiMessage* > &traceList);
+    virtual YukonError_t decodeResponse          (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+    virtual YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
     virtual INT freeDataBins();
 
 

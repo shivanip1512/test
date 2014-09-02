@@ -131,19 +131,19 @@ INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT Ccu721Device::ResultDecode( const INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
+INT Ccu721Device::ResultDecode( const INMESS &InMessage, const CtiTime Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
-    if( ! InMessage->ErrorCode )
+    if( ! InMessage.ErrorCode )
     {
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
-                                                  string(InMessage->Return.CommandStr),
-                                                  string((const char *)(InMessage->Buffer.InMessage + InMessage_StringOffset)),
-                                                  InMessage->ErrorCode,
-                                                  InMessage->Return.RouteID,
-                                                  InMessage->Return.RetryMacroOffset,
-                                                  InMessage->Return.Attempt,
-                                                  InMessage->Return.GrpMsgID,
-                                                  InMessage->Return.UserID));
+                                                  string(InMessage.Return.CommandStr),
+                                                  string((const char *)(InMessage.Buffer.InMessage + InMessage_StringOffset)),
+                                                  InMessage.ErrorCode,
+                                                  InMessage.Return.RouteID,
+                                                  InMessage.Return.RetryMacroOffset,
+                                                  InMessage.Return.Attempt,
+                                                  InMessage.Return.GrpMsgID,
+                                                  InMessage.Return.UserID));
 
         resetScanFlag();
     }
@@ -560,7 +560,7 @@ YukonError_t Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 }
 
 
-YukonError_t Ccu721Device::sendCommResult(INMESS *InMessage)
+YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
 {
     YukonError_t status = translateKlondikeError(_klondike.errorCode());
 
@@ -570,7 +570,7 @@ YukonError_t Ccu721Device::sendCommResult(INMESS *InMessage)
     {
         string results = _klondike.describeCurrentStatus();
 
-        strncpy(reinterpret_cast<char *>(InMessage->Buffer.InMessage + InMessage_StringOffset),
+        strncpy(reinterpret_cast<char *>(InMessage.Buffer.InMessage + InMessage_StringOffset),
                 results.data(),
                 4096 - InMessage_StringOffset);
     }
@@ -582,8 +582,8 @@ YukonError_t Ccu721Device::sendCommResult(INMESS *InMessage)
         {
             case KlondikeProtocol::Command_DirectTransmission:
             {
-                InMessage->Buffer.DSt.Time     = InMessage->Time;
-                InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
+                InMessage.Buffer.DSt.Time     = InMessage.Time;
+                InMessage.Buffer.DSt.DSTFlag  = InMessage.MilliTime & DSTACTIVE;
 
                 break;
             }
@@ -612,16 +612,16 @@ YukonError_t Ccu721Device::sendCommResult(INMESS *InMessage)
 
                 OutEchoToIN(_current_om, InMessage);
 
-                InMessage->Port   = _current_om->Port;
-                InMessage->Remote = _current_om->Remote;
+                InMessage.Port   = _current_om->Port;
+                InMessage.Remote = _current_om->Remote;
 
-                InMessage->Time   = CtiTime::now().seconds();
+                InMessage.Time   = CtiTime::now().seconds();
 
-                InMessage->InLength  = dtran_result.size();
+                InMessage.InLength  = dtran_result.size();
 
-                copy(dtran_result.begin(), dtran_result.end(), InMessage->Buffer.InMessage);
+                copy(dtran_result.begin(), dtran_result.end(), InMessage.Buffer.InMessage);
 
-                //  unlike in Command_LoadQueue/Command_ReadQueue, the InMessage->EventCode is set by
+                //  unlike in Command_LoadQueue/Command_ReadQueue, the InMessage.EventCode is set by
                 //    the CommResult/status later on in CtiDeviceSingle::ProcessResult
                 if( !status )
                 {
@@ -642,7 +642,7 @@ YukonError_t Ccu721Device::sendCommResult(INMESS *InMessage)
                     {
                         INMESS *im = new INMESS;
 
-                        OutEchoToIN(om, im);
+                        OutEchoToIN(om, *im);
 
                         im->Port      = om->Port;
                         im->Remote    = om->Remote;
@@ -655,7 +655,7 @@ YukonError_t Ccu721Device::sendCommResult(INMESS *InMessage)
 
                         if( ! im->ErrorCode )
                         {
-                            im->ErrorCode = processInbound(om, im);
+                            im->ErrorCode = processInbound(om, *im);
                         }
 
                         _results.push_back(make_pair(om, im));
@@ -784,7 +784,7 @@ void Ccu721Device::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 }
 
 
-YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
+YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
 {
     if( (om->EventCode & BWORD) &&
         (om->Buffer.BSt.IO & Protocols::EmetconProtocol::IO_Read ) )
@@ -793,29 +793,29 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
         ESTRUCT tmp_e_struct;
 
         //  inbound command - decode the D words
-        const YukonError_t dword_status = decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct, &tmp_e_struct);
+        const YukonError_t dword_status = decodeDWords(im.Buffer.InMessage, im.InLength, om->Remote, &tmp_d_struct, &tmp_e_struct);
 
         switch( dword_status )
         {
             case NORMAL:
             {
-                im->Buffer.DSt = tmp_d_struct;
-                im->Buffer.DSt.Time    = im->Time;
-                im->Buffer.DSt.DSTFlag = im->MilliTime & DSTACTIVE;
+                im.Buffer.DSt = tmp_d_struct;
+                im.Buffer.DSt.Time    = im.Time;
+                im.Buffer.DSt.DSTFlag = im.MilliTime & DSTACTIVE;
 
-                im->InLength = im->Buffer.DSt.Length = (im->InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
+                im.InLength = im.Buffer.DSt.Length = (im.InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
 
                 break;
             }
             case EWORDRCV:
             {
-                im->Buffer.RepeaterError.ESt = tmp_e_struct;
-                im->Buffer.RepeaterError.Details = 0;  //  no details yet, may be filled in by portfield.cpp/CommunicateDevice()
+                im.Buffer.RepeaterError.ESt = tmp_e_struct;
+                im.Buffer.RepeaterError.Details = 0;  //  no details yet, may be filled in by portfield.cpp/CommunicateDevice()
                 //  fall through
             }
             default:
             {
-                im->InLength = 0;
+                im.InLength = 0;
 
                 break;
             }
@@ -824,7 +824,7 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
         return dword_status;
     }
 
-    im->InLength = 0;
+    im.InLength = 0;
 
     return NoError;
 }

@@ -168,7 +168,7 @@ INT CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 
 /* Routine to decode returned Davis message and update database */
-INT CtiDeviceDavis::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceDavis::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     /* Misc. definitions */
     ULONG i;
@@ -187,7 +187,7 @@ INT CtiDeviceDavis::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -195,10 +195,10 @@ INT CtiDeviceDavis::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list
         return MEMORY;
     }
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
 
-    MyInMessage = (const PCHAR)(InMessage->Buffer.InMessage + 2);
+    MyInMessage = (const PCHAR)(InMessage.Buffer.InMessage + 2);
 
     /* Walk through the points and decode them */
     for (i = 1; i <= 8; i++)

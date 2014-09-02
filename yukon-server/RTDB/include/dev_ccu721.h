@@ -74,11 +74,11 @@ public:
 
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
+    INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList, INT ScanPriority = MAXPRIORITY - 4);
+    INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(const INMESS *InMessage, CtiTime &Now, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
+    INT ResultDecode(const INMESS &InMessage, const CtiTime Now, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     bool needsReset() const;
 
@@ -102,11 +102,11 @@ public:
     bool buildCommand(CtiOutMessage *&OutMessage, Commands command);
 
     virtual YukonError_t recvCommRequest(OUTMESS *OutMessage);
-    virtual YukonError_t sendCommResult (INMESS  *InMessage);
+    virtual YukonError_t sendCommResult (INMESS  &InMessage);
 
     void getQueuedResults(std::vector<queued_result_t> &results);
 
-    YukonError_t processInbound(const OUTMESS *om, INMESS *im);
+    YukonError_t processInbound(const OUTMESS *om, INMESS &im);
 };
 
 typedef boost::shared_ptr<Ccu721Device> Ccu721SPtr;

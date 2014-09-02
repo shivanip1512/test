@@ -51,7 +51,7 @@ public:
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     }
 
-    void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, std::list< CtiMessage* > &vgList)
+    void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList)
     {
         CtiTime now;
         std::string prevLastAction = _lastCommand;    // Save a temp copy.
@@ -90,7 +90,7 @@ public:
         _lastCommandExpiration = now.seconds() + parse.getiValue("control_interval", 0);
     }
 
-    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, std::list< CtiMessage* >  &vgList, std::string cmd = std::string(""), int controlPriority = 0 )
+    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, std::string cmd = std::string(""), int controlPriority = 0 )
     {
         /*
          *  This is the CONTROL STATUS point (offset) for the group.

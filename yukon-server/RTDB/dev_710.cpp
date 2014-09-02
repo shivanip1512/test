@@ -38,26 +38,26 @@ INT CtiDeviceCCU710::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 }
 
 
-INT CtiDeviceCCU710::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceCCU710::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int retVal = NORMAL;
 
-    switch(InMessage->Sequence)
+    switch(InMessage.Sequence)
     {
         case Command_Loop:
         {
             unsigned char expectedAck;
             unsigned char expectedBytes[2];
-            string cmd(InMessage->Return.CommandStr);
+            string cmd(InMessage.Return.CommandStr);
             CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                     cmd,
                                                     string(),
-                                                    InMessage->ErrorCode,
-                                                    InMessage->Return.RouteID,
-                                                    InMessage->Return.RetryMacroOffset,
-                                                    InMessage->Return.Attempt,
-                                                    InMessage->Return.GrpMsgID,
-                                                    InMessage->Return.UserID);
+                                                    InMessage.ErrorCode,
+                                                    InMessage.Return.RouteID,
+                                                    InMessage.Return.RetryMacroOffset,
+                                                    InMessage.Return.Attempt,
+                                                    InMessage.Return.GrpMsgID,
+                                                    InMessage.Return.UserID);
 
             resetScanFlag();
 
@@ -76,10 +76,10 @@ INT CtiDeviceCCU710::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, lis
                 expectedBytes[1] = Parity_C( 0x55 );
             }
 
-            if( InMessage->Buffer.InMessage[0] == expectedAck &&
-                InMessage->Buffer.InMessage[1] == expectedAck &&
-                InMessage->Buffer.InMessage[2] == expectedBytes[0] &&
-                InMessage->Buffer.InMessage[3] == expectedBytes[1] )
+            if( InMessage.Buffer.InMessage[0] == expectedAck &&
+                InMessage.Buffer.InMessage[1] == expectedAck &&
+                InMessage.Buffer.InMessage[2] == expectedBytes[0] &&
+                InMessage.Buffer.InMessage[3] == expectedBytes[1] )
             {
                 if( isDebugLudicrous() )
                 {
@@ -115,7 +115,7 @@ INT CtiDeviceCCU710::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, lis
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - IM->Sequence = " << InMessage->Sequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - IM->Sequence = " << InMessage.Sequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;

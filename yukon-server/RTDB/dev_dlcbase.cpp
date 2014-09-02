@@ -210,18 +210,18 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
 }
 
 
-INT DlcBaseDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
+INT DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
 {
     try
     {
-        findAndDecodeCommand(*InMessage, TimeNow, vgList, retList, outList);
+        findAndDecodeCommand(InMessage, TimeNow, vgList, retList, outList);
     }
     catch( DlcCommand::CommandException &e )
     {
         retList.push_back(
             new CtiReturnMsg(
                 getID(),
-                InMessage->Return,
+                InMessage.Return,
                 getName() + " / " + e.error_description,
                 e.error_code));
     }
@@ -751,9 +751,9 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
 
 
-bool DlcBaseDevice::processAdditionalRoutes( const INMESS *InMessage, int nRet ) const
+bool DlcBaseDevice::processAdditionalRoutes( const INMESS &InMessage, int nRet ) const
 {
-    if( ! InMessage->Return.RetryMacroOffset )
+    if( ! InMessage.Return.RetryMacroOffset )
     {
         return false;
     }
@@ -765,7 +765,7 @@ bool DlcBaseDevice::processAdditionalRoutes( const INMESS *InMessage, int nRet )
         return false;
     }
 
-    CtiRouteSPtr Route = getRoute(InMessage->Return.RouteID);    // This is "this's" route
+    CtiRouteSPtr Route = getRoute(InMessage.Return.RouteID);    // This is "this's" route
 
     if( ! Route )
     {

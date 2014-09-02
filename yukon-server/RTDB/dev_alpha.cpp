@@ -485,8 +485,8 @@ INT CtiDeviceAlpha::freeDataBins  ()
 }
 
 
-INT CtiDeviceAlpha::ResultDecode(const INMESS *InMessage,
-                                 CtiTime &TimeNow,
+INT CtiDeviceAlpha::ResultDecode(const INMESS &InMessage,
+                                 const CtiTime TimeNow,
                                  list< CtiMessage* >   &vgList,
                                  list< CtiMessage* > &retList,
                                  list< OUTMESS* > &outList)
@@ -498,8 +498,8 @@ INT CtiDeviceAlpha::ResultDecode(const INMESS *InMessage,
     *
     *****************************
     */
-    char tmpCurrentCommand = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0],
-         tmpCurrentState   = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
+    char tmpCurrentCommand = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[0],
+         tmpCurrentState   = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
     if( !_dstFlagValid )
     {
@@ -636,7 +636,7 @@ YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list<
         case StateHandshakeInitialize:
             {
                 // zero out the flags
-//         InMessage->Buffer.DUPSt.DUPRep.CompFlag = DIALUP_COMP_START;
+//         InMessage.Buffer.DUPSt.DUPRep.CompFlag = DIALUP_COMP_START;
                 setAttemptsRemaining(6);
             }
         case StateHandshakeSendStart:
