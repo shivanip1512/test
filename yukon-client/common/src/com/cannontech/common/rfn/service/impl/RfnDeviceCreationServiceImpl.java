@@ -189,9 +189,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                                                                                 rfnIdentifier.getSensorManufacturer(), 
                                                                                 rfnIdentifier.getSensorSerialNumber(), 
                                                                                 true);
-        RfnDevice rfnDevice = new RfnDevice(device.getPaoIdentifier(), rfnIdentifier);
-        rfnDeviceDao.updateDevice(rfnDevice);
-        return rfnDevice;
+        return new RfnDevice(device.getPaoIdentifier(), rfnIdentifier);
     }
     
     private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
