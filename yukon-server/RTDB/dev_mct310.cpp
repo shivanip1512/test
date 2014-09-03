@@ -204,7 +204,7 @@ ULONG Mct310Device::calcNextLPScanTime( void )
 }
 
 
-INT Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
     int nRet = NoError;
 
@@ -531,7 +531,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -627,7 +627,7 @@ INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, li
 }
 
 
-INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
@@ -667,7 +667,7 @@ INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime
 }
 
 
-INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
@@ -762,7 +762,7 @@ INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int       status = NORMAL, demand_interval;
     double    Value;
@@ -850,7 +850,7 @@ INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int       status = NORMAL;
     double    Value;
@@ -931,7 +931,7 @@ INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
 }
 
 
-INT Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
@@ -1144,7 +1144,7 @@ void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, const BYTE 
 }
 
 
-INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
@@ -1217,7 +1217,7 @@ INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 }
 
 
-INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
@@ -1257,7 +1257,7 @@ INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 }
 
 
-INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -1366,7 +1366,7 @@ INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 

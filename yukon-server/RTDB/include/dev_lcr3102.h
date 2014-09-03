@@ -98,7 +98,7 @@ protected:
     virtual INT executeGetConfig ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual INT executePutConfig ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
-    virtual INT IntegrityScan    ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority );
+    INT IntegrityScan    ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority ) override;
 
     int executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, OutMessageList &outList );
 
@@ -107,7 +107,7 @@ protected:
     int parseLoadValue(CtiCommandParser &parse);
     int parsePreviousValue(CtiCommandParser &parse);
 
-    virtual INT ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
     INT decodeGetValueTransmitPower        ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetValueTemperature          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
@@ -134,7 +134,7 @@ protected:
     void decodeMessageTime                 ( const BYTE Message[], CtiTime &time);
     void decodeMessageTransmitPower        ( const BYTE Message[], int &transmitPower );
 
-    virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList& retList);
+    INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList& retList) override;
 
 public:
 

@@ -219,7 +219,7 @@ CtiDeviceLandisGyrS4& CtiDeviceLandisGyrS4::setCurrentLPDate (ULONG aDate)
 
 
 
-YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -254,7 +254,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer,
     return retCode;
 }
 
-YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
 
@@ -296,7 +296,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, list< Ct
 }
 
 
-YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
     BYTEUSHORT checkSum;
@@ -453,7 +453,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list
 }
 
 
-YukonError_t CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
     LGS4LProfileConfig_t * localLPConfig = (LGS4LProfileConfig_t*)iLoadProfileConfig;
@@ -624,7 +624,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfe
 
 
 
-YukonError_t CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
 //   BYTE  Command;
 
@@ -650,7 +650,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, 
 
 
 
-YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -694,7 +694,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonErro
 }
 
 
-YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t  retCode    = NORMAL;
     LGS4LoadProfile_t    *localLP         = ((LGS4LoadProfile_t *)iLoadProfileBuffer);
@@ -894,7 +894,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
     return retCode;
 }
 
-YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode    = NORMAL;
     LGS4LProfileConfig_t *localLPConfig   = ((LGS4LProfileConfig_t*)iLoadProfileConfig);
@@ -1290,12 +1290,12 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
     return retCode;
 }
 
-INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg *pReq,
-                                      CtiCommandParser &parse,
-                                      OUTMESS *&OutMessage,
-                                      list< CtiMessage* > &vgList,
-                                      list< CtiMessage* > &retList,
-                                      list< OUTMESS* > &outList,
+INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg     *pReq,
+                                      CtiCommandParser  &parse,
+                                      OUTMESS          *&OutMessage,
+                                      CtiMessageList    &vgList,
+                                      CtiMessageList    &retList,
+                                      OutMessageList    &outList,
                                       INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1812,11 +1812,11 @@ INT CtiDeviceLandisGyrS4::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotal
 }
 
 
-INT  CtiDeviceLandisGyrS4::ResultDecode(const INMESS &InMessage,
-                                        const CtiTime TimeNow,
-                                        list< CtiMessage* >   &vgList,
-                                        list< CtiMessage* > &retList,
-                                        list< OUTMESS* > &outList)
+INT  CtiDeviceLandisGyrS4::ResultDecode(const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
+                                        CtiMessageList &vgList,
+                                        CtiMessageList &retList,
+                                        OutMessageList &outList)
 {
 
     /****************************
@@ -1881,9 +1881,9 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(const INMESS &InMessage,
     return NORMAL;
 }
 
-INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS        &InMessage,
-                                       const CtiTime        TimeNow,
-                                       list< CtiMessage* > &retList)
+INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS   &InMessage,
+                                       const CtiTime   TimeNow,
+                                       CtiMessageList &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1930,11 +1930,11 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS        &InMessage,
 
 
 
-INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS &InMessage,
-                                            const CtiTime TimeNow,
-                                            list< CtiMessage* >   &vgList,
-                                            list< CtiMessage* > &retList,
-                                            list< OUTMESS* > &outList)
+INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS   &InMessage,
+                                            const CtiTime   TimeNow,
+                                            CtiMessageList &vgList,
+                                            CtiMessageList &retList,
+                                            OutMessageList &outList)
 {
     char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
     CHAR           temp[100], buffer[60];
@@ -2044,11 +2044,11 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS &InMessage,
     return NORMAL;
 }
 
-INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS &InMessage,
-                                                   const CtiTime TimeNow,
-                                                   list< CtiMessage* >   &vgList,
-                                                   list< CtiMessage* > &retList,
-                                                   list< OUTMESS* > &outList)
+INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS   &InMessage,
+                                                   const CtiTime   TimeNow,
+                                                   CtiMessageList &vgList,
+                                                   CtiMessageList &retList,
+                                                   OutMessageList &outList)
 {
     const DIALUPREQUEST     *dupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
     const DIALUPREPLY       *dupRep = &InMessage.Buffer.DUPSt.DUPRep;

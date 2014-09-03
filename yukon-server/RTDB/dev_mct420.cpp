@@ -248,12 +248,12 @@ bool Mct420Device::isProfileTablePointerCurrent(const unsigned char table_pointe
 }
 
 
-int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
-                                    CtiCommandParser     &parse,
-                                    OUTMESS             *&OutMessage,
-                                    list< CtiMessage* >  &vgList,
-                                    list< CtiMessage* >  &retList,
-                                    list< OUTMESS* >     &outList )
+int Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
+                                    CtiCommandParser  &parse,
+                                    OUTMESS          *&OutMessage,
+                                    CtiMessageList    &vgList,
+                                    CtiMessageList    &retList,
+                                    OutMessageList    &outList )
 {
     //  Load all the other stuff that is needed
     OutMessage->TargetID  = getID();
@@ -352,7 +352,7 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
 }
 
 
-int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* > &outList, bool readsOnly)
+int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -614,12 +614,12 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
     return NoError;
 }
 
-int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
-                                    CtiCommandParser     &parse,
-                                    OUTMESS             *&OutMessage,
-                                    list< CtiMessage* >  &vgList,
-                                    list< CtiMessage* >  &retList,
-                                    list< OUTMESS* >     &outList )
+int Mct420Device::executeGetConfig( CtiRequestMsg     *pReq,
+                                    CtiCommandParser  &parse,
+                                    OUTMESS          *&OutMessage,
+                                    CtiMessageList    &vgList,
+                                    CtiMessageList    &retList,
+                                    OutMessageList    &outList )
 {
     INT nRet = NoMethod;
     bool found = false;
@@ -781,7 +781,7 @@ string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt) const
 }
 
 
-int Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+int Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -825,7 +825,7 @@ int Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const 
 }
 
 
-int Mct420Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+int Mct420Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 

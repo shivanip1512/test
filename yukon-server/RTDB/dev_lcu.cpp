@@ -112,7 +112,7 @@ CtiDeviceLCU::~CtiDeviceLCU()
 }
 
 
-INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -153,7 +153,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     return status;
 }
 
-INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -174,12 +174,12 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     return status;
 }
 
-INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
-INT CtiDeviceLCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return lcuDecode(InMessage, TimeNow, vgList, retList, outList);
 }
@@ -284,7 +284,7 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
     return(status);
 }
 
-INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = InMessage.ErrorCode;
 
@@ -485,7 +485,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, list
 }
 
 
-INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
+INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
     INT status = NoError;
 
@@ -525,7 +525,7 @@ INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
     return status;
 }
 
-INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList,list< OUTMESS* > &outList)
+INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList,OutMessageList &outList)
 {
     INT nRet = NORMAL;
     OUTMESS *pOM = 0;
@@ -1069,7 +1069,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS &InMessage)
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS &InMessage, list< OUTMESS* > &outList)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS &InMessage, OutMessageList &outList)
 {
     ULONG      i;
     string  resultString;
@@ -1832,7 +1832,7 @@ CtiMutex& CtiDeviceLCU::getLCUExclusionMux()
  *   This is a porter side decode used only when the OutMessage sent was RIPPLE'd and a control!
  *   It makes him pound the LCU into submission!
  */
-INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
+INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList)
 {
     INT status = NORMAL;
     CtiTime now;

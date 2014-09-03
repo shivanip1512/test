@@ -31,12 +31,7 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              CtiMessageList      &vgList,
-                              CtiMessageList      &retList,
-                              OutMessageList         &outList);
+   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    static std::string CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage);
 };

@@ -94,7 +94,7 @@ void CtiDeviceMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     CtiLockGuard<CtiMutex> guard(_deviceListMux);
     INT nRet = NORMAL;
@@ -276,7 +276,7 @@ bool CtiDeviceMacro::executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LO
 }
 
 
-INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList)
+INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, CtiMessageList  &vgList)
 {
     CtiPointSPtr pPoint;
 
@@ -308,7 +308,7 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessag
     return NORMAL;
 }
 
-INT CtiDeviceMacro::processTrxID( int trx,  list< CtiMessage* >  &vgList)
+INT CtiDeviceMacro::processTrxID( int trx,  CtiMessageList  &vgList)
 {
     CtiPointSPtr pPoint;
     INT cnt = getResponsesOnTrxID();
@@ -356,7 +356,7 @@ INT CtiDeviceMacro::processTrxID( int trx,  list< CtiMessage* >  &vgList)
 }
 
 
-INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 

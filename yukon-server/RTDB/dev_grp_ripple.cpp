@@ -80,7 +80,7 @@ void CtiDeviceGroupRipple::DecodeDatabaseReader(Cti::RowReader &rdr)
     _rippleTable.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   nRet = NoError;
     CtiRouteSPtr Route;
@@ -199,7 +199,7 @@ void CtiDeviceGroupRipple::contributeToBitPattern(BYTE *bptr, bool shed) const
     }
 }
 
-INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
+INT CtiDeviceGroupRipple::processTrxID( int trx, CtiMessageList  &vgList )
 {
     INT count = getResponsesOnTrxID();
     CtiPointSPtr pPoint;
@@ -268,7 +268,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
     return count;
 }
 
-INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList )
+INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, CtiMessageList  &vgList )
 {
     CtiPointSPtr pPoint;
 
@@ -341,7 +341,7 @@ bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
             bstatus = matchRippleDoubleOrders(parentDO, childDO);
             if(bstatus)
             {
-                list< CtiMessage* > vgList;
+                CtiMessageList vgList;
 
                 CtiLockGuard<CtiMutex> guard(otherGroup->_classMutex);
 
@@ -397,7 +397,7 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
             bstatus = matchRippleDoubleOrders(parentDO, childDO);
             if(bstatus)
             {
-                list< CtiMessage* > vgList;
+                CtiMessageList vgList;
                 otherGroup->reportControlStart( false, RESTORE_DURATION, 0, vgList, "control restore" );
 
                 if(vgList.size())

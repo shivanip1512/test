@@ -150,7 +150,7 @@ ULONG Mct24xDevice::calcNextLPScanTime( void )
 }
 
 
-INT Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
     int nRet = NoError;
 
@@ -296,7 +296,7 @@ bool Mct24xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -353,7 +353,7 @@ INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, li
 }
 
 
-INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
@@ -541,7 +541,7 @@ INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 }
 
 
-INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -695,7 +695,7 @@ INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNo
 }
 
 
-INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
@@ -730,7 +730,7 @@ INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 /*
  *  This code handles the decode for all 24X series model configs..
  */
-INT Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 

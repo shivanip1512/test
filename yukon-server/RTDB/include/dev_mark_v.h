@@ -65,45 +65,20 @@ private:
 public:
    CtiDeviceMarkV();
 
-   virtual INT GeneralScan(CtiRequestMsg              *pReq,
-                           CtiCommandParser           &parse,
-                           OUTMESS                    *&OutMessage,
-                           CtiMessageList  &vgList,
-                           CtiMessageList  &retList,
-                           OutMessageList     &outList,
-                           INT                        ScanPriority=MAXPRIORITY-4);
+   INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                               INT ScanPriority=MAXPRIORITY-4) override;
 
-   virtual INT LoadProfileScan(CtiRequestMsg              *pReq,
-                              CtiCommandParser           &parse,
-                              OUTMESS                    *&OutMessage,
-                              CtiMessageList  &vgList,
-                              CtiMessageList  &retList,
-                              OutMessageList     &outList,
-                              INT                        ScanPriority=MAXPRIORITY-4);
+   INT LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                               INT ScanPriority=MAXPRIORITY-4) override;
 
-   virtual INT ExecuteRequest(CtiRequestMsg              *pReq,
-                              CtiCommandParser           &parse,
-                              OUTMESS                    *&OutMessage,
-                              CtiMessageList  &vgList,
-                              CtiMessageList  &retList,
-                              OutMessageList     &outList,
-                              INT                        ScanPriority=MAXPRIORITY-4);
+   virtual INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                               INT ScanPriority=MAXPRIORITY-4);
 
-   virtual INT ResultDecode(const INMESS               &InMessage,
-                            CtiTime                    &TimeNow,
-                            CtiMessageList &vgList,
-                            CtiMessageList &retList,
-                            OutMessageList    &outList);
+   INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-   virtual INT ErrorDecode(const INMESS      &InMessage,
-                           const CtiTime      TimeNow,
-                           CtiMessageList &retList);
+   INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
-   int decodeResultScan( const INMESS                &InMessage,
-                          const CtiTime               TimeNow,
-                          CtiMessageList &vgList,
-                          CtiMessageList &retList,
-                          std::vector<CtiTransdataData *> transVector );
+   int decodeResultScan( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, std::vector<CtiTransdataData *> transVector );
 
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    YukonError_t sendCommResult( INMESS &InMessage );

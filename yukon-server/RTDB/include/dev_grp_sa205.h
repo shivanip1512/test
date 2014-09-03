@@ -37,5 +37,5 @@ public:
     virtual LONG getRouteID();
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 };

@@ -48,7 +48,7 @@ CtiDeviceGridAdvisor::CtiDeviceGridAdvisor()
 {
 }
 
-INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -173,7 +173,7 @@ INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser 
 
 
 
-INT CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -199,7 +199,7 @@ INT CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &pa
 
 
 
-INT CtiDeviceGridAdvisor::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceGridAdvisor::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -228,7 +228,7 @@ LONG CtiDeviceGridAdvisor::getPortID() const
     return _commport.getPortID();
 }
 
-INT CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan accumulator");

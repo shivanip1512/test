@@ -481,7 +481,7 @@ protected:
     virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
 
     virtual INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList);
+    INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
     virtual INT executeScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);

@@ -107,7 +107,7 @@ void CtiDeviceGroupSA205::DecodeDatabaseReader(Cti::RowReader &rdr)
 //===================================================================================================================
 //===================================================================================================================
 
-INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool gracefulrestore = false;
     INT   nRet = NoError;

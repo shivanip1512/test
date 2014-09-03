@@ -69,7 +69,7 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(Cti::RowReader &rdr)
     _loadGroup.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   nRet = NoError;
     string resultString;

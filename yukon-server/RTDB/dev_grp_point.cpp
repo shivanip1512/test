@@ -71,7 +71,7 @@ void CtiDeviceGroupPoint::DecodeDatabaseReader(Cti::RowReader &rdr)
 //====================================================================================================================
 //====================================================================================================================
 
-INT CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   nRet = NoError;
     RWCString resultString;

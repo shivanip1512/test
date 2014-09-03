@@ -101,7 +101,7 @@ void CtiDeviceGroupExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, string &resultString)
+int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, CtiMessageList &vgList, CtiMessageList &retList, string &resultString)
 {
     int nRet = NoError;
 
@@ -217,7 +217,7 @@ int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiC
 }
 
 
-void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse, list<CtiMessage *> &vgList, const string &commandString)
+void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse, CtiMessageList &vgList, const string &commandString)
 {
     if (parse.getCommand() == ControlRequest)
     {
@@ -242,7 +242,7 @@ void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse,
 }
 
 
-INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -412,7 +412,7 @@ string CtiDeviceGroupExpresscom::getAddressingAsString()
     return addressing;
 }
 
-bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &retList )
+bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &retList )
 {
     bool status = false;
 
@@ -538,7 +538,7 @@ CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareA
 }
 
 // Function to report control start for this group and ALL CHILD groups
-void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd, int controlPriority )
+void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, string cmd, int controlPriority )
 {
     reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);
     if( isAParent() )
@@ -558,7 +558,7 @@ void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int 
 }
 
 // Function to report control start for ONLY this group.
-void CtiDeviceGroupExpresscom::reportChildControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd, int controlPriority)
+void CtiDeviceGroupExpresscom::reportChildControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, string cmd, int controlPriority)
 {
     Inherited::reportControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);
 }
