@@ -50,6 +50,7 @@ yukon.deviceGroupPicker = (function () {
         tree = dialog.find('.tree-canvas').dynatree('getTree');
         
         picker.find(':hidden').each(function (idx, input) {
+            // When nothing is selected there will be one hidden input with no value attribute.
             var value = $(input).val();
             if (value) selected.push(value);
         });
@@ -69,6 +70,10 @@ yukon.deviceGroupPicker = (function () {
             }
         }
         
+        // Store the array of selected groups so we can revert to it on a later 'cancel' action.
+        dialog.data('selected', selected);
+        
+        // Dump this massive attribute since we don't need it anymore.
         picker.removeAttr('data-groups');
     },
     
@@ -104,8 +109,8 @@ yukon.deviceGroupPicker = (function () {
                     _adjustMaxHeight(dialog);
                     
                 } else {
-                    groups = picker.data('groups');
                     
+                    groups = picker.data('groups');
                     dialog = picker.next('.js-device-group-picker-dialog');
                     picker.data('dialog', dialog);
                     dialog.data('picker', picker);
@@ -152,6 +157,9 @@ yukon.deviceGroupPicker = (function () {
                     picker.find('span').text(picker.data('selectText'));
                 }
                 
+                // Add a marker class so we know a selection was made BEFORE we close the dialog.
+                // Too bad we can't add data to the close event :(
+                dialog.addClass('js-selection-made');
                 dialog.dialog('close');
                 picker.flashYellow();
                 
@@ -160,6 +168,31 @@ yukon.deviceGroupPicker = (function () {
             /** Adjust the tree max height when dialog is resized to avoid double scrollbars. */
             $(document).on('dialogresize', '.js-device-group-picker-dialog', function (ev, ui) {
                 _adjustMaxHeight($(this));
+            });
+            
+            /** The dialog was closed. If they didn't click the 'OK' button, undo any selctions they made. */
+            $(document).on('dialogclose', '.js-device-group-picker-dialog', function (ev, ui) {
+                var 
+                dialog = $(this),
+                selected = dialog.data('selected'),
+                selectionMade = dialog.is('.js-selection-made'),
+                tree = dialog.find('.tree-canvas').dynatree('getTree');
+                
+                if (selectionMade) {
+                    dialog.removeClass('js-selection-made');
+                    selected = $.map(tree.getSelectedNodes(), function (node) {
+                        return node.data.metadata.groupName;
+                    });
+                    dialog.data('selected', selected);
+                } else {
+                    // User canceled, revert to previous selections.
+                    tree.visit(function (node) {
+                        if (selected.indexOf(node.data.metadata.groupName) != -1) {
+                            node.makeVisible();
+                            node.select();
+                        } else { node.select(false); }
+                    });
+                }
             });
             
             _initialized = true;

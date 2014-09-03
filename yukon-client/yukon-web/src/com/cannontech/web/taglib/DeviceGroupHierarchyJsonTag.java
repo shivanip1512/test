@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -17,11 +19,11 @@ import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.HighlightSelectedGroupNodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
 
-@Configurable("deviceGroupHierarchyJsonPrototype")
-public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
+@Configurable(value="deviceGroupHierarchyJsonPrototype", autowire=Autowire.BY_NAME)
+public class DeviceGroupHierarchyJsonTag extends YukonTagSupport {
 
-    private DeviceGroupService deviceGroupService;
-    private DeviceGroupUiService deviceGroupUiService;
+    private @Autowired DeviceGroupService deviceGroupService;
+    private @Autowired DeviceGroupUiService deviceGroupUiService;
     
     private String predicates = "";
     private String rootName = "";
@@ -33,32 +35,32 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
     public void doTag() throws JspException, IOException {
         
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = DeviceGroupTreeUtils.getAggregratePredicateFromString(predicates);
-
+        
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
         
         HighlightSelectedGroupNodeAttributeSettingCallback nodeCallback = null;
         if (!StringUtils.isBlank(selectGroupName)) {
-        	DeviceGroup selectedDeviceGroup = deviceGroupService.resolveGroupName(selectGroupName);
-        	nodeCallback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
+            DeviceGroup selectedDeviceGroup = deviceGroupService.resolveGroupName(selectGroupName);
+            nodeCallback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
         }
         
-        if(StringUtils.isBlank(rootName)){
-        	try{
-        		rootName = getMessageSource().getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-        	}catch(Exception e){
-        		rootName = "Groups";
-        	}
+        if (StringUtils.isBlank(rootName)) {
+            try {
+                rootName = getMessageSource().getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+            } catch(Exception e) {
+                rootName = "Groups";
+            }
         }
         
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);
-
+        
         String extSelectedNodePath = null;
         if (nodeCallback != null) {
-        	extSelectedNodePath = nodeCallback.getJsTreeSelectedNodePath();
-        	if (!StringUtils.isBlank(selectedNodePathVar)) {
-        		this.getJspContext().setAttribute(selectedNodePathVar, extSelectedNodePath);
-        	}
+            extSelectedNodePath = nodeCallback.getJsTreeSelectedNodePath();
+            if (!StringUtils.isBlank(selectedNodePathVar)) {
+                this.getJspContext().setAttribute(selectedNodePathVar, extSelectedNodePath);
+            }
         }
         
         if (var == null) {
@@ -67,14 +69,6 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
             this.getJspContext().setAttribute(var, JsonUtils.toJson(root.toMap()));
         }
     }
-    
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
-		this.deviceGroupUiService = deviceGroupUiService;
-	}
     
     public void setPredicates(String predicates) {
         this.predicates = predicates;
@@ -87,16 +81,17 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
     }
     
     public void setSelectGroupName(String selectGroupName) {
-		this.selectGroupName = selectGroupName;
-	}
+        this.selectGroupName = selectGroupName;
+    }
     
     public void setSelectedNodePathVar(String selectedNodePathVar) {
-		this.selectedNodePathVar = selectedNodePathVar;
-	}
+        this.selectedNodePathVar = selectedNodePathVar;
+    }
     
     public void setVar(String var) {
         if (!StringUtils.isBlank(var)) {
             this.var = var;
         }
     }
+    
 }

@@ -24,6 +24,7 @@
 <%@ attribute name="inputName" required="true" description="The name of the hidden input(s)." %>
 <%@ attribute name="inputValue" description="Optional initial group names selected." type="java.util.List" %>
 
+<cti:default var="multi" value="${false}"/>
 <cti:default var="predicates" value="NON_HIDDEN"/>
 
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
@@ -38,18 +39,20 @@
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
 
 <cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}"/>
+<c:set var="titleKey" value="${multi ? 'yukon.common.selectGroups.title' : 'yukon.common.selectGroup.title'}"/>
+<c:set var="selectKey" value="${multi ? 'yukon.common.selectGroups' : 'yukon.common.selectGroup'}"/>
 
 <a href="javascript:void(0);" 
         <c:if test="${not empty pageScope.id}">id="${id}"</c:if> 
-        <c:if test="${pageScope.multi}">data-multi</c:if>
+        <c:if test="${multi}">data-multi</c:if>
         data-groups="${fn:escapeXml(groups)}"
-        data-select-text="<cti:msg2 key="yukon.common.selectGroup"/>"
+        data-select-text="<cti:msg2 key="${selectKey}"/>"
         data-more-text="<cti:msg2 key="yukon.common.selectGroup.more"/>"
         class="js-device-group-picker ${pageScope.classes}">
     <cti:icon icon="icon-folder-edit" classes="fn vatb"/>
     <c:choose>
         <c:when test="${empty inputValue}">
-            <span><i:inline key="yukon.common.selectGroup"/></span>
+            <span><i:inline key="${selectKey}"/></span>
             <input type="hidden" name="${inputName}">
         </c:when>
         <c:otherwise>
@@ -72,7 +75,7 @@
 
 <div data-dialog class="js-device-group-picker-dialog inline-tree dn pr" 
         <c:if test="${not empty pageScope.dialogId}">id="${dialogId}"</c:if>
-        data-title="<cti:msg2 key="yukon.common.selectGroup.title"/>"
+        data-title="<cti:msg2 key="${titleKey}"/>"
         data-width="400"
         data-event="yukon.deviceGroupPicker.chosen">
     

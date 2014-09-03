@@ -1799,8 +1799,8 @@
     
     <tag>
         <description>
-            Outputs a device group hierarchy as a Json string. Used to feed the 'dataJson' attribute
-            of any of the cannon Ext tree tags (such as nodeValueSelectingInlineTree).
+            Outputs a device group hierarchy as a JSON string for tags using the dynatree plugin such as 
+            deviceGroupPicker.tag.
         </description>
         <name>deviceGroupHierarchyJson</name>
         <tag-class>com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag</tag-class>

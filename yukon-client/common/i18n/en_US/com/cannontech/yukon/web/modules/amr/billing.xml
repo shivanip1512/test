@@ -254,7 +254,7 @@ greater than one.
 	<entry key="yukon.web.billing.demandDaysPrevious">Demand Days Previous</entry>
 	<entry key="yukon.web.billing.energyDaysPrevious">Energy Days Previous</entry>
 	<entry key="yukon.web.billing.removeMultiplier">Remove Multiplier</entry>
-	<entry key="yukon.web.billing.billingGroup">Billing Group</entry>
+	<entry key="yukon.web.billing.billingGroup">Device Group(s)</entry>
 	<entry key="yukon.web.billing.timeZoneDisclaimer">* All times are {0}</entry>
 
     <entry key="yukon.web.billing.tab.generation.title">Generation</entry>

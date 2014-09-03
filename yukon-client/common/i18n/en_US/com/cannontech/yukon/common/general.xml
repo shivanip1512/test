@@ -174,7 +174,9 @@
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
 
 <entry key="yukon.common.selectGroup">select device group...</entry>
+<entry key="yukon.common.selectGroups">select device group(s)...</entry>
 <entry key="yukon.common.selectGroup.title">Select Device Group</entry>
+<entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroup.more">and {0} more</entry>
 
 </properties>

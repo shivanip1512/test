@@ -1092,10 +1092,7 @@
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
 
-    <bean id="deviceGroupHierarchyJsonPrototype" class="com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag">
-        <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="deviceGroupUiService" ref="deviceGroupUiService"/>
-    </bean>
+    <bean id="deviceGroupHierarchyJsonPrototype" class="com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag"/>
 
     <bean id="checkYukonVersionUndefinedTagPrototype" class="com.cannontech.web.taglib.CheckYukonVersionUndefinedTag"/>
 
