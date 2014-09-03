@@ -767,7 +767,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         getJCSpinFieldChangeTriggerNumber().setValue(gear.getChangeTriggerNumber());
         final DecimalFormat format = new DecimalFormat("#####.####");
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
-
+        getJCSpinFieldDutyCyclePercent().setValue(gear.getDutyCyclePercent());
         getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
         getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
     }
