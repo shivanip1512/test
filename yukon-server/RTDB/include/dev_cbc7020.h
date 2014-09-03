@@ -25,7 +25,7 @@ public:
 
     //  we need to transform "control open" and "control close" into "control open offset 1" and "control close offset 1"
     //  also, we now need to allow configs to be sent out.
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     //virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList&vgList, CtiMessageList&retList, OutMessageList&outList);
 

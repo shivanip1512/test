@@ -161,33 +161,21 @@ public:
      *  These guys initiate a scan based upon the type requested.
      */
 
-    virtual INT GeneralScan(CtiRequestMsg *pReq,
-                            CtiCommandParser &parse,
-                            OUTMESS *&OutMessage,
-                            CtiMessageList &vgList,
-                            CtiMessageList &retList,
-                            OutMessageList &outList,
-                            INT ScanPriority);
+    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority) override;
 
-    virtual INT ResultDecode(const INMESS &InMessage,
-                             const CtiTime TimeNow,
-                             CtiMessageList   &vgList,
-                             CtiMessageList &retList,
-                             OutMessageList &outList);
-    virtual INT ErrorDecode(const INMESS      &InMessage,
-                            const CtiTime      TimeNow,
-                            CtiMessageList &retList);
+    INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
     // interrogation routines
-    virtual YukonError_t decodeResponseHandshake   (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-    virtual YukonError_t decodeResponse            (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-    virtual YukonError_t decodeResponseScan        (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-    virtual YukonError_t decodeResponseLoadProfile (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+    YukonError_t decodeResponseHandshake   (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+    YukonError_t decodeResponse            (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+    YukonError_t decodeResponseScan        (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+    YukonError_t decodeResponseLoadProfile (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
 
-    virtual YukonError_t generateCommandHandshake   (CtiXfer &Transfer, CtiMessageList &traceList);
-    virtual YukonError_t generateCommand            (CtiXfer &Transfer, CtiMessageList &traceList);
-    virtual YukonError_t generateCommandScan        (CtiXfer &Transfer, CtiMessageList &traceList);
-    virtual YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, CtiMessageList &traceList);
+    YukonError_t generateCommandHandshake   (CtiXfer &Transfer, CtiMessageList &traceList) override;
+    YukonError_t generateCommand            (CtiXfer &Transfer, CtiMessageList &traceList) override;
+    YukonError_t generateCommandScan        (CtiXfer &Transfer, CtiMessageList &traceList) override;
+    YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, CtiMessageList &traceList) override;
     virtual INT generateCommandTerminate   (CtiXfer &Transfer, CtiMessageList &traceList);
 
     virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
@@ -196,17 +184,9 @@ public:
     virtual INT allocateDataBins (OUTMESS *outMess);
     virtual INT freeDataBins ();
 
-    virtual INT   decodeResultScan (const INMESS               &InMessage,
-                                    const CtiTime               TimeNow,
-                                    CtiMessageList &vgList,
-                                    CtiMessageList &retList,
-                                    OutMessageList    &outList);
+    INT decodeResultScan       (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    INT decodeResultLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-    virtual INT decodeResultLoadProfile (const INMESS               &InMessage,
-                                         const CtiTime               TimeNow,
-                                         CtiMessageList &vgList,
-                                         CtiMessageList &retList,
-                                         OutMessageList    &outList);
     virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointID,
                                                DOUBLE        aValue,
                                                USHORT        aQuality,

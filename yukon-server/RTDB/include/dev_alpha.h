@@ -201,29 +201,18 @@ public:
     INT checkCRC(BYTE *InBuffer,ULONG InCount);
 
 
-    virtual INT GeneralScan(CtiRequestMsg              *pReq,
-                            CtiCommandParser           &parse,
-                            OUTMESS                   *&OutMessage,
-                            CtiMessageList  &vgList,
-                            CtiMessageList  &retList,
-                            OutMessageList     &outList,
-                            INT                         ScanPriority=MAXPRIORITY-4);
+    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                            INT ScanPriority=MAXPRIORITY-4) override;
 
-    virtual INT ResultDecode(const INMESS             &InMessage,
-                             const CtiTime             TimeNow,
-                             CtiMessageList &vgList,
-                             CtiMessageList &retList,
-                             OutMessageList    &outList);
-    virtual INT ErrorDecode(const INMESS        &InMessage,
-                            const CtiTime        TimeNow,
-                            CtiMessageList &retList);
+    INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
     // all defined in dev_alpha.cpp
-    virtual YukonError_t generateCommand          (CtiXfer &Transfer, CtiMessageList &traceList);
-    virtual YukonError_t generateCommandHandshake (CtiXfer &Transfer, CtiMessageList &traceList);
+    YukonError_t generateCommand          (CtiXfer &Transfer, CtiMessageList &traceList) override;
+    YukonError_t generateCommandHandshake (CtiXfer &Transfer, CtiMessageList &traceList) override;
 
-    virtual YukonError_t decodeResponse          (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-    virtual YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+    YukonError_t decodeResponse          (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+    YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
     virtual INT freeDataBins();
 
 

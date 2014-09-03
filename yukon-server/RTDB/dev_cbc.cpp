@@ -77,12 +77,12 @@ int CtiDeviceCBC::getCBCRetries( void )
 }
 
 
-INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                 CtiCommandParser               &parse,
-                                 OUTMESS                        *&OutMessage,
-                                 list< CtiMessage* >      &vgList,
-                                 list< CtiMessage* >      &retList,
-                                 list< OUTMESS* >         &outList)
+INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg     *pReq,
+                                 CtiCommandParser  &parse,
+                                 OUTMESS          *&OutMessage,
+                                 CtiMessageList    &vgList,
+                                 CtiMessageList    &retList,
+                                 OutMessageList    &outList)
 {
     INT nRet = NoMethod;
 
@@ -112,12 +112,12 @@ INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
-                                         CtiCommandParser               &parse,
-                                         OUTMESS                        *&OutMessage,
-                                         list< CtiMessage* >      &vgList,
-                                         list< CtiMessage* >      &retList,
-                                         list< OUTMESS* >         &outList)
+INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
+                                         CtiCommandParser  &parse,
+                                         OUTMESS          *&OutMessage,
+                                         CtiMessageList    &vgList,
+                                         CtiMessageList    &retList,
+                                         OutMessageList    &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -265,12 +265,12 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
-                                     CtiCommandParser               &parse,
-                                     OUTMESS                        *&OutMessage,
-                                     list< CtiMessage* >      &vgList,
-                                     list< CtiMessage* >      &retList,
-                                     list< OUTMESS* >         &outList)
+INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg     *pReq,
+                                     CtiCommandParser  &parse,
+                                     OUTMESS          *&OutMessage,
+                                     CtiMessageList    &vgList,
+                                     CtiMessageList    &retList,
+                                     OutMessageList    &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -441,12 +441,12 @@ void CtiDeviceCBC::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
-                                       CtiCommandParser               &parse,
-                                       OUTMESS                        *&OutMessage,
-                                       list< CtiMessage* >      &vgList,
-                                       list< CtiMessage* >      &retList,
-                                       list< OUTMESS* >         &outList)
+INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg     *pReq,
+                                       CtiCommandParser  &parse,
+                                       OUTMESS          *&OutMessage,
+                                       CtiMessageList    &vgList,
+                                       CtiMessageList    &retList,
+                                       OutMessageList    &outList)
 {
     INT   nRet = NoError;
     string resultString;

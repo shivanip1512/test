@@ -36,7 +36,7 @@ Protocol::Interface *Ccu721Device::getProtocol()
 }
 
 
-INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
+INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT nRet = NoMethod;
 
@@ -106,7 +106,7 @@ INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 }
 
 
-INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, INT ScanPriority )
+INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -131,7 +131,7 @@ INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT Ccu721Device::ResultDecode( const INMESS &InMessage, const CtiTime Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
+INT Ccu721Device::ResultDecode( const INMESS &InMessage, const CtiTime Now, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     if( ! InMessage.ErrorCode )
     {

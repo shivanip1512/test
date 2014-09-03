@@ -150,7 +150,7 @@ ULONG Dct501Device::calcNextLPScanTime( void )
 }
 
 
-INT Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
     int nRet = NoError;
 
@@ -309,7 +309,7 @@ bool Dct501Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -353,7 +353,7 @@ INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, li
 }
 
 
-INT Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -474,7 +474,7 @@ INT Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
@@ -663,7 +663,7 @@ INT Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 }
 
 
-INT Dct501Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 

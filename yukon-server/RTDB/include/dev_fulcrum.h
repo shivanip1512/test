@@ -215,17 +215,17 @@ public:
                            INT ScanPriority = MAXPRIORITY - 4);
 
    // interrogation routines
-   virtual YukonError_t generateCommandHandshake  (CtiXfer  &Transfer, CtiMessageList &traceList);
-   virtual YukonError_t generateCommand           (CtiXfer  &Transfer, CtiMessageList &traceList);
-   virtual YukonError_t generateCommandScan       (CtiXfer  &Transfer, CtiMessageList &traceList);
-   virtual YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, CtiMessageList &traceList);
-   virtual YukonError_t generateCommandSelectMeter(CtiXfer  &Transfer, CtiMessageList &traceList);
+   YukonError_t generateCommandHandshake  (CtiXfer  &Transfer, CtiMessageList &traceList) override;
+   YukonError_t generateCommand           (CtiXfer  &Transfer, CtiMessageList &traceList) override;
+   YukonError_t generateCommandScan       (CtiXfer  &Transfer, CtiMessageList &traceList) override;
+   YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, CtiMessageList &traceList) override;
+   YukonError_t generateCommandSelectMeter(CtiXfer  &Transfer, CtiMessageList &traceList) override;
 
-   virtual YukonError_t decodeResponse            (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-   virtual YukonError_t decodeResponseHandshake   (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-   virtual YukonError_t decodeResponseScan        (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-   virtual YukonError_t decodeResponseSelectMeter (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-   virtual YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+   YukonError_t decodeResponse            (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+   YukonError_t decodeResponseHandshake   (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+   YukonError_t decodeResponseScan        (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+   YukonError_t decodeResponseSelectMeter (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+   YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
 
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);

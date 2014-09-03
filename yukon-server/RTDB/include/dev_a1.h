@@ -497,22 +497,17 @@ public:
    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
    virtual INT allocateDataBins (OUTMESS *outMess);
-   virtual INT GeneralScan(CtiRequestMsg *pReq,
-                           CtiCommandParser &parse,
-                           OUTMESS *&OutMessage,
-                           CtiMessageList &vgList,
-                           CtiMessageList &retList,
-                           OutMessageList &outList,
-                           INT ScanPriority = MAXPRIORITY - 4);
+   INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                           INT ScanPriority = MAXPRIORITY - 4) override;
 
-   virtual YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, CtiMessageList &traceList );
-   virtual YukonError_t generateCommandScan       (CtiXfer  &Transfer, CtiMessageList &tListr );
+   YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, CtiMessageList &traceList ) override;
+   YukonError_t generateCommandScan       (CtiXfer  &Transfer, CtiMessageList &tListr ) override;
 
-   virtual YukonError_t decodeResponseScan        (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
-   virtual YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+   YukonError_t decodeResponseScan        (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
+   YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
 
-   virtual INT decodeResultLoadProfile (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
-   virtual INT decodeResultScan        (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
+   INT decodeResultLoadProfile (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   INT decodeResultScan        (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    INT   getA1ClassOffset(UINT Key, void *ptr);
    INT   getA1FuncOffset (UINT Key, void *ptr);

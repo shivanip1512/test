@@ -33,8 +33,8 @@ int CtiDeviceAnsi::buildSingleTableRequest(BYTE *ptr, UINT tableId)
     return 0;
 }
 
-INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
-                                    list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                                    CtiMessageList &retList, OutMessageList &outList)
 {
     if( OutMessage != NULL )
     {
@@ -82,8 +82,8 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
 //to the ansi protocol object to get info about the tables we know we need for a GeneralScan
 //=========================================================================================================================================
 
-INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
-                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    ULONG BytesWritten;
@@ -136,8 +136,8 @@ INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
    return NoError;
 }
 
-INT CtiDeviceAnsi::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
-                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceAnsi::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    if( OutMessage != NULL )
@@ -228,12 +228,12 @@ INT CtiDeviceAnsi::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
 
 
-INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
-                                  CtiCommandParser           &parse,
-                                  OUTMESS                   *&OutMessage,
-                                  list< CtiMessage* >  &vgList,
-                                  list< CtiMessage* >  &retList,
-                                  list< OUTMESS* >     &outList )
+INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg    *pReq,
+                                  CtiCommandParser  &parse,
+                                  OUTMESS          *&OutMessage,
+                                  CtiMessageList    &vgList,
+                                  CtiMessageList    &retList,
+                                  OutMessageList    &outList )
 {
     int nRet = NoError;
 
@@ -302,8 +302,8 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceAnsi::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
-                                list< OUTMESS* >    &outList)
+INT CtiDeviceAnsi::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList&retList,
+                                OutMessageList    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
     string inMsgResultString = "";

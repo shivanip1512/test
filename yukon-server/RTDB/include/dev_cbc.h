@@ -34,34 +34,11 @@ public:
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
-                               CtiCommandParser               &parse,
-                               OUTMESS                        *&OutMessage,
-                               CtiMessageList      &vgList,
-                               CtiMessageList      &retList,
-                               OutMessageList         &outList);
+    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-
-    INT executeFisherPierceCBC(CtiRequestMsg                  *pReq,
-                               CtiCommandParser               &parse,
-                               OUTMESS                        *&OutMessage,
-                               CtiMessageList      &vgList,
-                               CtiMessageList      &retList,
-                               OutMessageList         &outList);
-
-    INT executeVersacomCBC(CtiRequestMsg                  *pReq,
-                           CtiCommandParser               &parse,
-                           OUTMESS                        *&OutMessage,
-                           CtiMessageList      &vgList,
-                           CtiMessageList      &retList,
-                           OutMessageList         &outList);
-
-    INT executeExpresscomCBC(CtiRequestMsg                  *pReq,
-                             CtiCommandParser               &parse,
-                             OUTMESS                        *&OutMessage,
-                             CtiMessageList      &vgList,
-                             CtiMessageList      &retList,
-                             OutMessageList         &outList);
+    INT executeFisherPierceCBC(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT executeVersacomCBC    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT executeExpresscomCBC  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
 
 };

@@ -265,7 +265,7 @@ CtiDeviceDR87& CtiDeviceDR87::setNumberOfIncompleteMsgs (INT aNumberOfIncomplete
 
 
 
-YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -355,7 +355,7 @@ YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, list< 
     return retCode;
 }
 
-YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
 
@@ -396,7 +396,7 @@ YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, list< CtiMessag
 }
 
 
-YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -465,7 +465,7 @@ YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, list< CtiMe
 }
 
 
-INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     BYTEUSHORT worker;
     INT retVal = NORMAL;
@@ -527,7 +527,7 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, list< CtiMessag
     return retVal;
 }
 
-YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
     DR87LoadProfile_t * localLP = (DR87LoadProfile_t*)iLoadProfileBuffer;
@@ -764,7 +764,7 @@ YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, list
 
 
 
-YukonError_t CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
 //   BYTE  Command;
     int cnt=0;
@@ -835,7 +835,7 @@ YukonError_t CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, YukonEr
 
 
 
-YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -878,7 +878,7 @@ YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t com
     return retCode;
 }
 
-YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
     int x, msgDecodeRetVal;
@@ -1039,7 +1039,7 @@ YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t
     return retCode;
 }
 
-YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
     int x, msgDecodeRetVal;
@@ -1337,12 +1337,12 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
 
 
 
-INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
-                               CtiCommandParser &parse,
-                               OUTMESS *&OutMessage,
-                               list< CtiMessage* > &vgList,
-                               list< CtiMessage* > &retList,
-                               list< OUTMESS* > &outList,
+INT CtiDeviceDR87::GeneralScan(CtiRequestMsg     *pReq,
+                               CtiCommandParser  &parse,
+                               OUTMESS          *&OutMessage,
+                               CtiMessageList    &vgList,
+                               CtiMessageList    &retList,
+                               OutMessageList    &outList,
                                INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1481,11 +1481,11 @@ INT CtiDeviceDR87::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 }
 
 
-INT  CtiDeviceDR87::ResultDecode(const INMESS &InMessage,
-                                 const CtiTime TimeNow,
-                                 list< CtiMessage* >   &vgList,
-                                 list< CtiMessage* > &retList,
-                                 list< OUTMESS* > &outList)
+INT  CtiDeviceDR87::ResultDecode(const INMESS   &InMessage,
+                                 const CtiTime   TimeNow,
+                                 CtiMessageList &vgList,
+                                 CtiMessageList &retList,
+                                 OutMessageList &outList)
 {
 
     /****************************
@@ -1549,9 +1549,9 @@ INT  CtiDeviceDR87::ResultDecode(const INMESS &InMessage,
     return NORMAL;
 }
 
-INT CtiDeviceDR87::ErrorDecode (const INMESS        &InMessage,
-                                const CtiTime        TimeNow,
-                                list< CtiMessage* > &retList)
+INT CtiDeviceDR87::ErrorDecode (const INMESS   &InMessage,
+                                const CtiTime   TimeNow,
+                                CtiMessageList &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1597,11 +1597,11 @@ INT CtiDeviceDR87::ErrorDecode (const INMESS        &InMessage,
 
 
 
-INT CtiDeviceDR87::decodeResultScan (const INMESS &InMessage,
-                                     const CtiTime TimeNow,
-                                     list< CtiMessage* >   &vgList,
-                                     list< CtiMessage* > &retList,
-                                     list< OUTMESS* > &outList)
+INT CtiDeviceDR87::decodeResultScan (const INMESS   &InMessage,
+                                     const CtiTime   TimeNow,
+                                     CtiMessageList &vgList,
+                                     CtiMessageList &retList,
+                                     OutMessageList &outList)
 {
     char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
@@ -1720,11 +1720,11 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS &InMessage,
 }
 
 
-INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS &InMessage,
-                                            const CtiTime TimeNow,
-                                            list< CtiMessage* >   &vgList,
-                                            list< CtiMessage* > &retList,
-                                            list< OUTMESS* > &outList)
+INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS   &InMessage,
+                                            const CtiTime   TimeNow,
+                                            CtiMessageList &vgList,
+                                            CtiMessageList &retList,
+                                            OutMessageList &outList)
 {
     int retCode = NORMAL;
     const DIALUPREPLY        *DUPRep       = &InMessage.Buffer.DUPSt.DUPRep;

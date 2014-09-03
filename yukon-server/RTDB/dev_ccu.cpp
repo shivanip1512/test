@@ -96,7 +96,7 @@ bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 }
 
 
-INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -111,13 +111,13 @@ INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     return status;
 }
 
-INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList,  INT ScanPriority)
+INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,  INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
-INT CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanFlag(ScanRateGeneral);
@@ -212,12 +212,12 @@ Cti::DeviceQueueInterface* CtiDeviceCCU::getDeviceQueueHandler()
 }
 
 /* Routine to decode returned CCU message and update database */
-INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                 CtiCommandParser               &parse,
-                                 OUTMESS                        *&OutMessage,
-                                 list< CtiMessage* >      &vgList,
-                                 list< CtiMessage* >      &retList,
-                                 list< OUTMESS* >         &outList)
+INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg     *pReq,
+                                 CtiCommandParser  &parse,
+                                 OUTMESS          *&OutMessage,
+                                 CtiMessageList    &vgList,
+                                 CtiMessageList    &retList,
+                                 OutMessageList    &outList)
 {
     INT nRet = NORMAL;
     /*

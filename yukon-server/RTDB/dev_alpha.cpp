@@ -170,12 +170,12 @@ bool CtiDeviceAlpha::isReturnedBufferValid (CtiXfer  &Transfer)
     return retVal;
 }
 
-INT CtiDeviceAlpha::GeneralScan(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                list< CtiMessage* > &vgList,
-                                list< CtiMessage* > &retList,
-                                list< OUTMESS* > &outList,
+INT CtiDeviceAlpha::GeneralScan(CtiRequestMsg     *pReq,
+                                CtiCommandParser  &parse,
+                                OUTMESS          *&OutMessage,
+                                CtiMessageList    &vgList,
+                                CtiMessageList    &retList,
+                                OutMessageList    &outList,
                                 INT ScanPriority)
 {
     ULONG BytesWritten;
@@ -408,7 +408,7 @@ INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
    return retval;
 }
 
-YukonError_t CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode=NORMAL;
 
@@ -485,11 +485,11 @@ INT CtiDeviceAlpha::freeDataBins  ()
 }
 
 
-INT CtiDeviceAlpha::ResultDecode(const INMESS &InMessage,
-                                 const CtiTime TimeNow,
-                                 list< CtiMessage* >   &vgList,
-                                 list< CtiMessage* > &retList,
-                                 list< OUTMESS* > &outList)
+INT CtiDeviceAlpha::ResultDecode(const INMESS   &InMessage,
+                                 const CtiTime   TimeNow,
+                                 CtiMessageList &vgList,
+                                 CtiMessageList &retList,
+                                 OutMessageList &outList)
 {
     /****************************
     *
@@ -538,9 +538,9 @@ INT CtiDeviceAlpha::ResultDecode(const INMESS &InMessage,
     return NORMAL;
 }
 
-INT CtiDeviceAlpha::ErrorDecode (const INMESS        &InMessage,
-                                 const CtiTime        TimeNow,
-                                 list< CtiMessage* > &retList)
+INT CtiDeviceAlpha::ErrorDecode (const INMESS   &InMessage,
+                                 const CtiTime   TimeNow,
+                                 CtiMessageList &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -586,7 +586,7 @@ INT CtiDeviceAlpha::ErrorDecode (const INMESS        &InMessage,
 }
 
 
-YukonError_t CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
     int i;
@@ -624,7 +624,7 @@ YukonError_t CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, list< CtiMessa
     return retCode;
 }
 
-YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     BYTEULONG         passWord;
     BYTEULONG         passwordValue;
@@ -774,7 +774,7 @@ YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list<
     return retCode;
 }
 
-YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -903,7 +903,7 @@ YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonE
 
 
 
-INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     // Terminate the session
     sprintf((PCHAR)Transfer.getOutBuffer(),"%c%c", STX, ALPHA_CMD_TERMINATE);

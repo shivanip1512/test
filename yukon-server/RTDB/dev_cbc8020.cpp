@@ -62,14 +62,14 @@ void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t
                     'major' : 8-bit value -- upper 4-bits == major_version
                                              lower 4-bits == minor_version
                     'minor' : 8-bit value -- revision
-             
+
                 outgoing data format:
                     a SIXBIT (http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html)
                     encoded string packed inside a long long.  The point data message holds a
                     double which limits us to 8 (6-bit) encoded characters inside the 52-bit mantissa.
                     The string format is "major_version.minor_version.revision".  A string that is
                     too long will be truncated and the last character replaced by '#' to
-                    denote that condition. eg: "10.11.123" --> "10.11.1#".  
+                    denote that condition. eg: "10.11.123" --> "10.11.1#".
             */
 
             int major_minor = static_cast<int>( major->getValue() );
@@ -117,7 +117,7 @@ void Cbc8020Device::processPoints( Cti::Protocol::Interface::pointlist_t &points
     DnpDevice::processPoints(points);
 }
 
-INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = NoMethod;
     bool didExecute = false;

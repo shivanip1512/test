@@ -83,16 +83,16 @@ LONG DlcBaseDevice::getAddress() const   {   return CarrierSettings.getAddress()
 LONG DlcBaseDevice::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
-INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
-                                   CtiCommandParser     &parse,
-                                   OUTMESS             *&OutMessage,
-                                   list< CtiMessage* >  &vgList,
-                                   list< CtiMessage* >  &retList,
-                                   list< OUTMESS* >     &outList )
+INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
+                                   CtiCommandParser  &parse,
+                                   OUTMESS          *&OutMessage,
+                                   CtiMessageList    &vgList,
+                                   CtiMessageList    &retList,
+                                   OutMessageList    &outList )
 {
     int nRet = NoError;
     bool broadcast = false;
-    list< OUTMESS* > tmpOutList;
+    OutMessageList tmpOutList;
 
     if( OutMessage )
     {
@@ -210,7 +210,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
 }
 
 
-INT DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
+INT DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     try
     {
@@ -230,7 +230,7 @@ INT DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 }
 
 
-INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
+INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     try
     {
@@ -250,7 +250,7 @@ INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, l
 }
 
 
-INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore ) const
+INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, CtiMessageList &vgList, CtiMessageList &retList, bool expectMore ) const
 {
     CtiReturnMsg    *tmpVGRetMsg = NULL;
     CtiPointDataMsg *tmpMsg;
@@ -367,7 +367,7 @@ void DlcBaseDevice::handleCommandResult(const Commands::DlcCommand &command)
 }
 
 
-void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     //  We need to protect _activeCommands/trackCommand()
     CtiLockGuard<CtiMutex> lock(getMux());
@@ -469,7 +469,7 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
 
             executeOnDLCRoute(&newReq,
                               CtiCommandParser(newReq.CommandString()),
-                              list<OUTMESS *>(1, OutMessage),
+                              OutMessageList(1, OutMessage),
                               vgList, retList, outList, false);
         }
         else
@@ -558,13 +558,13 @@ bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr com
 }
 
 
-int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
-                                         CtiCommandParser           &parse,
-                                         list< OUTMESS* >     &tmpOutList,
-                                         list< CtiMessage* >  &vgList,
-                                         list< CtiMessage* >  &retList,
-                                         list< OUTMESS* >     &outList,
-                                         bool                  broadcastWritesOnMacroSubroutes )
+int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
+                                         CtiCommandParser &parse,
+                                         OutMessageList   &tmpOutList,
+                                         CtiMessageList   &vgList,
+                                         CtiMessageList   &retList,
+                                         OutMessageList   &outList,
+                                         bool              broadcastWritesOnMacroSubroutes )
 {
     int nRet = NoError;
 
@@ -676,7 +676,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         CtiCommandParser arm_parse(arm_req->CommandString());
 
                         //  we must trap any return messages to the client that this creates...
-                        list<CtiMessage *> tmp_retlist;
+                        CtiMessageList tmp_retlist;
 
                         if( beginExecuteRequestFromTemplate(arm_req, arm_parse, vgList, tmp_retlist, outList, pOut) )
                         {

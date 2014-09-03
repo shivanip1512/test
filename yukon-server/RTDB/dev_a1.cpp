@@ -136,12 +136,12 @@ INT CtiDeviceAlphaA1::freeDataBins  ()
 }
 
 
-INT CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  list< CtiMessage* > &vgList,
-                                  list< CtiMessage* > &retList,
-                                  list< OUTMESS* > &outList,
+INT CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg     *pReq,
+                                  CtiCommandParser  &parse,
+                                  OUTMESS          *&OutMessage,
+                                  CtiMessageList    &vgList,
+                                  CtiMessageList    &retList,
+                                  OutMessageList    &outList,
                                   INT ScanPriority)
 {
     INT status = NORMAL;
@@ -187,7 +187,7 @@ USHORT CtiDeviceAlphaA1::calculateStartingByteCountForCurrentScanState (int aCla
 }
 
 
-YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     AlphaA1LoadProfile_t *localLP      = ((AlphaA1LoadProfile_t*)_loadProfileBuffer);
     AlphaA1ScanData_t    *localData    = ((AlphaA1ScanData_t *)_dataBuffer);
@@ -503,7 +503,7 @@ YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, list< Ct
     return retCode;
 }
 
-YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     YukonError_t      retCode = NORMAL;
     BYTEUSHORT        reqLength;
@@ -903,7 +903,7 @@ YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, l
 }
 
 
-YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
 
     INT         iClass;
@@ -1276,7 +1276,7 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonErro
     return retCode;
 }
 
-YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode= NORMAL;
     INT         iClass;
@@ -1714,11 +1714,11 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
 
 
 
-INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS &InMessage,
-                                          const CtiTime TimeNow,
-                                          list< CtiMessage* >   &vgList,
-                                          list< CtiMessage* > &retList,
-                                          list< OUTMESS* > &outList)
+INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS   &InMessage,
+                                          const CtiTime   TimeNow,
+                                          CtiMessageList &vgList,
+                                          CtiMessageList &retList,
+                                          OutMessageList &outList)
 {
     char tmpCurrentState   = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 //   SYSTEMLOGMESS LogMessage;
@@ -1887,11 +1887,11 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS &InMessage,
     return(NORMAL);
 }
 
-INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS &InMessage,
-                                               const CtiTime TimeNow,
-                                               list< CtiMessage* >   &vgList,
-                                               list< CtiMessage* > &retList,
-                                               list< OUTMESS* > &outList)
+INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS   &InMessage,
+                                               const CtiTime   TimeNow,
+                                               CtiMessageList &vgList,
+                                               CtiMessageList &retList,
+                                               OutMessageList &outList)
 {
 
     int retCode = NORMAL;

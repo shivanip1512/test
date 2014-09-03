@@ -42,12 +42,12 @@ using std::string;
 using std::endl;
 using std::list;
 
-INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  list< CtiMessage* > &vgList,
-                                  list< CtiMessage* > &retList,
-                                  list< OUTMESS* > &outList,
+INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg     *pReq,
+                                  CtiCommandParser  &parse,
+                                  OUTMESS          *&OutMessage,
+                                  CtiMessageList    &vgList,
+                                  CtiMessageList    &retList,
+                                  OutMessageList    &outList,
                                   INT ScanPriority)
 {
     INT status = NORMAL;
@@ -70,7 +70,7 @@ INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
 
 
 
-YukonError_t CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -205,7 +205,7 @@ YukonError_t CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, lis
 }
 
 
-YukonError_t CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
     YukonError_t retCode = NORMAL;
@@ -325,7 +325,7 @@ YukonError_t CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMe
     return retCode;
 }
 
-YukonError_t CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
     YukonError_t      retCode = NORMAL;
@@ -466,7 +466,7 @@ YukonError_t CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, l
 }
 
 
-YukonError_t CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     SchlMeterStruct MeterSt;
     YukonError_t    retCode = NORMAL;
@@ -604,7 +604,7 @@ YukonError_t CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, list< Ct
     return retCode;
 }
 
-YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     // make this easier to read in the following code
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
@@ -1064,7 +1064,7 @@ YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, l
 }
 
 
-YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
     YukonError_t retCode = NORMAL;
@@ -1224,7 +1224,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
 }
 
 
-YukonError_t CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
     YukonError_t retCode = NORMAL;
@@ -1304,7 +1304,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, YukonError_t 
 
 
 
-YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 
 {
     YukonError_t retCode    = NORMAL;
@@ -1637,7 +1637,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
 }
 
 
-YukonError_t CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     FulcrumLoadProfileMessage_t *localLProfile      = ((FulcrumLoadProfileMessage_t*)_loadProfileBuffer);
     SchlMeterStruct   MeterSt;
@@ -1751,7 +1751,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, YukonErro
 }
 
 
-YukonError_t CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
     SchlLoadProfile_t           *localMMLoadProfile = ((SchlLoadProfile_t *)_massMemoryLoadProfile);
@@ -1839,11 +1839,11 @@ YukonError_t CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
 }
 
 
-INT CtiDeviceFulcrum::decodeResultScan (const INMESS &InMessage,
-                                        const CtiTime TimeNow,
-                                        list< CtiMessage* >   &vgList,
-                                        list< CtiMessage* > &retList,
-                                        list< OUTMESS* > &outList)
+INT CtiDeviceFulcrum::decodeResultScan (const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
+                                        CtiMessageList &vgList,
+                                        CtiMessageList &retList,
+                                        OutMessageList &outList)
 {
     char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
     CHAR     temp[100], buffer[60];
@@ -1955,11 +1955,11 @@ INT CtiDeviceFulcrum::decodeResultScan (const INMESS &InMessage,
 
 
 
-INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS &InMessage,
-                                               const CtiTime TimeNow,
-                                               list< CtiMessage* >   &vgList,
-                                               list< CtiMessage* > &retList,
-                                               list< OUTMESS* > &outList)
+INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS   &InMessage,
+                                               const CtiTime   TimeNow,
+                                               CtiMessageList &vgList,
+                                               CtiMessageList &retList,
+                                               OutMessageList &outList)
 {
 
     const DIALUPREQUEST                 *dupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;

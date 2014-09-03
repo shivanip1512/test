@@ -41,7 +41,7 @@ Cbc7020Device::ConfigPartsList Cbc7020Device::initConfigParts()
     return tempList;
 }
 
-INT Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = NoMethod;
     bool didExecute = false;
@@ -154,7 +154,7 @@ void Cbc7020Device::processPoints( Protocol::Interface::pointlist_t &points )
     Inherited::processPoints(points);
 }
 
-int Cbc7020Device::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >   &outList)
+int Cbc7020Device::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     string tempStr = "putvalue analog " + CtiNumStr(outputPt) + " " + CtiNumStr(value);
     OUTMESS *tempOutMess = CTIDBG_new OUTMESS(*OutMessage);

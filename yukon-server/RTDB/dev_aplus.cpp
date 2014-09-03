@@ -129,12 +129,12 @@ INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)
 }
 
 
-INT CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg *pReq,
-                                     CtiCommandParser &parse,
-                                     OUTMESS *&OutMessage,
-                                     list< CtiMessage* > &vgList,
-                                     list< CtiMessage* > &retList,
-                                     list< OUTMESS* > &outList,
+INT CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg     *pReq,
+                                     CtiCommandParser  &parse,
+                                     OUTMESS          *&OutMessage,
+                                     CtiMessageList    &vgList,
+                                     CtiMessageList    &retList,
+                                     OutMessageList    &outList,
                                      INT ScanPriority)
 {
     INT status = NORMAL;
@@ -185,7 +185,7 @@ USHORT CtiDeviceAlphaPPlus::calculateStartingByteCountForCurrentScanState (int a
 }
 
 
-YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     AlphaPPlusLoadProfile_t *localLP      = ((AlphaPPlusLoadProfile_t*)_loadProfileBuffer);
     AlphaPPlusScanData_t    *localData    = ((AlphaPPlusScanData_t *)_dataBuffer);
@@ -520,7 +520,7 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, list<
     return retCode;
 }
 
-YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     AlphaPPlusLoadProfile_t * ptr = (AlphaPPlusLoadProfile_t *)_loadProfileBuffer;
     YukonError_t      retCode = NORMAL;
@@ -899,11 +899,8 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
 }
 
 
-YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
-                                             YukonError_t      commReturnValue,
-                                             list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-
     INT         iClass;
     // Class Offset is the position of the requested class in the APlusClasses array
     INT         classOffset;
@@ -1274,7 +1271,7 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
 }
 
 
-YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t retCode= NORMAL;
     INT         iClass = 0;
@@ -1735,11 +1732,11 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer,
     return retCode;
 }
 
-INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS &InMessage,
-                                             const CtiTime TimeNow,
-                                             list< CtiMessage* >   &vgList,
-                                             list< CtiMessage* > &retList,
-                                             list< OUTMESS* > &outList)
+INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS   &InMessage,
+                                             const CtiTime   TimeNow,
+                                             CtiMessageList &vgList,
+                                             CtiMessageList &retList,
+                                             OutMessageList &outList)
 {
     char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
     CHAR     temp[100], buffer[100];
@@ -1906,11 +1903,11 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS &InMessage,
     return(NORMAL);
 }
 
-INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (const INMESS &InMessage,
-                                                  const CtiTime TimeNow,
-                                                  list< CtiMessage* >   &vgList,
-                                                  list< CtiMessage* > &retList,
-                                                  list< OUTMESS* > &outList)
+INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (const INMESS   &InMessage,
+                                                  const CtiTime   TimeNow,
+                                                  CtiMessageList &vgList,
+                                                  CtiMessageList &retList,
+                                                  OutMessageList &outList)
 {
 
     const DIALUPREPLY *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;

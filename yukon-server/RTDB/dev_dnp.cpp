@@ -91,7 +91,7 @@ bool DnpDevice::clearedForScan(int scantype)
 }
 
 
-INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -119,7 +119,7 @@ INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
 }
 
 
-INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -147,7 +147,7 @@ INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTME
 }
 
 
-INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = NoMethod;
 
@@ -628,7 +628,7 @@ Protocol::Interface *DnpDevice::getProtocol()
 }
 
 
-int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
 {
     int retVal = NoError;
 
@@ -1012,7 +1012,7 @@ void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     CtiReturnMsg *retMsg;
 
@@ -1084,7 +1084,7 @@ INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list
 }
 
 
-INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
+INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
     INT retCode = NORMAL;
 
