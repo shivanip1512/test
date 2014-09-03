@@ -5,6 +5,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -70,33 +71,28 @@
       <div class="utility">
         <nav>
           <ul>
-            <li><a id="contact-us" href="javascript:void(0)"><i:inline key="yukon.web.layout.standard.contactUs"/></a></li>
+            <li><a id="contact-us" href="javascript:void(0)" data-popup="#contact-us-dialog"><i:inline key="yukon.web.layout.standard.contactUs"/></a></li>
+            <cti:msg2 var="dialogTitle" key="layout.standard.contactUs"/>
+            <div id="contact-us-dialog" class="dn" data-title="${dialogTitle}"
+                data-position-my="right bottom" data-position-at="right top" data-position-of="#contact-us">
 
-            <i:simplePopup titleKey="layout.standard.contactUs" id="contact-us-dialog" on="#contact-us" 
-              options="{position: {my:'right bottom', at:'right top', of: '#contact-us'}}">
+              <cti:globalSetting var="email" globalSettingType="CONTACT_EMAIL"/>
               <div class="stacked">
                 <label>
                   <strong><i:inline key="yukon.web.modules.support.support.email.header"/></strong>&nbsp;
-                  <a href="mailto:<cti:msg2 key="yukon.web.modules.support.support.email.value"/>">
-                    <i:inline key="yukon.web.modules.support.support.email.value"/>
-                  </a>
+                  <a href="mailto:${fn:escapeXml(email)}">${fn:escapeXml(email)}</a>
                 </label>
               </div>
+              <cti:globalSetting var="phone" globalSettingType="CONTACT_PHONE"/>
               <div class="stacked">
                 <div>
                   <label>
                     <strong><i:inline key="yukon.web.modules.support.support.phone.header"/></strong>&nbsp;
-                    <i:inline key="yukon.web.modules.support.support.phone.value"/>
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    <strong><i:inline key="yukon.web.modules.support.support.hours.header"/></strong>&nbsp;
-                    <i:inline key="yukon.web.modules.support.support.hours.value"/>
+                    ${fn:escapeXml(phone)}
                   </label>
                 </div>
               </div>
-            </i:simplePopup>
+            </div>
           </ul>
         </nav>
       </div>

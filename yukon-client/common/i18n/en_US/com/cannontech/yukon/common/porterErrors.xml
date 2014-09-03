@@ -11,7 +11,6 @@
             <ul>
                 <li>Attempt the command again</li>
                 <li>From Commander, remotely reset the CCU and attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_4.porter">D Word Wrong length</entry>
@@ -22,7 +21,6 @@
             for a single communication. This error code is returned when the CCU receives too many or too few packets based on the request.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_9.porter">Parameter Out of Range</entry>
@@ -30,10 +28,7 @@
 	<entry key="yukon.web.errorCodes_9.description">A parameter supplied in the command string is outside
 		of its valid range.</entry>
 	<entry key="yukon.web.errorCodes_9.troubleshooting"><![CDATA[A parameter supplied in the command string is outside of its valid range.
-            Correct the invalid parameter and attempt the command again.
-            <ul>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+            Correct the invalid parameter and attempt the command again.]]></entry>
 
 	<entry key="yukon.web.errorCodes_15.porter">Parity Error</entry>
 	<entry key="yukon.web.errorCodes_15.category">Bulk Communications</entry>
@@ -52,8 +47,7 @@
                     <ul>
                         <li>Adjust the timings of the communication channel (Steps to find the
                             settings are shown below). If you are unfamiliar with the timing
-                            parameters available, please contact Technical Support at
-                            1-800-815-2258.</li>
+                            parameters available, please contact Technical Support.</li>
                         <ol>
                             <li>Open Database Editor</li>
                             <li>View -> Core</li>
@@ -68,7 +62,6 @@
                             channel</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_16.porter">Bad CCU Specification</entry>
@@ -81,8 +74,7 @@
                 <li>Attempt the command again</li>
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    the timing parameters available, please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -91,7 +83,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_17.porter">Word 1 NACK</entry>
@@ -112,7 +103,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_18.porter">Word 2 NACK</entry>
@@ -133,7 +123,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_19.porter">Word 3 NACK</entry>
@@ -154,7 +143,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_20.porter">Word 1 NACK Padded</entry>
@@ -181,7 +169,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 	<entry key="yukon.web.errorCodes_21.porter">Word 2 NACK Padded</entry>
 	<entry key="yukon.web.errorCodes_21.category">Powerline Carrier</entry>
@@ -207,7 +194,7 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+
             </ul>]]></entry>
 	<entry key="yukon.web.errorCodes_22.porter">Word 3 NACK Padded</entry>
 	<entry key="yukon.web.errorCodes_22.category">Powerline Carrier</entry>
@@ -233,7 +220,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_31.porter">Timeout Reading from Port</entry>
@@ -263,7 +249,6 @@
                             selector is not switched to external</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_32.porter">Sequence Reject Frame Received... Sequencing Adjusted</entry>
@@ -279,8 +264,7 @@
                 <li>Attempt the command again</li>
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    the timing parameters available, please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -289,7 +273,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_33.porter">Framing Error</entry>
@@ -304,8 +287,7 @@
                 <li>Attempt the command again</li>
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    the timing parameters available, please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -314,7 +296,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_34.porter">Bad CRC on Message</entry>
@@ -326,8 +307,7 @@
                 <li>Attempt the command again</li>
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    the timing parameters available, please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -336,7 +316,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_36.porter">Bad HDLC UA Frame</entry>
@@ -345,7 +324,6 @@
 	<entry key="yukon.web.errorCodes_36.troubleshooting"><![CDATA[This is a powerline carrier error associated with a logic problem internal to the CCU.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_46.category">Bulk Communications</entry>
@@ -359,7 +337,7 @@
                 <li>Attempt the command again</li>
                 <li>From Commander, remotely reset the CCU and attempt the command again</li>
                 <li>If the problem persists, it may be due to a faulty logic card in the CCU.
-                    Replace the logic card or contact Technical Support at 1-800-815-2258</li>
+                    Replace the logic card or contact Technical Support.</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_54.porter">Device ID not found</entry>
@@ -367,10 +345,7 @@
 	<entry key="yukon.web.errorCodes_54.description">The device ID requested does not exist or is not
 		loaded yet.</entry>
 	<entry key="yukon.web.errorCodes_54.troubleshooting"><![CDATA[The devices may still be in process of being loaded by the servers, wait a few minutes
-            and attempt the command again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+            and attempt the command again.]]></entry>
 
 	<entry key="yukon.web.errorCodes_57.porter">E-Word Received in Returned Message</entry>
 	<entry key="yukon.web.errorCodes_57.category">Powerline Carrier</entry>
@@ -396,7 +371,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_65.porter">No DCD on Return Message</entry>
@@ -426,7 +400,6 @@
                     station is working properly</li>
                 <li>If the targeted device is a CCU, verify it is powered up and the selector is not
                     switched to external</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_67.porter">Error Reading from Port</entry>
@@ -440,7 +413,6 @@
                 <li>Attempt the command again</li>
                 <li>If using a port server or terminal server, verify connectivity to the device
                     containing the physical communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_68.porter">Error Writing to Port</entry>
@@ -454,7 +426,6 @@
                 <li>Attempt the command again</li>
                 <li>If using a port server or terminal server, verify connectivity to the device
                     containing the physical communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_72.porter">DLC Read Timeout on CCU Queue Entry</entry>
@@ -481,7 +452,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_74.porter">Route Failed on CCU Queue Entry</entry>
@@ -502,7 +472,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_83.porter">Operation Attempted on Inhibited Port</entry>
@@ -528,7 +497,6 @@
             <ul>
                 <li>Attempt the command again</li>
                 <li>Verify the modem is functioning properly</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_88.porter">Wrong Unique Address Received</entry>
@@ -539,7 +507,6 @@
             preceded by a bulk communication error such as a timeout.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_89.porter">Error Connecting to Terminal Server</entry>
@@ -553,7 +520,6 @@
                 <li>Attempt the command again</li>
                 <li>Verify connectivity to the device (terminal server) containing the physical
                     communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_90.porter">Error Writing to Terminal Server</entry>
@@ -567,7 +533,6 @@
                 <li>Attempt the command again</li>
                 <li>Verify connectivity to the device (terminal server) containing the physical
                     communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_91.porter">Error Reading from Terminal Server</entry>
@@ -581,7 +546,6 @@
                 <li>Attempt the command again</li>
                 <li>Verify connectivity to the device (terminal server) containing the physical
                     communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_92.porter">Address Does Not Match Expected Value</entry>
@@ -592,7 +556,6 @@
             preceded by a bulk communication error such as a timeout.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_93.porter">Bad Data Buffer for IED</entry>
@@ -606,7 +569,6 @@
                 <li>Attempt the command again</li>
                 <li>If possible, verify the physical connection between the carrier device and the
                     IED</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_94.porter">Missing Required Configuration Entry</entry>
@@ -622,7 +584,6 @@
                 <li>Attempt the command again</li>
                 <li>If possible, verify the physical connection between the carrier device and the
                     IED</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_98.porter">Bad Nexus Specification</entry>
@@ -638,7 +599,6 @@
                 <li>Confirm the device's configuration is correct.</li>
                 <li>Physically inspect any unreachable devices for hardware issues.</li>
                 <li>Contact third parties to confirm operation of network.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_99.porter">Error Writing to Port</entry>
@@ -654,7 +614,6 @@
                 <li>Confirm the device's configuration is correct.</li>
                 <li>Physically inspect any unreachable devices for hardware issues.</li>
                 <li>Contact third parties to confirm operation of network.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_100.porter">Bad BCH</entry>
@@ -675,7 +634,6 @@
                 <li>Attempt the same command with a different device on the same route</li>
                 <li>Attempt the command on the original device and verify the signal to noise ratio
                     (signal strength) at the substation</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_202.porter">NoMethod or invalid command.</entry>
@@ -685,7 +643,6 @@
 	<entry key="yukon.web.errorCodes_202.troubleshooting"><![CDATA[<ul>
                 <li>Verify the command string syntax is valid.</li>
                 <li>The firmware for this device may not support this operation.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_261.porter">The freeze check bit in the frozen reading does not
@@ -703,7 +660,6 @@
                     <li>Using Commander, resend the expected freeze.</li>
                     <li>Attempt the command again</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_262.porter">The frozen peak timestamp is outside of the expected
@@ -723,7 +679,6 @@
                     <li>Using Commander, resend the expected freeze.</li>
                     <li>Attempt the command again</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_263.porter">The freeze counter is less than the expected value.</entry>
@@ -735,14 +690,12 @@
             count returned from the device. This indicates a
             freeze command was not received by the device.
             <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_264.porter">Invalid data was received for one or more data points.</entry>
 	<entry key="yukon.web.errorCodes_264.category">Data Validation</entry>
 	<entry key="yukon.web.errorCodes_264.description">Invalid data was received for one or more data points.</entry>
 	<entry key="yukon.web.errorCodes_264.troubleshooting"><![CDATA[<ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_265.porter">There is no record of the last freeze sent to this
@@ -751,7 +704,6 @@
 	<entry key="yukon.web.errorCodes_265.description">There is no record of the last freeze sent to this
 		device.</entry>
 	<entry key="yukon.web.errorCodes_265.troubleshooting"><![CDATA[<ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_267.porter">Invalid time returned OR time outside of requested
@@ -762,7 +714,6 @@
 		value. The device did not hear the setup command.</entry>
 	<entry key="yukon.web.errorCodes_267.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.
             <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>]]></entry>
 
 	<entry key="yukon.web.errorCodes_268.porter">Invalid channel returned by daily read.</entry>
@@ -770,84 +721,57 @@
 	<entry key="yukon.web.errorCodes_268.description">The setup validation data returned by the meter did
 		not match the expected
 		value. The device did not hear the setup command.</entry>
-	<entry key="yukon.web.errorCodes_268.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+	<entry key="yukon.web.errorCodes_268.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.]]></entry>
 
 	<entry key="yukon.web.errorCodes_269.porter">Invalid or insufficient device SSPEC revision.</entry>
 	<entry key="yukon.web.errorCodes_269.category">Data Validation</entry>
 	<entry key="yukon.web.errorCodes_269.description">The meter does not support the requested command.</entry>
 	<entry key="yukon.web.errorCodes_269.troubleshooting"><![CDATA[Please verify the SSPEC supports the requested command. Execute 'getconfig model' to
-            retrieve the SSPEC revision.
-            <ul>
-                <li>For more information, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+            retrieve the SSPEC revision.]]></entry>
 
 	<entry key="yukon.web.errorCodes_270.porter">Verification of device SSPEC revision is required.</entry>
 	<entry key="yukon.web.errorCodes_270.category">Data Validation</entry>
 	<entry key="yukon.web.errorCodes_270.description">Verification of device SSPEC revision is required.</entry>
-	<entry key="yukon.web.errorCodes_270.troubleshooting"><![CDATA[Execute 'getconfig model' to verify the device SSPEC revision.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+	<entry key="yukon.web.errorCodes_270.troubleshooting"><![CDATA[Execute 'getconfig model' to verify the device SSPEC revision.]]></entry>
 
 	<entry key="yukon.web.errorCodes_271.porter">Transmitter is busy</entry>
 	<entry key="yukon.web.errorCodes_271.category">Transmitter</entry>
 	<entry key="yukon.web.errorCodes_271.description">The transmitter is busy with another request.</entry>
 	<entry key="yukon.web.errorCodes_271.troubleshooting"><![CDATA[The transmitter is busy with another request, possibly from another system. Attempt the
-            command again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+            command again.]]></entry>
 
 	<entry key="yukon.web.errorCodes_273.porter">Port is not initialized</entry>
 	<entry key="yukon.web.errorCodes_273.category">Bulk Communications</entry>
 	<entry key="yukon.web.errorCodes_273.description">The request has been received, but may be delayed
 		because the port is not initialized. Bulk communication channel may be
 		experiencing connection difficulties.</entry>
-	<entry key="yukon.web.errorCodes_273.troubleshooting"><![CDATA[Verify the bulk communication channel is functioning properly.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+	<entry key="yukon.web.errorCodes_273.troubleshooting"><![CDATA[Verify the bulk communication channel is functioning properly.]]></entry>
 
 	<entry key="yukon.web.errorCodes_274.porter">Daily read request already in progress</entry>
 	<entry key="yukon.web.errorCodes_274.category">Data Validation</entry>
 	<entry key="yukon.web.errorCodes_274.description">The daily read request is already in progress.</entry>
 	<entry key="yukon.web.errorCodes_274.troubleshooting"><![CDATA[The daily read request is already in progress with another daily read request. Only one
             daily read can be in progress at a time. Wait for a moment and attempt the command
-            again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+            again.]]></entry>
 
 	<entry key="yukon.web.errorCodes_275.porter">Device is not connected</entry>
 	<entry key="yukon.web.errorCodes_275.category">Bulk Communications</entry>
 	<entry key="yukon.web.errorCodes_275.description">Yukon is unable to establish a connection with the
 		device.</entry>
-	<entry key="yukon.web.errorCodes_275.troubleshooting"><![CDATA[Verify the device's connection parameters.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+	<entry key="yukon.web.errorCodes_275.troubleshooting"><![CDATA[Verify the device's connection parameters.]]></entry>
 
 	<entry key="yukon.web.errorCodes_276.porter">No disconnect configured on this device</entry>
 	<entry key="yukon.web.errorCodes_276.category">Yukon System</entry>
 	<entry key="yukon.web.errorCodes_276.description">The device does not have a disconnect to be operated
 		on.</entry>
-	<entry key="yukon.web.errorCodes_276.troubleshooting"><![CDATA[Verify there is a disconnect configured in the Device Setup.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+	<entry key="yukon.web.errorCodes_276.troubleshooting"><![CDATA[Verify there is a disconnect configured in the Device Setup.]]></entry>
 
 	<entry key="yukon.web.errorCodes_277.porter">Transmitter is overheating</entry>
 	<entry key="yukon.web.errorCodes_277.category">Transmitter</entry>
 	<entry key="yukon.web.errorCodes_277.description">The request was denied because the PLC transmitter is
 		overheating.</entry>
 	<entry key="yukon.web.errorCodes_277.troubleshooting"><![CDATA[
-    		Hardware Protection Mode.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>]]></entry>
+    		Hardware Protection Mode.]]></entry>
 
 	<entry key="yukon.web.errorCodes_278.porter">Command requires channel configuration to continue.</entry>
 	<entry key="yukon.web.errorCodes_278.category">Yukon System</entry>
@@ -857,9 +781,6 @@
 	<entry key="yukon.web.errorCodes_278.troubleshooting"><![CDATA[
     		The system will attempt to collect the required configuration data automatically. Retry
             the command.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
             ]]></entry>
 
 	<entry key="yukon.web.errorCodes_1024.porter">No node in Network Manager.</entry>
@@ -890,8 +811,7 @@
 	<entry key="yukon.web.errorCodes_2000.category">Yukon System</entry>
 	<entry key="yukon.web.errorCodes_2000.porter">Invalid Action for Device Type.</entry>
 	<entry key="yukon.web.errorCodes_2000.description">This action cannot be performed on this device type.</entry>
-	<entry key="yukon.web.errorCodes_2000.troubleshooting">For more information, please contact Technical Support
-		at 1-800-815-2258</entry>
+	<entry key="yukon.web.errorCodes_2000.troubleshooting"></entry>
 
 	<entry key="yukon.web.errorCodes_0.category">N/A</entry>
 	<entry key="yukon.web.errorCodes_0.porter">N/A</entry>
@@ -903,8 +823,7 @@
 		available at this time</entry>
 	<entry key="yukon.web.errorCodes_*.description">Troubleshooting tips for this error code are not
 		available at this time</entry>
-	<entry key="yukon.web.errorCodes_*.troubleshooting">If the problem persists, please contact Technical
-		Support at 1-800-815-2258</entry>
+	<entry key="yukon.web.errorCodes_*.troubleshooting"></entry>
 
 
 

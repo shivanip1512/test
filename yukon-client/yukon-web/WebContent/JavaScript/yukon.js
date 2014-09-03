@@ -601,6 +601,11 @@ yukon.ui = (function () {
          *                     If 'data-url' is used, the event will be fired after the dialog is loaded with
          *                     the response body.
          * data-popup-toggle - If present, the trigger element can be clicked to close the popup as well.
+         *
+         * Positioning options: see http://api.jqueryui.com/position/
+         * data-position-my -  top/center/bottom + left/center/right. Default is 'center'
+         * data-position-at -  top/center/right + left/center/right. Default is 'center'
+         * data-position-of -  selector|element.  Default is 'window'.
          */
         dialog: function (popup, url) {
             
@@ -610,7 +615,8 @@ yukon.ui = (function () {
                     width: popup.is('[data-width]') ? popup.data('width') : 'auto',
                     height: popup.is('[data-height]') ? popup.data('height') : 'auto'
                 },
-                buttonOptions = {};
+                buttonOptions = {},
+                positionOptions = {};
             
             if (popup.is('[data-title]')) options.title = popup.data('title');
             if (popup.is('[title]')) options.title = popup.attr('title');
@@ -622,6 +628,11 @@ yukon.ui = (function () {
                 options.buttons = mod.buttons(buttonOptions);
             }
             
+            if (popup.is('[data-position-my]')) positionOptions.my = popup.data('positionMy');
+            if (popup.is('[data-position-at]')) positionOptions.at = popup.data('positionAt');
+            if (popup.is('[data-position-of]')) positionOptions.of = popup.data('positionOf');
+            options.position = positionOptions;
+
             if (popup.is('[data-url]') || url) {
                 url = url || popup.data('url');
                 popup.load(url, function () {

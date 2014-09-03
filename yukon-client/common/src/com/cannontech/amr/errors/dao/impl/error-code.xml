@@ -12,7 +12,6 @@
             <ul>
                 <li>Attempt the command again</li>
                 <li>From Commander, remotely reset the CCU and attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -28,7 +27,6 @@
             receives too many or too few packets based on the request.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -40,9 +38,6 @@
         <troubleshooting>
             A parameter supplied in the command string is outside of its valid range.
             Correct the invalid parameter and attempt the command again.
-            <ul>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="15">
@@ -64,8 +59,7 @@
                     <ul>
                         <li>Adjust the timings of the communication channel (Steps to find the
                             settings are shown below). If you are unfamiliar with the timing
-                            parameters available, please contact Technical Support at
-                            1-800-815-2258.</li>
+                            parameters available, please contact Technical Support.</li>
                         <ol>
                             <li>Open Database Editor</li>
                             <li>View -> Core</li>
@@ -80,7 +74,6 @@
                             channel</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -98,7 +91,7 @@
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
                     the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -107,7 +100,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -131,7 +123,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -155,7 +146,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -179,7 +169,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -209,7 +198,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -238,7 +226,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -268,7 +255,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -302,7 +288,6 @@
                             selector is not switched to external</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -325,7 +310,7 @@
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
                     the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -334,7 +319,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -354,7 +338,7 @@
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
                     the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -363,7 +347,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -380,7 +363,7 @@
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
                     shown below) or the communication equipment itself. If you are unfamiliar with
                     the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
+                    please contact Technical Support.
                 </li>
                 <ol>
                     <li>Open Database Editor</li>
@@ -389,7 +372,6 @@
                     <li>Select and edit the appropriate channel</li>
                     <li>Timings tab</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -402,7 +384,6 @@
             This is a powerline carrier error associated with a logic problem internal to the CCU.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -419,7 +400,7 @@
                 <li>Attempt the command again</li>
                 <li>From Commander, remotely reset the CCU and attempt the command again</li>
                 <li>If the problem persists, it may be due to a faulty logic card in the CCU.
-                    Replace the logic card or contact Technical Support at 1-800-815-2258</li>
+                    Replace the logic card or contact Technical Support.</li>
             </ul>
         </troubleshooting>
     </error>
@@ -431,9 +412,6 @@
         <troubleshooting>
             The devices may still be in process of being loaded by the servers, wait a few minutes
             and attempt the command again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
 
@@ -462,7 +440,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -496,7 +473,6 @@
                     station is working properly</li>
                 <li>If the targeted device is a CCU, verify it is powered up and the selector is not
                     switched to external</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -514,7 +490,6 @@
                 <li>Attempt the command again</li>
                 <li>If using a port server or terminal server, verify connectivity to the device
                     containing the physical communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -532,7 +507,6 @@
                 <li>Attempt the command again</li>
                 <li>If using a port server or terminal server, verify connectivity to the device
                     containing the physical communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -563,7 +537,6 @@
                             with the original device</li>
                     </ul>
                 </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -588,7 +561,6 @@
                 </ol>
                 <li>Verify the signal to noise ratio (signal strength) at the substation with the
                     original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -622,7 +594,6 @@
             <ul>
                 <li>Attempt the command again</li>
                 <li>Verify the modem is functioning properly</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -637,7 +608,6 @@
             preceded by a bulk communication error such as a timeout.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -655,7 +625,6 @@
                 <li>Attempt the command again</li>
                 <li>Verify connectivity to the device (terminal server) containing the physical
                     communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -673,7 +642,6 @@
                 <li>Attempt the command again</li>
                 <li>Verify connectivity to the device (terminal server) containing the physical
                     communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -691,7 +659,6 @@
                 <li>Attempt the command again</li>
                 <li>Verify connectivity to the device (terminal server) containing the physical
                     communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -706,7 +673,6 @@
             preceded by a bulk communication error such as a timeout.
             <ul>
                 <li>Attempt the command again</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -724,7 +690,6 @@
                 <li>Attempt the command again</li>
                 <li>If possible, verify the physical connection between the carrier device and the
                     IED</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -742,7 +707,6 @@
                 <li>Attempt the command again</li>
                 <li>If possible, verify the physical connection between the carrier device and the
                     IED</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -762,7 +726,6 @@
                 <li>Confirm the device's configuration is correct.</li>
                 <li>Physically inspect any unreachable devices for hardware issues.</li>
                 <li>Contact third parties to confirm operation of network.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -782,7 +745,6 @@
                 <li>Confirm the device's configuration is correct.</li>
                 <li>Physically inspect any unreachable devices for hardware issues.</li>
                 <li>Contact third parties to confirm operation of network.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -806,7 +768,6 @@
                 <li>Attempt the same command with a different device on the same route</li>
                 <li>Attempt the command on the original device and verify the signal to noise ratio
                     (signal strength) at the substation</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -818,7 +779,6 @@
             <ul>
                 <li>Verify the command string syntax is valid.</li>
                 <li>The firmware for this device may not support this operation.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -835,7 +795,6 @@
                     <li>Uncheck the "Control Inhibit" checkbox in the Physical Setup tab.</li>
                     <li>Submit the change and attempt the command again.</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -854,7 +813,6 @@
                     <li>Using Commander, resend the expected freeze.</li>
                     <li>Attempt the command again</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -875,7 +833,6 @@
                     <li>Using Commander, resend the expected freeze.</li>
                     <li>Attempt the command again</li>
                 </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>
         </troubleshooting>
     </error>
@@ -888,9 +845,6 @@
             The last recorded freeze count (in Yukon) for the device does not match the current
             count returned from the device. This indicates a
             freeze command was not received by the device.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="264">
@@ -898,9 +852,6 @@
         <porter>Invalid data was received for one or more data points.</porter>
         <description>Invalid data was received for one or more data points.</description>
         <troubleshooting>
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="265">
@@ -908,9 +859,6 @@
         <porter>There is no record of the last freeze sent to this device.</porter>
         <description>There is no record of the last freeze sent to this device.</description>
         <troubleshooting>
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="267">
@@ -920,9 +868,6 @@
             value. The device did not hear the setup command.</description>
         <troubleshooting>
             The meter did not receive the setup command for the read. Attempt the read again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="268">
@@ -932,9 +877,6 @@
             value. The device did not hear the setup command.</description>
         <troubleshooting>
             The meter did not receive the setup command for the read. Attempt the read again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="269">
@@ -944,9 +886,6 @@
         <troubleshooting>
             Please verify the SSPEC supports the requested command. Execute 'getconfig model' to
             retrieve the SSPEC revision.
-            <ul>
-                <li>For more information, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="270">
@@ -955,9 +894,6 @@
         <description>Verification of device SSPEC revision is required.</description>
         <troubleshooting>
             Execute 'getconfig model' to verify the device SSPEC revision.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="271">
@@ -967,9 +903,6 @@
         <troubleshooting>
             The transmitter is busy with another request, possibly from another system. Attempt the
             command again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="273">
@@ -980,9 +913,6 @@
         </description>
         <troubleshooting>
             Verify the bulk communication channel is functioning properly.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="274">
@@ -993,9 +923,6 @@
             The daily read request is already in progress with another daily read request. Only one
             daily read can be in progress at a time. Wait for a moment and attempt the command
             again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="275">
@@ -1004,9 +931,6 @@
         <description>Yukon is unable to establish a connection with the device.</description>
         <troubleshooting>
             Verify the device's connection parameters.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="276">
@@ -1015,9 +939,6 @@
         <description>The device does not have a disconnect to be operated on.</description>
         <troubleshooting>
             Verify there is a disconnect configured in the Device Setup.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="277">
@@ -1027,9 +948,6 @@
         </description>
         <troubleshooting>
             Hardware Protection Mode.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="278">
@@ -1040,9 +958,6 @@
         <troubleshooting>
             The system will attempt to collect the required configuration data automatically. Retry
             the command.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="279">
@@ -1051,9 +966,6 @@
         <description>In order to execute, the command must be provided a valid date.</description>
         <troubleshooting>
             Verify that the date provided for the command is valid and submit the request again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="280">
@@ -1063,9 +975,6 @@
             returned an error.</description>
         <troubleshooting>
             Verify that the DNS name is correct and that your networking settings are valid.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     <error code="281">
@@ -1081,9 +990,6 @@
         <porter></porter>
         <description>Demand reset failed, the reset timestamp was not received.</description>
         <troubleshooting>
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
      <error code="283">
@@ -1091,9 +997,6 @@
         <porter></porter>
         <description>Demand reset failed, the reset timestamp is outside of the expected range.</description>
         <troubleshooting>
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
         </troubleshooting>
     </error>
     
@@ -1141,8 +1044,6 @@
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>
         <description>This action cannot be performed on this device type.</description>
-        <troubleshooting>For more information, please contact Technical Support at 1-800-815-2258
-        </troubleshooting>
     </error>
     
     <error code="0">
@@ -1154,8 +1055,5 @@
         <porter>Troubleshooting tips for this error code are not available at this time</porter>
         <description>Troubleshooting tips for this error code are not available at this time
         </description>
-        <troubleshooting>
-            If the problem persists, please contact Technical Support at 1-800-815-2258
-        </troubleshooting>
     </error>
 </portererrorcodes>
