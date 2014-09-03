@@ -72,6 +72,16 @@ yukon.deviceGroupPicker = (function () {
         picker.removeAttr('data-groups');
     },
     
+    /** Adjust the tree max height avoid double scrollbars. */
+    _adjustMaxHeight = function (dialog) {
+        dialog = $(dialog);
+        var
+        container = dialog.find('.tree-canvas'),
+        controls = dialog.find('.tree-controls'),
+        maxHeight = dialog.height() - controls.outerHeight(true);
+        container.css('max-height', maxHeight + 'px');
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -88,8 +98,11 @@ yukon.deviceGroupPicker = (function () {
                 groups, dialog;
                 
                 if (initialized) {
+                    
                     dialog = picker.data('dialog');
                     dialog.dialog('open');
+                    _adjustMaxHeight(dialog);
+                    
                 } else {
                     groups = picker.data('groups');
                     
@@ -100,6 +113,7 @@ yukon.deviceGroupPicker = (function () {
                     _buildTree(dialog, groups);
                     
                     yukon.ui.dialog(dialog);
+                    _adjustMaxHeight(dialog);
                     
                     picker.addClass('js-initialized');
                     
@@ -129,7 +143,7 @@ yukon.deviceGroupPicker = (function () {
                     if (groupNames.length > 1) {
                         var moreText = picker.data('moreText');
                         moreText.replace('{0}', groupNames.length -1);
-                        picker.find('span').text(groupNames[0] + " " + moreText.replace('{0}', groupNames.length - 1));
+                        picker.find('span').text(groupNames[0] + ' ' + moreText.replace('{0}', groupNames.length - 1));
                     } else {
                         picker.find('span').text(groupNames[0]);
                     }
@@ -145,11 +159,7 @@ yukon.deviceGroupPicker = (function () {
             
             /** Adjust the tree max height when dialog is resized to avoid double scrollbars. */
             $(document).on('dialogresize', '.js-device-group-picker-dialog', function (ev, ui) {
-                var container = $(this).find('.tree-canvas'),
-                    controls = $(this).find('.tree-controls'),
-                    maxHeight = $(this).height() - controls.outerHeight(true);
-                
-                container.css('max-height', maxHeight + 'px');
+                _adjustMaxHeight($(this));
             });
             
             _initialized = true;

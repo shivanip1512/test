@@ -405,8 +405,8 @@ $(document).on('click', '#b-get-report', function(event) {
         <div class="column two nogutter">
         
             <tags:widgetContainer deviceId="${deviceId}" identify="false">
-                <tags:widget bean="meterInformationWidget" identify="false" deviceId="${deviceId}" hideEnabled="false"/>
-                <tags:widget bean="pendingProfilesWidget" identify="false" deviceId="${deviceId}" hideEnabled="false"/>
+                <tags:widget bean="meterInformationWidget" identify="false" deviceId="${deviceId}" hideEnabled="false" container="section"/>
+                <tags:widget bean="pendingProfilesWidget" identify="false" deviceId="${deviceId}" hideEnabled="false" container="section"/>
             </tags:widgetContainer>
             
         </div>

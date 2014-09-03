@@ -1,5 +1,3 @@
-
-yukon.namespace('yukon.ami');
 yukon.namespace('yukon.ami.peakDayProfile');
 
 yukon.ami.peakDayProfile = (function () {
@@ -38,7 +36,7 @@ yukon.ami.peakDayProfile = (function () {
             args.afterDays = $(divSel + '_afterDays').val();
             args.profileRequestOrigin = profileRequestOrigin;
         
-            url = '/meter/highBill/initiateLoadProfile';
+            url = yukon.url('/meter/highBill/initiateLoadProfile');
             $.ajax({
                 url: url,
                 type: 'POST',
