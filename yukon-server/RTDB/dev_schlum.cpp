@@ -326,12 +326,12 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
 }
 
 
-INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg *pReq,
-                                       CtiCommandParser &parse,
-                                       OUTMESS *&OutMessage,
-                                       list< CtiMessage* > &vgList,
-                                       list< CtiMessage* > &retList,
-                                       list< OUTMESS* > &outList,
+INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg     *pReq,
+                                       CtiCommandParser  &parse,
+                                       OUTMESS          *&OutMessage,
+                                       CtiMessageList    &vgList,
+                                       CtiMessageList    &retList,
+                                       OutMessageList    &outList,
                                        INT ScanPriority)
 {
     INT status = NORMAL;
@@ -458,11 +458,11 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     return retCode;
 }
 
-INT CtiDeviceSchlumberger::ResultDecode(const INMESS &InMessage,
-                                        CtiTime &TimeNow,
-                                        list< CtiMessage* >   &vgList,
-                                        list< CtiMessage* > &retList,
-                                        list< OUTMESS* > &outList)
+INT CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
+                                        CtiMessageList &vgList,
+                                        CtiMessageList &retList,
+                                        OutMessageList &outList)
 {
     /****************************
     *
@@ -526,9 +526,9 @@ INT CtiDeviceSchlumberger::ResultDecode(const INMESS &InMessage,
     return NORMAL;
 }
 
-INT CtiDeviceSchlumberger::ErrorDecode (const INMESS        &InMessage,
-                                        const CtiTime        TimeNow,
-                                        list< CtiMessage* > &retList)
+INT CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
+                                        CtiMessageList &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -128,22 +128,11 @@ public:
    CtiDeviceSchlumberger&  setCRCErrors (INT aError);
 
 
-   virtual INT GeneralScan(CtiRequestMsg *pReq,
-                           CtiCommandParser &parse,
-                           OUTMESS *&OutMessage,
-                           CtiMessageList &vgList,
-                           CtiMessageList &retList,
-                           OutMessageList &outList,
-                           INT ScanPriority = MAXPRIORITY - 4);
-   virtual INT ResultDecode(const INMESS &InMessage,
-                            CtiTime &TimeNow,
-                            CtiMessageList   &vgList,
-                            CtiMessageList &retList,
-                            OutMessageList &outList);
+   INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                           INT ScanPriority = MAXPRIORITY - 4) override;
 
-   virtual INT ErrorDecode(const INMESS      &InMessage,
-                           const CtiTime      TimeNow,
-                           CtiMessageList &retList);
+   INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                               DOUBLE        aValue,

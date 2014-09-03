@@ -495,7 +495,7 @@ bool CtiDeviceSnppPagingTerminal::isTransactionComplete()
     return _command == Complete;
 }
 
-INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = NORMAL;
     /*

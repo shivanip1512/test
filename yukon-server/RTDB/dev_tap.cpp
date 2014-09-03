@@ -43,7 +43,7 @@ CtiDeviceTapPagingTerminal::~CtiDeviceTapPagingTerminal()
     CtiDeviceTapPagingTerminal::freeDataBins();  //  qualified to prevent virtual dispatch
 }
 
-INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -251,7 +251,7 @@ string CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse
     return trelay;
 }
 
-YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t status = commReturnValue;
 
@@ -512,7 +512,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
  * It uses the current state and the Xfer InBuffer to get us to the next point
  * in the sequence.
  *-----------------------------------------------------------------------------*/
-YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     YukonError_t status = NORMAL;
 
@@ -716,7 +716,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer
 
 
 
-INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, list< CtiMessage* > &traceList)
+INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessageList &traceList)
 {
     ULONG i;
     string outStr;
@@ -752,7 +752,7 @@ INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, list< CtiM
     return(NORMAL);
 }
 
-INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, list< CtiMessage* > &traceList, BOOL CompletedMessage)
+INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList &traceList, BOOL CompletedMessage)
 {
     ULONG i;
     if(Count && Message != NULL)
@@ -868,7 +868,7 @@ INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
 }
 
 
-YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
     YukonError_t status = NORMAL;
@@ -1076,7 +1076,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< C
     return status;
 }
 
-YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t status = commReturnValue;
 
@@ -1230,7 +1230,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
 }
 
 
-YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
     YukonError_t status = NORMAL;
@@ -1359,7 +1359,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xf
     return status;
 }
 
-YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t status = commReturnValue;
 

@@ -153,12 +153,12 @@ bool CtiDeviceWctpTerminal::getSendFiller() const
     return _sendFiller;
 }
 
-INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                          CtiCommandParser               &parse,
-                                          OUTMESS                        *&OutMessage,
-                                          list< CtiMessage* >      &vgList,
-                                          list< CtiMessage* >      &retList,
-                                          list< OUTMESS* >         &outList)
+INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg     *pReq,
+                                          CtiCommandParser  &parse,
+                                          OUTMESS          *&OutMessage,
+                                          CtiMessageList    &vgList,
+                                          CtiMessageList    &retList,
+                                          OutMessageList    &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -528,7 +528,7 @@ CHAR* CtiDeviceWctpTerminal::trimMessage(CHAR *message)
 }
 
 
-INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, list< CtiMessage* > &traceList)
+INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessageList &traceList)
 {
     ULONG i;
     string outStr;
@@ -562,7 +562,7 @@ INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, list< CtiMessag
     return(NORMAL);
 }
 
-INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, list< CtiMessage* > &traceList, BOOL CompletedMessage)
+INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList &traceList, BOOL CompletedMessage)
 {
     ULONG i;
 
@@ -804,7 +804,7 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
     return len;
 }
 
-YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
     YukonError_t status = NORMAL;
@@ -957,7 +957,7 @@ YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMes
     return status;
 }
 
-YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t status = commReturnValue;
 

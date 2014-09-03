@@ -27,7 +27,7 @@ Cti::Protocol::Interface *CtiDeviceSeriesV::getProtocol()
 }
 
 
-INT CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT nRet = NORMAL;
     bool found = false;
@@ -164,7 +164,7 @@ INT CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &par
 }
 
 
-INT CtiDeviceSeriesV::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceSeriesV::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan accumulator");
@@ -190,7 +190,7 @@ INT CtiDeviceSeriesV::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &pa
 
 
 
-INT CtiDeviceSeriesV::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceSeriesV::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -215,7 +215,7 @@ INT CtiDeviceSeriesV::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 }
 
 
-INT CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -240,7 +240,7 @@ INT CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse
 }
 
 
-INT CtiDeviceSeriesV::ResultDecode( const INMESS &InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceSeriesV::ResultDecode( const INMESS &InMessage, const CtiTime Now, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     list<CtiPointDataMsg*> seriesvPoints;
 

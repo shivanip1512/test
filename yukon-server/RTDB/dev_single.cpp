@@ -138,7 +138,7 @@ void CtiDeviceSingle::validateScanTimes(bool force)
     }
 }
 
-INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
@@ -148,8 +148,8 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
      *  actual device specific code called by that device type.
      */
 
-    list< CtiMessage* > vgList;
-    list< CtiMessage* > retList;
+    CtiMessageList vgList;
+    CtiMessageList retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan accumulator",
@@ -263,7 +263,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
 }
 
 
-INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
@@ -273,8 +273,8 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
      *  actual device specific code called by that device type.
      */
 
-    list< CtiMessage* > vgList;
-    list< CtiMessage* > retList;
+    CtiMessageList vgList;
+    CtiMessageList retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan integrity",
@@ -390,14 +390,14 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
 }
 
 
-INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
 
-    list< CtiMessage* > vgList;
-    list< CtiMessage* > retList;
+    CtiMessageList vgList;
+    CtiMessageList retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan general",
@@ -537,7 +537,7 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
 }
 
 
-INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
@@ -547,8 +547,8 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
      *  actual device specific code called by that device type.
      */
 
-    list< CtiMessage* > vgList;
-    list< CtiMessage* > retList;
+    CtiMessageList vgList;
+    CtiMessageList retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan loadprofile",
@@ -777,11 +777,11 @@ std::string CtiDeviceSingle::eWordReport(const ESTRUCT &ESt, Cti::Optional<repea
 }
 
 
-INT CtiDeviceSingle::ProcessResult(const INMESS &InMessage,
-                                   const CtiTime TimeNow,
-                                   list< CtiMessage* >   &vgList,
-                                   list< CtiMessage* > &retList,
-                                   list< OUTMESS* > &outList)
+INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
+                                   const CtiTime   TimeNow,
+                                   CtiMessageList &vgList,
+                                   CtiMessageList &retList,
+                                   OutMessageList &outList)
 {
     INT   nRet = InMessage.ErrorCode;
     INT   status = 0;
@@ -956,11 +956,11 @@ INT CtiDeviceSingle::ProcessResult(const INMESS &InMessage,
 }
 
 
-INT CtiDeviceSingle::SubmitRetry(const INMESS &InMessage,
-                                 const CtiTime TimeNow,
-                                 list< CtiMessage* > &vgList,
-                                 list< CtiMessage* > &retList,
-                                 list< OUTMESS* > &outList)
+INT CtiDeviceSingle::SubmitRetry(const INMESS   &InMessage,
+                                 const CtiTime   TimeNow,
+                                 CtiMessageList &vgList,
+                                 CtiMessageList &retList,
+                                 OutMessageList &outList)
 {
     //  default to no retries
     return NoError;
@@ -2229,7 +2229,7 @@ string CtiDeviceSingle::valueReport(const string &pointname, const point_info &p
     return report;
 }
 
-void CtiDeviceSingle::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
+void CtiDeviceSingle::returnErrorMessage( int retval, OUTMESS *&om, CtiMessageList &retList, const string &error ) const
 {
     retList.push_back(
         new CtiReturnMsg(

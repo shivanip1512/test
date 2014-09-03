@@ -26,34 +26,15 @@ public:
 
    CtiDeviceSentinel();
 
-   virtual INT GeneralScan(CtiRequestMsg              *pReq,
-                           CtiCommandParser           &parse,
-                           OUTMESS                    *&OutMessage,
-                           CtiMessageList  &vgList,
-                           CtiMessageList  &retList,
-                           OutMessageList     &outList,
-                           INT                        ScanPriority=MAXPRIORITY-4);
-   virtual INT DemandReset( CtiRequestMsg *pReq,
-                    CtiCommandParser &parse,
-                    OUTMESS *&OutMessage,
-                    CtiMessageList &vgList,
-                    CtiMessageList &retList,
-                    OutMessageList &outList,
-                    INT ScanPriority = MAXPRIORITY-4);
+   INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                           INT ScanPriority = MAXPRIORITY-4) override;
+   virtual INT DemandReset(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                           INT ScanPriority = MAXPRIORITY-4);
 
 
-   virtual INT ResultDecode(const INMESS             &InMessage,
-                            const CtiTime             TimeNow,
-                            CtiMessageList &vgList,
-                            CtiMessageList &retList,
-                            OutMessageList    &outList);
+   INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-   virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
-                       CtiCommandParser           &parse,
-                       OUTMESS                   *&OutMessage,
-                       CtiMessageList  &vgList,
-                       CtiMessageList  &retList,
-                       OutMessageList     &outList );
+   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);

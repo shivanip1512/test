@@ -44,32 +44,14 @@ public:
    INT               TCUScanAll(OUTMESS*);
    INT               TCULoop(OUTMESS*);
 
-   virtual INT IntegrityScan(CtiRequestMsg *pReq,
-                             CtiCommandParser &parse,
-                             OUTMESS *&OutMessage,
-                             CtiMessageList &vgList,
-                             CtiMessageList &retList,
-                             OutMessageList &outList,
-                             INT ScanPriority = MAXPRIORITY - 4);
-   virtual INT GeneralScan(CtiRequestMsg *pReq,
-                           CtiCommandParser &parse,
-                           OUTMESS *&OutMessage,
-                           CtiMessageList &vgList,
-                           CtiMessageList &retList,
-                           OutMessageList &outList,
-                           INT ScanPriority = MAXPRIORITY - 4);
-   virtual INT ResultDecode(const INMESS&,
-                            const CtiTime,
-                            CtiMessageList   &vgList,
-                            CtiMessageList &retList,
-                            OutMessageList &outList);
+   INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                             INT ScanPriority = MAXPRIORITY - 4) override;
+   INT GeneralScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                             INT ScanPriority = MAXPRIORITY - 4) override;
 
-   virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              CtiMessageList      &vgList,
-                              CtiMessageList      &retList,
-                              OutMessageList         &outList);
+   INT ResultDecode(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+
+   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    CtiDeviceTCU& setSendFiller(bool yesno);
    bool getSendFiller() const;

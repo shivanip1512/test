@@ -40,7 +40,7 @@ using std::string;
 using std::endl;
 using std::list;
 
-INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
     INT iTemp;
@@ -142,7 +142,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                 delete errRet;
                                 errRet = 0;
 
-                                for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+                                for (CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); itr++)
                                 {
                                     ((CtiReturnMsg*)*itr)->setExpectMore(true);
                                 }
@@ -818,7 +818,7 @@ void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-INT CtiDeviceSystem::ProcessResult(const INMESS& InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceSystem::ProcessResult(const INMESS& InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     string resultString;
     string commandType;

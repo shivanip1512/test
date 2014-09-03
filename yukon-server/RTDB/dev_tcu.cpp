@@ -77,12 +77,12 @@ static char StatusPointNames55[][40] = {
 };
 
 
-INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
-                              CtiCommandParser &parse,
-                              OUTMESS *&OutMessage,
-                              list< CtiMessage* > &vgList,
-                              list< CtiMessage* > &retList,
-                              list< OUTMESS* > &outList,
+INT CtiDeviceTCU::GeneralScan(CtiRequestMsg     *pReq,
+                              CtiCommandParser  &parse,
+                              OUTMESS          *&OutMessage,
+                              CtiMessageList    &vgList,
+                              CtiMessageList    &retList,
+                              OutMessageList    &outList,
                               INT ScanPriority)
 {
    INT status = NORMAL;
@@ -106,23 +106,23 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
    return status;
 }
 
-INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                list< CtiMessage* > &vgList,
-                                list< CtiMessage* > &retList,
-                                list< OUTMESS* > &outList,
+INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg     *pReq,
+                                CtiCommandParser  &parse,
+                                OUTMESS          *&OutMessage,
+                                CtiMessageList    &vgList,
+                                CtiMessageList    &retList,
+                                OutMessageList    &outList,
                                 INT ScanPriority)
 {
    return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
-INT CtiDeviceTCU::ResultDecode(const INMESS &InMessage,
-                               const CtiTime TimeNow,
-                               list< CtiMessage* > &vgList,
-                               list< CtiMessage* > &retList,
-                               list< OUTMESS* > &outList)
+INT CtiDeviceTCU::ResultDecode(const INMESS   &InMessage,
+                               const CtiTime   TimeNow,
+                               CtiMessageList &vgList,
+                               CtiMessageList &retList,
+                               OutMessageList &outList)
 {
 #if 0
    {
@@ -153,7 +153,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
 }
 
 /* Routine to decode returned TCU message and update database */
-INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, list< CtiMessage* > &retList)
+INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, CtiMessageList &retList)
 {
    /* Misc. definitions */
    ULONG i;
@@ -260,12 +260,12 @@ INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, li
 
 
 
-INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                 CtiCommandParser               &parse,
-                                 OUTMESS                        *&OutMessage,
-                                 list< CtiMessage* >      &vgList,
-                                 list< CtiMessage* >      &retList,
-                                 list< OUTMESS* >         &outList)
+INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
+                                 CtiCommandParser  &parse,
+                                 OUTMESS          *&OutMessage,
+                                 CtiMessageList    &vgList,
+                                 CtiMessageList    &retList,
+                                 OutMessageList    &outList)
 {
    INT nRet = NORMAL;
    /*

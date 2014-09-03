@@ -33,8 +33,8 @@ CtiDeviceSentinel::CtiDeviceSentinel() :
 //to the ansi protocol object to get info about the tables we know we need for a GeneralScan
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
-                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    ULONG BytesWritten;
@@ -87,8 +87,8 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
    return NoError;
 }
 
-INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
-                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    if( OutMessage != NULL )
@@ -179,15 +179,15 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
 
 
 
-INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
-                                  CtiCommandParser           &parse,
-                                  OUTMESS                   *&OutMessage,
-                                  list< CtiMessage* >  &vgList,
-                                  list< CtiMessage* >  &retList,
-                                  list< OUTMESS* >     &outList )
+INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
+                                       CtiCommandParser  &parse,
+                                       OUTMESS          *&OutMessage,
+                                       CtiMessageList    &vgList,
+                                       CtiMessageList    &retList,
+                                       OutMessageList    &outList )
 {
     int nRet = NoError;
-    list< OUTMESS* > tmpOutList;
+    OutMessageList tmpOutList;
 
     //_parseFlags = parse.getFlags();
 
@@ -290,8 +290,8 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
-                                list< OUTMESS* >    &outList)
+INT CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList&retList,
+                                OutMessageList    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
     string inMsgResultString = "";

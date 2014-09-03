@@ -89,17 +89,12 @@ public:
    CHAR* getXMLBuffer();
    void  destroyBuffers();
 
-   virtual INT ExecuteRequest(CtiRequestMsg                 *pReq,
-                              CtiCommandParser              &parse,
-                              OUTMESS                       *&OutMessage,
-                              CtiMessageList      &vgList,
-                              CtiMessageList      &retList,
-                              OutMessageList         &outList);
+   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    std::string getDescription(const CtiCommandParser & parse) const;
 
-   virtual YukonError_t generateCommand(CtiXfer  &Transfer, CtiMessageList &traceList);
-   virtual YukonError_t decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList);
+   YukonError_t generateCommand(CtiXfer  &Transfer, CtiMessageList &traceList) override;
+   YukonError_t decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
 
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT freeDataBins();

@@ -116,11 +116,7 @@ protected:
 
     virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const std::string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
 
-    virtual INT  SubmitRetry(const INMESS &InMessage,
-                             const CtiTime TimeNow,
-                             CtiMessageList &vgList,
-                             CtiMessageList &retList,
-                             OutMessageList &outList);
+    virtual INT  SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     // Places error onto the retlist, DELETES OUT MESSAGE
     void returnErrorMessage( int retval, OUTMESS *&om, CtiMessageList &retList, const std::string &error ) const;
@@ -199,11 +195,7 @@ public:
     virtual void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
     virtual void getQueuedResults(std::vector<queued_result_t> &results);
 
-    virtual INT  ProcessResult(const INMESS&,
-                               const CtiTime,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList);
+    virtual INT  ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
     CtiTime         firstScan( const CtiTime &When, INT rate );

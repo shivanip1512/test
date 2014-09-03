@@ -38,12 +38,8 @@ public:
 
    YukonError_t recvCommRequest( OUTMESS *OutMessage );
 
-   virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
-                          CtiCommandParser               &parse,
-                          OUTMESS                        *&OutMessage,
-                          CtiMessageList      &vgList,
-                          CtiMessageList      &retList,
-                          OutMessageList         &outList);
+   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+
    virtual YukonError_t sendCommResult(INMESS &InMessage);
 
    bool isTransactionComplete();

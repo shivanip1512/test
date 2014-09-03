@@ -92,12 +92,12 @@ CtiDeviceVectron& CtiDeviceVectron::setCommandPacket (INT aCmd)
 }
 
 
-INT CtiDeviceVectron::GeneralScan(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  list< CtiMessage* > &vgList,
-                                  list< CtiMessage* > &retList,
-                                  list< OUTMESS* > &outList,
+INT CtiDeviceVectron::GeneralScan(CtiRequestMsg     *pReq,
+                                  CtiCommandParser  &parse,
+                                  OUTMESS          *&OutMessage,
+                                  CtiMessageList    &vgList,
+                                  CtiMessageList    &retList,
+                                  OutMessageList    &outList,
                                   INT ScanPriority)
 {
     INT status = NORMAL;
@@ -120,7 +120,7 @@ INT CtiDeviceVectron::GeneralScan(CtiRequestMsg *pReq,
 
 
 
-YukonError_t CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     YukonError_t retCode = NORMAL;
 
@@ -258,7 +258,7 @@ YukonError_t CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, lis
 }
 
 
-YukonError_t CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
 
@@ -298,7 +298,7 @@ YukonError_t CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, list< CtiMes
     return retCode;
 }
 
-YukonError_t CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     SchlMeterStruct MeterSt;
     YukonError_t    retCode = NORMAL;
@@ -438,7 +438,7 @@ YukonError_t CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, l
 }
 
 
-YukonError_t CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     SchlMeterStruct MeterSt;
     YukonError_t    retCode = NORMAL;
@@ -492,7 +492,7 @@ YukonError_t CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, list< Ct
     return retCode;
 }
 
-YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     // make this easier to read in the following code
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
@@ -946,7 +946,7 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, l
 }
 
 
-YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
     YukonError_t retCode = NORMAL;
@@ -1105,7 +1105,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
 }
 
 
-YukonError_t CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
     YukonError_t retCode = NORMAL;
@@ -1149,7 +1149,7 @@ YukonError_t CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, YukonError_t 
 }
 
 
-YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 
 {
     YukonError_t retCode    = NORMAL;
@@ -1478,7 +1478,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
     return retCode;
 }
 
-YukonError_t CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
     VectronLoadProfileMessage_t *localLP      = ((VectronLoadProfileMessage_t*)_loadProfileBuffer);
@@ -1545,7 +1545,7 @@ YukonError_t CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, YukonErro
 
 
 
-YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     YukonError_t      retCode  = NORMAL;
     SchlMeterStruct   MeterSt;
@@ -1652,11 +1652,11 @@ YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
     return retCode;
 }
 
-INT CtiDeviceVectron::decodeResultScan (const INMESS &InMessage,
-                                        const CtiTime TimeNow,
-                                        list< CtiMessage* >   &vgList,
-                                        list< CtiMessage* > &retList,
-                                        list< OUTMESS* > &outList)
+INT CtiDeviceVectron::decodeResultScan (const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
+                                        CtiMessageList &vgList,
+                                        CtiMessageList &retList,
+                                        OutMessageList &outList)
 {
     char tmpCurrentState = InMessage.Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
@@ -1779,11 +1779,11 @@ INT CtiDeviceVectron::decodeResultScan (const INMESS &InMessage,
 
 
 
-INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS &InMessage,
-                                               const CtiTime TimeNow,
-                                               list< CtiMessage* >   &vgList,
-                                               list< CtiMessage* > &retList,
-                                               list< OUTMESS* > &outList)
+INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
+                                               const CtiTime   TimeNow,
+                                               CtiMessageList &vgList,
+                                               CtiMessageList &retList,
+                                               OutMessageList &outList)
 {
 
     const DIALUPREQUEST                 *dupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;

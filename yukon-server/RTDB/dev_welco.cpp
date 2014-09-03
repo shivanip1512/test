@@ -95,7 +95,7 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -122,9 +122,9 @@ INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
-                                  list< CtiMessage* > &vgList,
-                                  list< CtiMessage* > &retList,
-                                  list< OUTMESS* > &outList,
+                                  CtiMessageList &vgList,
+                                  CtiMessageList &retList,
+                                  OutMessageList &outList,
                                   INT ScanPriority)
 {
     INT      AIOffset = 0;
@@ -305,7 +305,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool continue_required = false;             // This is not the last report from this device for the previous request.
     bool accums_spill_frame = false;            // The accumulator block spills across this frame into the next one.
@@ -1275,7 +1275,7 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
 
 }
 
-INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, list< OUTMESS* > &outList, INT Priority)
+INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outList, INT Priority)
 {
     INT   status = NORMAL;
 
@@ -1355,7 +1355,7 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 }
 
 
-INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, list< OUTMESS* > &outList, INT Priority)
+INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, OutMessageList &outList, INT Priority)
 {
     INT status = NORMAL;
 
@@ -1376,7 +1376,7 @@ INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, list< OUTMESS* > &ou
 }
 
 /* Routine to download deadbands for analogs */
-INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outList, INT Priority)
+INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, OutMessageList &outList, INT Priority)
 {
     INT      Position;
     ULONG    ByteCount;
@@ -1522,9 +1522,9 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
 
 
 
-INT CtiDeviceWelco::ErrorDecode(const INMESS        &InMessage,
-                                const CtiTime        TimeNow,
-                                list< CtiMessage* > &retList)
+INT CtiDeviceWelco::ErrorDecode(const INMESS   &InMessage,
+                                const CtiTime   TimeNow,
+                                CtiMessageList &retList)
 {
     INT nRet = NoError;
 
@@ -1582,12 +1582,12 @@ INT CtiDeviceWelco::ErrorDecode(const INMESS        &InMessage,
     return nRet;
 }
 
-INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                   CtiCommandParser               &parse,
-                                   OUTMESS                        *&OutMessage,
-                                   list< CtiMessage* >      &vgList,
-                                   list< CtiMessage* >      &retList,
-                                   list< OUTMESS* >         &outList)
+INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg     *pReq,
+                                   CtiCommandParser  &parse,
+                                   OUTMESS          *&OutMessage,
+                                   CtiMessageList    &vgList,
+                                   CtiMessageList    &retList,
+                                   OutMessageList    &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -1738,7 +1738,7 @@ CtiDeviceWelco& CtiDeviceWelco::setDeadbandsSent(const bool b)
 }
 
 
-INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
