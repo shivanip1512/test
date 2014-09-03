@@ -29,7 +29,7 @@ public:
     typedef std::vector<Commands::RfnCommandSPtr> RfnCommandList;
     typedef boost::ptr_deque<CtiReturnMsg> ReturnMsgList;
 
-    virtual int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     virtual std::string getSQLCoreStatement() const;
     virtual void DecodeDatabaseReader(RowReader &rdr);

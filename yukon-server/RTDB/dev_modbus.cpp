@@ -41,7 +41,7 @@ ModbusDevice::ModbusDevice(void)
 {
 }
 
-INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -67,7 +67,7 @@ INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -93,7 +93,7 @@ INT ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = NoMethod;
 
@@ -207,7 +207,7 @@ YukonError_t ModbusDevice::decode(CtiXfer &xfer, YukonError_t status)
 }
 
 
-int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
 {
     int retVal = NoError;
 
@@ -540,7 +540,7 @@ void ModbusDevice::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const INT ErrReturn = InMessage.ErrorCode;
 
@@ -602,7 +602,7 @@ INT ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, l
 }
 
 
-INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
+INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),

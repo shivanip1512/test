@@ -456,7 +456,7 @@ void RDSTransmitter::copyMessageToXfer(CtiXfer &xfer, MessageStore &message)
     }
 }
 
-INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = NORMAL;
     /*

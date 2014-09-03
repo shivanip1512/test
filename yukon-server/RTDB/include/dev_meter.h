@@ -50,24 +50,16 @@ public:
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
     *  the port's function out/inMess pair.
     */
-   virtual YukonError_t generateCommandScan       ( CtiXfer &Transfer, CtiMessageList &traceList )    { return NoGenerateCmdMethod; };
-   virtual YukonError_t generateCommandLoadProfile( CtiXfer &Transfer, CtiMessageList &traceList )    { return NoGenerateCmdMethod; };
-   virtual YukonError_t generateCommandSelectMeter( CtiXfer &Transfer, CtiMessageList &traceList )    { return NoGenerateCmdMethod; };
+   virtual YukonError_t generateCommandScan       ( CtiXfer &Transfer, CtiMessageList &traceList )  { return NoGenerateCmdMethod; }
+   virtual YukonError_t generateCommandLoadProfile( CtiXfer &Transfer, CtiMessageList &traceList )  { return NoGenerateCmdMethod; }
+   virtual YukonError_t generateCommandSelectMeter( CtiXfer &Transfer, CtiMessageList &traceList )  { return NoGenerateCmdMethod; }
 
-   virtual YukonError_t decodeResponseScan       ( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList ) { return NoDecodeResponseMethod; };
-   virtual YukonError_t decodeResponseLoadProfile( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList ) { return NoDecodeResponseMethod; };
-   virtual YukonError_t decodeResponseSelectMeter( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList ) { return NoDecodeResponseMethod; };
+   virtual YukonError_t decodeResponseScan       ( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList )  { return NoDecodeResponseMethod; }
+   virtual YukonError_t decodeResponseLoadProfile( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList )  { return NoDecodeResponseMethod; }
+   virtual YukonError_t decodeResponseSelectMeter( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList )  { return NoDecodeResponseMethod; }
 
-   virtual INT   decodeResultScan( const INMESS               &InMessage,
-                                   const CtiTime               TimeNow,
-                                   CtiMessageList &vgList,
-                                   CtiMessageList &retList,
-                                   OutMessageList    &outList )         { return NoResultDecodeMethod; };
-   virtual INT   decodeResultLoadProfile( const INMESS               &InMessage,
-                                          const CtiTime               TimeNow,
-                                          CtiMessageList &vgList,
-                                          CtiMessageList &retList,
-                                          OutMessageList    &outList )  { return NoResultDecodeMethod; };
+   virtual INT decodeResultScan       ( const INMESS &InMessage,const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )  { return NoResultDecodeMethod; }
+   virtual INT decodeResultLoadProfile( const INMESS &InMessage,const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )  { return NoResultDecodeMethod; }
 
    virtual BOOL verifyAndAddPointToReturnMsg( LONG   aPointId,
                                               DOUBLE aValue,

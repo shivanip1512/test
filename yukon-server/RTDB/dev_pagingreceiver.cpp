@@ -48,7 +48,7 @@ _retryTime(second_clock::universal_time())
     resetStates(true);
 }
 
-INT CtiDevicePagingReceiver::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDevicePagingReceiver::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     //So far I am doing nothing with the result...
     resetScanFlag();
@@ -62,7 +62,7 @@ YukonError_t CtiDevicePagingReceiver::sendCommResult(INMESS &InMessage)
     return NoError;
 }
 
-INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -88,7 +88,7 @@ INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &
     return status;
 }
 
-INT CtiDevicePagingReceiver::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDevicePagingReceiver::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT nRet = Normal;
     OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);

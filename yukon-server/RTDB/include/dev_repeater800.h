@@ -30,7 +30,7 @@ protected:
         Rpt800_PFCountLen =    3
     };
 
-    virtual INT ResultDecode(const INMESS&InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT ResultDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     INT decodeGetValuePFCount(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 

@@ -59,7 +59,7 @@ bool Repeater900Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 }
 
 
-INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -102,12 +102,12 @@ INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 }
 
 
-INT Repeater900Device::executeLoopback(CtiRequestMsg                  *pReq,
-                                          CtiCommandParser               &parse,
-                                          OUTMESS                        *&OutMessage,
-                                          list< CtiMessage* >      &vgList,
-                                          list< CtiMessage* >      &retList,
-                                          list< OUTMESS* >         &outList)
+INT Repeater900Device::executeLoopback(CtiRequestMsg        *pReq,
+                                          CtiCommandParser  &parse,
+                                          OUTMESS          *&OutMessage,
+                                          CtiMessageList    &vgList,
+                                          CtiMessageList    &retList,
+                                          OutMessageList    &outList)
 {
     bool found = false;
     INT   nRet = NoError;
@@ -136,12 +136,12 @@ INT Repeater900Device::executeLoopback(CtiRequestMsg                  *pReq,
 }
 
 
-INT Repeater900Device::executeGetConfig(CtiRequestMsg                  *pReq,
-                                           CtiCommandParser               &parse,
-                                           OUTMESS                        *&OutMessage,
-                                           list< CtiMessage* >      &vgList,
-                                           list< CtiMessage* >      &retList,
-                                           list< OUTMESS* >         &outList)
+INT Repeater900Device::executeGetConfig(CtiRequestMsg        *pReq,
+                                           CtiCommandParser  &parse,
+                                           OUTMESS          *&OutMessage,
+                                           CtiMessageList    &vgList,
+                                           CtiMessageList    &retList,
+                                           OutMessageList    &outList)
 {
     bool found = false;
     INT   nRet = NoError;
@@ -206,12 +206,12 @@ INT Repeater900Device::executeGetConfig(CtiRequestMsg                  *pReq,
 }
 
 
-INT Repeater900Device::executePutConfig(CtiRequestMsg          *pReq,
-                                           CtiCommandParser               &parse,
-                                           OUTMESS                        *&OutMessage,
-                                           list< CtiMessage* >      &vgList,
-                                           list< CtiMessage* >      &retList,
-                                           list< OUTMESS* >         &outList)
+INT Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
+                                           CtiCommandParser  &parse,
+                                           OUTMESS          *&OutMessage,
+                                           CtiMessageList    &vgList,
+                                           CtiMessageList    &retList,
+                                           OutMessageList    &outList)
 {
     int   i;
     bool  found = false;
@@ -417,12 +417,12 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg          *pReq,
 }
 
 
-INT Repeater900Device::executeGetValue(CtiRequestMsg                  *pReq,
-                                          CtiCommandParser               &parse,
-                                          OUTMESS                        *&OutMessage,
-                                          list< CtiMessage* >      &vgList,
-                                          list< CtiMessage* >      &retList,
-                                          list< OUTMESS* >         &outList)
+INT Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
+                                          CtiCommandParser  &parse,
+                                          OUTMESS          *&OutMessage,
+                                          CtiMessageList    &vgList,
+                                          CtiMessageList    &retList,
+                                          OutMessageList    &outList)
 {
     bool found = false;
     INT   nRet = NoError;
@@ -456,7 +456,7 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg                  *pReq,
 }
 
 
-INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -513,7 +513,7 @@ INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -544,7 +544,7 @@ INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime Tim
 }
 
 
-INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -587,7 +587,7 @@ INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTi
 }
 
 
-INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -636,7 +636,7 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTim
 }
 
 
-INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -703,7 +703,7 @@ INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTim
     return status;
 }
 
-INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NOTNORMAL;
 
@@ -758,7 +758,7 @@ INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTim
     return status;
 }
 
-INT Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NOTNORMAL;
 

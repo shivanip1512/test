@@ -47,12 +47,12 @@ void MctBroadcastDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 
 
-INT MctBroadcastDevice::executePutConfig(CtiRequestMsg                  *pReq,
-                                            CtiCommandParser               &parse,
-                                            OUTMESS                        *&OutMessage,
-                                            list< CtiMessage* >      &vgList,
-                                            list< CtiMessage* >      &retList,
-                                            list< OUTMESS* >         &outList)
+INT MctBroadcastDevice::executePutConfig(CtiRequestMsg        *pReq,
+                                            CtiCommandParser  &parse,
+                                            OUTMESS          *&OutMessage,
+                                            CtiMessageList    &vgList,
+                                            CtiMessageList    &retList,
+                                            OutMessageList    &outList)
 {
     bool  found = false;
     INT   function = 0;
@@ -121,12 +121,12 @@ INT MctBroadcastDevice::executePutConfig(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT MctBroadcastDevice::executePutStatus(CtiRequestMsg                  *pReq,
-                                            CtiCommandParser               &parse,
-                                            OUTMESS                        *&OutMessage,
-                                            list< CtiMessage* >      &vgList,
-                                            list< CtiMessage* >      &retList,
-                                            list< OUTMESS* >         &outList)
+INT MctBroadcastDevice::executePutStatus(CtiRequestMsg        *pReq,
+                                            CtiCommandParser  &parse,
+                                            OUTMESS          *&OutMessage,
+                                            CtiMessageList    &vgList,
+                                            CtiMessageList    &retList,
+                                            OutMessageList    &outList)
 {
     bool  found = false;
     INT   nRet = NoError;
@@ -227,12 +227,12 @@ INT MctBroadcastDevice::executePutStatus(CtiRequestMsg                  *pReq,
 }
 
 
-INT MctBroadcastDevice::executePutValue(CtiRequestMsg                  *pReq,
-                                           CtiCommandParser               &parse,
-                                           OUTMESS                        *&OutMessage,
-                                           list< CtiMessage* >      &vgList,
-                                           list< CtiMessage* >      &retList,
-                                           list< OUTMESS* >         &outList)
+INT MctBroadcastDevice::executePutValue(CtiRequestMsg        *pReq,
+                                           CtiCommandParser  &parse,
+                                           OUTMESS          *&OutMessage,
+                                           CtiMessageList    &vgList,
+                                           CtiMessageList    &retList,
+                                           OutMessageList    &outList)
 {
     INT    nRet = NoError,
            i;
@@ -308,7 +308,7 @@ bool MctBroadcastDevice::getOperation( const UINT &cmd, USHORT &function, USHORT
     return found;
 }
 
-INT MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 

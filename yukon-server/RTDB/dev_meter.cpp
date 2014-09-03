@@ -119,12 +119,12 @@ bool CtiDeviceMeter::shouldRetrieveLoadProfile(ULONG &aLPTime, int aIntervalLeng
 }
 
 
-INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
-                                   CtiCommandParser           &parse,
-                                   OUTMESS                   *&OutMessage,
-                                   list< CtiMessage* >  &vgList,
-                                   list< CtiMessage* >  &retList,
-                                   list< OUTMESS* >     &outList)
+INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg     *pReq,
+                                   CtiCommandParser  &parse,
+                                   OUTMESS          *&OutMessage,
+                                   CtiMessageList    &vgList,
+                                   CtiMessageList    &retList,
+                                   OutMessageList    &outList)
 {
     INT   nRet = NoError;
     string resultString;

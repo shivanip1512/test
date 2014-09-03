@@ -28,17 +28,17 @@ protected:
     virtual ConfigMap getConfigMethods(bool readOnly);
 
     //int executeLoadProfileRecording              (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executeImmediateDemandFreeze             (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executeTouCriticalPeak                   (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeImmediateDemandFreeze             (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executeTouCriticalPeak                   (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
-    YukonError_t executePutConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executePutConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executePutConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executePutConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
-    YukonError_t executeGetConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executeGetConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeGetConfigTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executeGetConfigHoliday                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
-    YukonError_t executePutValueTouReset                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executePutValueTouResetZero              (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executePutValueTouReset                  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executePutValueTouResetZero              (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
     YukonError_t executePutConfigDemandFreezeDay          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     YukonError_t executePutConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
@@ -46,35 +46,35 @@ protected:
     YukonError_t executePutConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     YukonError_t executeReadDemandFreezeInfo              (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executeGetStatusTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeGetStatusTou                      (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
     YukonError_t executeGetConfigInstallTou               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     YukonError_t executeGetConfigVoltageAveragingInterval (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     YukonError_t executeGetConfigOvUv                     (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    YukonError_t executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
-    YukonError_t executePutConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executeGetConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executePutConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executeGetConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
 
-    void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand            & cmd );
-    void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand            & cmd );
-    void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand                   & cmd );
-    void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand                       & cmd );
-    void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand                 & cmd );
-    void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand               & cmd );
-    void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand               & cmd );
-    void handleCommandResult( const Commands::RfnTouStateConfigurationCommand                     & cmd );
-    void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand                   & cmd );
-    void handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand                 & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand               & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatCountCommand                   & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatIntervalCommand                & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand             & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand            & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand           & cmd );
-    void handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand                          & cmd );
+    void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
+    void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand              & cmd ) override;
+    void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand        & cmd ) override;
+    void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand      & cmd ) override;
+    void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand      & cmd ) override;
+    void handleCommandResult( const Commands::RfnTouStateConfigurationCommand            & cmd ) override;
+    void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand          & cmd ) override;
+    void handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand        & cmd ) override;
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand      & cmd ) override;
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatCountCommand          & cmd ) override;
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatIntervalCommand       & cmd ) override;
+    void handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand    & cmd ) override;
+    void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand  & cmd ) override;
+    void handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand    & cmd ) override;
 
 private:
 

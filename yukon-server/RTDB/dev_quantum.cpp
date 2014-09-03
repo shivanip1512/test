@@ -182,12 +182,12 @@ CtiDeviceQuantum &CtiDeviceQuantum::setBasePageStart( ULONG pageStart )
 //  this routine was copied straight over from CtiDeviceSchlumberger, because
 //    the Quantum has multiple ways of handling slave devices.
 //  daisy-chained master-slave implemented.
-INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
-                                   CtiCommandParser &parse,
-                                   OUTMESS *&OutMessage,
-                                   list< CtiMessage* > &vgList,
-                                   list< CtiMessage* > &retList,
-                                   list< OUTMESS* > &outList,
+INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg     *pReq,
+                                   CtiCommandParser  &parse,
+                                   OUTMESS          *&OutMessage,
+                                   CtiMessageList    &vgList,
+                                   CtiMessageList    &retList,
+                                   OutMessageList    &outList,
                                    INT ScanPriority )
 {
     INT status = NORMAL;
@@ -248,7 +248,7 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
 }
 
 
-YukonError_t CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
 
@@ -377,7 +377,7 @@ YukonError_t CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list
 }
 
 
-YukonError_t CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, CtiMessageList &traceList )
 {
     SchlMeterStruct MeterSt;
     YukonError_t retCode = NORMAL;
@@ -420,7 +420,7 @@ YukonError_t CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, list< CtiMess
     return retCode;
 }
 
-YukonError_t CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, CtiMessageList &traceList )
 {
     SchlMeterStruct MeterSt;
     YukonError_t    retCode = NORMAL;
@@ -564,7 +564,7 @@ YukonError_t CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, li
 }
 
 
-YukonError_t CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
 
@@ -667,7 +667,7 @@ LONG CtiDeviceQuantum::getNextRecordLocation( LONG currentRecordAddress )
 }
 
 
-YukonError_t CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     //  grab the mass memory config
     QuantumConfigData_t  *mmCfg       = (QuantumConfigData_t *)_massMemoryConfig;
@@ -838,7 +838,7 @@ YukonError_t CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, l
 }
 
 
-YukonError_t CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList )
 {
     SchlMeterStruct   MeterSt;
     YukonError_t retCode = NORMAL;
@@ -1012,7 +1012,7 @@ YukonError_t CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, Yukon
 }
 
 
-YukonError_t CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList )
 {
     SchlMeterStruct MeterSt;
     YukonError_t retCode = NORMAL;
@@ -1057,7 +1057,7 @@ YukonError_t CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, YukonError_t c
 
 
 
-YukonError_t CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
     SchlMeterStruct   MeterSt;
@@ -1281,7 +1281,7 @@ YukonError_t CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, Yuk
 }
 
 
-YukonError_t CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList )
+YukonError_t CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList )
 {
     YukonError_t retCode = NORMAL;
 
@@ -1347,7 +1347,7 @@ YukonError_t CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, YukonError
 }
 
 
-YukonError_t CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, list< CtiMessage* > &traceList)
+YukonError_t CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     QuantumConfigData_t  *mmCfg = ((QuantumConfigData_t *)_massMemoryConfig);
 
@@ -1828,11 +1828,11 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( const QuantumRawScan
 }
 
 
-INT CtiDeviceQuantum::decodeResultScan( const INMESS &InMessage,
-                                        const CtiTime TimeNow,
-                                        list< CtiMessage* >   &vgList,
-                                        list< CtiMessage* > &retList,
-                                        list< OUTMESS* > &outList )
+INT CtiDeviceQuantum::decodeResultScan( const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
+                                        CtiMessageList &vgList,
+                                        CtiMessageList &retList,
+                                        OutMessageList &outList )
 {
     CHAR     temp[100],
              buffer[60];
@@ -1990,11 +1990,11 @@ INT CtiDeviceQuantum::decodeResultScan( const INMESS &InMessage,
 
 
 
-INT CtiDeviceQuantum::decodeResultLoadProfile (const INMESS &InMessage,
-                                               const CtiTime TimeNow,
-                                               list< CtiMessage* >   &vgList,
-                                               list< CtiMessage* > &retList,
-                                               list< OUTMESS* > &outList)
+INT CtiDeviceQuantum::decodeResultLoadProfile (const INMESS   &InMessage,
+                                               const CtiTime   TimeNow,
+                                               CtiMessageList &vgList,
+                                               CtiMessageList &retList,
+                                               OutMessageList &outList)
 {
     const DIALUPREQUEST         *dupReq = &InMessage.Buffer.DUPSt.DUPRep.ReqSt;
     const DIALUPREPLY           *dupRep = &InMessage.Buffer.DUPSt.DUPRep;

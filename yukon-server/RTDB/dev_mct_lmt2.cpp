@@ -114,7 +114,7 @@ ULONG Lmt2Device::calcNextLPScanTime( void )
 }
 
 
-INT Lmt2Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Lmt2Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
     int nRet = NoError;
 
@@ -256,7 +256,7 @@ bool Lmt2Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *
 }
 
 
-INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -304,7 +304,7 @@ INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, list
 }
 
 
-INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     int status = NORMAL;
 
@@ -492,7 +492,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime Tim
 }
 
 
-INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
@@ -550,7 +550,7 @@ INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime 
 }
 
 
-INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NORMAL;
 
@@ -582,7 +582,7 @@ INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTi
 }
 
 
-INT Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
    INT status = NORMAL;
 

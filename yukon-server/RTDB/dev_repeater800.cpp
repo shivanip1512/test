@@ -57,7 +57,7 @@ bool Repeater800Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 }
 
 
-INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -87,7 +87,7 @@ INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Repeater800Device::decodeGetValuePFCount(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater800Device::decodeGetValuePFCount(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
 
