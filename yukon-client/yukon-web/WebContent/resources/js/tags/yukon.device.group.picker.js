@@ -202,5 +202,5 @@ yukon.deviceGroupPicker = (function () {
     
     return mod;
 })();
- 
+
 $(function () { yukon.deviceGroupPicker.init(); });
