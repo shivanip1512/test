@@ -164,7 +164,8 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             sendE2eDataRequestPacket(
                     er.ack,
                     activeRequest.request.command->getApplicationServiceId(),
-                    activeRequest.request.rfnIdentifier);
+                    activeRequest.request.rfnIdentifier,
+                    activeRequest.request.priority);
 
             stats.incrementAcks(activeRequest.request.deviceId, CtiTime::now());
         }
@@ -205,7 +206,8 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                     sendE2eDataRequestPacket(
                             er.blockContinuation,
                             activeRequest.request.command->getApplicationServiceId(),
-                            activeRequest.request.rfnIdentifier);
+                            activeRequest.request.rfnIdentifier,
+                            activeRequest.request.priority);
 
             activeRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
             activeRequest.status  = ActiveRfnRequest::PendingConfirm;
@@ -392,7 +394,8 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                     sendE2eDataRequestPacket(
                             activeRequest.currentPacket.payloadSent,
                             activeRequest.request.command->getApplicationServiceId(),
-                            rfnId);
+                            rfnId,
+                            activeRequest.request.priority);
 
                     activeRequest.currentPacket.retransmits++;
                     activeRequest.currentPacket.retransmissionDelay *= 2;
@@ -535,7 +538,8 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                     sendE2eDataRequestPacket(
                             e2ePacket,
                             request.command->getApplicationServiceId(),
-                            request.rfnIdentifier);
+                            request.rfnIdentifier,
+                            request.priority);
 
             stats.incrementRequests(newRequest.request.deviceId, newRequest.currentPacket.timeSent);
 
@@ -648,12 +652,14 @@ RfnRequestManager::PacketInfo
     RfnRequestManager::sendE2eDataRequestPacket(
         const std::vector<unsigned char> &e2ePacket,
         const ApplicationServiceIdentifiers &asid,
-        const RfnIdentifier &rfnIdentifier)
+        const RfnIdentifier &rfnIdentifier,
+        const unsigned priority)
 {
     E2eMessenger::Request msg;
 
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload       = e2ePacket;
+    msg.priority      = std::max<char>(1, std::min<unsigned>(priority, MAXPRIORITY));
 
     E2eMessenger::sendE2eDt(msg, asid, boost::bind(&RfnRequestManager::receiveConfirm, this, _1));
 

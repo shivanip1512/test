@@ -14,28 +14,22 @@ enum RfnE2eProtocol {
     //...
 }
 
-enum RfnE2eMessagePriority {
-    APP_LO = 0x00,
-    APP_HI = 0x01,
-    //...
-}
-
 struct RfnE2eDataRequest {
-    1: required     RfnE2eProtocol        e2eProtocol;
-    2: required     byte                  applicationServiceId;
-    3: required     RfnIdentifier         rfnIdentifier;
-    4: required     RfnE2eMessagePriority priority;
-    5: optional     string                security;
-    6: required     binary                payload;
+    1: required     RfnE2eProtocol e2eProtocol;
+    2: required     byte           applicationServiceId;
+    3: required     RfnIdentifier  rfnIdentifier;
+    4: required     byte           priority;
+    5: optional     string         security;
+    6: required     binary         payload;
 }
 
 struct RfnE2eDataIndication {
-    1: required     RfnE2eProtocol        e2eProtocol;
-    2: required     byte                  applicationServiceId;
-    3: required     RfnIdentifier         rfnIdentifier;
-    4: required     RfnE2eMessagePriority priority;
-    5: optional     string                security;
-    6: required     binary                payload;
+    1: required     RfnE2eProtocol e2eProtocol;
+    2: required     byte           applicationServiceId;
+    3: required     RfnIdentifier  rfnIdentifier;
+    4: required     byte           priority;
+    5: optional     string         security;
+    6: required     binary         payload;
 }
 
 enum RfnE2eDataReplyType {

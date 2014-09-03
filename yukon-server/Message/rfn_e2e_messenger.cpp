@@ -202,7 +202,7 @@ void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentif
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = asid.value;
-    msg.high_priority = true;
+    msg.priority      = req.priority;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;
@@ -216,7 +216,7 @@ void E2eMessenger::sendE2eAp_Dnp(const Request &req, Confirm::Callback callback)
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = ApplicationServiceIdentifiers::E2EAP_DNP3.value;
-    msg.high_priority = true;
+    msg.priority      = req.priority;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;

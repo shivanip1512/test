@@ -42,6 +42,7 @@ public:
 
     struct Request : PayloadMessage
     {
+        char priority;
     };
 
     struct Indication : PayloadMessage, CallbackFor<Indication>

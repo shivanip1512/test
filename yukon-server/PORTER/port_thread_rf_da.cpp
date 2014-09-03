@@ -115,6 +115,7 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     Messaging::Rfn::E2eMessenger::Request msg;
 
     msg.rfnIdentifier = _rf_da_port->getRfnIdentifier();
+    msg.priority = std::max<int>(1, std::min<int>(dr.outbound.front()->Priority, MAXPRIORITY));
 
     msg.payload.assign(
             dr.xfer.getOutBuffer(),

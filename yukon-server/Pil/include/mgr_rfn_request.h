@@ -85,7 +85,7 @@ private:
         unsigned maxRetransmits;
     };
 
-    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier);
+    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority);
 
     void receiveConfirm(const E2eMessenger::Confirm &msg);
     void receiveIndication(const E2eMessenger::Indication &msg);

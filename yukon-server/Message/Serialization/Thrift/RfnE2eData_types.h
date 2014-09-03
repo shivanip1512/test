@@ -26,15 +26,6 @@ struct RfnE2eProtocol {
 
 extern const std::map<int, const char*> _RfnE2eProtocol_VALUES_TO_NAMES;
 
-struct RfnE2eMessagePriority {
-  enum type {
-    APP_LO = 0,
-    APP_HI = 1
-  };
-};
-
-extern const std::map<int, const char*> _RfnE2eMessagePriority_VALUES_TO_NAMES;
-
 struct RfnE2eDataReplyType {
   enum type {
     OK = 0,
@@ -110,10 +101,10 @@ typedef struct _RfnE2eDataRequest__isset {
 class RfnE2eDataRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "8566E586DC91E3EDB6D1BCD87B3E26BD";
-  static const uint8_t binary_fingerprint[16]; // = {0x85,0x66,0xE5,0x86,0xDC,0x91,0xE3,0xED,0xB6,0xD1,0xBC,0xD8,0x7B,0x3E,0x26,0xBD};
+  static const char* ascii_fingerprint; // = "559520F3403B1E3381E01E984AB40451";
+  static const uint8_t binary_fingerprint[16]; // = {0x55,0x95,0x20,0xF3,0x40,0x3B,0x1E,0x33,0x81,0xE0,0x1E,0x98,0x4A,0xB4,0x04,0x51};
 
-  RfnE2eDataRequest() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority((RfnE2eMessagePriority::type)0), security(), payload() {
+  RfnE2eDataRequest() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority(0), security(), payload() {
   }
 
   virtual ~RfnE2eDataRequest() throw() {}
@@ -121,7 +112,7 @@ class RfnE2eDataRequest {
   RfnE2eProtocol::type e2eProtocol;
   int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
-  RfnE2eMessagePriority::type priority;
+  int8_t priority;
   std::string security;
   std::string payload;
 
@@ -139,7 +130,7 @@ class RfnE2eDataRequest {
     rfnIdentifier = val;
   }
 
-  void __set_priority(const RfnE2eMessagePriority::type val) {
+  void __set_priority(const int8_t val) {
     priority = val;
   }
 
@@ -191,10 +182,10 @@ typedef struct _RfnE2eDataIndication__isset {
 class RfnE2eDataIndication {
  public:
 
-  static const char* ascii_fingerprint; // = "8566E586DC91E3EDB6D1BCD87B3E26BD";
-  static const uint8_t binary_fingerprint[16]; // = {0x85,0x66,0xE5,0x86,0xDC,0x91,0xE3,0xED,0xB6,0xD1,0xBC,0xD8,0x7B,0x3E,0x26,0xBD};
+  static const char* ascii_fingerprint; // = "559520F3403B1E3381E01E984AB40451";
+  static const uint8_t binary_fingerprint[16]; // = {0x55,0x95,0x20,0xF3,0x40,0x3B,0x1E,0x33,0x81,0xE0,0x1E,0x98,0x4A,0xB4,0x04,0x51};
 
-  RfnE2eDataIndication() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority((RfnE2eMessagePriority::type)0), security(), payload() {
+  RfnE2eDataIndication() : e2eProtocol((RfnE2eProtocol::type)0), applicationServiceId(0), priority(0), security(), payload() {
   }
 
   virtual ~RfnE2eDataIndication() throw() {}
@@ -202,7 +193,7 @@ class RfnE2eDataIndication {
   RfnE2eProtocol::type e2eProtocol;
   int8_t applicationServiceId;
   RfnIdentifier rfnIdentifier;
-  RfnE2eMessagePriority::type priority;
+  int8_t priority;
   std::string security;
   std::string payload;
 
@@ -220,7 +211,7 @@ class RfnE2eDataIndication {
     rfnIdentifier = val;
   }
 
-  void __set_priority(const RfnE2eMessagePriority::type val) {
+  void __set_priority(const int8_t val) {
     priority = val;
   }
 

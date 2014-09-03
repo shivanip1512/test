@@ -59,9 +59,7 @@ MessagePtr<Thrift::RfnE2eDataRequest>::type serialize( const E2eDataRequestMsg& 
 
     omsg->__set_applicationServiceId( imsg.applicationServiceId );
     omsg->__set_payload             ( transformContainer<std::string>( imsg.payload ) );
-    omsg->__set_priority            ( imsg.high_priority
-                                        ? Thrift::RfnE2eMessagePriority::APP_HI
-                                        : Thrift::RfnE2eMessagePriority::APP_LO );
+    omsg->__set_priority            ( imsg.priority );
 
     Thrift::RfnIdentifier rfnId;
 
@@ -86,7 +84,7 @@ MessagePtr<E2eDataRequestMsg>::type deserialize( const Thrift::RfnE2eDataRequest
     omsg->protocol             = mapping(imsg.e2eProtocol);
     omsg->applicationServiceId = imsg.applicationServiceId;
     omsg->payload              = transformContainer<std::vector<unsigned char>>( imsg.payload );
-    omsg->high_priority        = imsg.priority == Thrift::RfnE2eMessagePriority::APP_HI;
+    omsg->priority             = imsg.priority;
 
     ::Cti::RfnIdentifier rfnId;
 
@@ -157,9 +155,7 @@ MessagePtr<Thrift::RfnE2eDataIndication>::type serialize( const E2eDataIndicatio
     omsg->__set_e2eProtocol         ( mapping(imsg.protocol) );
     omsg->__set_applicationServiceId( imsg.applicationServiceId );
     omsg->__set_payload             ( transformContainer<std::string>( imsg.payload ) );
-    omsg->__set_priority            ( imsg.high_priority
-                                        ? Thrift::RfnE2eMessagePriority::APP_HI
-                                        : Thrift::RfnE2eMessagePriority::APP_LO );
+    omsg->__set_priority            ( imsg.priority );
 
     Thrift::RfnIdentifier rfnId;
 
@@ -184,7 +180,7 @@ MessagePtr<E2eDataIndicationMsg>::type deserialize( const Thrift::RfnE2eDataIndi
     omsg->protocol             = mapping(imsg.e2eProtocol);
     omsg->applicationServiceId = imsg.applicationServiceId;
     omsg->payload              = transformContainer<std::vector<unsigned char>>( imsg.payload );
-    omsg->high_priority        = imsg.priority == Thrift::RfnE2eMessagePriority::APP_HI;
+    omsg->priority             = imsg.priority;
 
     ::Cti::RfnIdentifier rfnId;
 
