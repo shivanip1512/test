@@ -48,17 +48,12 @@ public:
    CtiRoutePtrList_t & getRoutePtrList();
    CtiRoutePtrList_t   getRoutePtrList() const;
 
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   virtual void DecodeMacroReader(Cti::RowReader &rdr);
+   void DecodeDatabaseReader(Cti::RowReader &rdr) override;
+   void DecodeMacroReader(Cti::RowReader &rdr);
 
-   virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              std::list< CtiMessage* >      &vgList,
-                              std::list< CtiMessage* >      &retList,
-                              std::list< OUTMESS* >         &outList);
+   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override;
 
-   virtual bool processAdditionalRoutes( const INMESS &InMessage ) const;
+   bool processAdditionalRoutes( const INMESS &InMessage ) const override;
 
 };
 

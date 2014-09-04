@@ -29,13 +29,8 @@ public:
 
    virtual void DumpData();
 
-   virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              std::list< CtiMessage* >      &vgList,
-                              std::list< CtiMessage* >      &retList,
-                              std::list< OUTMESS* >         &outList);
+   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override;
 
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   virtual void DecodeVersacomDatabaseReader(Cti::RowReader &rdr);
+   void DecodeDatabaseReader(Cti::RowReader &rdr) override;
+   void DecodeVersacomDatabaseReader(Cti::RowReader &rdr);
 };

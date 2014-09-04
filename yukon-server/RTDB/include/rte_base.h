@@ -71,11 +71,7 @@ public:
         purgeStaticPaoInfo();
     }
 
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList)
-    {
-        return NoExecuteRequestMethod;
-    }
-
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) = 0;
 
     CtiTableCommRoute& getCommRoute()
     {

@@ -33,37 +33,9 @@
 #define DCWW_WAIT          0
 #define DCWW_NOWAIT        1
 
-/*************************************************************************\
-* CCHMAXPATH is the maximum fully qualified path name length including  *
-* the drive letter, colon, backslashes and terminating NULL.            *
-\*************************************************************************/
-#define CCHMAXPATH         260
-
-
 /****************************************************************************
  * OS/2 - Win32 define translations.
  ***************************************************************************/
-#define  SEM_INDEFINITE_WAIT        INFINITE       // For CTIRequestMutex
-
-/* Access protection                                                          */
-
-#define PAG_READ          0x00000001U      /* read access                      */
-#define PAG_WRITE         0x00000002U      /* write access                     */
-#define PAG_EXECUTE       0x00000004U      /* execute access                   */
-#define PAG_GUARD         0x00000008U      /* guard protection                 */
-#define PAG_DEFAULT       0x00000400U      /* default (initial) access         */
-
-/* Commit                                                                     */
-#define PAG_COMMIT        0x00000010U      /* commit storage                   */
-#define PAG_DECOMMIT      0x00000020U      /* decommit storage                 */
-
-/* Allocation attributes                                                      */
-#define OBJ_TILE          0x00000040U      /* tile object                      */
-#define OBJ_PROTECTED     0x00000080U      /* protect object
-                                              NOTE: This flag is NOT available at the api level */
-
-#define OBJ_GETTABLE      0x00000100U      /* gettable by other processes      */
-#define OBJ_GIVEABLE      0x00000200U      /* giveable to other processes      */
 
 /* CTIOpen/CTIQFHandState/CTIQueryFileInfo et al file attributes; also */
 /* known as CTI File Mode bits... */
@@ -115,56 +87,4 @@
 #define OPEN_FLAGS_DASD                0x00008000  /* 1--- ---- ---- ---- */
 #define OPEN_FLAGS_NONSPOOLED          0x00040000
 #define OPEN_FLAGS_PROTECTED_HANDLE    0x40000000
-
-
-#define PRTYS_PROCESS                  0
-#define PRTYS_THREAD                   2
-
-#define PRTYC_NOCHANGE                 0
-#define PRTYC_IDLETIME                 IDLE_PRIORITY_CLASS
-#define PRTYC_REGULAR                  NORMAL_PRIORITY_CLASS
-#define PRTYC_TIMECRITICAL             HIGH_PRIORITY_CLASS
-#define PRTYC_FOREGROUNDSERVER         REALTIME_PRIORITY_CLASS
-
-/* CTIExitList functions */
-
-#define EXLST_ADD          1
-#define EXLST_REMOVE       2
-#define EXLST_EXIT         3
-
-#define NP_INDEFINITE_WAIT      -1
-#define NP_DEFAULT_WAIT         0L
-
-/* CTIPeekNmPipe() pipe states */
-
-#define NP_STATE_DISCONNECTED   0x0001
-#define NP_STATE_LISTENING      0x0002
-#define NP_STATE_CONNECTED      0x0003
-#define NP_STATE_CLOSING        0x0004
-
-/* CTICreateNPipe open modes */
-
-#define NP_ACCESS_INBOUND       0x0000
-#define NP_ACCESS_OUTBOUND      0x0001
-#define NP_ACCESS_DUPLEX        0x0002
-#define NP_INHERIT              0x0000
-#define NP_NOINHERIT            0x0080
-#define NP_WRITEBEHIND          0x0000
-#define NP_NOWRITEBEHIND        0x4000
-
-/* CTICreateNPipe and CTIQueryNPHState state */
-
-#define NP_READMODE_BYTE        0x0000
-#define NP_READMODE_MESSAGE     0x0100
-#define NP_TYPE_BYTE            0x0000
-#define NP_TYPE_MESSAGE         0x0400
-#define NP_END_CLIENT           0x0000
-#define NP_END_SERVER           0x4000
-#define NP_WAIT                 0x0000
-#define NP_NOWAIT               0x8000
-#define NP_UNLIMITED_INSTANCES  0x00FF
-
-// #define ERROR_TIMEOUT         0x0000      // FIX this
-#define ERROR_OCCURRED        0x0000      // FIX this
-
 
