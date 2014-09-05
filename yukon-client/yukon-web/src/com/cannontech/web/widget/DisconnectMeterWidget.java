@@ -142,18 +142,6 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         YukonMeter meter = meterDao.getForId(deviceId);
         initModel(model, userContext, meter);
         
-        boolean is410Supported =
-            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_410);
-        model.addAttribute("is410Supported", is410Supported);
-
-        boolean is310Supported =
-            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_310);
-        model.addAttribute("is310Supported", is310Supported);
-        
-        boolean is213Supported =
-            paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_213);
-        model.addAttribute("is213Supported",is213Supported);
-
         return "disconnectMeterWidget/helpInfo.jsp";
     }
     
@@ -225,6 +213,17 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             LiteState[] liteStates = stateDao.getLiteStates(litePoint.getStateGroupID());
             model.addAttribute("stateGroups", liteStates);
             model.addAttribute("pointId", litePoint.getLiteID());
+            boolean is410Supported =
+                paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_410);
+            model.addAttribute("is410Supported", is410Supported);
+
+            boolean is310Supported =
+                paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_310);
+            model.addAttribute("is310Supported", is310Supported);
+
+            boolean is213Supported =
+                paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DISCONNECT_213);
+            model.addAttribute("is213Supported", is213Supported);
         } catch (IllegalUseOfAttribute e) {
             model.addAttribute("isConfigured", false);
         }
