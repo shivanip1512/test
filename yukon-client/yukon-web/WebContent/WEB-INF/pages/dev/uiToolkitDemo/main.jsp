@@ -8,7 +8,7 @@
 
 <h3>Toggle Switch Checkbox</h3>
 <div class="buffered">
-    <tags:switch name="tits"/>
+    <tags:switch name="foo"/>
 </div>
 
 <style>
