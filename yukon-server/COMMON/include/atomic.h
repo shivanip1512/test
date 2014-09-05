@@ -195,13 +195,13 @@ public:
  *
  * Member functions:
  * Atomic()
- * Atomic(T val)
- * operator T() const
- * T exchange(T val)
- * T operator=(T val)
- * T operator&=(T val)
- * T operator|=(T val)
- * T operator^=(T val)
+ * Atomic(bool val)
+ * operator bool() const
+ * bool exchange(bool val)
+ * bool operator=(bool val)
+ * bool operator&=(bool val)
+ * bool operator|=(bool val)
+ * bool operator^=(bool val)
  */
 template<>
 struct Atomic<bool, typename boost::enable_if_c<true>::type> : private boost::noncopyable
