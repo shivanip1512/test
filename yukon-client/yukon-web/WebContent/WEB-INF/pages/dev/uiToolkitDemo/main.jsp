@@ -6,6 +6,11 @@
 
 <cti:standardPage module="dev" page="uiToolkitDemo">
 
+<h3>Toggle Switch Checkbox</h3>
+<div class="buffered">
+    <tags:switch name="tits"/>
+</div>
+
 <style>
 .no_chrome {
     border: none;
@@ -41,11 +46,7 @@ background: transparent url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD/
 border: none;
 }
 
-button {
-    cursor: pointer;
-}
-
-label {
+.ex-label {
 float:left;
 overflow: hidden;
 display:block;
@@ -100,7 +101,7 @@ $(function() {
                     <th>Relevant Markup</th>
                 </tr>
                 <tr>
-                    <td><label>Something Important:</label><input type="text" name="important"
+                    <td><label class="ex-label" class="ex-label">Something Important:</label><input type="text" name="important"
                         class="js-focus" /></td>
                     <td>Add the <b>js-focus</b> class to the input. <br /> <br /> <pre class="code">
 &lt;input type="text" name="something" class="js-focus"/&gt;
@@ -111,25 +112,25 @@ $(function() {
                     <th>Relevant Markup</th>
                 </tr>
                 <tr>
-                    <td><label for="enabled">Enabled?</label><input type="checkbox"
+                    <td><label class="ex-label" class="ex-label" for="enabled">Enabled?</label><input type="checkbox"
                         name="enabled" class="js-toggle" /> <br /> <br />
                         <div class="js-toggle box">
-                            <label for="name">Name:</label><input type="text" name="name" /> <br />
-                            <br /> <label for="group">Group:</label><select name="group">
+                            <label class="ex-label" class="ex-label" for="name">Name:</label><input type="text" name="name" /> <br />
+                            <br /> <label class="ex-label" for="group">Group:</label><select name="group">
                                 <option>Select One</option>
                                 <option>A</option>
                                 <option>B</option>
                                 <option>C</option>
-                            </select> <br /> <br /> <label for="cool">Cool?</label><input type="checkbox"
-                                name="cool"> <br /> <br /> <label for="notes">Notes:</label>
+                            </select> <br /> <br /> <label class="ex-label" for="cool">Cool?</label><input type="checkbox"
+                                name="cool"> <br /> <br /> <label class="ex-label" for="notes">Notes:</label>
                             <textarea name="notes"></textarea>
                             <br /> <br />
                             <button name="save">Save</button>
-                        </div> <br /> <br /> <label for="enabled2">Edit</label><input type="checkbox"
+                        </div> <br /> <br /> <label class="ex-label" for="enabled2">Edit</label><input type="checkbox"
                         name="enabled2" class="js-toggle" checked="checked" /> <br /> <br />
                         <div class="js-toggle box">
-                            <label for="address">Address:</label><input type="text" name="address" />
-                            <br /> <br /> <label for="City">City:</label><input type="text"
+                            <label class="ex-label" for="address">Address:</label><input type="text" name="address" />
+                            <br /> <br /> <label class="ex-label" for="City">City:</label><input type="text"
                                 name="City" /> <br /> <br />
                             <button name="save" >Save</button>
                             <button name="save">Delete</button>
@@ -403,7 +404,7 @@ $("button.blockElement").click( function() {
                     <th>Relevant Markup</th>
                 </tr>
                 <tr>
-                    <td><label>Phone 1:</label><input type="text" name="phone1"
+                    <td><label class="ex-label">Phone 1:</label><input type="text" name="phone1"
                         class="js-format-phone" /></td>
                     <td>Add the <b>js-format-phone</b> class to the tag/button. <br /> <br /> <pre class="code">
 &lt;input type="text" name="phone1" class="js-format-phone"/&gt;

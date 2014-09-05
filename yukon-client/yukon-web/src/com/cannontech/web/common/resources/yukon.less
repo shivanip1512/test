@@ -126,6 +126,8 @@ a,
 .alert { background-color: #ffcccc !important; }
 
 /* FORM FIELDS */
+label { cursor: pointer;}
+
 input[type=email], 
 input[type=number], 
 input[type=password], 
@@ -204,6 +206,55 @@ input[type=radio]:focus { outline:none; }
 }
 
 .placeholder { color: #aaa; }
+
+/** Styles for a 'toggle switch' checkbox **/
+.checkbox input {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+.checkbox-value {
+  background-color: #ddd;
+  border: 0.1em solid #bbb;
+  border-radius: 0.75em;
+  box-shadow: inset 0 0.1em 0 0.1em rgba(0,0,0,0.075);
+  display: inline-block;
+  height: 1.5em;
+  margin: 0 0.2em;
+  position: relative;
+  transition: all 120ms;
+  vertical-align: -0.5em;
+  width: 2.5em;
+}
+.checkbox-value::before {
+  background-color: #fff;
+  border: 0.1em solid;
+  border-color: inherit;
+  border-radius: 50%;
+  box-shadow: 0 0.0625em 0 0.0625em rgba(0,0,0,0.075);
+  content: '';
+  display: block;
+  height: 1.5em;
+  left: 25%;
+  margin-left: -0.9375em;
+  margin-top: -0.15em;
+  position: absolute;
+  top: 0;
+  transition: all 120ms ease-in;
+  width: 1.5em;
+}
+input:checked + .checkbox-value {
+  background-color: #70C765;
+  border-color: #5A9E51;
+}
+input:checked + .checkbox-value::before {
+  left: 75%;
+}
 
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
