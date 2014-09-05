@@ -41,6 +41,7 @@ test_string_utility.obj \
 test_timeperiod.obj \
 test_utility.obj \
 test_words.obj \
+test_atomic.obj \
 
 SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
