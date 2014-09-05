@@ -8,13 +8,13 @@ public enum DemandResetError {
     TIMESTAMP_OUT_OF_RANGE(283), 
     ;
 
-    private final Integer errorCode;
+    private final int errorCode;
 
     private DemandResetError(int errorCode) {
         this.errorCode = errorCode;
     }
 
-    public Integer getErrorCode() {
+    public int getErrorCode() {
         return errorCode;
     }
 }

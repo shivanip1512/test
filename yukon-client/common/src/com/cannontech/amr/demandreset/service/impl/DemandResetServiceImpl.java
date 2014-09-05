@@ -182,8 +182,8 @@ public class DemandResetServiceImpl implements DemandResetService {
     }
     
     @Override
-    public void sendDemandResetAndVerify(Set<? extends YukonPao> devices,DemandResetCallback callback,
-                                        LiteYukonUser user) {
+    public void sendDemandResetAndVerify(Set<? extends YukonPao> devices, DemandResetCallback callback,
+                                         LiteYukonUser user) {
 
         log.debug("sendDemandResetAndVerify");
 
@@ -200,7 +200,7 @@ public class DemandResetServiceImpl implements DemandResetService {
             .initDemandResetAttempted(devicesToSend.size(), unsupportedDevices.size(), user);
         
         demandResetEventLogService
-            .verifDemandResetAttempted(devicesToVerify.size(), unverifiableDevices.size(), user);
+            .verifyDemandResetAttempted(devicesToVerify.size(), unverifiableDevices.size(), user);
 
         CommandRequestExecution initiationExecution =
             commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,

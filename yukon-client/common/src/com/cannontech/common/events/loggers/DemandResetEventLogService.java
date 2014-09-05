@@ -15,7 +15,7 @@ public interface DemandResetEventLogService {
     public void collectionDemandResetAttempted(String collection, @Arg(ArgEnum.username) LiteYukonUser user);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void verifDemandResetAttempted(@Arg(ArgEnum.totalRequests) Integer total,
+    public void verifyDemandResetAttempted(@Arg(ArgEnum.totalRequests) Integer total,
                                           @Arg(ArgEnum.notAttemptedRequests) Integer notAttempted,
                                           @Arg(ArgEnum.username) LiteYukonUser user);
     
