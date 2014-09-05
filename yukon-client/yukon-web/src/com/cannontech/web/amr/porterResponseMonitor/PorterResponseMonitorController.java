@@ -108,11 +108,7 @@ public class PorterResponseMonitorController {
             for (int i = 0; i < rules.size(); i++) {
                 PorterResponseMonitorRule rule = rules.get(i);
                 List<PorterResponseMonitorErrorCode> errorCodes = rule.getErrorCodes();
-                if (errorCodes.isEmpty()) {
-                    errors.rejectValue("rules[" + i + "].errorCodes", "yukon.web.error.required");
-                }
-                
-                
+
                 orderList.add(rule.getRuleOrder());
 
                 // Error Code Uniqueness
