@@ -2,31 +2,28 @@ package com.cannontech.common.rfn.message.gateway;
 
 import java.io.Serializable;
 
-import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
-
-public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Serializable {
+public class GatewayConnectionTestRequest implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    private RfnIdentifier rfnIdentifier;
+    private String ipAddress;
 
-    public RfnIdentifier getRfnIdentifier() {
-        return rfnIdentifier;
+    public String getIpAddress() {
+        return ipAddress;
     }
     
-    public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
-        this.rfnIdentifier = rfnIdentifier;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
+        result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -36,17 +33,16 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
         if (getClass() != obj.getClass())
             return false;
         GatewayConnectionTestRequest other = (GatewayConnectionTestRequest) obj;
-        if (rfnIdentifier == null) {
-            if (other.rfnIdentifier != null)
+        if (ipAddress == null) {
+            if (other.ipAddress != null)
                 return false;
-        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
+        } else if (!ipAddress.equals(other.ipAddress))
             return false;
         return true;
     }
-    
+
     @Override
     public String toString() {
-        return "GatewayConnectionTestRequest [rfnIdentifier=" + rfnIdentifier + "]";
+        return String.format("GatewayConnectionTestRequest [ipAddress=%s]", ipAddress);
     }
-    
 }
