@@ -125,7 +125,7 @@ CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
 
 void  CtiCommandParser::doParse(const string &_Cmd)
 {
-    _command = INT_MIN;
+    _command = InvalidRequest;
     _flags = 0;
     parse();
 }
@@ -422,14 +422,14 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp channel 2 12/13/2005             //  grabs the whole day
     //  getvalue lp channel 2 12/13/2005 12/15/2005  //  this wil do range of entire days
     //  getvalue lp channel 2 12/13/2005 12:00 12/15/2005  //  this grabs the second half of 13th, and all of the 14th and 15th
-    static const boost::regex  re_lp(CtiString("lp channel ") + str_num + CtiString(" ") + str_date + CtiString("( ") + str_time + CtiString(")?( ") + str_date + CtiString("( ") + str_time + CtiString(")?)?") );
+    static const boost::regex  re_lp(CtiString("lp channel ") + str_num + CtiString(" ") + str_date + CtiString("( ") + str_time + CtiString(")?( ") + str_date + CtiString("( ") + str_time + CtiString(")?)?"));
 
     //  getvalue lp peak daily channel 2 9/30/04 30
     //  getvalue lp peak hour channel 3 10-15-2003 15
     static const boost::regex  re_lp_peak(CtiString("lp peak (day|hour|interval) channel ") + str_num + CtiString(" ") + str_date + CtiString(" ") + str_num);
 
     //  getvalue voltage profile 12/13/2005 12/15/2005
-    static const boost::regex  re_voltage_profile(CtiString("voltage profile ") + str_date + CtiString("( ") + str_time + CtiString(")?( ") + str_date + CtiString("( ") + str_time + CtiString(")?)?") );
+    static const boost::regex  re_voltage_profile(CtiString("voltage profile ") + str_date + CtiString("( ") + str_time + CtiString(")?( ") + str_date + CtiString("( ") + str_time + CtiString(")?)?"));
 
     //  getvalue daily read
     //  getvalue daily read 12/12/2007
@@ -546,11 +546,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 cmdtok();  //  move past lp
                 cmdtok();  //  move past channel
 
-                _cmd["lp_channel"] = atoi(CtiString(cmdtok()).c_str());
+                _cmd["lp_channel"] = atoi(CtiString(cmdtok()).c_str() );
 
                 _cmd["lp_date_start"] = cmdtok();
-
-                temp = cmdtok();
+                    temp = cmdtok();
 
                 //  the optional "start time" parameter
                 if( !(temp.match(re_time)).empty() )
@@ -566,9 +565,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                     temp = cmdtok();
 
                     //  the optional "end time" parameter
-                    if( !(temp.match(re_time)).empty() )
-                    {
-                        _cmd["lp_time_end"] = temp;
+                if( !(temp.match(re_time)).empty() )
+                {
+                    _cmd["lp_time_end"] = temp;
                     }
                 }
             }
@@ -631,7 +630,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             _cmd["hourly_log_date"] = temp;
 
             temp = CtiString(cmdtok()).c_str();
-
             _cmd["hourly_log_time"] = temp;
         }
         else if(CmdStr.contains(" minmax"))
@@ -2334,12 +2332,12 @@ void  CtiCommandParser::doParseScan(const string &_CmdStr)
 
 }
 
-UINT     CtiCommandParser::getCommand() const
+CtiClientRequest_t CtiCommandParser::getCommand() const
 {
     return _command;
 }
 
-void     CtiCommandParser::setCommand(UINT command)
+void     CtiCommandParser::setCommand(CtiClientRequest_t command)
 {
     _command = command;
 }
@@ -2361,7 +2359,7 @@ UINT     CtiCommandParser::getOffset() const
 
 bool  CtiCommandParser::isKeyValid(const string &key) const
 {
-    return( _cmd.find(key) != _cmd.end() );
+    return _cmd.count(key);
 }
 
 INT      CtiCommandParser::getiValue(const string &key, INT valifnotfound) const

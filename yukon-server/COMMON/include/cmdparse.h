@@ -15,6 +15,8 @@ struct simple_hash
    unsigned long operator()(const std::string& x) const { return x.length() * (long)x[0]; }
 };
 
+enum CtiClientRequest_t;  //  forward declaration, defined at end of file
+
 class IM_EX_CTIBASE CtiCommandParser
 {
 protected:
@@ -23,9 +25,9 @@ protected:
 
    std::map< std::string, CtiParseValue >   _cmd;
 
-   UINT     _flags,
-            _command;
-   bool     _wasExternallyModified; // Set if someone other than parse() sets cmd flags.
+   UINT _flags;
+   CtiClientRequest_t _command;
+   bool _wasExternallyModified; // Set if someone other than parse() sets cmd flags.
 
 private:
 
@@ -65,7 +67,7 @@ private:
     void    doParsePutConfigCBC(const std::string &CmdStr);
 
     void    setFlags(UINT flags);
-    void    setCommand(UINT command);
+    void    setCommand(CtiClientRequest_t command);
 
     static double  getDurationInSeconds(std::string token);
 
@@ -96,7 +98,7 @@ public:
    bool     isDisconnect()  const;
    bool     isTwoWay()      const;
 
-   UINT   getCommand() const;
+   CtiClientRequest_t getCommand() const;
 
    UINT   getFlags()   const;
    UINT   getOffset()  const;

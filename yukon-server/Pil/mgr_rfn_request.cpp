@@ -248,7 +248,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                         new RfnDeviceResult(
                                     activeRequest.request,
                                     ce.error_description,
-                                    static_cast<YukonError_t>(ce.error_code)));
+                                    ce.error_code));
             }
 
             {

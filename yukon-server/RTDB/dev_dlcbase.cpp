@@ -11,7 +11,10 @@
 #include "porter.h"
 #include "numstr.h"
 
+#include "std_helper.h"
+
 #include <boost/optional.hpp>
+#include <boost/assign/list_of.hpp>
 
 using std::string;
 using std::endl;
@@ -53,7 +56,7 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
         oldAddress = CarrierSettings.getAddress();
     }
 
-    Inherited::DecodeDatabaseReader(rdr);       //  get the base class handled
+    Parent::DecodeDatabaseReader(rdr);       //  get the base class handled
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
@@ -83,6 +86,28 @@ LONG DlcBaseDevice::getAddress() const   {   return CarrierSettings.getAddress()
 LONG DlcBaseDevice::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
+const std::set<CtiClientRequest_t> BroadcastRequestTypes = boost::assign::list_of
+    (PutValueRequest)
+    (ControlRequest)
+    (PutStatusRequest)
+    (PutConfigRequest);
+
+const std::map<CtiClientRequest_t, DlcBaseDevice::ExecuteMethod> DlcBaseDevice::_executeMethods = DlcBaseDevice::buildExecuteMethodMap();
+
+const std::map<CtiClientRequest_t, DlcBaseDevice::ExecuteMethod> DlcBaseDevice::buildExecuteMethodMap()
+{
+    return boost::assign::map_list_of
+            (LoopbackRequest,  &Self::executeLoopback)
+            (ScanRequest,      &Self::executeScan)
+            (GetValueRequest,  &Self::executeGetValue)
+            (PutValueRequest,  &Self::executePutValue)
+            (ControlRequest,   &Self::executeControl)
+            (GetStatusRequest, &Self::executeGetStatus)
+            (PutStatusRequest, &Self::executePutStatus)
+            (GetConfigRequest, &Self::executeGetConfig)
+            (PutConfigRequest, &Self::executePutConfig);
+}
+
 INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
                                    CtiCommandParser  &parse,
                                    OUTMESS          *&OutMessage,
@@ -101,68 +126,19 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
 
     try
     {
-        switch( parse.getCommand( ) )
+        if( const boost::optional<ExecuteMethod> method = mapFind(_executeMethods, parse.getCommand()) )
         {
-            case LoopbackRequest:
-            {
-                nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case ScanRequest:
-            {
-                nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case GetValueRequest:
-            {
-                nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case PutValueRequest:
-            {
-                nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            case ControlRequest:
-            {
-                nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            case GetStatusRequest:
-            {
-                nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case PutStatusRequest:
-            {
-                nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            case GetConfigRequest:
-            {
-                nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case PutConfigRequest:
-            {
-                nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
-                }
-                nRet = NoMethod;
+            nRet = (this->**method)(pReq, parse, OutMessage, vgList, retList, tmpOutList);
 
-                break;
-            }
+            broadcast = BroadcastRequestTypes.count(parse.getCommand());
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Unsupported command type on EMETCON route. Command = " << parse.getCommand( ) << endl;
+
+            nRet = NoMethod;
         }
     }
     catch( DlcCommand::CommandException &e )
@@ -174,30 +150,22 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
 
     if( nRet != NORMAL )
     {
-        string resultString;
-
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
             dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
         }
 
-        resultString = "NoMethod or invalid command.";
-        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
-                                                string(OutMessage->Request.CommandStr),
-                                                resultString,
-                                                nRet,
-                                                OutMessage->Request.RouteID,
-                                                OutMessage->Request.RetryMacroOffset,
-                                                OutMessage->Request.Attempt,
-                                                OutMessage->Request.GrpMsgID,
-                                                OutMessage->Request.UserID,
-                                                OutMessage->Request.SOE,
-                                                CtiMultiMsg_vec( )) );
+        retList.push_back(
+                new CtiReturnMsg(
+                        getID( ),
+                        OutMessage->Request,
+                        "NoMethod or invalid command.",
+                        nRet));
     }
     else
     {
-        if(OutMessage != NULL)
+        if( OutMessage )
         {
             tmpOutList.push_back( OutMessage );
             OutMessage = NULL;

@@ -15,8 +15,7 @@ CarrierDevice::CarrierDevice()
 
 boost::shared_ptr<DataAccessLoadProfile> CarrierDevice::getLoadProfile()
 {
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    return boost::static_pointer_cast<DataAccessLoadProfile>(loadProfile);
+    return loadProfile;
 }
 
 string CarrierDevice::getSQLCoreStatement() const
