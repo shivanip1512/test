@@ -127,7 +127,7 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
 
         returnMsgs.push_back(commandsSent);
 
-        incrementGroupMessageCount(pReq->GroupMessageId(), reinterpret_cast<long>(pReq->getConnectionHandle()), rfnRequests.size());
+        incrementGroupMessageCount(pReq->UserMessageId(), reinterpret_cast<long>(pReq->getConnectionHandle()), rfnRequests.size());
     }
 
     for( ReturnMsgList::iterator itr = returnMsgs.begin(); itr != returnMsgs.end(); )
