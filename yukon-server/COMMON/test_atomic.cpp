@@ -37,7 +37,7 @@ struct TestAtomic
         test_init();
         test_assign();
         test_add();
-        test_substract();
+        test_subtract();
         test_and();
         test_or();
         test_xor();
@@ -122,7 +122,7 @@ struct TestAtomic
                 exp.begin(), exp.end());
     }
 
-    void test_substract()
+    void test_subtract()
     {
         std::vector<T> act, exp;
 
@@ -428,7 +428,7 @@ struct TestAtomic<T*>
         test_assign();
         test_exchange();
         test_add();
-        test_substract();
+        test_subtract();
         test_pre_increment();
         test_pre_decrement();
         test_post_increment();
@@ -484,7 +484,7 @@ struct TestAtomic<T*>
         BOOST_CHECK_EQUAL(act, exp);
     }
 
-    void test_substract()
+    void test_subtract()
     {
         T val[10];
         Cti::Atomic<T*> a = &val[10];

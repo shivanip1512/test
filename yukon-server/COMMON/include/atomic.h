@@ -40,11 +40,6 @@ struct Atomic<T, typename boost::enable_if_c<boost::is_integral<T>::value && siz
 private:
     long _stored;
     
-    long getStored() const
-    {
-        return InterlockedCompareExchange(const_cast<long*>(&_stored), 0, 0);
-    }
-
     template<int size>
     T increment()
     {
@@ -78,7 +73,7 @@ public:
 
     operator T() const
     {
-        return getStored();
+        return InterlockedCompareExchange(const_cast<long*>(&_stored), 0, 0);
     }
 
     T exchange(T val)
@@ -96,7 +91,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             T newVal = prev;
             newVal &= val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -110,7 +105,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             T newVal = prev;
             newVal |= val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -124,7 +119,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             T newVal = prev;
             newVal ^= val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -138,7 +133,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             T newVal = prev;
             newVal += val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -152,7 +147,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             T newVal = prev;
             newVal -= val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -209,11 +204,6 @@ struct Atomic<bool, typename boost::enable_if_c<true>::type> : private boost::no
 private:
     long _stored;
 
-    long getStored() const
-    {
-        return InterlockedCompareExchange(const_cast<long*>(&_stored), 0, 0);
-    }
-
 public:
     Atomic() : _stored(false)
     {}
@@ -223,7 +213,7 @@ public:
 
     operator bool() const
     {
-        return getStored();
+        return InterlockedCompareExchange(const_cast<long*>(&_stored), 0, 0);
     }
 
     bool exchange(bool val)
@@ -241,7 +231,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             bool newVal = prev;
             newVal &= val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -255,7 +245,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             bool newVal = prev;
             newVal |= val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -269,7 +259,7 @@ public:
     {
         for(;;)
         {
-            const long prev = getStored();
+            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
             bool newVal = prev;
             newVal ^= val;
             if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
@@ -302,11 +292,6 @@ struct Atomic<T*, typename boost::enable_if_c<true>::type> : private boost::nonc
 private:
     void* _stored;
 
-    void* getStored() const
-    {
-        return InterlockedCompareExchangePointer(const_cast<void**>(&_stored), 0, 0);
-    }
-
 public:
     Atomic() : _stored(0)
     {}
@@ -316,12 +301,14 @@ public:
 
     operator T*() const
     {
-        return static_cast<T*>(getStored());
+        void* const curr = InterlockedCompareExchangePointer(const_cast<void**>(&_stored), 0, 0);
+        return static_cast<T*>(curr);
     }
 
     T* exchange(T* val)
     {
-        return static_cast<T*>(InterlockedExchangePointer(&_stored, val));
+        void* const prev = InterlockedExchangePointer(&_stored, val);
+        return static_cast<T*>(prev);
     }
 
     T* operator=(T* val)
@@ -335,7 +322,7 @@ public:
         assert(_stored);
         for(;;)
         {
-            void* const prev = getStored();
+            void* const prev = InterlockedCompareExchangePointer(&_stored, 0, 0);
             T* newVal = static_cast<T*>(prev);
             newVal += val;
             if( InterlockedCompareExchangePointer(&_stored, newVal, prev) == prev )
@@ -350,7 +337,7 @@ public:
         assert(_stored);
         for(;;)
         {
-            void* const prev = getStored();
+            void* const prev = InterlockedCompareExchangePointer(&_stored, 0, 0);
             T* newVal = static_cast<T*>(prev);
             newVal -= val;
             if( InterlockedCompareExchangePointer(&_stored, newVal, prev) == prev )
