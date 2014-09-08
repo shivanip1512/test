@@ -2258,6 +2258,302 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
     BOOST_CHECK_EQUAL_COLLECTIONS( returnExpectMoreRcv.begin(), returnExpectMoreRcv.end(), returnExpectMoreExp.begin(), returnExpectMoreExp.end() );
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
+{
+    using boost::assign::list_of;
+    using boost::assign::map_list_of;
+
+    test_RfnResidentialDevice dut;
+    dut._type = TYPE_RFN410FX;
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations = list_of<CategoryDefinition>
+
+            // demand freeze day config
+            ( CategoryDefinition(
+                "demandFreeze", map_list_of
+                    ( RfnStrings::demandFreezeDay, "7" )))
+
+            // OVUV config
+            ( CategoryDefinition(
+                "rfnOvUv", map_list_of
+                    ( RfnStrings::OvUvEnabled,                "true"    )
+                    ( RfnStrings::OvUvAlarmReportingInterval, "5"       )
+                    ( RfnStrings::OvUvAlarmRepeatInterval,    "60"      )
+                    ( RfnStrings::OvUvRepeatCount,            "2"       )
+                    ( RfnStrings::OvThreshold,                "123.456" )
+                    ( RfnStrings::UvThreshold,                "78.901"  )))
+
+            // TOU config
+            ( CategoryDefinition(
+                "tou", map_list_of
+                    // Schedule 1
+                    ( RfnStrings::Schedule1Time0, "00:00" )
+                    ( RfnStrings::Schedule1Rate0, "A" )
+                    ( RfnStrings::Schedule1Time1, "00:01" )
+                    ( RfnStrings::Schedule1Rate1, "B" )
+                    ( RfnStrings::Schedule1Time2, "10:06" )
+                    ( RfnStrings::Schedule1Rate2, "C" )
+                    ( RfnStrings::Schedule1Time3, "12:22" )
+                    ( RfnStrings::Schedule1Rate3, "D" )
+                    ( RfnStrings::Schedule1Time4, "23:33" )
+                    ( RfnStrings::Schedule1Rate4, "A" )
+                    ( RfnStrings::Schedule1Time5, "23:44" )
+                    ( RfnStrings::Schedule1Rate5, "B" )
+
+                    // Schedule 2
+                    ( RfnStrings::Schedule2Time0, "00:00" )
+                    ( RfnStrings::Schedule2Rate0, "D" )
+                    ( RfnStrings::Schedule2Time1, "01:23" )
+                    ( RfnStrings::Schedule2Rate1, "A" )
+                    ( RfnStrings::Schedule2Time2, "03:12" )
+                    ( RfnStrings::Schedule2Rate2, "B" )
+                    ( RfnStrings::Schedule2Time3, "04:01" )
+                    ( RfnStrings::Schedule2Rate3, "C" )
+                    ( RfnStrings::Schedule2Time4, "05:23" )
+                    ( RfnStrings::Schedule2Rate4, "D" )
+                    ( RfnStrings::Schedule2Time5, "16:28" )
+                    ( RfnStrings::Schedule2Rate5, "A" )
+
+                    // Schedule 3
+                    ( RfnStrings::Schedule3Time0, "00:00" )
+                    ( RfnStrings::Schedule3Rate0, "C" )
+                    ( RfnStrings::Schedule3Time1, "01:02" )
+                    ( RfnStrings::Schedule3Rate1, "D" )
+                    ( RfnStrings::Schedule3Time2, "02:03" )
+                    ( RfnStrings::Schedule3Rate2, "A" )
+                    ( RfnStrings::Schedule3Time3, "04:05" )
+                    ( RfnStrings::Schedule3Rate3, "B" )
+                    ( RfnStrings::Schedule3Time4, "05:06" )
+                    ( RfnStrings::Schedule3Rate4, "C" )
+                    ( RfnStrings::Schedule3Time5, "06:07" )
+                    ( RfnStrings::Schedule3Rate5, "D" )
+
+                    // Schedule 4
+                    ( RfnStrings::Schedule4Time0, "00:00" )
+                    ( RfnStrings::Schedule4Rate0, "B" )
+                    ( RfnStrings::Schedule4Time1, "00:01" )
+                    ( RfnStrings::Schedule4Rate1, "C" )
+                    ( RfnStrings::Schedule4Time2, "08:59" )
+                    ( RfnStrings::Schedule4Rate2, "D" )
+                    ( RfnStrings::Schedule4Time3, "12:12" )
+                    ( RfnStrings::Schedule4Rate3, "A" )
+                    ( RfnStrings::Schedule4Time4, "23:01" )
+                    ( RfnStrings::Schedule4Rate4, "B" )
+                    ( RfnStrings::Schedule4Time5, "23:55" )
+                    ( RfnStrings::Schedule4Rate5, "C" )
+
+                    // day table
+                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
+                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
+                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
+                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
+                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
+                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
+                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
+                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
+
+                    // default rate
+                    ( RfnStrings::DefaultTouRate, "B" )
+
+                    // set TOU enabled
+                    ( RfnStrings::touEnabled, "true" )))
+
+            // voltage averaging config
+            ( CategoryDefinition(
+                "demandProfile", map_list_of
+                    ( RfnStrings::demandInterval,  "1" )
+                    ( RfnStrings::profileInterval, "2" )))
+
+            // temperature alarming config
+            ( CategoryDefinition(
+                "rfnTempAlarm", map_list_of
+                    ( RfnStrings::TemperatureAlarmEnabled,           "true" )
+                    ( RfnStrings::TemperatureAlarmRepeatInterval,    "15"   )
+                    ( RfnStrings::TemperatureAlarmRepeatCount,       "3"    )
+                    ( RfnStrings::TemperatureAlarmHighTempThreshold, "122"  )))
+
+            // channel config
+            ( CategoryDefinition(
+                "rfnChannelConfiguration", map_list_of
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+                      + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
+                    ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+                      + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" )
+                    ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
+                    ( RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" )))
+            ;
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, "7");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,                 "1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval,  "5");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval,    "60");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount,             "2");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvThreshold,           "123.456");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_UvThreshold,            "78.901");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, "00:01");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2, "10:06");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3, "12:22");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4, "23:33");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5, "23:44");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0, "A");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1, "00:01");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1, "B");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2, "10:06");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2, "C");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3, "12:22");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3, "D");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4, "23:33");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4, "A");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5, "23:44");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5, "B");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0, "D");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1, "01:23");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1, "A");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2, "03:12");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2, "B");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3, "04:01");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3, "C");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4, "05:23");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4, "D");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5, "16:28");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5, "A");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0, "C");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1, "01:02");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1, "D");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2, "02:03");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2, "A");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3, "04:05");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3, "B");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4, "05:06");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4, "C");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5, "06:07");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5, "D");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0, "B");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1, "00:01");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1, "C");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2, "08:59");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2, "D");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3, "12:12");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3, "A");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4, "23:01");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4, "B");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, "23:55");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, "C");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    "Schedule 1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    "Schedule 1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   "Schedule 3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, "Schedule 2");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  "Schedule 4");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    "Schedule 2");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  "Schedule 3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   "Schedule 3");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, "B");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, "1");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, "11");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, "22");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled, "1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval, "15");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount, "3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, "121");
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, "7380");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, "27360");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, std::vector<unsigned long>() );
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, std::vector<unsigned long>(1, 1) );
+
+    CtiCommandParser parse("putconfig install all");
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for each( const CategoryDefinition & category in configurations )
+    {
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+    }
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+    BOOST_CHECK_EQUAL( 2, rfnRequests.size() );
+
+    std::vector<bool> expectMoreRcv;
+    const std::vector<bool> expectMoreExp = list_of(true).repeat(4, true);
+
+    std::vector<std::string> resultStringRcv;
+    const std::vector<std::string> resultStringExp = list_of
+            ("Config channelconfig is current.")
+            ("Config freezeday is current.")
+            ("Config ovuv is current.")
+            ("Config tou is current.")
+            ("2 commands queued for device");
+
+    std::vector<int> statusRcv;
+    const std::vector<int> statusExp = list_of(0).repeat(4, 0);
+
+    for each( const CtiReturnMsg &m in returnMsgs )
+    {
+        expectMoreRcv.push_back( m.ExpectMore() );
+        resultStringRcv.push_back( m.ResultString() );
+        statusRcv.push_back( m.Status() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin(), expectMoreRcv.end(),
+                                   expectMoreExp.begin(), expectMoreExp.end() );
+    BOOST_CHECK_EQUAL_COLLECTIONS( resultStringRcv.begin(), resultStringRcv.end(),
+                                   resultStringExp.begin(), resultStringExp.end() );
+    BOOST_CHECK_EQUAL_COLLECTIONS( statusRcv.begin(), statusRcv.end(),
+                                   statusExp.begin(), statusExp.end() );
+
+    Cti::Devices::Commands::RfnCommandSPtr command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL( 0, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle())) );
+
+    {
+        // execute
+        const std::vector< unsigned char > exp = boost::assign::list_of
+            ( 0x88 )( 0x00 )( 0x01 )
+                ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f )( 0x03 );
+
+        Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                       exp.begin() , exp.end() );
+
+        // decode -- success response
+        const std::vector< unsigned char > response = boost::assign::list_of
+            ( 0x89 )( 0x00 )( 0x00 )( 0x00 );
+
+        Cti::Devices::Commands::RfnCommandResult cmdResult = command->decodeCommand( execute_time, response );
+
+        BOOST_CHECK_EQUAL( cmdResult.description, "Status: Success (0)" );
+
+        dut.extractCommandResult(*command);
+
+        //  replicating PIL's decrement
+        dut.decrementGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle()));
+    }
+
+    BOOST_CHECK_EQUAL( 0, dut.getGroupMessageCount(request->UserMessageId(), reinterpret_cast<long>(request->getConnectionHandle()) ) );
+}
+
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 {
     using boost::assign::list_of;
