@@ -13,7 +13,7 @@ public class RfnMeterReadingData implements Serializable {
     private List<DatedChannelData> datedChannelDataList; // Timestamped data like Peak Demand
     private RfnIdentifier rfnIdentifier;
     private long timeStamp;
-    private int recordInterval; // Recording interval lenth in seconds , only used for interval based readings
+    private int recordInterval; // Recording interval length in seconds , only used for interval based readings
 
     public List<ChannelData> getChannelDataList() {
         return channelDataList;
