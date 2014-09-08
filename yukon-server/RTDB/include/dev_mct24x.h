@@ -55,10 +55,10 @@ protected:
         MCT24X_Status_Closed     = 0x42
     };
 
-    INT calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
-    virtual bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+    INT calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList ) override;
+    bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage ) override;
 
-    virtual INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
     INT decodeScanLoadProfile     ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeScanStatus          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
@@ -69,7 +69,7 @@ public:
 
     Mct24xDevice( );
 
-    ULONG calcNextLPScanTime( void );
+    ULONG calcNextLPScanTime( void ) override;
 };
 
 }

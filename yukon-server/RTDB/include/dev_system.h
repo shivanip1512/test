@@ -19,7 +19,7 @@ public:
 
    CtiDeviceSystem();
 
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   void DecodeDatabaseReader(Cti::RowReader &rdr) override;
    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    virtual std::string getDescription(const CtiCommandParser &parse) const;

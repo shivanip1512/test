@@ -95,6 +95,6 @@ public:
                                int timeID,
                                int dateID );
 
-   void DecodeDatabaseReader(Cti::RowReader &rdr);
+   void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
 };

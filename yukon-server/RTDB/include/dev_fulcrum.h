@@ -206,13 +206,8 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   virtual INT GeneralScan(CtiRequestMsg *pReq,
-                           CtiCommandParser &parse,
-                           OUTMESS *&OutMessage,
-                           CtiMessageList &vgList,
-                           CtiMessageList &retList,
-                           OutMessageList &outList,
-                           INT ScanPriority = MAXPRIORITY - 4);
+   INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                         INT ScanPriority = MAXPRIORITY - 4) override;
 
    // interrogation routines
    YukonError_t generateCommandHandshake  (CtiXfer  &Transfer, CtiMessageList &traceList) override;
@@ -227,10 +222,10 @@ public:
    YukonError_t decodeResponseSelectMeter (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
    YukonError_t decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
 
-   virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
-   virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
+   INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived) override;
+   INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes) override;
 
-   virtual INT allocateDataBins (OUTMESS *outMess);
+   INT allocateDataBins (OUTMESS *outMess) override;
 
    virtual INT decodeResultScan ( const INMESS &InMessage,
                           const CtiTime TimeNow,

@@ -296,10 +296,10 @@ public:
    YukonError_t generateCommand    (CtiXfer  &Transfer, CtiMessageList &traceList) override;
    YukonError_t decodeResponse (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
 
-   virtual INT allocateDataBins (OUTMESS *);
-   virtual INT freeDataBins ();
-   virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
-   virtual INT copyLoadProfileData (BYTE *aInMessBuffer, ULONG &aBytesReceived);
+   INT allocateDataBins (OUTMESS *) override;
+   INT freeDataBins () override;
+   INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived) override;
+   INT copyLoadProfileData (BYTE *aInMessBuffer, ULONG &aBytesReceived) override;
 
    void setupGetRecord(CtiXfer &Transfer);
    void checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfer);
@@ -307,7 +307,7 @@ public:
    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority) override;
    INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
    INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
 
    INT decodeResultLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);

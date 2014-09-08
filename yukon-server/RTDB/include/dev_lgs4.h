@@ -456,22 +456,10 @@ public:
      *  These guys initiate a scan based upon the type requested.
      */
 
-    virtual INT GeneralScan( CtiRequestMsg              *pReq,
-                             CtiCommandParser           &parse,
-                             OUTMESS                   *&OutMessage,
-                             CtiMessageList  &vgList,
-                             CtiMessageList  &retList,
-                             OutMessageList     &outList,
-                             INT                         ScanPriority );
+    INT GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority ) override;
 
-    virtual INT ResultDecode( const INMESS               &InMessage,
-                              const CtiTime               TimeNow,
-                              CtiMessageList &vgList,
-                              CtiMessageList &retList,
-                              OutMessageList    &outList );
-    virtual INT ErrorDecode ( const INMESS      &InMessage,
-                              const CtiTime      TimeNow,
-                              CtiMessageList &retList);
+    INT ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList    &outList ) override;
+    INT ErrorDecode ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
     // interrogation routines
     YukonError_t decodeResponseHandshake  ( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList ) override;
@@ -484,11 +472,11 @@ public:
     YukonError_t generateCommandScan       ( CtiXfer &Transfer, CtiMessageList &traceList ) override;
     YukonError_t generateCommandLoadProfile( CtiXfer &Transfer, CtiMessageList &traceList ) override;
 
-    virtual INT reformatDataBuffer ( BYTE *aInMessBuffer, ULONG &aBytesReceived );
-    virtual INT copyLoadProfileData( BYTE *aInMessBuffer, ULONG &aTotalBytes );
+    INT reformatDataBuffer ( BYTE *aInMessBuffer, ULONG &aBytesReceived ) override;
+    INT copyLoadProfileData( BYTE *aInMessBuffer, ULONG &aTotalBytes ) override;
 
-    virtual INT allocateDataBins( OUTMESS *outMess );
-    virtual INT freeDataBins( );
+    INT allocateDataBins( OUTMESS *outMess ) override;
+    INT freeDataBins( ) override;
 
     virtual INT decodeResultScan( const INMESS               &InMessage,
                                   const CtiTime               TimeNow,
@@ -501,16 +489,9 @@ public:
                                          CtiMessageList &retList,
                                          OutMessageList    &outList );
 
-    virtual BOOL verifyAndAddPointToReturnMsg( LONG          aPointID,
-                                               DOUBLE        aValue,
-                                               USHORT        aQuality,
-                                               CtiTime        aTime,
-                                               CtiReturnMsg *aReturnMsg,
-                                               USHORT        aIntervalType=0,
-                                               std::string     aValReport=std::string() );
+    BOOL verifyAndAddPointToReturnMsg( LONG aPointID, DOUBLE aValue, USHORT aQuality, CtiTime aTime, CtiReturnMsg *aReturnMsg, USHORT aIntervalType=0, std::string aValReport=std::string() ) override;
 
-    virtual BOOL insertPointIntoReturnMsg( CtiMessage   *aDataPoint,
-                                           CtiReturnMsg *aReturnMsg );
+    BOOL insertPointIntoReturnMsg( CtiMessage *aDataPoint, CtiReturnMsg *aReturnMsg ) override;
 
 
     LONG findLPDataPoint( LGS4LPPointInfo_t &point,

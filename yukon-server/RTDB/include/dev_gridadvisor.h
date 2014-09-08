@@ -26,7 +26,7 @@ public:
 
     virtual std::string getSQLCoreStatement() const;
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     //  virtual in case different GridAdvisor devices need to form up alternate requests for the same command
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;

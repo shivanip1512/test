@@ -38,9 +38,9 @@ private:
 
 protected:
 
-    virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
+    bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const override;
 
-    virtual INT ModelDecode  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT ModelDecode  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
     INT decodeGetValueDemand ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetConfigModel ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );

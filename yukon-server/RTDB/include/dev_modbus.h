@@ -66,7 +66,7 @@ public:
     virtual std::string getSQLCoreStatement() const;
 
     virtual std::string getDescription(const CtiCommandParser & parse) const;
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     int sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList );
     YukonError_t recvCommRequest( OUTMESS *OutMessage );

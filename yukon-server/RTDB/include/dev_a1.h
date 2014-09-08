@@ -493,10 +493,10 @@ public:
    }
 
    // all routines required by base class dev_meter
-   virtual INT ResultDisplay (const INMESS &InMessage);
-   virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
-   virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
-   virtual INT allocateDataBins (OUTMESS *outMess);
+   INT ResultDisplay (const INMESS &InMessage);
+   INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived) override;
+   INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes) override;
+   INT allocateDataBins (OUTMESS *outMess) override;
    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
                            INT ScanPriority = MAXPRIORITY - 4) override;
 
@@ -531,11 +531,10 @@ public:
    BOOL getEnergyValueFromBlock6 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, const AlphaA1ScanData_t *aScanData);
    USHORT getOffsetMapping (int aOffset);
    USHORT getRate (int aOffset);
-   //INT ResultFailureDisplay (INT FailError);  apparently unused  2001-oct-04 mskf
 
    // from alpha base class in dev_alpha.cpp
-   virtual UCHAR touBlockMapping (UCHAR config, USHORT type);
-   virtual INT freeDataBins ();
+   UCHAR touBlockMapping (UCHAR config, USHORT type) override;
+   INT freeDataBins () override;
    USHORT calculateStartingByteCountForCurrentScanState (int aClass);
 };
 

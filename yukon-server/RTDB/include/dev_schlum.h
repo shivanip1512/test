@@ -134,20 +134,11 @@ public:
    INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
-   virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
-                                              DOUBLE        aValue,
-                                              USHORT        aQuality,
-                                              CtiTime        aTime,
-                                              CtiReturnMsg *aReturnMsg,
-                                              USHORT        aIntervalType=0,
-                                              std::string        aValReport=std::string());
+   BOOL verifyAndAddPointToReturnMsg (LONG aPointId, DOUBLE aValue, USHORT aQuality, CtiTime aTime, CtiReturnMsg *aReturnMsg, USHORT aIntervalType=0, std::string aValReport=std::string()) override;
 
-   virtual BOOL insertPointIntoReturnMsg (CtiMessage    *aDataPoint,
-                                  CtiReturnMsg   *aReturnMsg);
-   virtual INT freeDataBins ();
+   BOOL insertPointIntoReturnMsg (CtiMessage *aDataPoint, CtiReturnMsg *aReturnMsg) override;
 
-
-
+   INT freeDataBins () override;
 
    ULONG    previousMassMemoryAddress( ULONG SA,     // Starting Address
                                        ULONG CA,     // Current Address

@@ -166,7 +166,7 @@ public:
 
     unsigned long getTardyTime(int scantype) const;
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
     virtual void DecodeScanRateDatabaseReader(Cti::RowReader &rdr);
     virtual void DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr);
     void applySignaledRateChange(LONG aOpen, LONG aDuration);

@@ -101,7 +101,7 @@ protected:
 
     static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, const BYTE *DataValueArray );
 
-    virtual INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
     INT decodeGetValueKWH         ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetValueDemand      ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
@@ -113,9 +113,8 @@ protected:
     INT decodeScanLoadProfile     ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodePutConfigPeakMode   ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
-    //  virtual so that the MCT318 can override them
-    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+    INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList ) override;
+    bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage ) override;
 
     void decodeAccumulators( ULONG *result, INT accum_cnt, const BYTE *Data );
     void decodeStati( INT &stat, INT which, BYTE *Data );
@@ -132,8 +131,7 @@ public:
 
     Mct310Device( );
 
-    //  virtual so that the MCT318 can override it
-    virtual ULONG calcNextLPScanTime( void );
+    ULONG calcNextLPScanTime( void ) override;
 };
 
 }

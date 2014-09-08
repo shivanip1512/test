@@ -52,7 +52,7 @@ public:
     virtual YukonError_t sendCommResult(INMESS &InMessage);
     bool isTransactionComplete();
 
-    void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
    YukonError_t decode(CtiXfer &xfer, YukonError_t commReturnValue);
    YukonError_t generate(CtiXfer &xfer);

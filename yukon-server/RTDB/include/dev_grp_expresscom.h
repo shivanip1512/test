@@ -40,7 +40,7 @@ public:
 
     virtual LONG getRouteID();
     virtual std::string getDescription(const CtiCommandParser & parse) const;
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
     virtual std::string getPutConfigAssignment(UINT modifier = 0);
     virtual void reportControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, std::string cmd = std::string(""), int priority = 0 );

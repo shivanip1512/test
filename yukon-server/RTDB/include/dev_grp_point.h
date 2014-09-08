@@ -32,7 +32,7 @@ public:
 
     virtual std::string getSQLCoreStatement() const;
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     const CtiTablePointGroup& getLoadGroup() const { return _loadGroup; }

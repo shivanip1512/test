@@ -98,7 +98,7 @@ protected:
 
     virtual INT executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    virtual INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
     INT decodeGetConfigIED   ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetStatusIED   ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
@@ -124,9 +124,9 @@ public:
 
     CtiTableDeviceMCTIEDPort &getIEDPort( void );
 
-    ULONG calcNextLPScanTime( void );
-    INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
-    virtual bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+    ULONG calcNextLPScanTime( void ) override;
+    INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList ) override;
+    bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage ) override;
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

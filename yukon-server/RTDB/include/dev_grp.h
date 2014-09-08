@@ -46,7 +46,7 @@ public:
 
     virtual LONG getRouteID() = 0;      // Must be defined!
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override
     {
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     }

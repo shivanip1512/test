@@ -32,7 +32,7 @@ public:
     int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     virtual std::string getSQLCoreStatement() const;
-    virtual void DecodeDatabaseReader(RowReader &rdr);
+    void DecodeDatabaseReader(RowReader &rdr) override;
 
     RfnIdentifier getRfnIdentifier() const;
 

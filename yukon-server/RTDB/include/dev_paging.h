@@ -31,7 +31,7 @@ public:
 
    virtual std::string getSQLCoreStatement() const;
 
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 };
 
 }// namespace Device

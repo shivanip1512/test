@@ -120,7 +120,7 @@ public:
         return sqlCore;
     }
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override
     {
         INT iTemp;
 

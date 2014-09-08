@@ -38,7 +38,7 @@ protected:
         MCT_LMT2_ResetOverrideFunc = 0x57
     };
 
-    virtual INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    INT ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
     INT decodeScanLoadProfile     (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     INT decodeAccumScan           (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
@@ -49,14 +49,14 @@ protected:
 
     INT decodeGetConfigModel      (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    INT calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
-    virtual bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+    INT calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList ) override;
+    bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage ) override;
 
 public:
 
     Lmt2Device();
 
-    ULONG calcNextLPScanTime( void );
+    ULONG calcNextLPScanTime( void ) override;
 };
 
 }

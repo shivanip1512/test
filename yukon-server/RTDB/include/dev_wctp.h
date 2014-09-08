@@ -96,8 +96,8 @@ public:
    YukonError_t generateCommand(CtiXfer  &Transfer, CtiMessageList &traceList) override;
    YukonError_t decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
 
-   virtual INT allocateDataBins (OUTMESS *outMess);
-   virtual INT freeDataBins();
+   INT allocateDataBins (OUTMESS *outMess) override;
+   INT freeDataBins() override;
 
    virtual CtiDeviceIED& setInitialState(const LONG oldid);
 

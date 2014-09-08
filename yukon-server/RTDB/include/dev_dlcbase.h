@@ -34,7 +34,13 @@ public:
 
 private:
 
-    typedef CtiDeviceSingle Inherited;
+    typedef DlcBaseDevice Self;
+    typedef CtiDeviceSingle Parent;
+
+    typedef int (Self::*ExecuteMethod)(CtiRequestMsg *, CtiCommandParser &, OUTMESS *&, std::list< CtiMessage* > &, std::list< CtiMessage* > &, std::list< OUTMESS* > &);
+
+    static const std::map<CtiClientRequest_t, ExecuteMethod> _executeMethods;
+    static const std::map<CtiClientRequest_t, ExecuteMethod> buildExecuteMethodMap();
 
     static unsigned int _lpRetryMultiplier;
     static unsigned int _lpRetryMinimum;
@@ -101,8 +107,7 @@ protected:
                            OutMessageList     &outList,
                            bool                  broadcastWritesOnMacroSubroutes );
 
-    virtual INT SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-
+    INT SubmitRetry (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
     INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     INT retMsgHandler( std::string commandStr, int status, CtiReturnMsg *retMsg, CtiMessageList &vgList, CtiMessageList &retList, bool expectMore = false ) const;
@@ -156,7 +161,7 @@ public:
 
     virtual std::string getSQLCoreStatement() const;
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;

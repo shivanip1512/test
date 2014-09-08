@@ -223,10 +223,10 @@ public:
    YukonError_t decodeResponseSelectMeter( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList ) override;
    YukonError_t decodeResponseLoadProfile( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList ) override;
 
-   virtual INT reformatDataBuffer ( BYTE *aInMessBuffer, ULONG &aBytesReceived );
-   virtual INT copyLoadProfileData( BYTE *aInMessBuffer, ULONG &aTotalBytes );
+   INT reformatDataBuffer ( BYTE *aInMessBuffer, ULONG &aBytesReceived ) override;
+   INT copyLoadProfileData( BYTE *aInMessBuffer, ULONG &aTotalBytes ) override;
 
-   virtual INT allocateDataBins( OUTMESS *outMess );
+   INT allocateDataBins( OUTMESS *outMess ) override;
 
    INT decodeResultScan       ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
    INT decodeResultLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;

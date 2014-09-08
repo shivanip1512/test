@@ -48,7 +48,7 @@ public:
 
     virtual LONG getAddress() const;
     virtual std::string getDescription(const CtiCommandParser & parse) const;
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     unsigned queuedWorkCount() const;
     virtual bool hasQueuedWork() const;

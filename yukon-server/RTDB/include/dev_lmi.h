@@ -34,7 +34,7 @@ public:
 
     virtual std::string getSQLCoreStatement() const;
 
-    void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     YukonError_t decode(CtiXfer &xfer, YukonError_t status);
     void sendDispatchResults(CtiConnection &vg_connection);

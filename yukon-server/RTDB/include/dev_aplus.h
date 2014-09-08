@@ -356,9 +356,9 @@ public:
     INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
                             INT ScanPriority = MAXPRIORITY - 4) override;
 
-    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
-    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
-    virtual INT allocateDataBins (OUTMESS *outMess);
+    INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived) override;
+    INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes) override;
+    INT allocateDataBins (OUTMESS *outMess) override;
 
     YukonError_t generateCommandScan       (CtiXfer  &Transfer, CtiMessageList &traceList ) override;
     YukonError_t generateCommandLoadProfile(CtiXfer  &Transfer, CtiMessageList &traceList ) override;

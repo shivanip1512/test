@@ -82,7 +82,7 @@ public:
         return sqlCore;
     }
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
+    void DecodeDatabaseReader(Cti::RowReader &rdr ) override
     {
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

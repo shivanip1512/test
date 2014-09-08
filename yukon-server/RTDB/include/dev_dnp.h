@@ -81,7 +81,7 @@ public:
     virtual std::string getSQLCoreStatement() const;
 
     virtual std::string getDescription(const CtiCommandParser & parse) const;
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     LONG getAddress() const;
     LONG getMasterAddress() const;

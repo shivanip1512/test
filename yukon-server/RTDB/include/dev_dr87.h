@@ -178,26 +178,18 @@ public:
     YukonError_t generateCommandLoadProfile (CtiXfer &Transfer, CtiMessageList &traceList) override;
     virtual INT generateCommandTerminate   (CtiXfer &Transfer, CtiMessageList &traceList);
 
-    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
-    virtual INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes);
+    INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived) override;
+    INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes) override;
 
-    virtual INT allocateDataBins (OUTMESS *outMess);
-    virtual INT freeDataBins ();
+    INT allocateDataBins (OUTMESS *outMess) override;
+    INT freeDataBins () override;
 
     INT decodeResultScan       (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
     INT decodeResultLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointID,
-                                               DOUBLE        aValue,
-                                               USHORT        aQuality,
-                                               CtiTime        aTime,
-                                               CtiReturnMsg *aReturnMsg,
-                                               USHORT        aIntervalType=0,
-                                               std::string     aValReport=std::string());
+    BOOL verifyAndAddPointToReturnMsg (LONG aPointID, DOUBLE aValue, USHORT aQuality, CtiTime aTime, CtiReturnMsg *aReturnMsg, USHORT aIntervalType=0, std::string aValReport=std::string()) override;
 
-    virtual BOOL insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
-                                           CtiReturnMsg *aReturnMsg);
-
+    BOOL insertPointIntoReturnMsg (CtiMessage *aDataPoint, CtiReturnMsg *aReturnMsg) override;
 
     INT     checkCRC(BYTE *InBuffer,ULONG InCount);
     USHORT  calculateCRC(UCHAR* buffer, LONG length, BOOL bAdd);

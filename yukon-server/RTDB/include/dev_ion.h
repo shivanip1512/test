@@ -54,7 +54,7 @@ public:
     void setMeterGroupData( const std::string &meterNumber);
 
     virtual std::string getSQLCoreStatement() const;
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     Cti::Protocol::Interface *getProtocol( void );

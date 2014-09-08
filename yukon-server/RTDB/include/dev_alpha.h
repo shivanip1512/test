@@ -213,20 +213,13 @@ public:
 
     YukonError_t decodeResponse          (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
     YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList) override;
-    virtual INT freeDataBins();
+    INT freeDataBins() override;
 
 
-    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
-                                               DOUBLE        aValue,
-                                               USHORT        aQuality,
-                                               CtiTime        aTime,
-                                               CtiReturnMsg *aReturnMsg,
-                                               USHORT        aIntervalType=0,
-                                               std::string     aValReport=std::string());
+    BOOL verifyAndAddPointToReturnMsg (LONG aPointId, DOUBLE aValue, USHORT aQuality, CtiTime aTime, CtiReturnMsg *aReturnMsg, USHORT aIntervalType=0, std::string aValReport=std::string()) override;
 
 
-    virtual BOOL insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
-                                           CtiReturnMsg *aReturnMsg);
+    BOOL insertPointIntoReturnMsg (CtiMessage *aDataPoint, CtiReturnMsg *aReturnMsg) override;
 
 
 
