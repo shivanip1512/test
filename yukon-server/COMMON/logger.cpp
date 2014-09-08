@@ -303,10 +303,11 @@ void CtiLogger::doOutput()
             bool truncated_output_printed = false;
             while( _queue.tryRead(to_write) )
             {
-                const int pcount = to_write->pcount();
-                const bool oversize = pcount > 1024 * 4;
+                const streamsize Limit_4k = 1024 * 4;
+                const streamsize pcount = to_write->pcount();
+                const bool oversize = pcount > Limit_4k;
 
-                const int n = std::min(pcount, 1024 * 4);
+                const int n = std::min(pcount, Limit_4k);
 
                 if( n > 0 )
                 {
@@ -346,7 +347,7 @@ void CtiLogger::doOutput()
                         outfile.write( to_write->str(), n );
                         if( oversize )
                         {
-                            outfile << endl << "********  Log entry limited to " << 1024 * 4 << " chars, was " << pcount << " chars ********" << endl;
+                            outfile << endl << "********  Log entry limited to " << Limit_4k << " chars, was " << pcount << " chars ********" << endl;
                         }
                     }
                 }
