@@ -40,30 +40,6 @@ struct Atomic<T, typename boost::enable_if_c<boost::is_integral<T>::value && siz
 private:
     long _stored;
     
-    template<int size>
-    T increment()
-    {
-        return operator+=(1);
-    }
-
-    template<>
-    T increment<sizeof(long)>()
-    {
-        return InterlockedIncrement(&_stored);
-    }
-
-    template<int size>
-    T decrement()
-    {
-        return operator-=(1);
-    }
-
-    template<>
-    T decrement<sizeof(long)>()
-    {
-        return InterlockedDecrement(&_stored);
-    }
-
 public:
     Atomic() : _stored(0)
     {}
@@ -131,55 +107,38 @@ public:
 
     T operator+=(T val)
     {
-        for(;;)
-        {
-            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
-            T newVal = prev;
-            newVal += val;
-            if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
-            {
-                return newVal; // success
-            }
-        }
+        return (InterlockedExchangeAdd(&_stored, val) + val);
     }
 
     T operator-=(T val)
     {
-        for(;;)
-        {
-            const long prev = InterlockedCompareExchange(&_stored, 0, 0);
-            T newVal = prev;
-            newVal -= val;
-            if( InterlockedCompareExchange(&_stored, newVal, prev) == prev )
-            {
-                return newVal; // success
-            }
-        }
+        const long negVal = ~static_cast<long>(val) + 1;
+        return (InterlockedExchangeAdd(&_stored, negVal) + negVal);
     }
 
     // pre-increment
     T operator++()
     {
-        return increment<sizeof(T)>();
+        return InterlockedIncrement(&_stored);
     }
 
     // pre-decrement
     T operator--()
     {
-        return decrement<sizeof(T)>();
+        return InterlockedDecrement(&_stored);
     }
 
     // post-increment
     T operator++(int)
     {
-        T val = increment<sizeof(T)>();
+        T val = InterlockedIncrement(&_stored);
         return --val;
     }
 
     // post-decrement
     T operator--(int)
     {
-        T val = decrement<sizeof(T)>();
+        T val = InterlockedDecrement(&_stored);
         return ++val;
     }
 };
