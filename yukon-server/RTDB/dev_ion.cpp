@@ -454,7 +454,7 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 int CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT ErrReturn = InMessage.ErrorCode;
+    YukonError_t ErrReturn = InMessage.ErrorCode;
     list<CtiPointDataMsg*> pointData;
     list<CtiSignalMsg*>    eventData;
     string returnInfo;

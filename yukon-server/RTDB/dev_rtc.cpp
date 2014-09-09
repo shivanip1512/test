@@ -182,7 +182,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceRTC::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    const INT ErrReturn = InMessage.ErrorCode;
+    const YukonError_t ErrReturn = InMessage.ErrorCode;
 
     string resultString;
 

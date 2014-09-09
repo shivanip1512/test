@@ -542,7 +542,7 @@ void ModbusDevice::processPoints( Protocol::Interface::pointlist_t &points )
 
 INT ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    const INT ErrReturn = InMessage.ErrorCode;
+    const YukonError_t ErrReturn = InMessage.ErrorCode;
 
     CtiReturnMsg *retMsg;
 
