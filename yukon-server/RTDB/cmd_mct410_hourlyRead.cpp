@@ -127,7 +127,7 @@ Mct410Device::point_info Mct410HourlyReadCommand::extractMidnightKwh(const Bytes
     //  we have to manually check this here because we're using Mct4xxDevice::getData(), which only knows pointers
     if( payload.size() < 13 )
     {
-        throw CommandException(NOTNORMAL, "Payload too small");
+        throw CommandException(Error_Abnormal, "Payload too small");
     }
 
     return getAccumulatorData(&payload.front() + 10, 3);

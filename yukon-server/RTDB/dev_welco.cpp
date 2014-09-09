@@ -61,7 +61,7 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
      *  This is the WelCoFreeze code from the bad old daze.
      */
 
-    INT         status      = NORMAL;
+    INT         status      = NoError;
 
     if(OutMessage != NULL)
     {
@@ -97,7 +97,7 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
 
 INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(getDeadbandsSent() == false)      // We are currently unsure whether a deadband request has ever been sent.
     {
@@ -138,7 +138,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     USHORT   AccumFirst = 0xffff;
     USHORT   AccumLast = 0;
 
-    INT         status      = NORMAL;
+    INT         status      = NoError;
 
     if(OutMessage != NULL)
     {
@@ -362,7 +362,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
     {
         // CtiLockGuard<CtiLogger> doubt_guard(dout);
         // dout << TimeNow << " " << getName() << " No exceptions.. " << endl;
-        return(NORMAL);
+        return NoError;
     }
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
@@ -409,7 +409,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                         InEchoToOut(InMessage, OutMessage);
 
                         /* This is the Big E so reset the RTU, download the deadbands and clear the demand accums */
-                        if((i = WelCoReset(OutMessage, MAXPRIORITY)) != NORMAL)
+                        if((i = WelCoReset(OutMessage, MAXPRIORITY)) != NoError)
                         {
                             /* Send Error to logger */
                             ReportError ((USHORT)i);
@@ -427,7 +427,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
 
                     setDeadbandsSent(false);
 
-                    if((i = WelCoDeadBands(InMessage, outList, MAXPRIORITY - 1)) != NORMAL)
+                    if((i = WelCoDeadBands(InMessage, outList, MAXPRIORITY - 1)) != NoError)
                     {
                         /* Send Error to logger */
                         ReportError (i);
@@ -438,7 +438,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                 if(MyInMessage[2] & (EW_FMW_BIT | EW_PWR_BIT | EW_SYN_BIT))
                 {
                     result += string("Time synchronization sent to RTU\n");
-                    if((i = WelCoTimeSync (InMessage, outList, MAXPRIORITY - 1)) != NORMAL)
+                    if((i = WelCoTimeSync (InMessage, outList, MAXPRIORITY - 1)) != NoError)
                     {
                         /* Send Error to logger */
                         ReportError (i);
@@ -486,7 +486,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                             Sleep(welcofreezedelay);
                         }
 
-                        if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
+                        if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NoError)
                         {
                             ReportError ((USHORT)i); /* Send Error to logger */
                         }
@@ -1174,7 +1174,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
         {
             InEchoToOut(InMessage, OutMessage);
 
-            if((i = WelCoContinue (OutMessage, MAXPRIORITY - 4)) != NORMAL)
+            if((i = WelCoContinue (OutMessage, MAXPRIORITY - 4)) != NoError)
             {
                 /* Send Error to logger */
                 ReportError (i);
@@ -1199,7 +1199,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
         }
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -1208,7 +1208,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
 /* Routine to error codes from a WelCo device */
 INT CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            /* Priority to place command on queue */
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     /* Load the sectn to reset the RTU */
     OutMessage->Buffer.OutMessage[5] = IDLC_DIAGNOSTICS | 0x80;  // This is what it should be. CGP.
@@ -1231,7 +1231,7 @@ INT CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            
 INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
 
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     if(getDebugLevel() & DEBUGLEVEL_WELCO_PROTOCOL)
     {
@@ -1258,7 +1258,7 @@ INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
 /* Routine to output continue message to a WelCo device */
 INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     /* Load the sectn to scan the stati */
     OutMessage->Buffer.OutMessage[5] = IDLC_POLL | 0x80;
@@ -1277,7 +1277,7 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
 
 INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outList, INT Priority)
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
@@ -1286,7 +1286,7 @@ INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outLi
         InEchoToOut(InMessage, OutMessage);
         status = WelCoTimeSync(OutMessage, MAXPRIORITY - 1);
 
-        if(status == NORMAL)
+        if(status == NoError)
         {
             outList.push_back(OutMessage);
         }
@@ -1302,7 +1302,7 @@ INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outLi
 /* Routine to send a time sync to a WelCo device */
 INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -1335,7 +1335,7 @@ INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
 /* Routine to reset a WelCo device */
 INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     /* Load the sectn to reset the RTU */
     OutMessage->Buffer.OutMessage[5] = IDLC_RESET | 0x80;
@@ -1357,7 +1357,7 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 
 INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, OutMessageList &outList, INT Priority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
@@ -1386,7 +1386,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, OutMessageList &outList,
 
     CtiPointSPtr PointRecord;
 
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     OUTMESS *MyOutMessage = NULL;
 
@@ -1438,7 +1438,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, OutMessageList &outList,
 
                 Position = AnalogFirst + 1;
 
-                for(Position = AnalogFirst + 1; Position <= AnalogLast + 1 && status == NORMAL; Position++)
+                for(Position = AnalogFirst + 1; Position <= AnalogLast + 1 && status == NoError; Position++)
                 {
                     CtiPointAnalogSPtr Point = boost::static_pointer_cast<CtiPointAnalog>(getDevicePointOffsetTypeEqual(Position, AnalogPointType));
 
@@ -1589,7 +1589,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg     *pReq,
                                    CtiMessageList    &retList,
                                    OutMessageList    &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -1740,7 +1740,7 @@ CtiDeviceWelco& CtiDeviceWelco::setDeadbandsSent(const bool b)
 
 INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(!isInhibited())
     {

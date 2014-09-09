@@ -71,7 +71,7 @@ bool Mct210Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  */
 INT Mct210Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     switch(InMessage.Sequence)
     {
@@ -85,7 +85,7 @@ INT Mct210Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NORMAL)
+            if(status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

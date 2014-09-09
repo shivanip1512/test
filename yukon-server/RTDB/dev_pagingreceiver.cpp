@@ -52,7 +52,7 @@ INT CtiDevicePagingReceiver::ResultDecode(const INMESS &InMessage, const CtiTime
 {
     //So far I am doing nothing with the result...
     resetScanFlag();
-    return NORMAL;
+    return NoError;
 }
 
 YukonError_t CtiDevicePagingReceiver::sendCommResult(INMESS &InMessage)
@@ -64,7 +64,7 @@ YukonError_t CtiDevicePagingReceiver::sendCommResult(INMESS &InMessage)
 
 INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
 
@@ -104,7 +104,7 @@ INT CtiDevicePagingReceiver::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
 YukonError_t CtiDevicePagingReceiver::recvCommRequest(OUTMESS *OutMessage)
 {
     _command = Normal;
-    return NORMAL;//could do something with this someday.
+    return NoError;//could do something with this someday.
 }
 
 void CtiDevicePagingReceiver::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
@@ -119,7 +119,7 @@ void CtiDevicePagingReceiver::getVerificationObjects(queue< CtiVerificationBase 
 
 YukonError_t CtiDevicePagingReceiver::generate(CtiXfer &xfer)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     try
     {
@@ -266,7 +266,7 @@ YukonError_t CtiDevicePagingReceiver::generate(CtiXfer &xfer)
         //Do catch stuff here ADD_CODE_HERE
         resetStates();
         _command = Complete;
-        status = FinalError;
+        status = Error_Abnormal;
         throw;
     }
     return status;
@@ -289,7 +289,7 @@ YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commRet
                     //the previous command does!
                     if(getPreviousState() == DoInit)
                     {
-                        status = NORMAL;
+                        status = NoError;
                         setCurrentState(SendWhatStringPointerPointsTo);
                     }
                     else
@@ -297,7 +297,7 @@ YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commRet
                     {
                         if(strstr((char*)xfer.getInBuffer(), "T>") != NULL)
                         {
-                            status = NORMAL;
+                            status = NoError;
                             setCurrentState(getPreviousState());
 
                         }
@@ -319,7 +319,7 @@ YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commRet
 
                     if(getPreviousState()==Done)
                     {
-                        status = NORMAL;
+                        status = NoError;
                         _command = Complete;
                         resetStates();
                     }
@@ -355,7 +355,7 @@ YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commRet
                                 else
                                 {
                                     _command = Complete;
-                                    status = NORMAL;
+                                    status = NoError;
                                     resetStates();
 
                                 }
@@ -390,7 +390,7 @@ YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commRet
                                 _messageString = _messageString.substr(headLocation);//take off anything before headLocation
                                 _hadHeader = true;
                                 _command = Complete;
-                                status = NORMAL;
+                                status = NoError;
                                 resetStates();
                                 break;
                             }
@@ -407,7 +407,7 @@ YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commRet
                             _messageString = _messageString.substr(_messageString.length()-4);
                         }
                         _command = Complete;
-                        status = NORMAL;
+                        status = NoError;
                         resetStates();
                     }
 
@@ -438,7 +438,7 @@ YukonError_t CtiDevicePagingReceiver::decode(CtiXfer &xfer, YukonError_t commRet
     {
         resetStates();
         _command = Complete;
-        status = FinalError;
+        status = Error_Abnormal;
         throw;
     }
     return status;

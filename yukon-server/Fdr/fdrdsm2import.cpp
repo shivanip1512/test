@@ -110,7 +110,7 @@ bool CtiFDR_Dsm2Import::sendMessageToForeignSys ( CtiMessage *aMessage )
 
 INT CtiFDR_Dsm2Import::processMessageFromForeignSystem (CHAR *data)
 {
-    return NORMAL;
+    return NoError;
 }
 
 CtiTime CtiFDR_Dsm2Import::Dsm2ToYukonTime (string aTime)

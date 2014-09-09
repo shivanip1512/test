@@ -49,7 +49,7 @@ int CtiDeviceFocus::buildSingleTableRequest(BYTE *aMsg, UINT tableId)
             &flags, sizeof(UINT));
 
 
-    return NORMAL;
+    return NoError;
 
 }
 
@@ -200,7 +200,7 @@ int CtiDeviceFocus::buildTableRequest (BYTE *aMsg, ANSI_TABLE_WANTS *table, WANT
             &flags, sizeof(UINT));
 
 
-    return NORMAL;
+    return NoError;
 }
 
 

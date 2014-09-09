@@ -157,7 +157,7 @@ YukonError_t TransportLayer::generate( CtiXfer &xfer )
             }
             case Failed:
             {
-                retVal = NOTNORMAL;
+                retVal = Error_Abnormal;
             }
         }
     }

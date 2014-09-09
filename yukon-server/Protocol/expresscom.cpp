@@ -123,7 +123,7 @@ INT CtiProtocolExpresscom::addAddressing( UINT    serial,
 
     resolveAddressLevel();
 
-    return valid ? NORMAL : BADPARAM;
+    return valid ? NoError : BADPARAM;
 }
 
 INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
@@ -140,7 +140,7 @@ INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 
     resolveAddressLevel();
 
-    return validateParseAddressing(parse) ? NORMAL : BADPARAM;
+    return validateParseAddressing(parse) ? NoError : BADPARAM;
 }
 
 INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
@@ -158,7 +158,7 @@ INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
     resolveAddressLevel();
 
     // Either not using unique address, or unique address is > 0
-    return (validateParseAddressing(parse) && (_uniqueAddress > 0 || _addressLevel != atIndividual)) ? NORMAL : BADPARAM;
+    return (validateParseAddressing(parse) && (_uniqueAddress > 0 || _addressLevel != atIndividual)) ? NoError : BADPARAM;
 }
 
 void CtiProtocolExpresscom::addressMessage()
@@ -1076,7 +1076,7 @@ INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, B
 
 INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     addressMessage();
 
@@ -1226,7 +1226,7 @@ BYTE CtiProtocolExpresscom::getStopByte() const
 
 INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
 {
-    INT  status = NORMAL;
+    INT  status = NoError;
 
     if(parse.isKeyValid("xctamper"))
     {
@@ -1248,7 +1248,7 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
 INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
 {
     INT  i;
-    INT  status = NORMAL;
+    INT  status = NoError;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
     INT  relaymask  = parse.getiValue("relaymask", 0);
 
@@ -1404,7 +1404,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     int serial = parse.getiValue("xc_serial", 0);
     int relaymask  = parse.getiValue("relaymask", 0);
@@ -1427,12 +1427,12 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     if(parse.isKeyValid("xctservicecancel"))
     {
         bool isOutOfServiceRequest = (bool)parse.getiValue("xctservicecancel");
-        
+
         // Allow Serial or anything beyond SPID for in/out. Allow SPID alone for in service message but not out of service.
         if(isAddressSerial || isAddressBeyondSpid || (isAddressExactlySpid && !isOutOfServiceRequest))
         {
             priority(0);                    // Need to make certain the restore is high priority.
-            
+
             // Restore only happens on service out, not on service in.
             if(isOutOfServiceRequest)
             {
@@ -1492,7 +1492,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     if(parse.isKeyValid("xcgenericaddress"))
     {
         //Add our new target addressing! This overrides all addressing levels!
-        if((status = parseTargetAddressing(parse)) != NORMAL)
+        if((status = parseTargetAddressing(parse)) != NoError)
         {
             //We already know it is wrong, quit!
             return status;
@@ -1507,9 +1507,9 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 
         // If either succeeds, we are ok. Unless we have MISPARAM which indicates
         // we would be sending something unexpected based on user input.
-        if(tempStatus == NORMAL && status != MISPARAM)
+        if(tempStatus == NoError && status != MISPARAM)
         {
-            status = NORMAL;
+            status = NoError;
         }
     }
 
@@ -1707,7 +1707,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(parse.isKeyValid("xcproptest"))
     {
@@ -2728,7 +2728,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     /*  YUK-12764
         If the parse is an expresscom address assignment
             1. putconfig xcom assign ...
-            2. putconfig xcom target ... assign ...     
+            2. putconfig xcom target ... assign ...
         we want to allow a 0 for any of the address parameters (except spid).
         We still want to disallow 0 addressing for control commands.
     */

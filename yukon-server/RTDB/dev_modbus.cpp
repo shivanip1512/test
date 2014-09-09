@@ -43,7 +43,7 @@ ModbusDevice::ModbusDevice(void)
 
 INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -69,7 +69,7 @@ INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -647,7 +647,7 @@ INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 

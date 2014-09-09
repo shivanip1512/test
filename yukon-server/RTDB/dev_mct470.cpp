@@ -3112,12 +3112,12 @@ int Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &pars
     outList.push_back( touOutMessage );
     touOutMessage = 0;
 
-    return NORMAL;
+    return NoError;
 }
 
 int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -3173,8 +3173,8 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
                 const double multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
                 const double multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
 
-                if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,*peakKwResolution1,*lastIntervalDemandResolution1,*lpResolution1,ratio1,kRatio1) == NORMAL) &&
-                    (setupRatioBytesBasedOnMeterType(channel2,multiplier2,*peakKwResolution2,*lastIntervalDemandResolution2,*lpResolution2,ratio2,kRatio2) == NORMAL))
+                if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,*peakKwResolution1,*lastIntervalDemandResolution1,*lpResolution1,ratio1,kRatio1) == NoError) &&
+                    (setupRatioBytesBasedOnMeterType(channel2,multiplier2,*peakKwResolution2,*lastIntervalDemandResolution2,*lpResolution2,ratio2,kRatio2) == NoError))
                 {
                     if (parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1)  != channel1
                                                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2) != channel2
@@ -3210,7 +3210,7 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
                             nRet = ConfigNotCurrent;
                         }
                     }
-                    else if( nRet == NORMAL )
+                    else if( nRet == NoError )
                     {
                         nRet = ConfigCurrent;
                     }
@@ -3219,7 +3219,7 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL && ! strstr(OutMessage->Request.CommandStr, "lpchannel 34") )
+        if (nRet == NoError && ! strstr(OutMessage->Request.CommandStr, "lpchannel 34") )
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel12Pos;
             OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel12Len;
@@ -3266,8 +3266,8 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
                 const double multiplier3 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier3);
                 const double multiplier4 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
 
-                if ((setupRatioBytesBasedOnMeterType(channel3,multiplier3,*peakKwResolution3,*lastIntervalDemandResolution3,*lpResolution3,ratio3,kRatio3) == NORMAL) &&
-                    (setupRatioBytesBasedOnMeterType(channel4,multiplier4,*peakKwResolution4,*lastIntervalDemandResolution4,*lpResolution4,ratio4,kRatio4) == NORMAL))
+                if ((setupRatioBytesBasedOnMeterType(channel3,multiplier3,*peakKwResolution3,*lastIntervalDemandResolution3,*lpResolution3,ratio3,kRatio3) == NoError) &&
+                    (setupRatioBytesBasedOnMeterType(channel4,multiplier4,*peakKwResolution4,*lastIntervalDemandResolution4,*lpResolution4,ratio4,kRatio4) == NoError))
                 {
                     if( parse.isKeyValid("force")
                         || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3) != channel3
@@ -3303,7 +3303,7 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
                             nRet = ConfigNotCurrent;
                         }
                     }
-                    else if( nRet == NORMAL )
+                    else if( nRet == NoError )
                     {
                         nRet = ConfigCurrent;
                     }
@@ -3312,7 +3312,7 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL && ! strstr(OutMessage->Request.CommandStr, "lpchannel 12") )
+        if (nRet == NoError && ! strstr(OutMessage->Request.CommandStr, "lpchannel 12") )
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel34Pos;
             OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel34Len;
@@ -3331,7 +3331,7 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
 
 int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -3386,7 +3386,7 @@ int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &p
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if (nRet == NoError)
         {
             OutMessage->Buffer.BSt.Function   = Memory_RelayATimerPos;
             OutMessage->Buffer.BSt.Length     = Memory_RelayATimerLen + Memory_RelayBTimerLen;
@@ -3400,12 +3400,12 @@ int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &p
         nRet = NoConfigData;
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     long value;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -3451,7 +3451,7 @@ int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser 
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if (nRet == NoError)
         {
             OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
             OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
@@ -3470,7 +3470,7 @@ int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser 
 
 int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -3534,7 +3534,7 @@ int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandP
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if (nRet == NoError)
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_PrecannedTablePos;
             OutMessage->Buffer.BSt.Length     = FuncRead_PrecannedTableLen;
@@ -3564,7 +3564,7 @@ int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandP
 
 int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     const int bufferSize = 26;
     BYTE buffer[bufferSize];
 
@@ -3682,7 +3682,7 @@ int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList,
 
 INT Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -3803,7 +3803,7 @@ INT Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int  status = NORMAL, i;
+    int  status = NoError, i;
     bool demand_defined = false;
     point_info pi;
 
@@ -3886,7 +3886,7 @@ INT Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int         status = NORMAL, base_offset;
+    int         status = NoError, base_offset;
     point_info  pi, pi_time;
     CtiTime     pointTime;
 
@@ -3994,7 +3994,7 @@ void Mct470Device::reportPointData(const CtiPointType_t pointType, const int poi
 
 INT Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int        status = NORMAL,
+    int        status = NoError,
                frozen = 0,
                offset = 0,
                rate   = 0;
@@ -4645,7 +4645,7 @@ int Mct470Device::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &
             consumption_value.quality = InvalidQuality;
             consumption_value.description = "Bad consumption timestamp";
 
-            status = NOTNORMAL;
+            status = Error_Abnormal;
         }
 
         insertPointDataReport(AnalogPointType, consumption_offset, ReturnMsg, consumption_value, consumption_name, consumption_timestamp, 1.0, TAG_POINT_MUST_ARCHIVE);
@@ -4673,7 +4673,7 @@ int Mct470Device::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &
             demand_value.quality = InvalidQuality;
             demand_value.description = "Bad peak demand timestamp";
 
-            status = NOTNORMAL;
+            status = Error_Abnormal;
         }
 
         insertPointDataReport(AnalogPointType, demand_offset, ReturnMsg, demand_value, demand_name, demand_timestamp);
@@ -4734,7 +4734,7 @@ unsigned long Mct470Device::convertTimestamp(const unsigned long timestamp, cons
 
 INT Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     point_info     pi;
     string         resultString;
@@ -4974,7 +4974,7 @@ INT Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const CtiTime Time
 
 INT Mct470Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
 
@@ -5064,7 +5064,7 @@ INT Mct470Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 
 INT Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL, lp_channel;
+    INT status = NoError, lp_channel;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
@@ -5123,7 +5123,7 @@ INT Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 
 INT Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL, lp_channel;
+    INT status = NoError, lp_channel;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
@@ -5183,7 +5183,7 @@ INT Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const CtiTime Tim
 
 INT Mct470Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-     INT status = NORMAL;
+     INT status = NoError;
 
      const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -5238,7 +5238,7 @@ INT Mct470Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime 
 
 INT Mct470Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5283,7 +5283,7 @@ INT Mct470Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTim
 
 INT Mct470Device::decodeGetConfigIedDnpAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5383,7 +5383,7 @@ string Mct470Device::describeChannel(unsigned char channel_config) const
 
 INT Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5420,7 +5420,7 @@ INT Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, const Cti
 
 INT Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5478,7 +5478,7 @@ INT Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct470Device::decodeGetConfigMultiplier(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
@@ -5630,7 +5630,7 @@ void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, str
 
 INT Mct470Device::decodeGetValuePhaseCurrent(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 
@@ -5896,7 +5896,7 @@ unsigned char Mct470Device::computeResolutionByte(double lpResolution, double pe
 
 int Mct470Device::setupRatioBytesBasedOnMeterType(int channel, double multiplier, double peakKwResolution, double lastIntervalDemandResolution, double lpResolution, unsigned int &ratio, unsigned int &kRatio)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     int meterType = channel & 0x03;
 
     switch (meterType)

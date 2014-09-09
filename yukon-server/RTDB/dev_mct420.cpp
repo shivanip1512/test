@@ -961,9 +961,9 @@ int Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, cons
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, NORMAL, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
 
-    return NORMAL;
+    return NoError;
 }
 
 

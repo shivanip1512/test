@@ -429,7 +429,7 @@ bool CtiFDRSingleSocket::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
 
 int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     USHORT *function = (USHORT *)aBuffer;
 
     switch (ntohs (*function))
@@ -506,35 +506,35 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
 
 int CtiFDRSingleSocket::processValueMessage(CHAR *data)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     return retVal;
 }
 
 int CtiFDRSingleSocket::processStatusMessage(CHAR *data)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     return retVal;
 }
 
 int CtiFDRSingleSocket::processRegistrationMessage(CHAR *data)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     return retVal;
 }
 
 int CtiFDRSingleSocket::processControlMessage(CHAR *data)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     return retVal;
 }
 int CtiFDRSingleSocket::processScanMessage(CHAR *data)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     return retVal;
 }
 int CtiFDRSingleSocket::processTimeSyncMessage(CHAR *data)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     return retVal;
 }
 
@@ -620,7 +620,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 try
                 {
                     CtiLockGuard<CtiMutex> lock(_listenerMux);
-                    
+
                     if( isListenerShutdown() )
                     {
                         // listener sockets have shutdown

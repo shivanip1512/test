@@ -147,7 +147,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg     *pReq,
         }
     }
 
-    if(nRet != NORMAL)
+    if(nRet != NoError)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

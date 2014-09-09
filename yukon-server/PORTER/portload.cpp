@@ -95,7 +95,7 @@ INT LoadPortRoutes (USHORT Port)
 
     for_each(devices.begin(), devices.end(), loadRemoteRoutes());
 
-    return(NORMAL);
+    return NoError;
 }
 
 /* Routine to load routes into specified CCU */
@@ -488,5 +488,5 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
             }
         }
     }
-    return(NORMAL);
+    return NoError;
 }

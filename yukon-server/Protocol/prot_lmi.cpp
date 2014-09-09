@@ -580,7 +580,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 
                 _transaction_complete = true;
 
-                retval = NOTNORMAL;
+                retval = Error_Abnormal;
             }
             //  if we've never downloaded the system parameters, send them out (once per day by default)
             else if( _config_sent < (CtiTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
@@ -843,7 +843,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
                             }
                             else
                             {
-                                retval = NOTNORMAL;
+                                retval = Error_Abnormal;
                             }
                         }
 
@@ -1158,7 +1158,7 @@ YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
                                     }
                                     else
                                     {
-                                        retval = NOTNORMAL;
+                                        retval = Error_Abnormal;
                                     }
                                 }
 

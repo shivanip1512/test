@@ -160,7 +160,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
                     if(parse.getCommand() == ControlRequest)
                         reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, getLastCommand() );
 
-                    pRet->setStatus(NORMAL);
+                    pRet->setStatus(NoError);
                 }
                 else     // An error occured in the processing/communication
                 {

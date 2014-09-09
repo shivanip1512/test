@@ -312,7 +312,7 @@ INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
     ULONG          QueueCount;
     CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev.get();
 
-    INT            status = NORMAL;
+    INT            status = NoError;
 
 
     if(OutMessage->EventCode & RIPPLE)  /* Check if this is another control message, scans get through */
@@ -336,7 +336,7 @@ INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             }
 
             /* Force main routine to continue */
-            status = !NORMAL;
+            status = Error_Abnormal;
         }
     }
 
@@ -453,7 +453,7 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
 
     if( !lcu->isGlobalLCU() )  /* Check if this decode is the result of a scan */
     {
-        if( Result == NORMAL || Result == ErrPortSimulated)            // Successful communication, or simulate
+        if( Result == NoError || Result == ErrPortSimulated)            // Successful communication, or simulate
         {
             list< CtiMessage* >       vgList;
             CtiDeviceLCU::CtiLCUResult_t    resultCode = CtiDeviceLCU::eLCUInvalid;
@@ -807,7 +807,7 @@ INT MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
         }
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 /*
@@ -896,7 +896,7 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu)
 
 INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMESS *OutMessage, INT resultCode)
 {
-    INT  status = NORMAL;
+    INT  status = NoError;
     bool wasTransmitting;
 
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)splcu.get();
@@ -1276,7 +1276,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
 /* try to requeue the command */
 INT RequeueLCUCommand( CtiDeviceSPtr splcu )
 {
-    int successflag = NORMAL;
+    int successflag = NoError;
 
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)splcu.get();
 
@@ -1399,7 +1399,7 @@ INT ReportCompletionStateToLMGroup(CtiDeviceSPtr splcu)     // f.k.a. ReturnTrxI
 
 INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)splcu.get();
 
     if(!lcu->isGlobalLCU() && mayqueuescans)
@@ -1475,7 +1475,7 @@ INT QueueAllForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
         DeviceManager.apply(applyQueueForScanFalse, (void*)splcu.get());
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 void SubmitDataToDispatch  ( list< CtiMessage* >  &vgList )
@@ -1574,7 +1574,7 @@ INT SendTextToDispatch(PCHAR Source, PCHAR Message, string majorName, string min
 
     SubmitDataToDispatch( lst );
 
-    return NORMAL;
+    return NoError;
 }
 
 void ProcessRippleGroupTrxID( LONG LMGIDControl, UINT TrxID)

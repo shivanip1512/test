@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout)
                                0x02,                // tier number
                                0x38, 0x40 };        // timeout value: 14400 == 0x3840
 
-    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
     BOOST_CHECK_EQUAL( xcom.entries(), 1 );
     BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_xcdata_ascii)
                                    0x4F, 0x66, 0x66, 0x70, 0x65, 0x61, 0x6B, 0x20, 0x72, 0x61, 0x74, 0x65, 0x3A, 0x36, 0x2E, 0x35, 0xA2, 0x2F, 0x6B, 0x57, 0x68};
                                    //O    f     f     p     e      a     k    ' '    r     a     t    e     :     6      .    5    cent   /     k     W      h
 
-        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
         BOOST_CHECK_EQUAL( xcom.entries(), 1 );
         BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_xcdata_ascii)
                                    0x4F, 0x66, 0x66, 0x70, 0x65, 0x61, 0x6B, 0x20, 0x72, 0x61, 0x74, 0x65, 0x3A, 0x36, 0x2E, 0x35, 0xA2, 0x2F, 0x6B, 0x57, 0x68};
                                    //O    f     f     p     e      a     k    ' '    r     a     t    e     :     6      .    5    cent   /     k     W      h
 
-        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
         BOOST_CHECK_EQUAL( xcom.entries(), 1 );
         BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_delay)
                                0x02,                // tier number
                                0x0E, 0x10 };        // delay value: 3600 == 0x0E10
 
-    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
     BOOST_CHECK_EQUAL( xcom.entries(), 1 );
     BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout_and_delay)
                                0x38, 0x40,          // timeout value: 14400 == 0x3840
                                0x0E, 0x10 };        // delay value: 3600 == 0x0E10
 
-    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
     BOOST_CHECK_EQUAL( xcom.entries(), 1 );
     BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_default)
     CtiProtocolExpresscom   xcom;
 
     // all addresses are 0
-    BOOST_CHECK_EQUAL( xcom.addAddressing() , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing() , NoError);
 }
 
 
@@ -159,9 +159,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_spid)
     CtiProtocolExpresscom   xcom;
 
     // test the SPID
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0x1234) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0x1234) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMax) , NoError);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMax + 1) , BADPARAM);
 }
 
@@ -171,9 +171,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_geo)
     CtiProtocolExpresscom   xcom;
 
     // test the GEO
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, CtiProtocolExpresscom::GeoMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0x1234) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, CtiProtocolExpresscom::GeoMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, CtiProtocolExpresscom::GeoMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0x1234) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, CtiProtocolExpresscom::GeoMax) , NoError);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, CtiProtocolExpresscom::GeoMax + 1) , BADPARAM);
 }
 
@@ -183,9 +183,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_substation)
     CtiProtocolExpresscom   xcom;
 
     // test the SUBSTATION
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, CtiProtocolExpresscom::SubstationMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0x1234) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, CtiProtocolExpresscom::SubstationMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, CtiProtocolExpresscom::SubstationMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0x1234) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, CtiProtocolExpresscom::SubstationMax) , NoError);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, CtiProtocolExpresscom::SubstationMax + 1) , BADPARAM);
 }
 
@@ -195,9 +195,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_feeder)
     CtiProtocolExpresscom   xcom;
 
     // test the FEEDER -- all numbers are possible
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, CtiProtocolExpresscom::FeederMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0x1234) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, CtiProtocolExpresscom::FeederMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, CtiProtocolExpresscom::FeederMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0x1234) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, CtiProtocolExpresscom::FeederMax) , NoError);
 }
 
 
@@ -206,9 +206,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_zip)
     CtiProtocolExpresscom   xcom;
 
     // test the ZIP
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0x1234) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0x1234) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMax) , NoError);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMax + 1) , BADPARAM);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMax + 10000) , BADPARAM);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMax + 10000000) , BADPARAM);
@@ -220,9 +220,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_uda)
     CtiProtocolExpresscom   xcom;
 
     // test the UDA
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::UserMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0x1234) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::UserMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::UserMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0x1234) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::UserMax) , NoError);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::UserMax + 1) , BADPARAM);
 }
 
@@ -232,9 +232,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_program)
     CtiProtocolExpresscom   xcom;
 
     // test the PROGRAM
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::ProgramMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0x12) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::ProgramMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::ProgramMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0x12) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::ProgramMax) , NoError);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::ProgramMax + 1) , BADPARAM);
 }
 
@@ -244,9 +244,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_splinter)
     CtiProtocolExpresscom   xcom;
 
     // test the SPLINTER
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::SplinterMin) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, 0x12) , NORMAL);
-    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::SplinterMax) , NORMAL);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::SplinterMin) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, 0x12) , NoError);
+    BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::SplinterMax) , NoError);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::SplinterMax + 1) , BADPARAM);
 }
 
@@ -264,22 +264,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_serial)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign serial 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign serial 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign serial 123456" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign serial 4294967295" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -305,17 +305,17 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_spid)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign spid 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign spid 12345" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign spid 65534" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -346,22 +346,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_geo)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign geo 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign geo 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign geo 12345" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign geo 65534" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -392,22 +392,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_substation)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign sub 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign sub 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign sub 12345" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign sub 65534" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -438,22 +438,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_feeder)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign feeder 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign feeder 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign feeder 12345" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign feeder 65535" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -484,27 +484,27 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_zip)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign zip 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign zip 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign zip 12345" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign zip 1234567" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign zip 16777214" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -535,22 +535,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_uda)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign uda 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign uda 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign uda 12345" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign uda 65534" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -581,22 +581,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_program)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign program 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign program 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign program 34" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign program 254" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -632,22 +632,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_splinter)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign splinter 0" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign splinter 1" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign splinter 34" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom assign splinter 254" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 
     {
@@ -684,7 +684,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_manual_config_zero_address)
 
     {
         CtiCommandParser    parse( "putconfig xcom assign p 3,0,0 load 1,2,3 update serial 404850" );
-        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NoError);
     }
 }
 
@@ -731,7 +731,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_spid)
 
     {
         CtiCommandParser    parse( "putconfig xcom target spid 1 assign spid 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -741,12 +741,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_spid)
 
     {
         CtiCommandParser    parse( "putconfig xcom target spid 2345 assign spid 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target spid 65534 assign spid 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -777,12 +777,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_geo)
 
     {
         CtiCommandParser    parse( "putconfig xcom target geo 1 assign geo 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target geo 1 assign geo 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -792,12 +792,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_geo)
 
     {
         CtiCommandParser    parse( "putconfig xcom target geo 2345 assign geo 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target geo 65534 assign geo 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -828,12 +828,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_substation)
 
     {
         CtiCommandParser    parse( "putconfig xcom target sub 1 assign sub 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target sub 1 assign sub 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -843,12 +843,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_substation)
 
     {
         CtiCommandParser    parse( "putconfig xcom target sub 2345 assign sub 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target sub 65534 assign sub 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -871,22 +871,22 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_feeder)
     //  level is not properly set.  I tacked on a SPID for these two tests.
     {
         CtiCommandParser    parse( "putconfig xcom target spid 1 feeder 0 assign feeder 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target spid 1 feeder 0 assign feeder 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target feeder 1 assign feeder 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target feeder 1 assign feeder 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -896,12 +896,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_feeder)
 
     {
         CtiCommandParser    parse( "putconfig xcom target feeder 65534 assign feeder 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target feeder 65535 assign feeder 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -932,12 +932,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_zip)
 
     {
         CtiCommandParser    parse( "putconfig xcom target zip 1 assign zip 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target zip 1 assign zip 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -947,12 +947,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_zip)
 
     {
         CtiCommandParser    parse( "putconfig xcom target zip 777214 assign zip 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target zip 16777214 assign zip 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -983,12 +983,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_uda)
 
     {
         CtiCommandParser    parse( "putconfig xcom target uda 1 assign uda 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target uda 1 assign uda 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -998,12 +998,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_uda)
 
     {
         CtiCommandParser    parse( "putconfig xcom target uda 2345 assign uda 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target uda 65534 assign uda 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -1034,12 +1034,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_program)
 
     {
         CtiCommandParser    parse( "putconfig xcom target program 1 assign program 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target program 1 assign program 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -1049,12 +1049,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_program)
 
     {
         CtiCommandParser    parse( "putconfig xcom target program 34 assign program 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target program 254 assign program 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -1090,12 +1090,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_splinter)
 
     {
         CtiCommandParser    parse( "putconfig xcom target splinter 1 assign splinter 0" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target splinter 1 assign splinter 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -1105,12 +1105,12 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_splinter)
 
     {
         CtiCommandParser    parse( "putconfig xcom target splinter 34 assign splinter 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
         CtiCommandParser    parse( "putconfig xcom target splinter 254 assign splinter 1" );
-        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NORMAL);
+        BOOST_CHECK_EQUAL( xcom.test_parseTargetAddressing(parse) , NoError);
     }
 
     {
@@ -1134,7 +1134,7 @@ BOOST_AUTO_TEST_CASE(test_get_message_as_string)
     CtiCommandParser        parse( "putconfig xcom extended tier 2 timeout 14400 delay 3600" );
     CtiProtocolExpresscom   xcom;
 
-    /*Shamefully copied from below 
+    /*Shamefully copied from below
       BYTE expected_result[] = { 0, 0, 0, 0, 0,       // Address defaults to Serial 0
                                0x17,                // message type: extended tier
                                0x18,                // flags: send a timeout and a delay value
@@ -1143,7 +1143,7 @@ BOOST_AUTO_TEST_CASE(test_get_message_as_string)
                                0x0E, 0x10,          // delay value: 3600 == 0x0E10
                                0xED, 0x0F };        // CRC generated by CDT <>MSG CNS08 U000000000017180238400E10ED0FV*/
 
-    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
 
     BOOST_CHECK_EQUAL("u000000000017180238400E10ED0Fv", xcom.getMessageAsString());
 }
@@ -1163,7 +1163,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_crc)
                                    0x0E, 0x10,          // delay value: 3600 == 0x0E10
                                    0xED, 0x0F };        // CRC generated by CDT <>MSG CNS08 U000000000017180238400E10ED0FV
 
-        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
         BOOST_CHECK_EQUAL( xcom.entries(), 1 );
         BOOST_CHECK_EQUAL( xcom.getStartByte(), 'u' ); // With CRC, these are U and V.
         BOOST_CHECK_EQUAL( xcom.getStopByte(), 'v' );
@@ -1202,7 +1202,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_crc)
                                    0x0E, 0x10,          // delay value: 3600 == 0x0E10
                                    0xED, 0x0F };        // CRC generated by CDT <>MSG CNS08 U000000000017180238400E10ED0FV
 
-        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
         BOOST_CHECK_EQUAL( xcom.entries(), 1 );
         BOOST_CHECK_EQUAL( xcom.getStartByte(), 'u' ); // With CRC, these are U and V.
         BOOST_CHECK_EQUAL( xcom.getStopByte(), 'v' );
@@ -1234,7 +1234,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_crc)
                                    0x38, 0x40,          // timeout value: 14400 == 0x3840
                                    0x0E, 0x10 };        // delay value: 3600 == 0x0E10, NO CRC
 
-        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
         BOOST_CHECK_EQUAL( xcom.entries(), 1 );
         BOOST_CHECK_EQUAL( xcom.getStartByte(), 's' ); // With CRC, these are U and V.
         BOOST_CHECK_EQUAL( xcom.getStopByte(), 't' );
@@ -1264,7 +1264,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_crc)
                                    0x0E, 0x10,          // delay value: 3600 == 0x0E10
                                    0x95, 0xA8 };        // CRC generated by CDT <>MSG CNS08 U000000000017180238410E1095A8V
 
-        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NoError );
         BOOST_CHECK_EQUAL( xcom.entries(), 1 );
         BOOST_CHECK_EQUAL( xcom.getStartByte(), 'u' ); // With CRC, these are U and V.
         BOOST_CHECK_EQUAL( xcom.getStopByte(), 'v' );

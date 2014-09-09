@@ -409,7 +409,7 @@ bool CtiFDRCygnet::sendMessageToForeignSys ( CtiMessage *aMessage )
 */
 INT CtiFDRCygnet::processMessageFromForeignSystem (CHAR *data)
 {
-    return NORMAL;
+    return NoError;
 }
 /************************************************************************
 * Function Name: CtiFDRCygnet::connectToAnalogService()

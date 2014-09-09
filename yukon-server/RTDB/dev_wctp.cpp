@@ -160,7 +160,7 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg     *pReq,
                                           CtiMessageList    &retList,
                                           OutMessageList    &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -268,7 +268,7 @@ INT CtiDeviceWctpTerminal::allocateDataBins(OUTMESS *oMess)
 
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDeviceWctpTerminal::freeDataBins()
@@ -283,7 +283,7 @@ INT CtiDeviceWctpTerminal::freeDataBins()
         _outMessage = NULL;
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 CHAR  CtiDeviceWctpTerminal::getPagePrefix() const
@@ -559,7 +559,7 @@ INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessageList 
     trace.setTrace( string("\"") + outStr + string("\"\n\n") );
     traceList.push_back( trace.replicateMessage() );
 
-    return(NORMAL);
+    return NoError;
 }
 
 INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList &traceList, BOOL CompletedMessage)
@@ -600,7 +600,7 @@ INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList 
         _inStr = string();     // Reset it for the next message
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 CHAR* CtiDeviceWctpTerminal::replaceChars(const CHAR *src, CHAR *dst)
@@ -807,7 +807,7 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
 YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     xfer.setInCountExpected(4000);
 
@@ -971,7 +971,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
 
     try
     {
-        if( status == NORMAL )     // Communications must have been successful
+        if( status == NoError )     // Communications must have been successful
         {
             switch( getCurrentState() )
             {

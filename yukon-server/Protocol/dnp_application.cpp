@@ -420,7 +420,7 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
             {
                 //  eventually, we should respect the results from _transport.initForOutput and _transport.initForInput - they could fail, too
                 _appState = Failed;
-                retVal = NOTNORMAL;
+                retVal = Error_Abnormal;
 
                 break;
             }

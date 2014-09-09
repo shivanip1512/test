@@ -61,7 +61,7 @@ INT PreIDLC (PBYTE   Message,        /* resulting command string */
    /* command */
    Message[5] = (UCHAR)Command;
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -147,7 +147,7 @@ INT PreUnSequenced (PBYTE  Message,        /* resulting command string */
       break;
    }
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -164,7 +164,7 @@ INT PostIDLC (PBYTE    Message,       /* message and result */
    Message[Length] = HIBYTE(i);
    Message[Length+1] = LOBYTE(i);
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -242,7 +242,7 @@ YukonError_t GenReply (PBYTE Reply,            /* reply message */
       return(READTIMEOUT);
    }
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -261,7 +261,7 @@ YukonError_t RTUReply (PBYTE Reply, USHORT Length)
    if(Save != NCrcCalc_C ((Reply+1), Length-3))
       return(BADCRC);
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -298,7 +298,7 @@ YukonError_t RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, 
       *ReadLength = Length2 + 2;
    }
 
-   return(NORMAL);
+   return NoError;
 
 }
 
@@ -312,13 +312,13 @@ YukonError_t IDLCRej (PBYTE Reply, PUSHORT ReqNum)
 
    /* check the crc */
    if(Save != NCrcCalc_C((Reply+1),2))
-      return(NORMAL);
+      return NoError;
 
    /* check for a reject frame */
 //   if ((Reply[2] & 0x1f) != REJ)
    /* Softened reject detect code */
    if((Reply[2] & 0x0f) != REJ)
-      return(NORMAL);
+      return NoError;
 
 /* if we have one get us back into sequence */
    if(ReqNum != NULL)
@@ -345,7 +345,7 @@ INT IDLCSArm (PBYTE Message, USHORT Remote)
    /* crc */
    PostIDLC (Message, 3);
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -366,7 +366,7 @@ INT IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
    {
       *ReqNum = 0;
       *RepNum = 0;
-      return(NORMAL);
+      return NoError;
    }
 
    return(BADUA);
@@ -376,7 +376,7 @@ INT IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
 /* Routine to decode the Algorithm status part of the message */
 INT IDLCAlgStat (PBYTE Message, PUSHORT Status)
 {
-    int retval = NORMAL;
+    int retval = NoError;
 
     USHORT i;
 
@@ -392,7 +392,7 @@ INT IDLCAlgStat (PBYTE Message, PUSHORT Status)
     if( !Message[0] && !Message[1] )
     {
         //  we have no statuses - something's wrong
-        retval = NOTNORMAL;
+        retval = Error_Abnormal;
     }
     else if( Status[0] || Status[3] || Status[6] || Status[7] )
     {
@@ -410,7 +410,7 @@ INT IDLCAlgStat (PBYTE Message, PUSHORT Status)
         OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
         */
 
-        retval = NOTNORMAL;
+        retval = Error_Abnormal;
     }
 
     return retval;

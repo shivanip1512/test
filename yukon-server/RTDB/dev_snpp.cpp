@@ -80,7 +80,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
                         if(getPreviousState() == StateEnd)
                         {
-                            status = NORMAL;
+                            status = NoError;
                             _command = Complete; //Transaction Complete
                         }
 
@@ -94,7 +94,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                 {
                     //OUCH. Nothing read in, probably a timeout.
                     _command = Complete; //Transaction Complete
-                    status = FinalError; // FinalError returned when a carriage return isnt received from unit
+                    status = Error_Abnormal; // Abort when a carriage return isnt received from unit
 
                 }
 
@@ -136,7 +136,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                                 dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                             }
-                            status = NORMAL;//quit command failed, all others passed, return normal
+                            status = NoError;//quit command failed, all others passed, return normal
                         }
 
                     }
@@ -154,7 +154,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                         }
-                        status = NORMAL;//quit command failed, all others passed, return normal
+                        status = NoError;//quit command failed, all others passed, return normal
                     }
                 }
                 break;
@@ -178,7 +178,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
 YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
     try
     {
         switch( getCurrentState() )
@@ -497,7 +497,7 @@ bool CtiDeviceSnppPagingTerminal::isTransactionComplete()
 
 INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)

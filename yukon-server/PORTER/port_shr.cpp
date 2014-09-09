@@ -112,9 +112,6 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
    case ERRUNKNOWN:
       retValue = CtiPortShare::PSHR_ERROR_UNKNOWN;
       break;
-   case DBFERR:
-      retValue = CtiPortShare::PSHR_ERROR_DATABASE;
-      break;
    case REMOTEINHIBITED:
       retValue = CtiPortShare::PSHR_ERROR_RTU_DISABLED;
       break;
@@ -138,7 +135,7 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
 void CtiPortShare::createNexus(const string &nexusName)
 {
     StreamSocketListener ListenNexus;
-   
+
    /*
     *  4/8/99 This is the server side of a new Nexus
     *  This thread listens only once and is shutdown as the listener.

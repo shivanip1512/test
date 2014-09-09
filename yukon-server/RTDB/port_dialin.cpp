@@ -27,7 +27,7 @@ CtiPortDialin::CtiPortDialin()
 
 YukonError_t CtiPortDialin::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    YukonError_t status = NOTNORMAL;
+    YukonError_t status = Error_Abnormal;
 
     LastDeviceId = 0L;
     {
@@ -41,7 +41,7 @@ YukonError_t CtiPortDialin::connectToDevice(CtiDeviceSPtr Device, LONG &LastDevi
 
 INT CtiPortDialin::close(INT trace)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -52,7 +52,7 @@ INT CtiPortDialin::close(INT trace)
 
 YukonError_t CtiPortDialin::reset(INT trace)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     try
     {
@@ -93,7 +93,7 @@ INT CtiPortDialin::setup(INT trace)
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 /* Routine to force the reset of modem */
@@ -239,11 +239,11 @@ YukonError_t CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
         /* Make sure that we got OK */
         if(!(strnicmp(Response, "OK", 2)))
         {
-            return(NORMAL);
+            return NoError;
         }
     }
 
-    return NOTNORMAL;
+    return Error_Abnormal;
 }
 
 
@@ -270,7 +270,7 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
                                  initlen,
                                  1, &BytesWritten) || BytesWritten != initlen)
         {
-            return(!NORMAL);
+            return Error_Abnormal;
         }
 
         /* Send the CR */
@@ -331,10 +331,10 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
     if(j >= 5)
     {
         // _superPort->close(TRUE);
-        return(!NORMAL);
+        return Error_Abnormal;
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 

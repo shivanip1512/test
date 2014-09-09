@@ -148,11 +148,11 @@ DWORD      IM_EX_CTIBASE CurrentTID()
 
 APIRET IM_EX_CTIBASE CTIClose(HANDLE &hFile)
 {
-   DWORD status = NORMAL;
+   DWORD status = NoError;
 
    if( !CloseHandle(hFile) )
    {
-      status = !NORMAL;
+      status = Error_Abnormal;
    }
 
    hFile = (HANDLE)NULL;
@@ -169,7 +169,7 @@ YukonError_t CTIRead( HANDLE   &hFile,
 
    bSuccess = ReadFile(hFile, pBuf, BufLen, pBytesRead, NULL);
 
-   return bSuccess ? NoError : NOTNORMAL;  // Win32 returns positive if successfull.
+   return bSuccess ? NoError : Error_Abnormal;  // Win32 returns positive if successfull.
 }
 
 APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
@@ -180,7 +180,7 @@ APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
 {
    BOOL bSuccess = FALSE;
 
-   DWORD status = NORMAL;
+   DWORD status = NoError;
 
 //   fprintf(stderr,"*** DEBUG CTIWrite File Handle %8d\n",hFile);
    bSuccess = WriteFile(hFile, pBuf, BufLen, pBytesWritten, NULL);

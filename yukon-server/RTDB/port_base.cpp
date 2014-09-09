@@ -22,7 +22,7 @@ using namespace std;
 
 INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     string msg;
 
@@ -112,16 +112,16 @@ INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPt
 
 INT CtiPort::traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(!isTAP() || (Dev && !Dev->isTAP()))
     {
-        if(Xfer.traceError() && ErrorCode != NORMAL && ErrorCode != ErrPortSimulated)      // if Error is set, it happened on the InMessage, and we didn't print the outmessage before
+        if(Xfer.traceError() && ErrorCode != NoError && ErrorCode != ErrPortSimulated)      // if Error is set, it happened on the InMessage, and we didn't print the outmessage before
         {
             status = traceOut(Xfer, traceList, Dev, ErrorCode);
         }
 
-        if( NORMAL == status)
+        if( NoError == status)
         {
             status = traceIn(Xfer, traceList, Dev, ErrorCode);
         }
@@ -133,7 +133,7 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceS
 
 INT CtiPort::traceOut(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT ErrorCode) const
 {
-    INT status = NORMAL;
+    INT status = NoError;
     string msg;
 
     try
@@ -201,7 +201,7 @@ INT CtiPort::traceOut(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSP
 
 INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
 {
-    INT status = NORMAL;
+    INT status = NoError;
     ULONG i;
     ULONG width = 1;
     ULONG offset = 0;
@@ -232,7 +232,7 @@ INT CtiPort::writeQueue(OUTMESS *OutMessage, HANDLE hQuit)
 
 INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQuit)
 {
-    int status = NORMAL;
+    int status = NoError;
     ULONG QueEntries;
 
 #ifdef DEBUG
@@ -264,7 +264,7 @@ INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQ
         }
     }
 
-    if(verifyPortIsRunnable( hQuit ) == NORMAL)
+    if(verifyPortIsRunnable( hQuit ) == NoError)
     {
         if(OutMessage && OutMessage->MessageFlags & MessageFlag_PortSharing)        // This OM has been tagged as a sharing OM.
         {
@@ -324,14 +324,14 @@ INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQ
 
 INT CtiPort::queueInit(HANDLE hQuit)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(_portQueue == NULL)
     {
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
-        if( (status = CreateQueue (&_portQueue, hQuit)) != NORMAL )
+        if( (status = CreateQueue (&_portQueue, hQuit)) != NoError )
         {
             CloseQueue( _portQueue );
             _portQueue = NULL;
@@ -348,7 +348,7 @@ INT CtiPort::queueInit(HANDLE hQuit)
 
 INT CtiPort::queueDeInit()
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     // RWMutexLock::LockGuard( getMux() );      // 072503 CGP - What the !@$$@#??
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -357,14 +357,14 @@ INT CtiPort::queueDeInit()
     CloseQueue( _portQueue );
     _portQueue = NULL;
 
-    status = !NORMAL;
+    status = Error_Abnormal;
 
     return status;
 }
 
 INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     try
     {
@@ -372,7 +372,7 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
         {
             status = PORTINHIBITED;
         }
-        else if( (status = queueInit(hQuit)) == NORMAL )
+        else if( (status = queueInit(hQuit)) == NoError )
         {
             if(!_portThread.isValid() || _portThread.getCompletionState() != RW_THR_PENDING)
             {
@@ -387,7 +387,7 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " No port thread function defined" << endl;
                     }
-                    status = !NORMAL;
+                    status = Error_Abnormal;
                 }
             }
         }
@@ -483,11 +483,11 @@ void CtiPort::haltLog()
 
 YukonError_t CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     Xfer.setInCountActual((ULONG)0L);    // Make sure that any error on the outMess does not affect a state machine!
 
-    if( NORMAL == (status = outMess(Xfer, Dev, traceList)) )
+    if( NoError == (status = outMess(Xfer, Dev, traceList)) )
     {
         status = inMess(Xfer, Dev, traceList);
     }
@@ -589,7 +589,7 @@ bool CtiPort::isSimulated() const
 
 YukonError_t CtiPort::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
 
     LastDeviceId = 0L;
@@ -646,7 +646,7 @@ INT CtiPort::disconnect(CtiDeviceSPtr Device, INT trace)
     setConnectedDevice(0L);
     setConnectedDeviceUID(-1);
 
-    return NORMAL;
+    return NoError;
 }
 
 CtiPort& CtiPort::setShouldDisconnect(BOOL b)
@@ -659,15 +659,15 @@ BOOL CtiPort::shouldDisconnect() const
 }
 YukonError_t CtiPort::reset(INT trace)
 {
-    return NORMAL;
+    return NoError;
 }
 YukonError_t CtiPort::setup(INT trace)
 {
-    return NORMAL;
+    return NoError;
 }
 INT CtiPort::close(INT trace)
 {
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -687,28 +687,28 @@ INT       CtiPort::dsrTest() const
 
 INT       CtiPort::lowerRTS()
 {
-    return NORMAL;
+    return NoError;
 }
 INT       CtiPort::raiseRTS()
 {
-    return NORMAL;
+    return NoError;
 }
 INT       CtiPort::lowerDTR()
 {
-    return NORMAL;
+    return NoError;
 }
 INT       CtiPort::raiseDTR()
 {
-    return NORMAL;
+    return NoError;
 }
 
 YukonError_t CtiPort::inClear()
 {
-    return NORMAL;
+    return NoError;
 }
 INT       CtiPort::outClear()
 {
-    return NORMAL;
+    return NoError;
 }
 
 INT       CtiPort::byteTime(ULONG bytes) const
@@ -743,7 +743,7 @@ RWThreadFunction& CtiPort::getPortThread()
 
 INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, list< CtiMessage* > &traceList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     ULONG i;
     ULONG width = 1;
     ULONG offset = 0;
@@ -820,7 +820,7 @@ CtiPort& CtiPort::setConnectedDeviceUID(const ULONG &i)
 
 pair< bool, YukonError_t > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
 {
-    pair< bool, YukonError_t > rpair = make_pair( false, NORMAL );
+    pair< bool, YukonError_t > rpair = make_pair( false, NoError );
     static const bool release_idle_ports = gConfigParms.isTrue("PORTER_RELEASE_IDLE_PORTS");
 
     //  no need to attempt this if we're simulating the port
@@ -837,13 +837,13 @@ pair< bool, YukonError_t > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT t
 
 pair< bool, YukonError_t > CtiPort::checkCommStatus(CtiDeviceSPtr Device, INT trace)
 {
-    YukonError_t status = NORMAL;
-    pair< bool, YukonError_t > rpair = make_pair( false, NORMAL );
+    YukonError_t status = NoError;
+    pair< bool, YukonError_t > rpair = make_pair( false, NoError );
 
     if(!isViable())
     {
         /* set up the port */
-        if( (status = openPort()) != NORMAL )
+        if( (status = openPort()) != NoError )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -878,7 +878,7 @@ YukonError_t CtiPort::setPortReadTimeOut(USHORT millitimeout)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return NORMAL;
+    return NoError;
 }
 
 YukonError_t CtiPort::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
@@ -887,7 +887,7 @@ YukonError_t CtiPort::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiPort::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
@@ -896,7 +896,7 @@ INT CtiPort::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWri
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiPort::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead)
@@ -905,7 +905,7 @@ INT CtiPort::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return NORMAL;
+    return NoError;
 }
 
 bool CtiPort::isViable()
@@ -1328,7 +1328,7 @@ int CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
         }
     }
 
-    if(status == NORMAL)
+    if(status == NoError)
     {
         setLastOMRead();
     }
@@ -1354,7 +1354,7 @@ bool CtiPort::adjustCommCounts( INT CommResult )
     CtiLockGuard<CtiMutex> guard(_classMutex);
     bool bAdjust = false;
     bool bStateChange = false;
-    bool success = (CommResult == NORMAL);
+    bool success = (CommResult == NoError);
     bool isCommClassError = (GetErrorType(CommResult) == ERRTYPECOMM);      // is this a comm class error (else device attributable)
 
     bool isCommFail;
@@ -1406,7 +1406,7 @@ bool CtiPort::adjustCommCounts( INT CommResult )
 // Return all queue entries to the processing parent.
 YukonError_t CtiPort::requeueToParent(OUTMESS *&OutMessage)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     if(_parentPort) // Do we have this ability??
     {
@@ -1431,7 +1431,7 @@ YukonError_t CtiPort::requeueToParent(OUTMESS *&OutMessage)
         while(queueCount())
         {
             // Move the OM from the pool queue to the child queue.
-            if( readQueue( &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+            if( readQueue( &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NoError )
             {
                 _parentPort->writeQueue( NewOutMessage );
                 {
@@ -1675,7 +1675,7 @@ set<LONG> CtiPort::getPreloads(void)
 
 INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit)
 {
-    INT status = !NORMAL;
+    INT status = Error_Abnormal;
     ULONG QueEntries;
 
     if(!_portShareQueue)
@@ -1683,7 +1683,7 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
-        if( (status = CreateQueue (&_portShareQueue, hQuit)) != NORMAL )
+        if( (status = CreateQueue (&_portShareQueue, hQuit)) != NoError )
         {
             CloseQueue( _portShareQueue );
             _portShareQueue = NULL;

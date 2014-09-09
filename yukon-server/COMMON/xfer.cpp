@@ -189,7 +189,7 @@ BOOL     CtiXfer::doTrace(INT status, ULONG rem) const
 {
    BOOL  trace = (_traceDefault || _traceDebug) ? TRUE : FALSE;
 
-   if(_traceError && status != NORMAL)
+   if(_traceError && status != NoError)
    {
       trace = TRUE;
    }

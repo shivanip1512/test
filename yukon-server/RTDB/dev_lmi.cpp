@@ -92,7 +92,7 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
 
 INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     bool found = false;
 
     switch(parse.getCommand())
@@ -213,7 +213,7 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
 INT CtiDeviceLMI::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan accumulator");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -239,7 +239,7 @@ INT CtiDeviceLMI::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 INT CtiDeviceLMI::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -264,7 +264,7 @@ INT CtiDeviceLMI::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -497,7 +497,7 @@ unsigned CtiDeviceLMI::queuedWorkCount() const
 
 YukonError_t CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    YukonError_t retval = NORMAL;
+    YukonError_t retval = NoError;
 
     if( OutMessage->Sequence == CtiProtocolLMI::Sequence_Code )
     {

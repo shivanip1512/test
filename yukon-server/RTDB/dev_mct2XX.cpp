@@ -75,7 +75,7 @@ bool Mct2xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  */
 INT Mct2xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
 
     switch(InMessage.Sequence)
@@ -97,7 +97,7 @@ INT Mct2xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NORMAL)
+            if(status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -113,7 +113,7 @@ INT Mct2xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct2xxDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -186,7 +186,7 @@ INT Mct2xxDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct2xxDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -276,7 +276,7 @@ INT Mct2xxDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct2xxDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
@@ -357,7 +357,7 @@ INT Mct2xxDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 
 INT Mct2xxDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -441,7 +441,7 @@ INT Mct2xxDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct2xxDevice::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const unsigned char *optBuf = InMessage.Buffer.DSt.Message;
 

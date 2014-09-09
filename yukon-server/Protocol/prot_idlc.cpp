@@ -407,7 +407,7 @@ YukonError_t IDLC::decode( CtiXfer &xfer, YukonError_t status )
         }
         else
         {
-            retval = NOTNORMAL;
+            retval = Error_Abnormal;
         }
     }
 

@@ -20,7 +20,7 @@ using std::string;
 
 INT CtiPortDialable::disconnect(CtiDeviceSPtr Device, INT trace)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(_superPort->isViable())          // Makes most dialup modems drop carrier!
     {
@@ -71,7 +71,7 @@ YukonError_t CtiPortDialable::waitForResponse(PULONG ResponseSize, PCHAR Respons
 
     if(!_superPort->isViable())
     {
-        return(NOTNORMAL);
+        return Error_Abnormal;
     }
 
     /* Set the timeout on read to 1 second */
@@ -114,14 +114,14 @@ YukonError_t CtiPortDialable::waitForResponse(PULONG ResponseSize, PCHAR Respons
             {
                 // it was the response we wanted or we did not specify any response
                 *ResponseSize = i;
-                status = NORMAL;
+                status = NoError;
                 break; // the while
             }
             else if(_modem.validModemResponse(Response))
             {
                 // this is valid, though unexpected, response or we did not specify.
                 *ResponseSize = strlen(Response);
-                status = NORMAL;
+                status = NoError;
                 break; // the while
             }
 
@@ -135,7 +135,7 @@ YukonError_t CtiPortDialable::waitForResponse(PULONG ResponseSize, PCHAR Respons
 
             if(i + 2 > *ResponseSize)     // are we still within the size limit.
             {
-                status = NOTNORMAL;
+                status = Error_Abnormal;
                 break; // the while
             }
         }

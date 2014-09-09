@@ -878,7 +878,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 {
     int commandLimit=0;
     int commandsPerTime=0;
-    int interval=1,decodeResult=NORMAL;
+    int interval=1,decodeResult=NoError;
     CHAR newFileName[100];
     int retVal = TCL_OK;
     bool dsm2ImportFlag = false;
@@ -1091,7 +1091,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
                 // we wait this to keep running even if it fails
                 VanGoghConnection->WriteConnQue(msg);
-                decodeResult = NORMAL;
+                decodeResult = NoError;
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL)
             {
@@ -1945,7 +1945,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
         {
             device_map.insert(PILReturnMap::value_type(dev_id, data));
 
-            if( msg->Status() != NORMAL )
+            if( msg->Status() != NoError )
             {
                 CtiTableMeterReadLog result(0, msg->DeviceId(), 0, msg->Status(), msg->getMessageTime());
                 resultQueue.push_back(result);
@@ -2350,7 +2350,7 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return NOTNORMAL;
+            return Error_Abnormal;
         }
 
         try
@@ -2391,5 +2391,5 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
 
     resultQueue.clear();
 
-    return NORMAL;
+    return NoError;
 }

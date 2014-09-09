@@ -1581,7 +1581,7 @@ void DatabaseHandlerThread(void *Arg)
 INT MakePorterRequests(list< OUTMESS* > &outList)
 {
     INT   i, j = 0;
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     OUTMESS *OutMessage = NULL;
 
@@ -1593,7 +1593,7 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
         status = PIPEWASBROKEN;
     }
 
-    for( i = outList.size() ; status == NORMAL && i > 0; i-- )
+    for( i = outList.size() ; status == NoError && i > 0; i-- )
     {
         OutMessage = outList.front(); outList.pop_front();
 
@@ -1695,7 +1695,7 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
 
 INT RecordDynamicData()
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     // Make an attempt to keep the ScanData table current
     if(ScannerDeviceManager.entries())
@@ -1711,7 +1711,7 @@ INT RecordDynamicData()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return NOTNORMAL;
+            return Error_Abnormal;
         }
 
         /*

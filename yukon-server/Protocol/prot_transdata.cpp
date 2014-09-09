@@ -176,16 +176,16 @@ YukonError_t CtiProtocolTransdata::sendCommResult( INMESS &InMessage )
 //      memcpy( InMessage.Buffer.InMessage + sizeof( ULONG ), _billingBytes, _numBilling );
       memcpy( InMessage.Buffer.InMessage + sizeof( llp ), _billingBytes, _numBilling );
       InMessage.InLength = _numBilling + sizeof( llp );
-      InMessage.ErrorCode = NORMAL;
+      InMessage.ErrorCode = NoError;
       _numBytes = 0;
    }
    else
    {
-      InMessage.ErrorCode = NOTNORMAL;
+      InMessage.ErrorCode = Error_Abnormal;
       InMessage.InLength = 0;   //matt says this is the way to know failure
    }
 
-   return NORMAL;
+   return NoError;
 }
 
 //=====================================================================================================================

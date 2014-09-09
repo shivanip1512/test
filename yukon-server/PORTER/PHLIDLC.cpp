@@ -59,13 +59,13 @@ INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
 
     CtiXfer trx(Message, 5, Reply, 5, &Count, TIMEOUT, FALSE, FALSE, traceMask);
 
-    if( (i = PortRecord->outInMess(trx, RemoteRecord, traceList)) != NORMAL)
+    if( (i = PortRecord->outInMess(trx, RemoteRecord, traceList)) != NoError)
     {
         return i;
     }
 
     /* check for a valid response */
-    if((i = IDLCua (Reply, &RemoteSequence->Request, &RemoteSequence->Reply)) != NORMAL)
+    if((i = IDLCua (Reply, &RemoteSequence->Request, &RemoteSequence->Reply)) != NoError)
     {
         return(i);
     }
@@ -77,7 +77,7 @@ INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
 
     DisplayTraceList( PortRecord, traceList, true );
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -87,7 +87,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
               USHORT Dest,      /* id of destination process */
               USHORT Function)  /* function to execute */
 {
-    INT status = (NORMAL);
+    INT status = (NoError);
 
     OUTMESS *OutMessage;
 
@@ -151,13 +151,13 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
 /* routine to build an idlc RCONT function */
 INT IDLCRCont (CtiDeviceSPtr &Dev)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     OUTMESS *OutMessage;
     ULONG i;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     if(p711Info->PortQueueConts)
-        return(NORMAL);
+        return NoError;
 
     if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
@@ -218,7 +218,7 @@ INT IDLCRCont (CtiDeviceSPtr &Dev)
 /* routine to build an idlc RCOLQ function */
 INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     OUTMESS *OutMessage;
     ULONG i;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
@@ -325,7 +325,7 @@ INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
 /* Routine to Set CCU time sync values */
 INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT Period)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     USHORT Index;
     OUTMESS *OutMessage;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
@@ -401,7 +401,7 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
         p711Info->PortQueueConts++;
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -473,7 +473,7 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
         p711Info->PortQueueConts++;
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 /* Excerpt from a technote on spread spectrum radios.
@@ -745,5 +745,5 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         }
     }
 
-    return(NORMAL);
+    return NoError;
 }

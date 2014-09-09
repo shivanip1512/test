@@ -42,7 +42,7 @@ using std::list;
 
 INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     INT iTemp;
 
     CtiRouteSPtr Route;
@@ -70,7 +70,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         {
             if (parse.isKeyValid("phasedetect") && parse.isKeyValid("broadcast"))
             {
-                int nRet = NORMAL;
+                int nRet = NoError;
                 string broadcastType = parse.getsValue("broadcast");
 
                 CtiReturnMsg * errRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
@@ -136,7 +136,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             }
                             // This will need to be refactored out when more device types are added.
                             // We expect a response back so tell the clients to this is not the last message.
-                            if (nRet == NORMAL)
+                            if (nRet == NoError)
                             {
                                 //If we are here there is no error message to send. Delete it.
                                 delete errRet;

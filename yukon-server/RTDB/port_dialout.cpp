@@ -32,7 +32,7 @@ CtiPortDialout::CtiPortDialout()
 
 YukonError_t CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
     LastDeviceId = 0L;
 
@@ -77,11 +77,11 @@ YukonError_t CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDev
 
         status = portpair.second;
 
-        if( status == NORMAL )
+        if( status == NoError )
         {
             string number = getTablePortDialup().getPrefixString() + Device->getPhoneNumber();
             /*  Now Dial */
-            if(NORMAL != (status = modemConnect((char*)number.c_str(), trace, _superPort->getCDWait() != 0)))
+            if(NoError != (status = modemConnect((char*)number.c_str(), trace, _superPort->getCDWait() != 0)))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -93,7 +93,7 @@ YukonError_t CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDev
         }
     }
 
-    if(status == NORMAL)
+    if(status == NoError)
     {
         /* Make sure the remotes match */
         _superPort->setConnectedDevice( Device->getID() );
@@ -106,7 +106,7 @@ YukonError_t CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDev
 
 INT CtiPortDialout::disconnect(CtiDeviceSPtr Device, INT trace)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     status = modemHangup( trace );
 
@@ -121,7 +121,7 @@ INT CtiPortDialout::disconnect(CtiDeviceSPtr Device, INT trace)
 
 YukonError_t CtiPortDialout::reset(INT trace)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     setDialedUpNumber(string());
 
@@ -150,7 +150,7 @@ INT CtiPortDialout::close(INT trace)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -226,7 +226,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             ResponseSize = sizeof (Response);
 
             /* Wait to see if we get the no carrier message */
-            if( (_superPort->waitForPortResponse(&ResponseSize, Response, 1)) == NORMAL )      // See if we get something back from this guy.
+            if( (_superPort->waitForPortResponse(&ResponseSize, Response, 1)) == NoError )      // See if we get something back from this guy.
             {
                 if(Trace)
                 {
@@ -289,7 +289,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             /* Make sure that we got OK */
             if(!(strnicmp(Response, "OK", 2)))
             {
-                return(NORMAL);
+                return NoError;
             }
         }
     }
@@ -389,13 +389,13 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         return(ErrPortDialupConnect_Port);
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 /* Routine to establish modem connection */
 YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
     ULONG BytesWritten, i;
     CHAR MyMessage[100];
     CHAR Response[100];
@@ -437,7 +437,7 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
     ResponseSize = sizeof (Response);
 
     /* Wait for a response from the modem */
-    if( NORMAL != (status = _superPort->waitForPortResponse(&ResponseSize, Response, ModemConnectionTimeout, "CONNECT")) )
+    if( NoError != (status = _superPort->waitForPortResponse(&ResponseSize, Response, ModemConnectionTimeout, "CONNECT")) )
     {
         if(Trace)
         {
@@ -468,7 +468,7 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
                         CTISleep( 200L);       // CTISleep ( 2000L );
                         _superPort->inClear();
 
-                        status = NORMAL;
+                        status = NoError;
                         break;                  // the for loop.  dcd is detected!
                     }
                     else
@@ -483,7 +483,7 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
                 _superPort->raiseRTS();
                 CTISleep ( 200L);       // CTISleep ( 2000L );
                 _superPort->inClear();
-                status = NORMAL;
+                status = NoError;
             }
         }
         else if(!(strnicmp (Response, "NO CARRIER", 10)))
@@ -549,7 +549,7 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
 
 INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CHAR Response[100];
     ULONG ResponseSize;
     ULONG BytesWritten;
@@ -581,7 +581,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
             ResponseSize = sizeof (Response);
 
             /* Wait to see if we get the no carrier message */
-            if( NORMAL == (_superPort->waitForPortResponse(&ResponseSize, Response, 1, NULL)) )      // See if we get something back from this guy.
+            if( NoError == (_superPort->waitForPortResponse(&ResponseSize, Response, 1, NULL)) )      // See if we get something back from this guy.
             {
                 if(Trace)
                 {
@@ -622,7 +622,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << _superPort->getName()  << " Received from Modem:  " << Response <<  endl;
 
-                    status = NORMAL;
+                    status = NoError;
                     break;
                 }
             }
@@ -634,7 +634,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
 
         _superPort->inClear();
 
-        if(status == NORMAL)
+        if(status == NoError)
         {
             /* Attempt to hangup the modem (on hook) */
             for(i = 0; i < 5; i++)
@@ -671,13 +671,13 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                         dout << CtiTime() << " " << _superPort->getName()  << " Received from Modem:  " << Response <<  endl;
                     }
 
-                    status = NORMAL;
+                    status = NoError;
                     break;   // Wow, we just went on hook!
                 }
             }
         }
 
-        if(status == NORMAL && dcdTest == TRUE)
+        if(status == NoError && dcdTest == TRUE)
         {
             /* Wait for carrier to drop */
             i = 0;
@@ -686,7 +686,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                 if(!(_superPort->dcdTest()))
                 {
                     CTISleep ( 1500L );
-                    status = NORMAL;
+                    status = NoError;
                     break;
                 }
 
@@ -696,7 +696,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
         }
 
 
-        if(status != NORMAL)
+        if(status != NoError)
         {
             /* something is wrong so reset and setup the modem */
             modemReset(Trace, dcdTest);

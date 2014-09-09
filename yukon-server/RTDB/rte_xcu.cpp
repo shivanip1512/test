@@ -74,7 +74,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                                 list< CtiMessage* >   &retList,
                                 list< OUTMESS* >      &outList)
 {
-    INT      status = NORMAL;
+    INT      status = NoError;
     ULONG    BytesWritten;
 
     try
@@ -115,7 +115,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                 }
                 else if( parse.getiValue("type") == ProtocolEmetconType )
                 {
-                    status = !NORMAL;
+                    status = Error_Abnormal;
                 }
                 else if(OutMessage->EventCode & VERSACOM)
                 {
@@ -164,7 +164,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                                          list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -254,7 +254,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     NewOutMessage->OutLength = MASTERLENGTH + Length;
 
                     /* Build MasterComm header */
-                    if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NORMAL)
+                    if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NoError)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -342,7 +342,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
                                        list< CtiMessage* >   &retList,
                                        list< OUTMESS* >      &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     string      resultString;
     ULONG          i, j;
@@ -425,7 +425,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                                              list< CtiMessage* >   &retList,
                                              list< OUTMESS* >      &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     string      resultString;
     ULONG          i, j;
@@ -565,7 +565,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
 
 INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     bool           isAscii = true;
     string      resultString;
@@ -758,7 +758,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
             }
         }
 
-        if(status == NORMAL)
+        if(status == NoError)
         {
             resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName();
 
@@ -804,7 +804,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                                       list< CtiMessage* >   &retList,
                                       list< OUTMESS* >      &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -961,7 +961,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                                          list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -1067,7 +1067,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                                          list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     string      resultString;
     string      byteString;

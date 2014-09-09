@@ -54,7 +54,7 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
          retMsg = CTIDBG_new CtiReturnMsg(getID(),
                              pReq->CommandString(),
                              string(getName() + " / loopback in progress"),
-                             NORMAL,
+                             NoError,
                              pReq->RouteId(),
                              pReq->MacroOffset(),
                              1, //pReq->Attempt(),
@@ -112,7 +112,7 @@ INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NORMAL,
+                                          NoError,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -270,7 +270,7 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg    *pReq,
         }
     }
 
-    if( nRet != NORMAL )
+    if( nRet != NoError )
     {
         string resultString;
 

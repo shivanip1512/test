@@ -110,7 +110,7 @@ INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
                                                    OutMessageList &outList,
                                                    const OUTMESS *OutTemplate)
 {
-    INT      status = NORMAL;
+    INT      status = NoError;
     LONG     Id;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -668,7 +668,7 @@ inline INT CtiDeviceBase::initTrxID( int trx, CtiCommandParser &parse, CtiMessag
 {
     setResponsesOnTrxID(0);
     setTrxID(trx);
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -703,7 +703,7 @@ void CtiDeviceBase::setOutMessageTargetID( LONG &omtid )
 
 INT CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     if(isInhibited())
     {

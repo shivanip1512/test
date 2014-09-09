@@ -143,7 +143,7 @@ bool CtiFDRTextFileBase::sendMessageToForeignSys ( CtiMessage *aMessage )
 
 INT CtiFDRTextFileBase::processMessageFromForeignSystem (CHAR *data)
 {
-    return NORMAL;
+    return NoError;
 }
 
 

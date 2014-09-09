@@ -100,7 +100,7 @@ INT CtiDeviceVectron::GeneralScan(CtiRequestMsg     *pReq,
                                   OutMessageList    &outList,
                                   INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -122,7 +122,7 @@ INT CtiDeviceVectron::GeneralScan(CtiRequestMsg     *pReq,
 
 YukonError_t CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NORMAL;
+    YukonError_t retCode = NoError;
 
     switch (getCurrentState())
     {
@@ -251,7 +251,7 @@ YukonError_t CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, Cti
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = NOTNORMAL;
+                retCode = Error_Abnormal;
             }
     }
     return retCode;
@@ -260,7 +260,7 @@ YukonError_t CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, Cti
 
 YukonError_t CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
-    YukonError_t retCode = NORMAL;
+    YukonError_t retCode = NoError;
 
     switch (getCurrentCommand())
     {
@@ -290,7 +290,7 @@ YukonError_t CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, CtiMessageLi
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = NOTNORMAL;
+                retCode = Error_Abnormal;
                 break;
             }
 
@@ -301,7 +301,7 @@ YukonError_t CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, CtiMessageLi
 YukonError_t CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     SchlMeterStruct MeterSt;
-    YukonError_t    retCode = NORMAL;
+    YukonError_t    retCode = NoError;
 
     // get appropriate data
     switch (getCurrentState())
@@ -432,7 +432,7 @@ YukonError_t CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, C
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
     }
     return retCode;
 }
@@ -441,7 +441,7 @@ YukonError_t CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, C
 YukonError_t CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     SchlMeterStruct MeterSt;
-    YukonError_t    retCode = NORMAL;
+    YukonError_t    retCode = NoError;
 
     /*
      *  This is the scanner request... Scanned data comes through here
@@ -486,7 +486,7 @@ YukonError_t CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, CtiMessa
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
     }
 
     return retCode;
@@ -501,7 +501,7 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
     VectronLoadProfileMessage_t *localLProfile      = ((VectronLoadProfileMessage_t*)_loadProfileBuffer);
     VectronRealTimeRegister_t   *localRTReg         = ((VectronRealTimeRegister_t *)_loadProfileTimeDate);
 
-    YukonError_t retCode = NORMAL;
+    YukonError_t retCode = NoError;
     ULONG    MMTemp               = 0L;
     SchlMeterStruct   MeterSt;
 
@@ -800,7 +800,7 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
                             Transfer.setInCountExpected( 0 );
                             setCurrentState (StateScanAbort);
                             setAttemptsRemaining (0);
-                            retCode = NOTNORMAL;
+                            retCode = Error_Abnormal;
                         }
                     }
                     else
@@ -809,7 +809,7 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
                         Transfer.setInCountExpected( 0 );
                         setCurrentState (StateScanAbort);
                         setAttemptsRemaining (0);
-                        retCode = NOTNORMAL;
+                        retCode = Error_Abnormal;
                     }
                 }
                 else
@@ -939,7 +939,7 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
 
     }
     return retCode;
@@ -949,7 +949,7 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
 YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
-    YukonError_t retCode = NORMAL;
+    YukonError_t retCode = NoError;
 
     switch (getCurrentState())
     {
@@ -1015,7 +1015,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                 {
                     setAttemptsRemaining (0);
                     setCurrentState (StateHandshakeAbort);  // Couldn't get the job done... bail out here
-                    retCode = NOTNORMAL;
+                    retCode = Error_Abnormal;
                 }
                 break;
             }
@@ -1046,7 +1046,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                 {
                     setAttemptsRemaining (0);
                     setCurrentState (StateHandshakeAbort);  // Couldn't get the job done... bail out here
-                    retCode = NOTNORMAL;
+                    retCode = Error_Abnormal;
                 }
                 break;
             }
@@ -1086,7 +1086,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                 {
                     setAttemptsRemaining (0);
                     setCurrentState (StateHandshakeAbort);  // Couldn't get the job done... bail out here
-                    retCode = NOTNORMAL;
+                    retCode = Error_Abnormal;
                 }
                 break;
             }
@@ -1097,7 +1097,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
-                retCode = NOTNORMAL;
+                retCode = Error_Abnormal;
                 break;
             }
     }
@@ -1108,7 +1108,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
 YukonError_t CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     SchlMeterStruct   MeterSt;
-    YukonError_t retCode = NORMAL;
+    YukonError_t retCode = NoError;
 
     switch (getCurrentCommand())
     {
@@ -1141,7 +1141,7 @@ YukonError_t CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, YukonError_t 
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = NOTNORMAL;
+                retCode = Error_Abnormal;
                 break;
             }
     }
@@ -1152,7 +1152,7 @@ YukonError_t CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, YukonError_t 
 YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 
 {
-    YukonError_t retCode    = NORMAL;
+    YukonError_t retCode    = NoError;
 
     // get appropriate data
     switch (getCurrentState())
@@ -1192,7 +1192,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = NOTNORMAL;
+                        retCode = Error_Abnormal;
                     }
                     else
                     {
@@ -1256,7 +1256,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                         {
                             setCurrentState (StateScanAbort);  // Couldn't get the job done... bail out here
                             setTotalByteCount (0);
-                            retCode = NOTNORMAL;
+                            retCode = Error_Abnormal;
                         }
                         else
                         {
@@ -1267,7 +1267,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                     {
                         setCurrentState (StateScanAbort);  // Couldn't get the job done... bail out here
                         setTotalByteCount (0);
-                        retCode = NOTNORMAL;
+                        retCode = Error_Abnormal;
                     }
                 }
                 break;
@@ -1303,7 +1303,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                         dout << CtiTime() << " Failed switching to master " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = NOTNORMAL;
+                                    retCode = Error_Abnormal;
                                 }
                                 break;
                             }
@@ -1321,7 +1321,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                             dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = NOTNORMAL;
+                                        retCode = Error_Abnormal;
                                     }
                                     else
                                     {
@@ -1340,7 +1340,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                         dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = NOTNORMAL;
+                                    retCode = Error_Abnormal;
                                 }
                                 break;
                             }
@@ -1358,7 +1358,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                             dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = NOTNORMAL;
+                                        retCode = Error_Abnormal;
                                     }
                                     else
                                     {
@@ -1377,7 +1377,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                         dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = NOTNORMAL;
+                                    retCode = Error_Abnormal;
                                 }
                                 break;
                             }
@@ -1395,7 +1395,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                             dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = NOTNORMAL;
+                                        retCode = Error_Abnormal;
                                     }
                                     else
                                     {
@@ -1414,7 +1414,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                         dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = NOTNORMAL;
+                                    retCode = Error_Abnormal;
                                 }
                                 break;
                             }
@@ -1432,7 +1432,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                             dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
-                                        retCode = NOTNORMAL;
+                                        retCode = Error_Abnormal;
                                     }
                                     else
                                     {
@@ -1451,7 +1451,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                         dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
-                                    retCode = NOTNORMAL;
+                                    retCode = Error_Abnormal;
                                 }
                                 break;
                             }
@@ -1459,7 +1459,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                 }
                 else
                 {
-                    retCode = NOTNORMAL;
+                    retCode = Error_Abnormal;
                     setCurrentState (StateScanAbort);
                 }
                 break;
@@ -1471,7 +1471,7 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                 dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
 
     }
 
@@ -1482,7 +1482,7 @@ YukonError_t CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, YukonErro
 {
     SchlMeterStruct   MeterSt;
     VectronLoadProfileMessage_t *localLP      = ((VectronLoadProfileMessage_t*)_loadProfileBuffer);
-    YukonError_t      retCode    = NORMAL;
+    YukonError_t      retCode    = NoError;
     INT               lastCommandStartAddress;
 
     // run the return through the ringer
@@ -1531,13 +1531,13 @@ YukonError_t CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, YukonErro
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
-                retCode = NOTNORMAL;
+                retCode = Error_Abnormal;
         }
     }
     else if (retCode == RETRY_SUBMITTED)
     {
         // we don't want to abort, just try again
-        retCode = NORMAL;
+        retCode = NoError;
     }
 
     return retCode;
@@ -1547,7 +1547,7 @@ YukonError_t CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, YukonErro
 
 YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t      retCode  = NORMAL;
+    YukonError_t      retCode  = NoError;
     SchlMeterStruct   MeterSt;
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
     SchlLoadProfile_t           *localMMLoadProfile = ((SchlLoadProfile_t *)_massMemoryLoadProfile);
@@ -1640,13 +1640,13 @@ YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
                     dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
-                retCode = NOTNORMAL;
+                retCode = Error_Abnormal;
         }
     }
     else if (retCode == RETRY_SUBMITTED)
     {
         // we don't want to abort, just try again
-        retCode = NORMAL;
+        retCode = NoError;
     }
 
     return retCode;
@@ -1774,7 +1774,7 @@ INT CtiDeviceVectron::decodeResultScan (const INMESS   &InMessage,
 
     if( DebugLevel & 0x0001 )
         ResultDisplay(InMessage);
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -1805,7 +1805,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
     const BYTE     *pulseData           = NULL;
     const BYTE     *pulseTemp           = NULL;
 
-    ULONG          goodPoint = !NORMAL;
+    ULONG          goodPoint = Error_Abnormal;
     ULONG          lastLPTime;
     ULONG          startingLPTime = getLastLPTime().seconds() ;
     CtiTime         intervalTime;
@@ -1851,7 +1851,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
         lastLPTime = startingLPTime;
 
         // needs to be reset each time through the loop
-        goodPoint = !NORMAL;
+        goodPoint = Error_Abnormal;
 
         energyRegister = vectronMMConfig->Real.program[programNumber].energyRegister;
 
@@ -1860,7 +1860,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
             case 1:  // Wh
                 {
                     if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)))
-                        goodPoint = NORMAL;
+                        goodPoint = NoError;
 
                     regTypeSupported = TRUE;
                     break;
@@ -1869,7 +1869,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
             case 2:  // Lagging VARh
                 {
                     if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)))
-                        goodPoint = NORMAL;
+                        goodPoint = NoError;
 
                     regTypeSupported = TRUE;
                     break;
@@ -1887,7 +1887,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
             case 4:  // VAh
                 {
                     if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)))
-                        goodPoint = NORMAL;
+                        goodPoint = NoError;
 
                     regTypeSupported = TRUE;
                     break;
@@ -1895,7 +1895,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
             case 0:
                 {
                     regTypeSupported = FALSE;
-                    goodPoint       = !NORMAL;
+                    goodPoint       = Error_Abnormal;
                     break;
                 }
             case 5:  // watt demand
@@ -1905,14 +1905,14 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
             case 9:  // va total demand
                 {
                     regTypeSupported = FALSE;
-                    goodPoint       = !NORMAL;
+                    goodPoint       = Error_Abnormal;
                     break;
                 }
         }
 
         if (
            regTypeSupported       &&
-           (goodPoint == NORMAL)
+           (goodPoint == NoError)
            )
         {
             pulseTemp      = pulseData;
@@ -1968,7 +1968,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
     }
     pPIL = NULL;
 
-    return NORMAL;
+    return NoError;
 }
 
 // Routine to display or print the message
@@ -2138,7 +2138,7 @@ INT CtiDeviceVectron::ResultDisplay (const INMESS &InMessage)
         }
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 CHAR * displayRegisterMapping (USHORT reg, CHAR *retString)
@@ -2220,7 +2220,7 @@ INT CtiDeviceVectron::allocateDataBins  (OUTMESS *outMess)
     setTotalByteCount (0);
     setCurrentCommand ((CtiDeviceIED::CtiMeterCmdStates_t)outMess->Buffer.DUPReq.Command[0]);
     setCurrentState (StateHandshakeInitialize);
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes)
@@ -2471,7 +2471,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
 
     memcpy(aInMessBuffer, _dataBuffer, sizeof(VectronScanData_t));
     aTotalBytes = getTotalByteCount();
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -2481,7 +2481,7 @@ INT CtiDeviceVectron::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalByte
 
     memcpy(aInMessBuffer, _loadProfileBuffer, sizeof (VectronLoadProfileMessage_t));
     aTotalBytes = sizeof (VectronLoadProfileMessage_t);
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -2490,7 +2490,7 @@ INT CtiDeviceVectron::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalByte
 
 INT CtiDeviceVectron::decodeResultMMConfig (VectronMMConfig_t *config)
 {
-    int retCode=NORMAL;
+    int retCode=NoError;
 
     // lets decode and display this stuff
     config->Real.program[0].pulseWeight     = VectronBCDtoDouble (config->Byte.pulseWeightChannel1,4) / 100.0;
@@ -2524,7 +2524,7 @@ INT CtiDeviceVectron::decodeResultMMConfig (VectronMMConfig_t *config)
         config->Real.recordLength = 108;
     }
     else
-        retCode = !NORMAL;
+        retCode = Error_Abnormal;
 
     config->dataIsReal = TRUE;
 
@@ -2554,7 +2554,7 @@ INT CtiDeviceVectron::decodeResultMMConfig (VectronMMConfig_t *config)
 
 INT CtiDeviceVectron::decodeResultRealTime (VectronRealTimeRegister_t *localTimeDate)
 {
-    int retCode=NORMAL;
+    int retCode=NoError;
 
 
     localTimeDate->Hours = BCDtoBase10 (&localTimeDate->Hours,1);

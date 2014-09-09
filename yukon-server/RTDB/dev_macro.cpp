@@ -97,7 +97,7 @@ void CtiDeviceMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     CtiLockGuard<CtiMutex> guard(_deviceListMux);
-    INT nRet = NORMAL;
+    INT nRet = NoError;
 
     if( !_deviceList.empty( ) )
     {
@@ -305,7 +305,7 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, CtiMessageList 
             vgList.push_back( pData );
         }
     }
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDeviceMacro::processTrxID( int trx,  CtiMessageList  &vgList)
@@ -358,7 +358,7 @@ INT CtiDeviceMacro::processTrxID( int trx,  CtiMessageList  &vgList)
 
 INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     // Do we need to process Ripple Bit Packing?
     if(gCoalesceRippleBits)

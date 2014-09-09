@@ -302,7 +302,7 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, CtiMessag
         }
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)

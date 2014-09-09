@@ -166,7 +166,7 @@ void PaoStatistics::incrementCompletion(const CtiTime completion_time, int compl
 {
     incrementAttempts(completion_time, completion_status);
 
-    if(completion_status == NORMAL)
+    if(completion_status == NoError)
     {
         _hourly  ->incrementCompletions();
         _daily   ->incrementCompletions();

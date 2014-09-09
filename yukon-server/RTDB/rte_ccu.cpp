@@ -33,7 +33,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
                                 list< CtiMessage* >      &retList,
                                 list< OUTMESS* >         &outList)
 {
-    INT      status = NORMAL;
+    INT      status = NoError;
 
     if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
@@ -90,7 +90,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
                                          list< OUTMESS* >         &outList)
 {
     INT            i, j;
-    INT            status = NORMAL;
+    INT            status = NoError;
     string      resultString;
     string      byteString;
     BSTRUCT        BSt;
@@ -343,7 +343,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
                                     list< CtiMessage* >  &retList,
                                     list< OUTMESS* >     &outList)
 {
-    INT           status = NORMAL;
+    INT           status = NoError;
 
     if(OutMessage->EventCode & BWORD)
     {
@@ -544,7 +544,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                                          list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     string      resultString;
     string      byteString;
     BSTRUCT        BSt;

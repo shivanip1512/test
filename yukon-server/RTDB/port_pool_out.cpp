@@ -25,18 +25,18 @@ int CtiPortPoolDialout::_poolDebugLevel = 0;
 
 YukonError_t CtiPortPoolDialout::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     return status;
 }
 YukonError_t CtiPortPoolDialout::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    return NORMAL;
+    return NoError;
 }
 
 YukonError_t CtiPortPoolDialout::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    return NORMAL;
+    return NoError;
 }
 
 string CtiPortPoolDialout::getSQLCoreStatement()
@@ -251,7 +251,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
  */
 INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
 {
-    INT status = NORMAL;
+    INT status = NoError;
     INT qloc;
 
     CtiPortSPtr childport;
@@ -288,7 +288,7 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
 
                                 setQueueSlot(qloc);
                                 // Move the OM from the pool queue to the child queue.
-                                if( readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+                                if( readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NoError )
                                 {
                                     childport->writeQueue( OutMessage );
 

@@ -657,7 +657,7 @@ inline Protocol::Interface *CtiDeviceSingle::getProtocol()
 
 YukonError_t CtiDeviceSingle::generate(CtiXfer &xfer)
 {
-    YukonError_t retval = NOTNORMAL;
+    YukonError_t retval = Error_Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->generate(xfer);
@@ -667,7 +667,7 @@ YukonError_t CtiDeviceSingle::generate(CtiXfer &xfer)
 
 YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
 {
-    YukonError_t retval = NOTNORMAL;
+    YukonError_t retval = Error_Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     try
@@ -689,7 +689,7 @@ YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
 
 YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 {
-    YukonError_t retval = NOTNORMAL;
+    YukonError_t retval = Error_Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->recvCommRequest(OutMessage);
@@ -699,7 +699,7 @@ YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 
 YukonError_t CtiDeviceSingle::sendCommResult(INMESS &InMessage)
 {
-    YukonError_t retval = NOTNORMAL;
+    YukonError_t retval = Error_Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->sendCommResult(InMessage);
@@ -1705,7 +1705,7 @@ bool CtiDeviceSingle::isScanDataValid() const
 
 INT CtiDeviceSingle::validateScanData()
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
 

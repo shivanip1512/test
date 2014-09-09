@@ -522,7 +522,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
     }
 
     //  We shouldn't even ever get here...
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -533,7 +533,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
  */
 INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     switch(InMessage.Sequence)
     {
@@ -612,7 +612,7 @@ INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NORMAL)
+            if(status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -629,7 +629,7 @@ INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     ULONG i,x;
     string resultString;
 
@@ -669,7 +669,7 @@ INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime
 
 INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     ULONG i,x;
     INT pid;
     string resultString;
@@ -764,7 +764,7 @@ INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = NORMAL, demand_interval;
+    int       status = NoError, demand_interval;
     double    Value;
     string resultString;
     unsigned long pulses;
@@ -852,7 +852,7 @@ INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = NORMAL;
+    int       status = NoError;
     double    Value;
     string resultString;
 
@@ -933,7 +933,7 @@ INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
 
 INT Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -1146,7 +1146,7 @@ void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, const BYTE 
 
 INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
 
@@ -1219,7 +1219,7 @@ INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 
 INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -1259,7 +1259,7 @@ INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 
 INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -1368,7 +1368,7 @@ INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const unsigned char *optBuf  = InMessage.Buffer.DSt.Message;
 

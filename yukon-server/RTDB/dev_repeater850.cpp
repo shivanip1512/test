@@ -55,7 +55,7 @@ bool Repeater850Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 
 INT Repeater850Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
 
     switch( InMessage.Sequence )
@@ -69,7 +69,7 @@ INT Repeater850Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
         {
             status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if( status != NORMAL )
+            if( status != NoError )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -85,7 +85,7 @@ INT Repeater850Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 
 INT Repeater850Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

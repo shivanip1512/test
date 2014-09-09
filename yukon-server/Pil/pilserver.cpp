@@ -1336,7 +1336,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 vgList.splice(vgList.end(), executer.vgList);
 
-                if(status != NORMAL &&
+                if(status != NoError &&
                    status != DEVICEINHIBITED)
                 {
                     CtiTime NowTime;
@@ -1347,7 +1347,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
                     dout << NowTime << "   Status = " << status << ": " << GetErrorString(status) << endl;
                 }
 
-                status = NORMAL;
+                status = NoError;
             }
             else
             {
@@ -2027,7 +2027,7 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
 
 INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     int i;
     CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
     // CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
@@ -2123,7 +2123,7 @@ INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, li
         execList.push_back( (CtiRequestMsg*)Req.replicateMessage() );
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 void PilServer::putQueue(CtiMessage *Msg)
@@ -2232,7 +2232,7 @@ static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdev
  */
 int PilServer::reportClientRequests(const CtiDeviceBase &Dev, const CtiCommandParser &parse, const string &requestingUser, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     long pid = SYS_PID_PORTER;
     static unsigned soe = 0;
@@ -2267,7 +2267,7 @@ int PilServer::reportClientRequests(const CtiDeviceBase &Dev, const CtiCommandPa
                 const CtiReturnMsg *&pcRet = (const CtiReturnMsg*&)*itr;
 
                 addl = Dev.getName() + " / (" + CtiNumStr(Dev.getID()) + "): " + pcRet->CommandString();
-                if(pcRet->Status() == NORMAL)
+                if(pcRet->Status() == NoError)
                     text = string("Success: ");
                 else
                     text = string("Failed (Err ") + CtiNumStr(pcRet->Status()) + "): ";

@@ -98,7 +98,7 @@ bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 
 INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     // Get a loop done maybe?
     if( OutMessage != NULL )
@@ -181,7 +181,7 @@ INT CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
     }
 
 
-    return(NORMAL);
+    return NoError;
 }
 
 unsigned CtiDeviceCCU::queuedWorkCount() const
@@ -219,7 +219,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg     *pReq,
                                  CtiMessageList    &retList,
                                  OutMessageList    &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -324,7 +324,7 @@ INT CtiDeviceCCU::CCULoop(OUTMESS* OutMessage)
 
     OutMessage->Buffer.OutMessage[PREIDL] = NO_OP;
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -351,6 +351,6 @@ INT CtiDeviceCCU::CCU711Reset(OUTMESS* OutMessage)
 
     EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
 
-    return(NORMAL);
+    return NoError;
 }
 

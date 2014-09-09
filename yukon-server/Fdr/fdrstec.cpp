@@ -118,14 +118,14 @@ bool CtiFDR_STEC::sendMessageToForeignSys ( CtiMessage *aMessage )
 
 INT CtiFDR_STEC::processMessageFromForeignSystem (CHAR *data)
 {
-    return NORMAL;
+    return NoError;
 }
 
 int CtiFDR_STEC::decodeFile ()
 {
     int fileHandle;
     FILE *controlFile;
-    int retVal = NORMAL;
+    int retVal = NoError;
     FLOAT totalSystem=0.0, stecOnly=0.0;
 
     CHAR buffer[300];
@@ -147,7 +147,7 @@ int CtiFDR_STEC::decodeFile ()
             desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
 
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
         else
         {
@@ -157,7 +157,7 @@ int CtiFDR_STEC::decodeFile ()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " STEC file failed to open after download " << endl;
-                retVal = !NORMAL;
+                retVal = Error_Abnormal;
             }
             else
             {
@@ -253,17 +253,17 @@ int CtiFDR_STEC::decodeFile ()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " STEC file failed to open after download " << endl;
-        retVal = !NORMAL;
+        retVal = Error_Abnormal;
     }
 
 
-    return NORMAL;
+    return NoError;
 }
 
 
 int CtiFDR_STEC::fail ()
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     CtiPointDataMsg     *pData;
     string           translationName;
     CtiFDRPoint         point;
@@ -315,7 +315,7 @@ int CtiFDR_STEC::fail ()
 
 int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     string           translationName;
     CtiFDRPoint         point;
     bool                 flag = true;

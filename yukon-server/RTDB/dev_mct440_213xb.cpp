@@ -826,7 +826,7 @@ INT Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
                                     CtiMessageList  &retList,
                                     OutMessageList  &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     switch(InMessage.Sequence)
     {
@@ -888,7 +888,7 @@ INT Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
 
         default:
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
-            if (status != NORMAL)
+            if (status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -922,7 +922,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &InMessage
                                                       CtiMessageList  &retList,
                                                       OutMessageList  &outList)
 {
-    INT status   = NORMAL;
+    INT status   = NoError;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -1043,7 +1043,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage,
                                              CtiMessageList  &retList,
                                              OutMessageList  &outList)
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -1176,7 +1176,7 @@ INT Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMessage,
                                                 CtiMessageList  &retList,
                                                 OutMessageList  &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const int offset = InMessage.Return.ProtocolInfo.Emetcon.Function - Memory_EventLogBasePos;
 
@@ -1262,7 +1262,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                                             OutMessageList    &outList,
                                             bool               readsOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     long value, tempTime;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -1845,7 +1845,7 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &InMessage
                                                       CtiMessageList  &retList,
                                                       OutMessageList  &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     string resultString;
     bool expectMore = false;
@@ -2373,7 +2373,7 @@ string Mct440_213xBDevice::describeStatusAndEvents(const unsigned char *buf)
 */
 INT Mct440_213xBDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     string resultString;
@@ -2459,7 +2459,7 @@ INT Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS   &InMess
                                                           CtiMessageList &retList,
                                                           OutMessageList &outList)
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -2650,7 +2650,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
                                            CtiMessageList  &retList,
                                            OutMessageList  &outList)
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
@@ -2973,7 +2973,7 @@ INT Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    &InMessage,
                                               CtiMessageList  &retList,
                                               OutMessageList  &outList)
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3032,7 +3032,7 @@ INT Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    &InMessage,
                                                  CtiMessageList  &retList,
                                                  OutMessageList  &outList)
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3124,7 +3124,7 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    &InMessage,
                                                  CtiMessageList  &retList,
                                                  OutMessageList  &outList)
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3331,7 +3331,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
                                           CtiMessageList &retList,
                                           OutMessageList &outList)
 {
-    INT status    = NORMAL;
+    INT status    = NoError;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3485,7 +3485,7 @@ INT Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   &InMessage,
                                                   CtiMessageList &retList,
                                                   OutMessageList &outList)
 {
-    INT status    = NORMAL, state = 0;
+    INT status    = NoError, state = 0;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string stateName;
@@ -3547,7 +3547,7 @@ INT Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   &InMessage,
                                                   CtiMessageList &retList,
                                                   OutMessageList &outList)
 {
-    INT status    = NORMAL, state = 0;
+    INT status    = NoError, state = 0;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string resultStr, stateName;
@@ -3653,7 +3653,7 @@ int Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  &InMessage,
                                                  CtiMessageList &retList,
                                                  OutMessageList &outList)
 {
-    INT status   = NORMAL;
+    INT status   = NoError;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3700,7 +3700,7 @@ int Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS   &InMes
                                                            CtiMessageList &retList,
                                                            OutMessageList &outList)
 {
-    INT status   = NORMAL;
+    INT status   = NoError;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3737,7 +3737,7 @@ int Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessage,
                                                CtiMessageList &retList,
                                                OutMessageList &outList)
 {
-    INT status   = NORMAL;
+    INT status   = NoError;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3874,7 +3874,7 @@ int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -3977,7 +3977,7 @@ int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pRe
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -4110,7 +4110,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -4203,7 +4203,7 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -4294,7 +4294,7 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 

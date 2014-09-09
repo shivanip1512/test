@@ -33,7 +33,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     switch(parse.getCommand())
     {
@@ -90,7 +90,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutConfig(CtiCommandParser  &parse, cons
 INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
     INT   i, iNum;
-    INT   status = NORMAL;
+    INT   status = NoError;
     BOOL  firstOneDone = FALSE;
     BYTE  config[6];
 
@@ -146,7 +146,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
 
 INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
 
     UINT  CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
@@ -172,7 +172,7 @@ INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const 
 
 INT CtiProtocolFisherPierceCBC::primeFPStruct(const FPSTRUCT &FPstTemplate)
 {
-    INT      status = NORMAL;
+    INT      status = NoError;
 
     FPSTRUCT  *fpst = CTIDBG_new FPSTRUCT;
 
@@ -210,7 +210,7 @@ INT CtiProtocolFisherPierceCBC::capacitorControlCommand(BOOL Trip)
         last_ptr->u.PCC.F[1] = '3';
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 FPSTRUCT CtiProtocolFisherPierceCBC::getFPStruct(INT pos) const

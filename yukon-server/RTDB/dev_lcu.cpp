@@ -114,7 +114,7 @@ CtiDeviceLCU::~CtiDeviceLCU()
 
 INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -155,7 +155,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -187,10 +187,10 @@ INT CtiDeviceLCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 /* Routine to output freeze to an LCU */
 INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     /* Load the freeze message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERFREEZE, 0)) != NORMAL)
+    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERFREEZE, 0)) != NoError)
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -207,12 +207,12 @@ INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
 /* Routine to reset freeze to an LCU */
 INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     setScanFlag(ScanResetting);
 
     /* Load the reset freeze message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERRESET, 0)) != NORMAL)
+    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERRESET, 0)) != NoError)
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -229,7 +229,7 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
 /* Routine to scan ALL LCU status */
 INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to place command on queue */
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(_lcuType == LCU_T3026)
     {
@@ -238,7 +238,7 @@ INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to pla
     else
     {
         /* Load the forced scan message */
-        if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANALL, 0)) != NORMAL)
+        if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANALL, 0)) != NoError)
             return(status);
 
         /* Load all the other stuff that is needed */
@@ -253,10 +253,10 @@ INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to pla
 /* Routine to scan internal LCU status */
 INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     /* Load the forced scan message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0)) != NORMAL)
+    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0)) != NoError)
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -270,10 +270,10 @@ INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
 /* Routine to scan internal LCU status */
 INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     /* Load the forced scan message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANEXT, 0)) != NORMAL)
+    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANEXT, 0)) != NoError)
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -320,7 +320,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
                         InEchoToOut(InMessage, OutMessage);
                         CtiCommandParser parse(InMessage.Return.CommandStr);
 
-                        if((status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
+                        if((status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NoError)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -527,7 +527,7 @@ INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList,OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     OUTMESS *pOM = 0;
 
     switch(parse.getCommand())
@@ -754,7 +754,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
             /* Build MasterComm header */
             if((_lcuType == LCU_LANDG) && OutMessage->Remote != RTUGLOBAL)
             {
-                if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSENDREPLY, (USHORT)(Count + 1))) != NORMAL)
+                if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSENDREPLY, (USHORT)(Count + 1))) != NoError)
                 {
                     delete (OutMessage);
                     OutMessage = NULL;
@@ -762,7 +762,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
             }
             else
             {
-                if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSEND, (USHORT)(Count + 1))) != NORMAL)
+                if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSEND, (USHORT)(Count + 1))) != NoError)
                 {
                     delete (OutMessage);
                     OutMessage = NULL;
@@ -809,7 +809,7 @@ INT CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
         OutMessage->SaveNexus               = NULL;
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -1720,7 +1720,7 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
                     MyOutMessage->SaveNexus = NULL;
 
                     /* Build MasterComm header */
-                    if((i = MasterHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage->Remote, MASTERSTAGE, 0)) != NORMAL)
+                    if((i = MasterHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage->Remote, MASTERSTAGE, 0)) != NoError)
                     {
                         delete (MyOutMessage);
                         MyOutMessage = NULL;
@@ -1834,7 +1834,7 @@ CtiMutex& CtiDeviceLCU::getLCUExclusionMux()
  */
 INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiTime now;
 
     // Pretend for the simulated ports!
@@ -2298,11 +2298,11 @@ INT CtiDeviceLCU::getProtocolWrap() const
 /*  */
 INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool lockout)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     USHORT cmd = (lockout ? MASTERLOCKOUTSET : MASTERLOCKOUTRESET);
 
     /* Load the forced scan message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), cmd, 0)) != NORMAL)
+    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), cmd, 0)) != NoError)
         return(status);
 
     /* Load all the other stuff that is needed */

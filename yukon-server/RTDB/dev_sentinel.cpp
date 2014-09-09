@@ -63,7 +63,7 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NORMAL,
+                                          NoError,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -259,7 +259,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
         }
     }
 
-    if( nRet != NORMAL )
+    if( nRet != NoError )
     {
         string resultString;
 
@@ -598,7 +598,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     //getANSIProtocol().buildWantedTableList (aMsg);
 
 
-    return NORMAL;
+    return NoError;
 }
 
 /*************************************************************************************
@@ -677,7 +677,7 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
             &flags, sizeof(UINT));
 
-    return NORMAL;
+    return NoError;
 }
 
 

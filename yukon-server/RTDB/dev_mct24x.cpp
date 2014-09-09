@@ -298,7 +298,7 @@ bool Mct24xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  */
 INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
 
     switch(InMessage.Sequence)
@@ -339,7 +339,7 @@ INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NORMAL)
+            if(status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -355,7 +355,7 @@ INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -543,7 +543,7 @@ INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 
 INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -697,7 +697,7 @@ INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNo
 
 INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
@@ -732,7 +732,7 @@ INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
  */
 INT Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

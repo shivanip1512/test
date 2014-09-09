@@ -15,8 +15,8 @@ CtiMCConnection::CtiMCConnection()
     Constructor
 ---------------------------------------------------------------------------*/
 CtiMCConnection::CtiMCConnection( CtiListenerConnection& listenerConn, CtiConnection::Que_t *inQ )
-	:	_valid(true),
-		_connection( listenerConn, inQ )
+    :   _valid(true),
+        _connection( listenerConn, inQ )
 {
 }
 
@@ -49,7 +49,7 @@ void CtiMCConnection::start()
 ---------------------------------------------------------------------------*/
 bool CtiMCConnection::isValid()
 {
-    if( _connection.verifyConnection() != NORMAL )
+    if( _connection.verifyConnection() != NoError )
     {
         _valid = FALSE;
     }

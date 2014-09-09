@@ -1874,7 +1874,7 @@ bool CtiFDRTelegyr::sendMessageToForeignSys( CtiMessage *aMessage )
 
 INT CtiFDRTelegyr::processMessageFromForeignSystem( CHAR *data )
 {
-   return NORMAL;
+   return NoError;
 }
 
 //=================================================================================================================================

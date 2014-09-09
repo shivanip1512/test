@@ -191,7 +191,7 @@ YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
             }
             case State_IO_Failed:
             {
-                retVal = NOTNORMAL;
+                retVal = Error_Abnormal;
 
                 xfer.setOutBuffer(NULL);
                 xfer.setOutCount(0);
@@ -381,7 +381,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
     if( _protocol_errors > ProtocolRetryCount )
     {
         _io_state = State_IO_Failed;
-        retVal = NOTNORMAL;
+        retVal = Error_Abnormal;
     }
 
     return retVal;
@@ -763,7 +763,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
                 dout << CtiTime() << " **** Checkpoint - unhandled state " << _control_state << " in Cti::Protocol::DNP::Datalink::generateControl() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            retVal = NOTNORMAL;
+            retVal = Error_Abnormal;
 
             break;
         }

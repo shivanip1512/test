@@ -61,7 +61,7 @@ bool Repeater900Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 
 INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -458,7 +458,7 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
 
 INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
 
     switch(InMessage.Sequence)
@@ -515,7 +515,7 @@ INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 
 INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -546,7 +546,7 @@ INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime Tim
 
 INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -589,7 +589,7 @@ INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTi
 
 INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -638,7 +638,7 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTim
 
 INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -705,7 +705,7 @@ INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTim
 
 INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = Error_Abnormal;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -760,7 +760,7 @@ INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTim
 
 INT Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = Error_Abnormal;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi

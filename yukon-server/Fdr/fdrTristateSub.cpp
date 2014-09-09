@@ -209,7 +209,7 @@ int FDRTriStateSub::fail()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " FDRTristateSub failed decoding the File. \n";
     }
-    return NORMAL;
+    return NoError;
 }
 
 int FDRTriStateSub::decodeFile()
@@ -291,7 +291,7 @@ int FDRTriStateSub::decodeFile()
         }
 
 
-        return NORMAL;
+        return NoError;
     }else
         return 1; //fail() is called if we return bad
 }

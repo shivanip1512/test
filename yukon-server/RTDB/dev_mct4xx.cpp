@@ -631,7 +631,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                 temp += "Current interval: " + printTimestamp(_llpRequest.begin) + "\n";
                                 temp += "Ending interval:  " + printTimestamp(_llpRequest.end) + "\n";
                                 errRet->setResultString(temp);
-                                errRet->setStatus(NOTNORMAL);
+                                errRet->setStatus(Error_Abnormal);
                                 retList.push_back(errRet);
                                 errRet = NULL;
                             }
@@ -648,7 +648,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                 {
                                     CtiString temp = "Long load profile request was cancelled";
                                     errRet->setResultString(temp);
-                                    errRet->setStatus(NOTNORMAL);
+                                    errRet->setStatus(Error_Abnormal);
                                     retList.push_back(errRet);
                                     errRet = NULL;
                                 }
@@ -1974,7 +1974,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
 
     string installValue = parse.getsValue("installvalue");
 
-    int nRet = NORMAL;
+    int nRet = NoError;
     if (installValue == PutConfigPart_tou )
     {
         nRet = executePutConfigTOU(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
@@ -2046,7 +2046,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
         nRet = NoMethod;
     }
 
-    if( nRet != NORMAL )
+    if( nRet != NoError )
     {
         CtiString resultString;
 
@@ -2059,7 +2059,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
         else if( nRet == ConfigCurrent )
         {
             resultString = "Config " + installValue + " is current.";
-            nRet = NORMAL; //This is an OK return! Note that nRet is no longer propogated!
+            nRet = NoError; //This is an OK return! Note that nRet is no longer propogated!
         }
         else if( nRet == ConfigNotCurrent )
         {
@@ -2433,7 +2433,7 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
 
 int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if(deviceConfig)
@@ -2467,7 +2467,7 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
                         OutMessage->Buffer.BSt.Message[0] = *spid;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        nRet = NORMAL;
+                        nRet = NoError;
                     }
                     else
                     {
@@ -2481,7 +2481,7 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
             }
         }
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if (nRet == NoError)
         {
             if(getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
             {
@@ -2571,7 +2571,7 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
 
 int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
+    int nRet = NoError;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -2604,7 +2604,7 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
                         OutMessage->Buffer.BSt.Message[0] = *timeAdjustTolerance;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        nRet = NORMAL;
+                        nRet = NoError;
                     }
                     else
                     {
@@ -2618,7 +2618,7 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
             }
         }
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
+        if (nRet == NoError)
         {
             if(getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
             {
@@ -2662,7 +2662,7 @@ int Mct4xxDevice::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &pars
 
 INT Mct4xxDevice::decodeGetConfigTime(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -2727,7 +2727,7 @@ INT Mct4xxDevice::decodeGetConfigTime(const INMESS &InMessage, const CtiTime Tim
 
 INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -2897,7 +2897,7 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, const CtiTi
 
 INT Mct4xxDevice::decodeGetConfigTOU(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -3083,7 +3083,7 @@ bool Mct4xxDevice::isProfileTablePointerCurrent(const unsigned char table_pointe
 
 INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3217,7 +3217,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 
 INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int        status = NORMAL,
+    int        status = NoError,
                channel,
                pointoffset;
     point_info pi_kw,

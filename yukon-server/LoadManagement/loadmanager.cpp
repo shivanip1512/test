@@ -673,7 +673,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
 {
     try
     {
-        if( _dispatchConnection.get() == NULL || _dispatchConnection->verifyConnection() != NORMAL )
+        if( _dispatchConnection.get() == NULL || _dispatchConnection->verifyConnection() != NoError )
         {
             //Connect to Dispatch
             _dispatchConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
@@ -705,7 +705,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
 {
     try
     {
-        if( _pilConnection.get() == NULL || _pilConnection->verifyConnection() != NORMAL )
+        if( _pilConnection.get() == NULL || _pilConnection->verifyConnection() != NoError )
         {
             //Connect to Pil
             _pilConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
@@ -737,7 +737,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
 {
     try
     {
-        if( _notificationConnection.get() == NULL || _notificationConnection->verifyConnection() != NORMAL )
+        if( _notificationConnection.get() == NULL || _notificationConnection->verifyConnection() != NoError )
         {
             //Connect to Pil
             _notificationConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification ));
@@ -971,7 +971,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Porter return received." << endl;
             }
-            if( pcReturn->Status() != NORMAL &&
+            if( pcReturn->Status() != NoError &&
                 pcReturn->Status() != DEVICEINHIBITED &&
                 pcReturn->Status() != REMOTEINHIBITED &&
                 pcReturn->Status() != PORTINHIBITED )

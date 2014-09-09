@@ -603,7 +603,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
                         dout << CtiTime() << " **** Checkpoint - RTU status: request questionable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    retval = NOTNORMAL;
+                    retval = Error_Abnormal;
                 }
                 else if( !_configRead )
                 {
@@ -781,7 +781,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
     }
     else
     {
-        retval = NOTNORMAL;
+        retval = Error_Abnormal;
     }
 
     if( retval )

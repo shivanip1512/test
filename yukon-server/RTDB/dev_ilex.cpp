@@ -55,12 +55,12 @@ INT CtiDeviceILEX::header(PBYTE  Header,          /* Pointer to message */
     if(SubFunction2) Header[0] |= 0x08;
     Header[1] = LOBYTE (getAddress() >> 3);
 
-    return(NORMAL);
+    return NoError;
 }
 
 INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -88,7 +88,7 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -116,7 +116,7 @@ INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
 INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -142,7 +142,7 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT             status = NORMAL;
+    INT             status = NoError;
     CtiPointSPtr    PointRecord;
     CtiPointNumericSPtr NumericPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -213,7 +213,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 
                         CtiCommandParser parse(InMessage.Return.CommandStr);
 
-                        if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
+                        if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NoError)
                         {
                             ReportError ((USHORT)i); /* Send Error to logger */
                         }
@@ -288,7 +288,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 
                         setIlexSequenceNumber( firstByte & 0x10 );
 
-                        if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
+                        if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NoError)
                         {
                             ReportError ((USHORT)i); /* Send Error to logger */
                         }
@@ -444,7 +444,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                                     // CtiCommandParser parse(InMessage.Return.CommandStr);
                                     setIlexSequenceNumber( firstByte & 0x10 );
 
-                                    if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
+                                    if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NoError)
                                     {
                                         ReportError ((USHORT)i); /* Send Error to logger */
                                     }
@@ -699,7 +699,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                         InEchoToOut(InMessage, OutMessage);
 
                         CtiCommandParser parse(InMessage.Return.CommandStr);
-                        if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NORMAL)
+                        if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NoError)
                         {
                             if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                             {
@@ -872,7 +872,7 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
 INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(!isInhibited())
     {

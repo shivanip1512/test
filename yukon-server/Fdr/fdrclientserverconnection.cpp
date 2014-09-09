@@ -218,7 +218,7 @@ ostream& CtiFDRClientServerConnection::logNow()
 void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    int retVal = NORMAL;
+    int retVal = NoError;
 
     try
     {
@@ -358,7 +358,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
 void CtiFDRClientServerConnection::threadFunctionHealth( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    int retVal = NORMAL;
+    int retVal = NoError;
 
     try
     {
@@ -423,7 +423,7 @@ void CtiFDRClientServerConnection::threadFunctionHealth( void )
 
 INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG &aBytesWritten)
 {
-    INT retVal = NORMAL;
+    INT retVal = NoError;
 
     aBytesWritten = 0;
 
@@ -562,7 +562,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
 
 INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead)
 {
-    INT retVal = NORMAL;
+    INT retVal = NoError;
 
     // initialize
     aBytesRead = 0;

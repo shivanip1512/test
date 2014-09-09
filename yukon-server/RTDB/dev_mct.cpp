@@ -512,7 +512,7 @@ INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
                            OutMessageList &outList,
                            INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -568,7 +568,7 @@ INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
                              OutMessageList &outList,
                              INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -622,7 +622,7 @@ INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
                                OutMessageList &outList,
                                INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -678,7 +678,7 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
                                OutMessageList &outList,
                                INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -791,7 +791,7 @@ INT MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
 INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     switch( InMessage.Sequence )
     {
@@ -932,7 +932,7 @@ INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
 
 INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NORMAL;
+    INT retCode = NoError;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
@@ -2570,7 +2570,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 
 INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NORMAL,
+    INT   status = NoError,
           j;
     ULONG pfCount = 0;
     string resultString;
@@ -2598,7 +2598,7 @@ INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -2663,7 +2663,7 @@ INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
     CtiCommandParser parse(InMessage.Return.CommandStr);
@@ -2909,7 +2909,7 @@ INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 
@@ -3129,7 +3129,7 @@ INT MctDevice::decodePutValue(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NORMAL,
+    INT   status = NoError,
           j;
     ULONG pfCount = 0;
     string resultString;
@@ -3157,7 +3157,7 @@ INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NORMAL;
+    INT   status = NoError;
     ULONG pfCount = 0;
     string resultString;
     OUTMESS *OutTemplate;

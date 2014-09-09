@@ -47,7 +47,7 @@ CtiDeviceDavis::CtiDeviceDavis()
 
 INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {
@@ -84,7 +84,7 @@ INT CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 
 INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -163,7 +163,7 @@ INT CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         OutMessage = NULL;
     }
 
-    return (NORMAL);
+    return (NoError);
 }
 
 
@@ -416,7 +416,7 @@ INT CtiDeviceDavis::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
         }
     }
 
-    return (NORMAL);
+    return (NoError);
 }
 
 

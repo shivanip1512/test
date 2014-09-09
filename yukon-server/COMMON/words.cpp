@@ -24,7 +24,7 @@ INT IM_EX_CTIBASE A_Word (PBYTE AWord, const ASTRUCT &ASt, BOOL Double)      /* 
    AWord[3] = BCHCalc_C (AWord, 24) & 0xfc;
 
 
-   return(NORMAL);
+   return NoError;
 }
 
 /* Routine to create a "B" type word */
@@ -51,7 +51,7 @@ INT IM_EX_CTIBASE B_Word (PBYTE BWord, const BSTRUCT &BSt, unsigned wordCount, B
    BWord[5] |= (BCH = BCHCalc_C (BWord, 46)) >> 6;
    BWord[6] = BCH << 2;
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -86,7 +86,7 @@ INT IM_EX_CTIBASE C_Word (PBYTE CWord,                        /* result */
    CWord[5] |= (BCH = BCHCalc_C (CWord, 46)) >> 6;
    CWord[6] = BCH << 2;
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -111,7 +111,7 @@ INT IM_EX_CTIBASE C_Words (unsigned char * CWords,             /* results */
 
    if( cword_count )  *cword_count = i;
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -151,7 +151,7 @@ YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
       Mess[i] = DWord[i+2] << 4 | DWord[i+3] >> 4;
    }
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -188,7 +188,7 @@ YukonError_t D23_Word(
       Mess[i] = DWord[i] << 4 | DWord[i+1] >> 4;
    }
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -223,7 +223,7 @@ YukonError_t D_Words (
    }
 
    /* check for a nacked */
-   if((Code = NackTst (DWords[7], &Nack, CCU)) != NORMAL)
+   if((Code = NackTst (DWords[7], &Nack, CCU)) != NoError)
    {
       return(Code);
    }
@@ -243,7 +243,7 @@ YukonError_t D_Words (
    }
 
    /* decode the first word and get the data from it */
-   if((Code = D1_Word (DWords, DSt->Message, &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm)) != NORMAL)
+   if((Code = D1_Word (DWords, DSt->Message, &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm)) != NoError)
    {
       if(Code == EWORDRCV)
       {
@@ -257,7 +257,7 @@ YukonError_t D_Words (
    /* repeat the process for each DWord in the message */
    if(Num > 1)
    {
-      if((Code = NackTst (DWords[15], &Nack, CCU)) != NORMAL)
+      if((Code = NackTst (DWords[15], &Nack, CCU)) != NoError)
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -274,7 +274,7 @@ YukonError_t D_Words (
             return(NACK2);
       }
 
-      if((Code = D23_Word (DWords+8, DSt->Message + 3, &DSt->TSync, &Dummy)) != NORMAL)
+      if((Code = D23_Word (DWords+8, DSt->Message + 3, &DSt->TSync, &Dummy)) != NoError)
       {
          if(Code == EWORDRCV)
          {
@@ -289,7 +289,7 @@ YukonError_t D_Words (
    if(Num > 2)
    {
 
-      if((Code = NackTst (DWords[23], &Nack, CCU)) != NORMAL)
+      if((Code = NackTst (DWords[23], &Nack, CCU)) != NoError)
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -306,7 +306,7 @@ YukonError_t D_Words (
             return(NACK3);
       }
 
-      if((Code = D23_Word (DWords+16, DSt->Message + 8, &Dummy, &Dummy)) != NORMAL)
+      if((Code = D23_Word (DWords+16, DSt->Message + 8, &Dummy, &Dummy)) != NoError)
       {
          if(Code == EWORDRCV)
          {
@@ -321,7 +321,7 @@ YukonError_t D_Words (
    /* compute the Length of the returned data */
    DSt->Length = (Num - 1) * 5 + 3;
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -428,7 +428,7 @@ YukonError_t NackTst (
    if((Reply & 0x03) != (CCU & 0x03))
       return(BADCCU);
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -467,7 +467,7 @@ INT IM_EX_CTIBASE APreamble (PBYTE Pre, const ASTRUCT &ASt)             /* A wor
     for(i = 0; i < 3; i++)
         Pre[i] = Parity_C (Pre[i]);
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -504,6 +504,6 @@ INT IM_EX_CTIBASE BPreamble (PBYTE Pre, const BSTRUCT &BSt, INT wordsToFollow)  
     for(i = 0; i < 3; i++)
         Pre[i] = Parity_C (Pre[i]);
 
-    return(NORMAL);
+    return NoError;
 }
 

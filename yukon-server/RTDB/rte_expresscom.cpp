@@ -31,7 +31,7 @@
 using std::endl;
 using std::list;
 
-CtiRouteExpresscom::CtiRouteExpresscom() 
+CtiRouteExpresscom::CtiRouteExpresscom()
 {}
 
 void CtiRouteExpresscom::DumpData()
@@ -81,7 +81,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
 #define ABUFSIZE 40
 #define A_WORD_LEN 7
 
-    INT       status = NORMAL;
+    INT       status = NoError;
     bool      xmore = true;
     CtiString resultString;
     BYTE      ABuf[ABUFSIZE];
@@ -226,7 +226,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
         status = -1;
     }
 
-    if(status != NORMAL)
+    if(status != NoError)
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Versacom/AWord commands";

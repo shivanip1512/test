@@ -977,7 +977,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
                     retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                                               InMessage.Return.CommandStr,
                                                               "Multi-day daily read request failed",
-                                                              NOTNORMAL,
+                                                              Error_Abnormal,
                                                               InMessage.Return.RouteID,
                                                               InMessage.Return.RetryMacroOffset,
                                                               InMessage.Return.Attempt,
@@ -2591,7 +2591,7 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
 
 INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiTime pointTime;
     bool valid_data = true;
 
@@ -2718,7 +2718,7 @@ INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiTime pointTime;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
@@ -2815,7 +2815,7 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     point_info pi;
 
@@ -2883,7 +2883,7 @@ INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -2937,7 +2937,7 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime 
 
 INT Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
@@ -3123,7 +3123,7 @@ INT Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime T
 
 INT Mct410Device::decodeGetValueFreezeCounter( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const unsigned char   *msgbuf = InMessage.Buffer.DSt.Message;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -3229,7 +3229,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, c
         return NoError;
     }
 
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3393,9 +3393,9 @@ INT Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, cons
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, NORMAL, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
 
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -3422,7 +3422,7 @@ void Mct410Device::tryVerifyDailyReadInterestDate(const unsigned interest_day, c
 
 INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     string resultString;
     bool expectMore = false;
@@ -3804,7 +3804,7 @@ string Mct410Device::describeStatusAndEvents(const unsigned char *buf)
 
 INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -3889,7 +3889,7 @@ INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 
 INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3952,7 +3952,7 @@ INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 
 INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-     INT status = NORMAL;
+     INT status = NoError;
 
      const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -4030,7 +4030,7 @@ INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime 
 
 INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4070,7 +4070,7 @@ INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTim
 
 INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4113,7 +4113,7 @@ INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTi
 
 INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4152,7 +4152,7 @@ INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime T
 
 INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4222,7 +4222,7 @@ INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const 
 
 INT Mct410Device::decodeGetConfigDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL, state = 0;
+    INT status = NoError, state = 0;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4414,7 +4414,7 @@ string Mct410Device::decodeDisconnectCyclingConfig(const boost::optional<int> co
 
 INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4449,7 +4449,7 @@ INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime 
 
 INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4534,7 +4534,7 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiT
 
 INT Mct410Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -4698,7 +4698,7 @@ bool Mct410Device::sspecValid(const unsigned sspec, const unsigned rev) const
 
 INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4752,7 +4752,7 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage
 
 INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

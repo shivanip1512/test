@@ -108,7 +108,7 @@ INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
 INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -384,7 +384,7 @@ DeviceQueueInterface *Ccu721Device::getDeviceQueueHandler()
 
 YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    YukonError_t retval = NORMAL;
+    YukonError_t retval = NoError;
 
     // If they are the same, it is a message to the CCU and should not be queued
     // Instead of checking this, should all messages to the CCU be marked DTRAN?
@@ -679,7 +679,7 @@ YukonError_t Ccu721Device::translateKlondikeError(KlondikeProtocol::Errors error
 
         case KlondikeProtocol::Error_BusDisabled:               return BADBUSS;
         case KlondikeProtocol::Error_InvalidBus:                return BADBUSS;
-        case KlondikeProtocol::Error_InvalidDLCType:            return NOTNORMAL;
+        case KlondikeProtocol::Error_InvalidDLCType:            return Error_Abnormal;
         case KlondikeProtocol::Error_InvalidMessageLength:      return BADLENGTH;
         case KlondikeProtocol::Error_InvalidSequence:           return BADSEQUENCE;
         case KlondikeProtocol::Error_NoRoutes:                  return RTNF;
@@ -687,7 +687,7 @@ YukonError_t Ccu721Device::translateKlondikeError(KlondikeProtocol::Errors error
         case KlondikeProtocol::Error_TransmitterOverheating:    return ErrorTransmitterOverheating;
 
         default:
-        case KlondikeProtocol::Error_Unknown:                   return NOTNORMAL;
+        case KlondikeProtocol::Error_Unknown:                   return Error_Abnormal;
     }
 }
 
@@ -797,7 +797,7 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
 
         switch( dword_status )
         {
-            case NORMAL:
+            case NoError:
             {
                 im.Buffer.DSt = tmp_d_struct;
                 im.Buffer.DSt.Time    = im.Time;

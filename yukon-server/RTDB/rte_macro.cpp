@@ -76,7 +76,7 @@ void CtiRouteMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     MacroOffset offset = (OutMessage->Request.RetryMacroOffset) ? OutMessage->Request.RetryMacroOffset : pReq->MacroOffset();
 
     try

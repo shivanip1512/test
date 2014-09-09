@@ -45,7 +45,7 @@ CtiDeviceTapPagingTerminal::~CtiDeviceTapPagingTerminal()
 
 INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -153,7 +153,7 @@ INT CtiDeviceTapPagingTerminal::allocateDataBins(OUTMESS *oMess)
 
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDeviceTapPagingTerminal::freeDataBins()
@@ -168,7 +168,7 @@ INT CtiDeviceTapPagingTerminal::freeDataBins()
         _outMessage = NULL;
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 CHAR  CtiDeviceTapPagingTerminal::getPagePrefix() const
@@ -275,7 +275,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
                     if(commReturnValue == READTIMEOUT)
                     {
                         // We got the bytes we needed though.. so lets ignore the error!
-                        status = NORMAL;  // Make sure the portfield loop is not compromised!
+                        status = NoError;  // Make sure the portfield loop is not compromised!
 
                         _idByteCount = xfer.getInCountActual();  // Improve the efficiency for the next call.
                     }
@@ -298,13 +298,13 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
                     {
                         xfer.setOutCount(1);
                         setCurrentState( StateRepeat );
-                        status = NORMAL;  // Make sure the portfield loop is not compromised!
+                        status = NoError;  // Make sure the portfield loop is not compromised!
                     }
                     else
                     {
                         setPreviousState( getCurrentState() );    // Want the Repeat routine to send us back to this state.
                         setCurrentState( StateRepeat );
-                        status = NORMAL;  // Make sure the portfield loop is not compromised!
+                        status = NoError;  // Make sure the portfield loop is not compromised!
                     }
 
                     if(xfer.doTrace(commReturnValue))
@@ -324,7 +324,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
                 xfer.setOutCount(1);
                 setPreviousState( getCurrentState() );    // Want the Repeat routine to send us back to this state.
                 setCurrentState( StateRepeat );
-                status = NORMAL;  // Make sure the portfield loop is not compromised!
+                status = NoError;  // Make sure the portfield loop is not compromised!
                 if(xfer.doTrace(commReturnValue))
                 {
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
@@ -394,7 +394,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
                 {
                     setPreviousState( getCurrentState() );    // Want the Repeat routine to send us back to this state.
                     setCurrentState( StateRepeat );
-                    status = NORMAL;  // Make sure the portfield loop is not compromised!
+                    status = NoError;  // Make sure the portfield loop is not compromised!
                     if(xfer.doTrace(commReturnValue))
                     {
                         traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
@@ -436,7 +436,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
                 {
                     setPreviousState( getCurrentState() );    // Leave a breadcrumb for those who follow to get us back here if needed
                     setCurrentState( StateRepeat );
-                    status = NORMAL;  // Make sure the portfield loop is not compromised!
+                    status = NoError;  // Make sure the portfield loop is not compromised!
                     if(xfer.doTrace(commReturnValue))
                     {
                         traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
@@ -471,7 +471,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
             {
                 setPreviousState( getCurrentState() );    // I need repeat to send me back here
                 setCurrentState( StateRepeat );
-                status = NORMAL;  // Make sure the portfield loop is not compromised!
+                status = NoError;  // Make sure the portfield loop is not compromised!
                 if(xfer.doTrace(commReturnValue))
                 {
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
@@ -514,7 +514,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
  *-----------------------------------------------------------------------------*/
 YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, CtiMessageList &traceList)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
@@ -749,7 +749,7 @@ INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessage
     trace.setEnd(true);
     traceList.push_back( trace.replicateMessage() );
 
-    return(NORMAL);
+    return NoError;
 }
 
 INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList &traceList, BOOL CompletedMessage)
@@ -790,7 +790,7 @@ INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessage
         _inStr = string();     // Reset it for the next message
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -864,14 +864,14 @@ INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
         break;
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 
 YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
@@ -1080,7 +1080,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
 {
     YukonError_t status = commReturnValue;
 
-    if( status == NORMAL )     // Communications must have been successful
+    if( status == NoError )     // Communications must have been successful
     {
         if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
         {
@@ -1233,7 +1233,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
 YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
@@ -1363,7 +1363,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer
 {
     YukonError_t status = commReturnValue;
 
-    if( status == NORMAL )     // Communications must have been successful
+    if( status == NoError )     // Communications must have been successful
     {
         if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
         {

@@ -499,7 +499,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
 // Interesting
 INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     // These elements of addressing must be defined.
     if(_utility <= 0) _utility = parse.getiValue("sa_utility");
@@ -563,7 +563,7 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
     }
 
     if(_transmitterType != TYPE_RTC) appendCRCToMessage();
-    if(status == NORMAL) _messageReady = true;
+    if(status == NoError) _messageReady = true;
     // dumpBits();
 
     return status;
@@ -639,7 +639,7 @@ void CtiProtocolSA305::addressMessage(int command_type, int command_description)
 INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
     INT  i;
-    INT  status = NORMAL;
+    INT  status = NoError;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
     _repetitions = parse.getiValue("sa_reps", 0);
@@ -700,7 +700,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
 
 INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if( _strategy != 0 )
     {

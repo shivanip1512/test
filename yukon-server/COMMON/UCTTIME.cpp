@@ -117,7 +117,7 @@ int IM_EX_CTIBASE getUCTMemoryFlags (void)
         InitTZFlag = TRUE;  /* the time zone must be initialized for each program that uses this DLL.  This flag says so */
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -131,7 +131,7 @@ IM_EX_CTIBASE INT UCTFTime (struct timeb *TimeBuffer)
     if(Flags == NULL)
     {
         /* get our share memory */
-        if((rc = getUCTMemoryFlags()) != NORMAL)
+        if((rc = getUCTMemoryFlags()) != NoError)
         {
             /* we got some kind of an error */
             return(rc);
@@ -154,7 +154,7 @@ IM_EX_CTIBASE INT UCTFTime (struct timeb *TimeBuffer)
     /* flags is the dst ruler set return value */
     TimeBuffer->dstflag = (SHORT)Flags->MyDSTFlag;
 
-    return(NORMAL);
+    return NoError;
 }
 
 

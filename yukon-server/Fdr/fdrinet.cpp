@@ -790,7 +790,7 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         ptr->msgUnion.value.Value = aPoint.getValue();
                         break;
                 }
-                ptr->msgUnion.value.AlarmState = NORMAL;
+                ptr->msgUnion.value.AlarmState = NoError;
 
                 /**************************
                 * if we get this far, the connection list must exist so no null check
@@ -1522,7 +1522,7 @@ string CtiFDR_Inet::decodeClientName(CHAR * aBuffer)
 
 int CtiFDR_Inet::processMessageFromForeignSystem(CHAR *aBuffer)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     InetInterface_t *data = (InetInterface_t*)aBuffer;
     string clientName(data->SourceName);
     string deviceName(data->msgUnion.value.DeviceName);
@@ -1582,7 +1582,7 @@ int CtiFDR_Inet::processMessageFromForeignSystem(CHAR *aBuffer)
 
 int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     CtiPointDataMsg     *pData;
     string           translationName (data->msgUnion.value.DeviceName);
     int                 quality;
@@ -1629,7 +1629,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                                   translationName.c_str(),
                                   point.getPointID());
                         logEvent (desc,string (action));
-                        retVal = !NORMAL;
+                        retVal = Error_Abnormal;
                     }
                     else
                     {
@@ -1682,7 +1682,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                                       translationName.c_str(),
                                       point.getPointID());
                             logEvent (desc,string (action));
-                            retVal = !NORMAL;
+                            retVal = Error_Abnormal;
                         }
 
                         if (controlState != -1)
@@ -1765,7 +1765,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                                       translationName.c_str(),
                                       point.getPointID());
                             logEvent (desc,string (action));
-                            retVal = !NORMAL;
+                            retVal = Error_Abnormal;
 
                         }
                         else
@@ -1778,7 +1778,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                                           translationName.c_str(),
                                           point.getPointID());
                                 logEvent (desc,string (action));
-                                retVal = !NORMAL;
+                                retVal = Error_Abnormal;
                             }
                             else
                             {
@@ -1815,7 +1815,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
         desc = decodeClientName((CHAR*)data) + string ("'s point is not listed in the translation table");
         _snprintf(action,60,"%s", translationName.c_str());
         logEvent (desc,string (action));
-        retVal = !NORMAL;
+        retVal = Error_Abnormal;
     }
 
     return retVal;
@@ -1863,7 +1863,7 @@ USHORT CtiFDR_Inet::YukonToForeignQuality (USHORT aQuality)
                 Quality = INETUNREASONABLE;
 
         if (aQuality == NormalQuality)
-                Quality = NORMAL;
+                Quality = NoError;
 
         return(htons (Quality));
 }

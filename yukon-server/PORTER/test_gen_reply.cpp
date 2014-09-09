@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 1);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 1);
-    BOOST_CHECK_EQUAL(status, NORMAL);
+    BOOST_CHECK_EQUAL(status, NoError);
 
     status = callGenReply(reply, sizeof(reply), pInfo);
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 2);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 4);
-    BOOST_CHECK_EQUAL(status, NORMAL);
+    BOOST_CHECK_EQUAL(status, NoError);
 
     // Change the sequencing in the reply for the next test and
     // update the CRC.
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 6);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 0);
-    BOOST_CHECK_EQUAL(status, NORMAL);
+    BOOST_CHECK_EQUAL(status, NoError);
 
     // Change our reply to something else.
     pInfo.RemoteSequence.Reply = 3;
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 6);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 0);
-    BOOST_CHECK_EQUAL(status, NORMAL);
+    BOOST_CHECK_EQUAL(status, NoError);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

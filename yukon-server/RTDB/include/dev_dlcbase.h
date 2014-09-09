@@ -37,7 +37,7 @@ private:
     typedef DlcBaseDevice Self;
     typedef CtiDeviceSingle Parent;
 
-    typedef int (Self::*ExecuteMethod)(CtiRequestMsg *, CtiCommandParser &, OUTMESS *&, std::list< CtiMessage* > &, std::list< CtiMessage* > &, std::list< OUTMESS* > &);
+    typedef int (Self::*ExecuteMethod)(CtiRequestMsg *, CtiCommandParser &, OUTMESS *&, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
     static const std::map<CtiClientRequest_t, ExecuteMethod> _executeMethods;
     static const std::map<CtiClientRequest_t, ExecuteMethod> buildExecuteMethodMap();

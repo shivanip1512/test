@@ -187,7 +187,7 @@ int CtiProtocolSixnet::assemble()
         /*
          *  pTX now has a message ready to be sent in it.!
          */
-        status = NORMAL;
+        status = NoError;
 
         _state = GETLEAD;
     }

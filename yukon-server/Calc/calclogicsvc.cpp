@@ -209,7 +209,7 @@ void CtiCalcLogicService::Run( )
 
         while( !UserQuit )
         {
-            if( ! dispatchConnection || dispatchConnection->verifyConnection() != NORMAL )
+            if( ! dispatchConnection || dispatchConnection->verifyConnection() != NoError )
             {
                 if( _threadsStarted )
                 {
@@ -361,7 +361,7 @@ void CtiCalcLogicService::Run( )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Unable to reuse the old point lists.  Will attempt a DB reload in 15 sec." << endl;
                             }
-                            
+
                             tempCalcThread.reset();
                             Sleep(15000);
                             continue;
@@ -373,7 +373,7 @@ void CtiCalcLogicService::Run( )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-                        
+
                         tempCalcThread.reset();
                         Sleep(1000);
                         continue;

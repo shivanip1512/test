@@ -93,7 +93,7 @@ bool DnpDevice::clearedForScan(int scantype)
 
 INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     setScanFlag(ScanRateGeneral, true);
@@ -121,7 +121,7 @@ INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
 
 INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan integrity");
 
     setScanFlag(ScanRateIntegrity, true);
@@ -1086,7 +1086,7 @@ INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
 INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NORMAL;
+    INT retCode = NoError;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
 

@@ -249,14 +249,14 @@ INT CtiDeviceSchlumberger::fillUploadTransferObject (CtiXfer  &aTransfer, ULONG 
     aTransfer.getOutBuffer()[5] = temp.ch[1];
     aTransfer.getOutBuffer()[6] = temp.ch[0];
 
-    return NORMAL;
+    return NoError;
 }
 
 
 YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
                                                    YukonError_t commReturnValue)
 {
-    YukonError_t retCode    = NORMAL;
+    YukonError_t retCode    = NoError;
 
     if (commReturnValue || Transfer.getInBuffer()[0] == NAK)
     {
@@ -271,7 +271,7 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
                 setCRCErrors (0);
                 setCurrentState (StateScanAbort);
                 setAttemptsRemaining (0);
-                retCode = NOTNORMAL;
+                retCode = Error_Abnormal;
             }
 
             if (Transfer.doTrace(BADCRC))
@@ -298,7 +298,7 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
         if (getAttemptsRemaining() <= 0)
         {
             setCurrentState (StateScanAbort);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
         }
         else
         {
@@ -317,10 +317,10 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
         {
             setCurrentState (StateScanAbort);
             setAttemptsRemaining (0);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
         }
         else
-            retCode = NORMAL;
+            retCode = NoError;
     }
     return retCode;
 }
@@ -334,7 +334,7 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg     *pReq,
                                        OutMessageList    &outList,
                                        INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     ULONG BytesWritten;
 
@@ -523,7 +523,7 @@ INT CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
             }
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
@@ -535,7 +535,7 @@ INT CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = NORMAL;
+    INT retCode = NoError;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
@@ -615,7 +615,7 @@ INT CtiDeviceSchlumberger::freeDataBins  ()
     // re-init everything for next time through
     setTotalByteCount (0);
     setCurrentState (StateHandshakeInitialize);
-    return NORMAL;
+    return NoError;
 }
 
 // default constructor that takes 2 optional parameters

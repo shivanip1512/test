@@ -54,7 +54,7 @@ CtiProtocolSA3rdParty::~CtiProtocolSA3rdParty()
 
 INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     _sa._commandType = parse.getCommand();
 
@@ -98,7 +98,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
         {
             _sa._function = parse.getiValue("sa_function");
 
-            if( !solveStrategy(parse) && NORMAL == (status = assembleControl( parse )) )
+            if( !solveStrategy(parse) && NoError == (status = assembleControl( parse )) )
             {
                 loadControl();
                 _messageReady = true;
@@ -107,7 +107,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
         }
     case PutConfigRequest:
         {
-            if( NORMAL == (status = assemblePutConfig( parse )) )
+            if( NoError == (status = assemblePutConfig( parse )) )
             {
                 if(  parse.isKeyValid("sa_assign") && parse.isKeyValid("serial") )
                 {
@@ -266,7 +266,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
 {
     INT  i;
-    INT  status = NORMAL;
+    INT  status = NoError;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
@@ -346,7 +346,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
 
 INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     string   temp, token;
     string   str = parse.getCommandStr();
@@ -470,7 +470,7 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 
 INT CtiProtocolSA3rdParty::loadControl()
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     SA_CODE scode;
     INT retCode = 0;
@@ -551,7 +551,7 @@ INT CtiProtocolSA3rdParty::loadControl()
 
 INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     INT retCode = 0;
 
@@ -586,7 +586,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
 
 INT CtiProtocolSA3rdParty::restoreLoadControl()
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -598,7 +598,7 @@ INT CtiProtocolSA3rdParty::restoreLoadControl()
 
 int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     bool dlc_control = (parse.getCommandStr().find(" dlc")!=string::npos);      // if set, we want DLC (not DI) control!
 
     // We only try to predict it if it has not already been fully identified for us.

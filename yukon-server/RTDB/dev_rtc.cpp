@@ -60,7 +60,7 @@ CtiDeviceRTC::~CtiDeviceRTC()
 
 INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -85,7 +85,7 @@ INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -110,7 +110,7 @@ INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
 INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -252,7 +252,7 @@ INT CtiDeviceRTC::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT CtiDeviceRTC::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NORMAL;
+    INT retCode = NoError;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
@@ -346,7 +346,7 @@ LONG CtiDeviceRTC::getAddress() const
 
 INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage->Buffer.SASt._groupType == SA205 || OutMessage->Buffer.SASt._groupType == SA305 || OutMessage->Buffer.SASt._groupType == SA105)
     {
@@ -376,7 +376,7 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage)
 
 YukonError_t CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
 
     if( !(MessageFlag_QueuedToDevice & OutMessage->MessageFlags) && hasExclusions())
     {
@@ -503,7 +503,7 @@ LONG CtiDeviceRTC::deviceMaxCommunicationTime() const
 INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 {
     CtiTime now;
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiOutMessage *rtcOutMessage = 0;       // This pointer is used to process the queued outmessages on this device.
 

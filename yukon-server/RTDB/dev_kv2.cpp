@@ -72,7 +72,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NORMAL,
+                                          NoError,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -314,7 +314,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg     *pReq,
         }
     }
 
-    if( nRet != NORMAL )
+    if( nRet != NoError )
     {
         string resultString;
 
@@ -622,7 +622,7 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     //getKV2Protocol().buildWantedTableList (aMsg);
 
 
-    return NORMAL;
+    return NoError;
 }
 
 /*************************************************************************************
@@ -705,7 +705,7 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 
     // keep the list on the scanner side for decode
     //getKV2Protocol().buildWantedTableList (aMsg);
-    return NORMAL;
+    return NoError;
 }
 
 

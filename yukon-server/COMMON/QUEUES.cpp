@@ -38,7 +38,7 @@ static void DefibBlockSem(HCTIQUEUE QueueHandle)
 /* Routine to return the number of requests for a RequestID, returns 0 if not found */
 IM_EX_CTIBASE INT GetRequestCount(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG &Count)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     Count = 0;
     QUEUEENT *Entry = NULL;
 

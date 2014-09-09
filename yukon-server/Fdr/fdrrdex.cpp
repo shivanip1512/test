@@ -423,7 +423,7 @@ string CtiFDR_Rdex::decodeClientName(CHAR * aBuffer)
 
 int CtiFDR_Rdex::processMessageFromForeignSystem(CHAR *aBuffer)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     RdexInterface_t *rdex = (RdexInterface_t *)aBuffer;
 
     switch (ntohl (rdex->function))
@@ -481,7 +481,7 @@ int CtiFDR_Rdex::processMessageFromForeignSystem(CHAR *aBuffer)
 
 int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
 {
-    int retVal = !NORMAL;
+    int retVal = Error_Abnormal;
     Rdex_Registration *data = (Rdex_Registration*)aData;
     string           desc;
     string           action;
@@ -513,7 +513,7 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
             action = getLayer()->getName() + ": Acknowledgment";
             desc = getLayer()->getName() + " registration acknowledgment message has failed";
             logEvent (desc,action,true);
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
         else
         {
@@ -527,7 +527,7 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
             desc = getLayer()->getName() + " has registered with Yukon";
             logEvent (desc,action,true);
 
-            retVal = NORMAL;
+            retVal = NoError;
         }
     }
 
@@ -537,7 +537,7 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
 
 int CtiFDR_Rdex::processValueMessage(CHAR *aData)
 {
-    int retVal = !NORMAL;
+    int retVal = Error_Abnormal;
     CtiPointDataMsg     *pData;
     RdexInterface_t  *data = (RdexInterface_t*)aData;
     string           translationName;
@@ -579,7 +579,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                           translationName.c_str(),
                           point.getPointID());
                 logEvent (desc,string (action));
-                retVal = !NORMAL;
+                retVal = Error_Abnormal;
             }
             else
             {
@@ -599,7 +599,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                     dout << CtiTime() << " Analog point " << translationName;
                     dout << " value " << value << " from " << getLayer()->getName() << " assigned to point " << point.getPointID() << endl;;
                 }
-                retVal = NORMAL;
+                retVal = NoError;
             }
         }
         else
@@ -633,7 +633,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                     logEvent (desc,string (action));
                 }
             }
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
     }
     return retVal;
@@ -641,7 +641,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
 
 int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
 {
-    int retVal = !NORMAL;
+    int retVal = Error_Abnormal;
     CtiPointDataMsg     *pData;
     RdexInterface_t  *data = (RdexInterface_t*)aData;
     string           translationName;
@@ -692,7 +692,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                               point.getPointID());
                     logEvent (desc,string (action));
                 }
-                retVal = !NORMAL;
+                retVal = Error_Abnormal;
             }
             else
             {
@@ -720,7 +720,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                     }
                     dout <<" from " << getLayer()->getName() << " assigned to point " << point.getPointID() << endl;;
                 }
-                retVal = NORMAL;
+                retVal = NoError;
             }
         }
         else
@@ -754,7 +754,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                     logEvent (desc,string (action));
                 }
             }
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
     }
     return retVal;
@@ -762,7 +762,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
 
 int CtiFDR_Rdex::processControlMessage(CHAR *aData)
 {
-    int retVal = !NORMAL;
+    int retVal = Error_Abnormal;
     CtiPointDataMsg     *pData;
     RdexInterface_t  *data = (RdexInterface_t*)aData;
     string           translationName;
@@ -801,7 +801,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                           translationName.c_str(),
                           point.getPointID());
                 logEvent (desc,string (action));
-                retVal = !NORMAL;
+                retVal = Error_Abnormal;
             }
             else if ((controlState == STATE_OPENED || controlState == STATE_CLOSED))
             {
@@ -830,7 +830,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
 
                     dout <<" from " << getLayer()->getName() << " and processed for point " << point.getPointID() << endl;;
                  }
-                retVal = NORMAL;
+                retVal = NoError;
             }
         }
         else
@@ -883,7 +883,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                     logEvent (desc,string (action));
                 }
             }
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
     }
 

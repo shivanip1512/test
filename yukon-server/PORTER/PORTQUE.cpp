@@ -279,7 +279,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
     CtiDeviceCCU *ccu = (CtiDeviceCCU *)Dev.get();
 
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
     ULONG i;
     INMESS ResultMessage;
     USHORT QueTabEnt;
@@ -876,7 +876,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 /* see if we have any interest in decoding the results */
                 if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
                 {
-                    ResultMessage.ErrorCode           = NORMAL;
+                    ResultMessage.ErrorCode           = NoError;
 
                     ResultMessage.DeviceID        = InMessage.DeviceID;
                     ResultMessage.MessageFlags    = InMessage.MessageFlags;
@@ -943,7 +943,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                                 ResultMessage.ErrorCode = NOATTEMPT;
                                 break;
                             case 1:
-                                ResultMessage.ErrorCode = NORMAL;
+                                ResultMessage.ErrorCode = NoError;
                                 break;
                             case 2:
                                 ResultMessage.ErrorCode = ROUTEFAILED;
@@ -1359,7 +1359,7 @@ INT QueueFlush (CtiDeviceSPtr Dev)
         InterlockedExchange(&(pInfo->FreeSlots), MAXQUEENTRIES);
         pInfo->clearStatus(INLGRPQ);            // 20050506 CGP on a wh.
     }
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -1383,7 +1383,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << tempstr << endl;
         }
-        return(!NORMAL);
+        return Error_Abnormal;
     }
 
     if(Count)
@@ -1410,7 +1410,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                     dout << CtiTime() << " " << tempstr << endl;
                 }
             }
-            return(NORMAL);
+            return NoError;
         }
 
         /* Check how many entries we can handle on this CCU */
@@ -1678,7 +1678,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
         }
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 INT BuildActinShed (CtiDeviceSPtr Dev)
@@ -1802,7 +1802,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
         }
     }
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -1810,7 +1810,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 /* Dequeues only those entries marked as having QueueEntrySequence equal to the inbound message sequence*/
 YukonError_t DeQueue (INMESS &InMessage)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
     struct timeb TimeB;
     ULONG i;
     INMESS ResultMessage;
@@ -1827,7 +1827,7 @@ YukonError_t DeQueue (INMESS &InMessage)
     /* Make sure this is one of em */
     if(!(InMessage.Sequence & 0x8000))
     {
-        return NOTNORMAL;
+        return Error_Abnormal;
     }
 
     CtiDeviceSPtr TransmitterDev = DeviceManager.getDeviceByID(InMessage.DeviceID);
@@ -2047,5 +2047,5 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
         }
     }
 
-    return NORMAL;
+    return NoError;
 }

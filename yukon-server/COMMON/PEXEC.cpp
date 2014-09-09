@@ -47,7 +47,7 @@ IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
       Sleep(1000);
    }
 
-   return NORMAL;
+   return NoError;
 }
 
 /* Routine that gets run when we go tits up */

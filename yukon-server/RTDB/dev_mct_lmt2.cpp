@@ -258,7 +258,7 @@ bool Lmt2Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *
 
 INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     switch(InMessage.Sequence)
     {
@@ -290,7 +290,7 @@ INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NORMAL)
+            if(status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -306,7 +306,7 @@ INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
 INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -494,7 +494,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime Tim
 
 INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
@@ -552,7 +552,7 @@ INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime 
 
 INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
@@ -584,7 +584,7 @@ INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTi
 
 INT Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-   INT status = NORMAL;
+   INT status = NoError;
 
    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

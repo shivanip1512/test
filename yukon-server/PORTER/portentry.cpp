@@ -272,14 +272,14 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
 {
     //Expiration default is 1 day.
     static UINT defaultExpirationSeconds = gConfigParms.getValueAsULong("DEFAULT_EXPIRATION_SECONDS", 86400);
-    INT status = NORMAL;
+    INT status = NoError;
 
-    if((status = ValidateOutMessage(OutMessage)) != NORMAL)
+    if((status = ValidateOutMessage(OutMessage)) != NoError)
     {
         return status;
     }
 
-    if((status = ValidatePort(OutMessage)) != NORMAL)
+    if((status = ValidatePort(OutMessage)) != NoError)
     {
         return status;
     }
@@ -376,7 +376,7 @@ INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev)
         return IDNF;
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 /*----------------------------------------------------------------------------*
@@ -388,7 +388,7 @@ INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev)
 
 INT ValidatePort(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     static CtiCriticalSection crit;
     static CtiPortSPtr last_port;
@@ -469,7 +469,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
  *----------------------------------------------------------------------------*/
 INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage->EventCode & BWORD)
     {
@@ -489,7 +489,7 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
 INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
@@ -588,7 +588,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 
 INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     /* check to see if this can be used as RCONT */
     switch(devicetype)
@@ -610,7 +610,7 @@ INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype)
 
 INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiDeviceSPtr pDev = DeviceManager.getDeviceByID(SendOutMessage->DeviceID);
 
@@ -639,7 +639,7 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 
 INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
 {
-    INT            status            = NORMAL;
+    INT            status            = NoError;
 
     //  if this is a nonqueued port, we will come out of this marked DTRAN
     ValidateEmetconMessage(OutMessage);
@@ -685,14 +685,14 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
 
 INT RemoteComm(OUTMESS *&OutMessage)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     /* Now check if we know about the remote */
     if(OutMessage->Remote != 0xffff)
     {
         CtiDeviceSPtr Device = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
-        if((status = ValidateRemote(OutMessage, Device)) == NORMAL)
+        if((status = ValidateRemote(OutMessage, Device)) == NoError)
         {
             status = ExecuteGoodRemote(OutMessage, Device);   // Does a WriteQueue eventually if all is OK.
         }
@@ -715,7 +715,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
 {
     extern CtiClientConnection VanGoghConnection;
 
-    INT status = NORMAL;
+    INT status = NoError;
 
     CtiRequestMsg pReq(OutMessage.DeviceID, OutMessage.Request.CommandStr);
     list< CtiMessage* >  vgList;
@@ -760,7 +760,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
             }
         }
 
-        if(status != NORMAL)
+        if(status != NoError)
         {
             {
                 CtiTime NowTime;

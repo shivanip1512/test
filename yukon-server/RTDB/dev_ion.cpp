@@ -378,7 +378,7 @@ void CtiDeviceION::initEventLogPosition( void )
 
 INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -404,7 +404,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
 INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -429,7 +429,7 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan accumulator");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -690,7 +690,7 @@ int CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, 
 
         if( !ErrReturn )
         {
-            ErrReturn = NOTNORMAL;
+            ErrReturn = Error_Abnormal;
         }
 
         const string error_str = GetErrorString(ErrReturn);
@@ -821,7 +821,7 @@ void CtiDeviceION::processInboundData( const INMESS &InMessage, const CtiTime Ti
 
 INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NORMAL, ErrReturn = InMessage.ErrorCode;
+    INT retCode = NoError, ErrReturn = InMessage.ErrorCode;
 
     //CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg;

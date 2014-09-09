@@ -38,7 +38,7 @@ void PortPoolDialoutThread(void *pid)
     extern CtiClientConnection  VanGoghConnection;
     extern CtiPortManager PortManager;
 
-    INT            i, status = NORMAL;
+    INT            i, status = NoError;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiPortSPtr    ParentPort( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
 
@@ -85,7 +85,7 @@ void PortPoolDialoutThread(void *pid)
             continue;
         }
 
-        if((status = ParentPort->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
+        if((status = ParentPort->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NoError )
         {
             /*
              *  This is a Read from the CTI queueing structures which will originate from
@@ -309,7 +309,7 @@ void PortPoolDialoutThread(void *pid)
 
 INT AllocateOutMessagesToChildPorts(CtiPortSPtr &ParentPort)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     try
     {

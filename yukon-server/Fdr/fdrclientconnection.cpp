@@ -48,7 +48,7 @@ int CtiFDRClientConnection::init ()
     // this will be false only if the client and server are using the same socket
     if( !getAddr() )
     {
-        retVal = NORMAL;
+        retVal = NoError;
     }
     else
     {
@@ -62,7 +62,7 @@ int CtiFDRClientConnection::run ()
 {
     iThreadSend.start();
     iThreadHeartbeat.start();
-    return NORMAL;
+    return NoError;
 }
 
 int CtiFDRClientConnection::stop ()
@@ -70,7 +70,7 @@ int CtiFDRClientConnection::stop ()
     closeAndFailConnection();
     iThreadSend.requestCancellation();
     iThreadHeartbeat.requestCancellation();
-    return NORMAL;
+    return NoError;
 }
 
 
@@ -87,7 +87,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
     CHAR *buffer=NULL;
     ULONG bytesSent,bytesRead;
     UCHAR priority;
-    int retVal = NORMAL;
+    int retVal = NoError;
     int connectionBadCount=0;
     int outCount=0;
 
@@ -427,14 +427,14 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
 
     setConnection(tmpConnection);
 
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesWritten)
 {
     ULONG    bytesAvailable  = 0;
     ULONG    bytesSent  = 0;
-    INT      retVal             = NORMAL;
+    INT      retVal             = NoError;
     ULONG    totalByteCnt    = 0;
 
     aBytesWritten = 0;

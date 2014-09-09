@@ -700,7 +700,7 @@ void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
     }
     else
     {
-        dr->comm_status = NORMAL;
+        dr->comm_status = NoError;
     }
 
     //  if we have data, are expecting no data, or we have an error, decode right away
@@ -867,7 +867,7 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
 
     unsigned long max_entries = port->queueCount();
 
-    while( max_entries-- && port->readQueue( &size, (PPVOID)&om, DCWW_NOWAIT, &priority, &entries) == NORMAL )
+    while( max_entries-- && port->readQueue( &size, (PPVOID)&om, DCWW_NOWAIT, &priority, &entries) == NoError )
     {
         port->incQueueSubmittal();
 

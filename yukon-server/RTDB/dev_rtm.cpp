@@ -34,7 +34,7 @@ CtiDeviceRTM::CtiDeviceRTM() :
 
 INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -59,7 +59,7 @@ INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     string      resultString;
 
     switch(parse.getCommand())
@@ -97,7 +97,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     }
                     else
                     {
-                        nRet = !NORMAL;
+                        nRet = Error_Abnormal;
                     }
 
                     break;
@@ -245,7 +245,7 @@ INT CtiDeviceRTM::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT CtiDeviceRTM::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NORMAL;
+    INT retCode = NoError;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiPointDataMsg  *commFailed;

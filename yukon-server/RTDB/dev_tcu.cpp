@@ -85,7 +85,7 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg     *pReq,
                               OutMessageList    &outList,
                               INT ScanPriority)
 {
-   INT status = NORMAL;
+   INT status = NoError;
 
    if(OutMessage != NULL)
    {
@@ -141,7 +141,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
    ULONG       BytesWritten;
 
    /* Load the forced scan message */
-   if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0)) != NORMAL)
+   if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0)) != NoError)
       return(i);
 
    /* Load all the other stuff that is needed */
@@ -149,7 +149,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
    OutMessage->OutLength       = 4;
    OutMessage->InLength        = -1;
 
-   return(NORMAL);
+   return NoError;
 }
 
 /* Routine to decode returned TCU message and update database */
@@ -255,7 +255,7 @@ INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, Ct
       break;
    }   /* End of switch */
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -267,7 +267,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
                                  CtiMessageList    &retList,
                                  OutMessageList    &outList)
 {
-   INT nRet = NORMAL;
+   INT nRet = NoError;
    /*
     *  This method should only be called by the dev_base method
     *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -472,7 +472,7 @@ INT CtiDeviceTCU::TCULoop(OUTMESS* OutMessage)
    OutMessage->SaveNexus               = NULL;
 
 
-   return(NORMAL);
+   return NoError;
 }
 
 

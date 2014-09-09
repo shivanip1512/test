@@ -310,7 +310,7 @@ bool MctBroadcastDevice::getOperation( const UINT &cmd, USHORT &function, USHORT
 
 INT MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
 
     {

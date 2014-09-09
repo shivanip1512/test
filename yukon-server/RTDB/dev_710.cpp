@@ -10,7 +10,7 @@ using namespace std;
 
 INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("loop");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -40,7 +40,7 @@ INT CtiDeviceCCU710::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 INT CtiDeviceCCU710::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
 
     switch(InMessage.Sequence)
     {
@@ -134,7 +134,7 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg     *pReq,
                                     CtiMessageList    &retList,
                                     OutMessageList    &outList)
 {
-   INT nRet = NORMAL;
+   INT nRet = NoError;
    /*
     *  This method should only be called by the dev_base method
     *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -212,7 +212,7 @@ INT CtiDeviceCCU710::Loopback(OUTMESS* OutMessage)
    OutMessage->ReturnNexus = NULL;
    OutMessage->SaveNexus   = NULL;
 
-   return(NORMAL);
+   return NoError;
 }
 
 CtiDeviceCCU710::CtiDeviceCCU710()
@@ -247,6 +247,6 @@ INT CtiDeviceCCU710::LPreamble(PBYTE Pre, USHORT Remote)
    for(i = 0; i < 3; i++)
       Pre[i] = Parity_C (Pre[i]);
 
-   return(NORMAL);
+   return NoError;
 }
 

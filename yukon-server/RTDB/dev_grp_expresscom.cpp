@@ -476,7 +476,7 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                      string(OutMessage->Request.CommandStr),
                                                      issue,
-                                                     NORMAL,
+                                                     NoError,
                                                      OutMessage->Request.RouteID,
                                                      OutMessage->Request.RetryMacroOffset,
                                                      OutMessage->Request.Attempt,

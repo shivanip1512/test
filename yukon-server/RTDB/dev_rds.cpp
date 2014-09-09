@@ -149,17 +149,17 @@ YukonError_t RDSTransmitter::generate(CtiXfer &xfer)
 
     copyMessageToXfer(xfer, newMessage);
 
-    return NORMAL;
+    return NoError;
 }
 
 YukonError_t RDSTransmitter::decode(CtiXfer &xfer, YukonError_t status)
 {
-    status = NORMAL;
+    status = NoError;
 
     if(isTwoWay() && xfer.getInCountActual() < UECPResponseLen)
     {
         _command = Complete; //Transaction Complete
-        status = FinalError;
+        status = Error_Abnormal;
         _isBiDirectionSet = false;
     }
     else
@@ -168,7 +168,7 @@ YukonError_t RDSTransmitter::decode(CtiXfer &xfer, YukonError_t status)
         if(!isTwoWay() || xfer.getInBuffer()[6] == 0)
         {
             //OK!
-            status = NORMAL;
+            status = NoError;
             if(_previousState == StateSendBiDirectionalRequest)
             {
                 _isBiDirectionSet = true;
@@ -220,7 +220,7 @@ YukonError_t RDSTransmitter::decode(CtiXfer &xfer, YukonError_t status)
             // print error
             printAcknowledgmentError(xfer.getInBuffer()[6]);
             _command = Complete; //Transaction Complete
-            status = FinalError;
+            status = Error_Abnormal;
         }
     }
 
@@ -458,7 +458,7 @@ void RDSTransmitter::copyMessageToXfer(CtiXfer &xfer, MessageStore &message)
 
 INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)

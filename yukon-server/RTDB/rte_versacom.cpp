@@ -30,7 +30,7 @@ using std::string;
 using std::endl;
 using std::list;
 
-CtiRouteVersacom::CtiRouteVersacom() 
+CtiRouteVersacom::CtiRouteVersacom()
 {}
 
 void CtiRouteVersacom::DumpData()
@@ -81,7 +81,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
 {
 #define ABUFSIZE 40
 
-    INT       status = NORMAL;
+    INT       status = NoError;
     bool      xmore = true;
     string resultString;
     BYTE      ABuf[ABUFSIZE];
@@ -200,7 +200,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         status = -1;
     }
 
-    if(status != NORMAL)
+    if(status != NoError)
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Versacom/AWord commands";
@@ -252,7 +252,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                                               list< CtiMessage* >      &retList,
                                               list< OUTMESS* >         &outList)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
     bool           xmore = true;
     ULONG          i, j;
     USHORT         Length;
@@ -266,7 +266,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
     {
         // Someone else did all the parsing and is just needs building
         // Prime the Protocol device with the vstruct, and call the update routine
-        if((status = vcom.primeAndAppend(OutMessage->Buffer.VSt)) == NORMAL)
+        if((status = vcom.primeAndAppend(OutMessage->Buffer.VSt)) == NoError)
         {
             status = vcom.updateVersacomMessage();
         }
@@ -283,7 +283,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
     /* This is a mastercomm device */
     /* Load up all the goodies */
 
-    if(status == NORMAL)
+    if(status == NoError)
     {
         OutMessage->TimeOut   = 2;
         OutMessage->InLength  = -1;
@@ -303,7 +303,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                 NewOutMessage->OutLength = MASTERLENGTH + Length;
 
                 /* Build MasterComm header */
-                if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NORMAL)
+                if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NoError)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

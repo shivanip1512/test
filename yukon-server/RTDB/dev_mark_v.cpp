@@ -110,7 +110,7 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg     *pReq,
                                  OutMessageList    &outList,
                                  INT ScanPriority)
 {
-   INT status = NORMAL;
+   INT status = NoError;
    CtiCommandParser newParse( "scan general" );
 
    pReq->setCommandString( "scan general" );
@@ -131,7 +131,7 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg     *pReq,
                                      OutMessageList    &outList,
                                      INT ScanPriority)
 {
-   INT status = NORMAL;
+   INT status = NoError;
    CtiCommandParser newParse( "scan loadprofile" );
 
    pReq->setCommandString( "scan loadprofile" );
@@ -151,7 +151,7 @@ INT CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
                                   OutMessageList &outList)
 {
    vector<CtiTransdataData *> transVector;
-   INT                        retCode = NOTNORMAL;
+   INT                        retCode = Error_Abnormal;
 
    try
    {
@@ -177,7 +177,7 @@ INT CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
          //LOADPROFILE
       }
 
-      retCode = NORMAL;
+      retCode = NoError;
    }
    catch(...)
    {
@@ -200,7 +200,7 @@ INT CtiDeviceMarkV::ErrorDecode( const INMESS   &InMessage,
                                  const CtiTime   TimeNow,
                                  CtiMessageList &retList)
 {
-   INT retCode = NORMAL;
+   INT retCode = NoError;
 
    CtiCommandParser parse( InMessage.Return.CommandStr );
 

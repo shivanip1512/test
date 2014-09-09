@@ -539,7 +539,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
     try
     {
-        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
+        if( iDispatchConn && iDispatchConn->verifyConnection() == NoError )
         {
             return true;
         }
@@ -572,7 +572,7 @@ bool CtiFDRInterface::connectWithDispatch()
         iDispatchConn->setName( "FDR to Dispatch: " + getInterfaceName() );
         iDispatchConn->start();
 
-        if( iDispatchConn->verifyConnection() != NORMAL )
+        if( iDispatchConn->verifyConnection() != NoError )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -593,7 +593,7 @@ bool CtiFDRInterface::connectWithDispatch()
             dout << CtiTime() << " Registering:  " << regStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        if( iDispatchConn->WriteConnQue( new CtiRegistrationMsg( regStr, *iDispatchRegisterId, true)) != NORMAL )
+        if( iDispatchConn->WriteConnQue( new CtiRegistrationMsg( regStr, *iDispatchRegisterId, true)) != NoError )
         {
             iDispatchConn.reset();
             return false;
@@ -605,7 +605,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
             multiMsg->insert( buildRegistrationPointList() );
 
-            if( iDispatchConn->WriteConnQue(multiMsg.release()) != NORMAL )
+            if( iDispatchConn->WriteConnQue(multiMsg.release()) != NoError )
             {
                 iDispatchConn.reset();
                 return false;
@@ -880,7 +880,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 {
                     ReaderGuard guard(iDispatchLock);
 
-                    if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
+                    if( iDispatchConn && iDispatchConn->verifyConnection() == NoError )
                     {
                         incomingMsg.reset( iDispatchConn->ReadConnQue( 1000 ));
                         continue;
@@ -1325,7 +1325,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
     {
         ReaderGuard guard(iDispatchLock);
 
-        if( iDispatchConn && iDispatchConn->WriteConnQue(msg->replicateMessage()) == NORMAL ) // use a copy in case the send fails
+        if( iDispatchConn && iDispatchConn->WriteConnQue(msg->replicateMessage()) == NoError ) // use a copy in case the send fails
         {
             return true;
         }
@@ -1342,7 +1342,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
     {
         ReaderGuard guard(iDispatchLock);
 
-        if( iDispatchConn && iDispatchConn->WriteConnQue(msg.release()) == NORMAL )
+        if( iDispatchConn && iDispatchConn->WriteConnQue(msg.release()) == NoError )
         {
             return true;
         }
@@ -1681,7 +1681,7 @@ bool CtiFDRInterface::verifyDispatchConnection()
     {
         ReaderGuard guard(iDispatchLock);
 
-        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
+        if( iDispatchConn && iDispatchConn->verifyConnection() == NoError )
         {
             return true;
         }

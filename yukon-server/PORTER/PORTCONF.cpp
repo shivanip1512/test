@@ -190,7 +190,7 @@ void VConfigThread (void *Arg)
                        FILE_READONLY,
                        FILE_OPEN,
                        OPEN_ACCESS_READONLY | OPEN_SHARE_DENYREADWRITE,
-                       0L)) != NORMAL)
+                       0L)) != NoError)
       {
          if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L) )
             PorterQuit = TRUE;
@@ -766,7 +766,7 @@ INT VSend (VSTRUCT *VSt,
       break;
    }
 
-   return(NORMAL);
+   return NoError;
 }
 
 
@@ -803,10 +803,10 @@ INT VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << "**** ADD CODE HERE Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
-      return NORMAL; //   return(VersacomSend (&OutMessage));
+      return NoError; //   return(VersacomSend (&OutMessage));
    }
 
-   return !NORMAL;
+   return Error_Abnormal;
 }
 
 
@@ -822,7 +822,7 @@ INT GetString (FILE *File, PCHAR Buffer, ULONG Length)
       if(Buffer[i] == (BYTE) EOF)
       {
          Buffer[i] = '\0';
-         return(NORMAL);
+         return NoError;
       }
 
       if(Buffer[i] == '\r' || Buffer[i] == '\n')
@@ -837,14 +837,14 @@ INT GetString (FILE *File, PCHAR Buffer, ULONG Length)
             if(Buffer[i] == (BYTE) EOF)
             {
                Buffer[i] = '\0';
-               return(NORMAL);
+               return NoError;
             }
 
             continue;
          }
 
          Buffer[i] = '\0';
-         return(NORMAL);
+         return NoError;
       }
    }
 
@@ -856,7 +856,7 @@ INT GetString (FILE *File, PCHAR Buffer, ULONG Length)
       Save = fgetc (File);
    } while(Save != '\r' && Save != '\n' && Save != (BYTE) EOF);
 
-   return(!(NORMAL));
+   return(!(NoError));
 }
 
 

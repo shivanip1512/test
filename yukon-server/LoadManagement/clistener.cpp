@@ -209,7 +209,7 @@ void CtiLMClientListener::_listen()
 
                 // Kick off the connection's communication threads.
                 new_conn->start();
-                
+
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
                     _connections.push_back( new_conn );
@@ -277,7 +277,7 @@ void CtiLMClientListener::_check()
                     CtiLMConnectionVec::iterator itr = _connections.begin();
                     while( itr != _connections.end() )
                     {
-                        if( (*itr)->verifyConnection() != NORMAL )
+                        if( (*itr)->verifyConnection() != NoError )
                         {
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {

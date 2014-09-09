@@ -141,7 +141,7 @@ YukonError_t ModbusProtocol::generate( CtiXfer &xfer )
     }
 
 
-    return NORMAL;//FIX_ME JESS
+    return NoError;//FIX_ME JESS
 }
 
 

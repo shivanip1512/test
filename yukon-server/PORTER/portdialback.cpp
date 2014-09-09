@@ -31,7 +31,7 @@ void PortDialbackThread(void *pid)
     extern CtiPortManager       PortManager;
     extern CtiDeviceManager     DeviceManager;
 
-    INT            i, status = NORMAL;
+    INT            i, status = NoError;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiPortSPtr    Port( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
     DWORD oldmask = 0, inmask = 0;
@@ -64,7 +64,7 @@ void PortDialbackThread(void *pid)
 
             if(portpair.first)  // Port was opened on this pass.
             {
-                if( portpair.second != NORMAL )
+                if( portpair.second != NoError )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

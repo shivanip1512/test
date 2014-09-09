@@ -311,7 +311,7 @@ bool Dct501Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  */
 INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
 
     switch(InMessage.Sequence)
@@ -339,7 +339,7 @@ INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NORMAL)
+            if(status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -355,7 +355,7 @@ INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     INT pnt_offset, byte_offset;
     ULONG i,x;
     INT pid;
@@ -476,7 +476,7 @@ INT Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NORMAL;
+    int status = NoError;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -665,7 +665,7 @@ INT Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 
 INT Dct501Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 

@@ -84,7 +84,7 @@ void CtiConnection::start()
 
         int status = verifyConnection();
 
-        if( status != NORMAL )
+        if( status != NoError )
         {
             logStatus( __FUNCTION__, "connection has error status: " + CtiNumStr(status));
         }
@@ -440,7 +440,7 @@ void CtiConnection::close()
 
         _outthread.tryJoinOrTerminateFor( Chrono::seconds(2) );
 
-    	forceTermination();
+        forceTermination();
 
         if( _inQueue && _localQueueAlloc && _inQueue->entries() )
         {
@@ -469,7 +469,7 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
     auto_ptr<CtiMessage> msg( QEnt );
 
     const int status = verifyConnection();
-    if( status != NORMAL )
+    if( status != NoError )
     {
         logStatus( __FUNCTION__, "connection error (" + CtiNumStr(status) + "), message was NOT able to be queued." );
         return status;
@@ -495,7 +495,7 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
         _outQueue.putQueue( msg.release() ); // wait forever
     }
 
-    return NORMAL;
+    return NoError;
 }
 
 /**
@@ -548,12 +548,12 @@ int CtiConnection::verifyConnection()
 
             if( ! isViable() || ! _connectCalled )
             {
-                return NOTNORMAL;
+                return Error_Abnormal;
             }
 
             if( _outthread.isRunning() )
             {
-                return NORMAL;
+                return NoError;
             }
         }
 
@@ -562,7 +562,7 @@ int CtiConnection::verifyConnection()
 
             if( ! isViable() )
             {
-                return NOTNORMAL;
+                return Error_Abnormal;
             }
 
             if( ! _outthread.isRunning() )
@@ -580,12 +580,12 @@ int CtiConnection::verifyConnection()
 
                         forceTermination();
 
-                        return NOTNORMAL;
+                        return Error_Abnormal;
                     }
                 }
             }
 
-            return NORMAL; // the thread has been restarted
+            return NoError; // the thread has been restarted
         }
     }
     catch(...)
@@ -594,7 +594,7 @@ int CtiConnection::verifyConnection()
 
         Sleep(5000);
 
-        return NOTNORMAL;
+        return Error_Abnormal;
     }
 }
 
@@ -630,7 +630,7 @@ void CtiConnection::triggerReconnect()
     {
         // if this connection will reconnect, make this connection not valid to stop transmission of messages
         _valid = false;
-    
+
         // interrupt the current or the next getQueue() call
         _outQueue.interruptBlockingRead();
     }
@@ -752,7 +752,7 @@ string CtiConnection::getPeer() const
 void CtiConnection::resetPeer( const string &peerName )
 {
     CtiLockGuard<CtiCriticalSection> guard(_peerMux);
-    
+
     _peerName        = peerName;
     _peerConnectTime = CtiTime::now();
 }

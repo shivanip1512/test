@@ -175,7 +175,7 @@ INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser 
 
 INT CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -201,7 +201,7 @@ INT CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &pa
 
 INT CtiDeviceGridAdvisor::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -230,7 +230,7 @@ LONG CtiDeviceGridAdvisor::getPortID() const
 
 INT CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NORMAL;
+    INT status = NoError;
     CtiCommandParser newParse("scan accumulator");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )

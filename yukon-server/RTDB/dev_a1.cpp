@@ -124,7 +124,7 @@ INT CtiDeviceAlphaA1::allocateDataBins  (OUTMESS *outMess)
     setCurrentCommand ((CtiDeviceIED::CtiMeterCmdStates_t)outMess->Buffer.DUPReq.Command[0]);
     setCurrentState (StateHandshakeInitialize);
 
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDeviceAlphaA1::freeDataBins  ()
@@ -144,7 +144,7 @@ INT CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg     *pReq,
                                   OutMessageList    &outList,
                                   INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -191,7 +191,7 @@ YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, CtiMessa
 {
     AlphaA1LoadProfile_t *localLP      = ((AlphaA1LoadProfile_t*)_loadProfileBuffer);
     AlphaA1ScanData_t    *localData    = ((AlphaA1ScanData_t *)_dataBuffer);
-    YukonError_t      retCode = NORMAL;
+    YukonError_t      retCode = NoError;
     BYTEUSHORT        reqLength;
     BYTEUSHORT        reqOffset;
     BYTE              classToRead;
@@ -498,14 +498,14 @@ YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, CtiMessa
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
     }
     return retCode;
 }
 
 YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, CtiMessageList &traceList )
 {
-    YukonError_t      retCode = NORMAL;
+    YukonError_t      retCode = NoError;
     BYTEUSHORT        reqLength;
     BYTEUSHORT        reqOffset;
     BYTE              classToRead;
@@ -897,7 +897,7 @@ YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, C
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
-            retCode = NOTNORMAL;
+            retCode = Error_Abnormal;
     }
     return retCode;
 }
@@ -912,7 +912,7 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonErro
     // ClassLength is the byte length count of the requested class from the APlusClasses array
     INT         classLength;
 
-    YukonError_t retCode = NORMAL;
+    YukonError_t retCode = NoError;
 
     // get appropriate data
     switch (getCurrentState())
@@ -1256,9 +1256,9 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonErro
                 setCurrentState(getPreviousState());
 
                 if (getCurrentState() == StateScanComplete)
-                    retCode =NORMAL;
+                    retCode =NoError;
                 else
-                    retCode = NOTNORMAL;
+                    retCode = Error_Abnormal;
                 break;
             }
 
@@ -1278,7 +1278,7 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonErro
 
 YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode= NORMAL;
+    YukonError_t retCode= NoError;
     INT         iClass;
     // Class Offset is the position of the requested class in the APlusClasses array
     INT         classOffset;
@@ -1692,9 +1692,9 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
                 setCurrentState(getPreviousState());
 
                 if (getCurrentState() == StateScanComplete)
-                    retCode = NORMAL;
+                    retCode = NoError;
                 else
-                    retCode = NOTNORMAL;
+                    retCode = Error_Abnormal;
                 break;
             }
 
@@ -1884,7 +1884,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS   &InMessage,
 
     if( DebugLevel & 0x0001 )
         ResultDisplay(InMessage);
-    return(NORMAL);
+    return NoError;
 }
 
 INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS   &InMessage,
@@ -1894,7 +1894,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS   &InMessage,
                                                OutMessageList &outList)
 {
 
-    int retCode = NORMAL;
+    int retCode = NoError;
     const DIALUPREPLY *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
 
     const AlphaA1LoadProfile_t *ptr = (const AlphaA1LoadProfile_t *)DUPRep->Message;
@@ -2387,7 +2387,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(const INMESS &InMessage)
     }
 
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -2759,20 +2759,20 @@ INT CtiDeviceAlphaA1::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     ::memcpy (aInMessBuffer, _dataBuffer, sizeof (AlphaA1ScanData_t));
     aTotalBytes = ptr->totalByteCount;
     ptr->bDataIsReal = TRUE;
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDeviceAlphaA1::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 {
     ::memcpy(aInMessBuffer, _loadProfileBuffer, sizeof (AlphaA1LoadProfile_t));
     aTotalBytes = sizeof (AlphaA1LoadProfile_t);
-    return NORMAL;
+    return NoError;
 }
 
 
 LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, const AlphaA1Class14Real_t &class14)
 {
-    LONG retCode = NORMAL;
+    LONG retCode = NoError;
     CtiPointNumericSPtr   pNumericPoint;
 
     // always set the metric
@@ -2793,7 +2793,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = !NORMAL;
+                    retCode = Error_Abnormal;
                 }
 
                 break;
@@ -2810,7 +2810,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = !NORMAL;
+                    retCode = Error_Abnormal;
                 }
 
                 break;
@@ -2827,7 +2827,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = !NORMAL;
+                    retCode = Error_Abnormal;
                 }
 
                 break;
@@ -2844,7 +2844,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = !NORMAL;
+                    retCode = Error_Abnormal;
                 }
 
                 break;
@@ -2861,7 +2861,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = !NORMAL;
+                    retCode = Error_Abnormal;
                 }
 
                 break;
@@ -2879,7 +2879,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = !NORMAL;
+                    retCode = Error_Abnormal;
                 }
 
                 break;
@@ -2896,7 +2896,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = !NORMAL;
+                    retCode = Error_Abnormal;
                 }
 
                 break;
@@ -2941,7 +2941,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
             {
                 point.pointId = 0;
                 point.multiplier = 1.0;
-                retCode = !NORMAL;
+                retCode = Error_Abnormal;
             }
     }
     return retCode;

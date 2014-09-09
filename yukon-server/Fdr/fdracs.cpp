@@ -539,7 +539,7 @@ string CtiFDR_ACS::decodeClientName(CHAR * aBuffer)
 
 int CtiFDR_ACS::processValueMessage(CHAR *aData)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     CtiPointDataMsg     *pData;
     ACSInterface_t  *data = (ACSInterface_t*)aData;
     string           translationName;
@@ -589,7 +589,7 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
                       ntohs(data->Value.PointNumber),
                       point.getPointID());
             logEvent (desc,string (action));
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
         else
         {
@@ -655,7 +655,7 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
                       ntohs(data->Value.PointNumber));
             logEvent (desc,string (action));
         }
-        retVal = !NORMAL;
+        retVal = Error_Abnormal;
     }
 
     return retVal;
@@ -663,7 +663,7 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
 
 int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     CtiPointDataMsg     *pData;
     ACSInterface_t  *data = (ACSInterface_t*)aData;
     string           translationName;
@@ -712,7 +712,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
                       ntohs(data->Status.PointNumber),
                       point.getPointID());
             logEvent (desc,string (action));
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
         else
         {
@@ -732,7 +732,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
                           ntohs(data->Status.PointNumber),
                           point.getPointID());
                 logEvent (desc,string (action));
-                retVal = !NORMAL;
+                retVal = Error_Abnormal;
             }
             else
             {
@@ -807,7 +807,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
                       ntohs(data->Status.PointNumber));
             logEvent (desc,string (action));
         }
-        retVal = !NORMAL;
+        retVal = Error_Abnormal;
     }
 
     return retVal;
@@ -815,7 +815,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
 int CtiFDR_ACS::processControlMessage(CHAR *aData)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     CtiPointDataMsg     *pData;
     ACSInterface_t  *data = (ACSInterface_t*)aData;
     string           translationName;
@@ -860,7 +860,7 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
                       ntohs(data->Control.PointNumber),
                       point.getPointID());
             logEvent (desc,string (action));
-            retVal = !NORMAL;
+            retVal = Error_Abnormal;
         }
         else if (controlState == STATE_OPENED || controlState == STATE_CLOSED)
         {
@@ -957,7 +957,7 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
                       ntohs(data->Control.PointNumber));
             logEvent (desc,string (action));
         }
-        retVal = !NORMAL;
+        retVal = Error_Abnormal;
     }
 
     return retVal;
@@ -966,7 +966,7 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
 
 int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
 {
-    int retVal = NORMAL;
+    int retVal = NoError;
     CtiPointDataMsg     *pData;
     ACSInterface_t  *data = (ACSInterface_t*)aData;
     CtiTime              timestamp;
@@ -983,7 +983,7 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
         }
         desc = getInterfaceName() + string (" time sync request was invalid ") + string (data->TimeStamp);
         logEvent (desc,action,true);
-        retVal = !NORMAL;
+        retVal = Error_Abnormal;
     }
     else
     {
@@ -992,7 +992,7 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
         if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
             timestamp.seconds() < (now.seconds()+getTimeSyncVariation()))
         {
-            retVal = NORMAL;
+            retVal = NoError;
         }
         else
         {
@@ -1054,7 +1054,7 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
                         desc += timestamp.asString() + " failed";
                         action = string ("System time update API failed");
                         logEvent (desc,action,true);
-                        retVal = !NORMAL;
+                        retVal = Error_Abnormal;
                     }
                 }
                 else
@@ -1067,7 +1067,7 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
                     desc += timestamp.asString() + " failed";
                     action = string ("System time update API failed");
                     logEvent (desc,action,true);
-                    retVal = !NORMAL;
+                    retVal = Error_Abnormal;
                 }
             }
             else
@@ -1114,13 +1114,13 @@ int CtiFDR_ACS::YukonToForeignId (string aPointName, USHORT &aRemoteNumber, CHAR
 
     // Read the values out of point name
     if (sscanf (pointName, "T%hdR%hdC%cP%hd", &tmp_type, &tmp_remote, &tmp_category, &tmp_point) != 4)
-        return (!NORMAL);
+        return (Error_Abnormal);
 
     // put these into our values
     aRemoteNumber = htons(tmp_remote);
     aPointNumber = htons(tmp_point);
     aCategory = tmp_category;
-    return (NORMAL);
+    return (NoError);
 }
 
 

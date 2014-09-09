@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_error_active )
     }
     catch(DlcCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
         BOOST_CHECK_EQUAL(ex.error_description, "Device responded with a data log dispute. (0x1c)");
     }
 }
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_temperature_active )
     }
     catch(DlcCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
         BOOST_CHECK_EQUAL(ex.error_description, "Device responded with invalid data types (0x0e)");
     }
 }
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_setpoint_active )
     }
     catch(DlcCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
         BOOST_CHECK_EQUAL(ex.error_description, "Device responded with invalid data types (0x0d)");
     }
 }
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_temperature_and_setpoint_active )
     }
     catch(DlcCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
         BOOST_CHECK_EQUAL(ex.error_description, "Device responded with invalid data types (0x0f)");
     }
 }
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_runtime_inactive )
     }
     catch(DlcCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
         BOOST_CHECK_EQUAL(ex.error_description, "Device did not respond with expected shedtime and runtime data (0x04)");
     }
 }
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_shedtime_inactive )
     }
     catch(DlcCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
         BOOST_CHECK_EQUAL(ex.error_description, "Device did not respond with expected shedtime and runtime data (0x08)");
     }
 }
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE( test_validate_flags_runtime_and_shedtime_inactive )
     }
     catch(DlcCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
         BOOST_CHECK_EQUAL(ex.error_description, "Device did not respond with expected shedtime and runtime data (0x00)");
     }
 }
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
         }
         catch(DlcCommand::CommandException &ex)
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+            BOOST_CHECK_EQUAL(ex.error_code,        Error_Abnormal);
             BOOST_CHECK_EQUAL(ex.error_description, "Payload too small");
         }
     }

@@ -43,7 +43,7 @@ INT CtiProtocolVersacom::setNibble (INT iNibble, INT iValue)
     else
         _vst.back()->Message[Nibble / 2] |= (Value << 4) & 0x00f0;
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -73,7 +73,7 @@ INT CtiProtocolVersacom::initVersacomMessage()
 
     setNibble (1, _addressMode);
 
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiProtocolVersacom::assembleCommandToMessage()
@@ -595,12 +595,12 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             break;
         }
     }
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiProtocolVersacom::assembleAddressing()
 {
-    INT status = NORMAL;
+    INT status = NoError;
     ULONG IAddress = 0;
 
     /* Now go ahead and figure out the addressing */
@@ -709,7 +709,7 @@ INT CtiProtocolVersacom::assembleAddressing()
 
 INT CtiProtocolVersacom::updateVersacomMessage()
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     status = initVersacomMessage();     // Prime the message buffer and the constants
     if(!status) status = assembleCommandToMessage();
@@ -757,7 +757,7 @@ CtiProtocolVersacom& CtiProtocolVersacom::setTransmitterType(INT type)
  *-------------------------------------------------------------------------*/
 INT CtiProtocolVersacom::adjustVersacomAddress(VSTRUCT &vTemp, ULONG Serial, UINT Uid, UINT Section, UINT Class, UINT Division)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(!(Serial))
     {
@@ -1329,7 +1329,7 @@ INT CtiProtocolVersacom::VersacomCountResetCommand(UINT resetmask)
 
 INT CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
 {
-    INT status = NORMAL;
+    INT status = NoError;
     VSTRUCT *newvst = CTIDBG_new VSTRUCT;
 
     if(newvst)
@@ -1357,7 +1357,7 @@ void CtiProtocolVersacom::removeLastVStruct()
 
 INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
-    INT            status = NORMAL;
+    INT            status = NoError;
 
     switch(parse.getCommand())
     {
@@ -1416,7 +1416,7 @@ void CtiProtocolVersacom::dumpMessageBuffer()
 INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
     INT   i, IAddress, iNum;
-    INT   status = NORMAL;
+    INT   status = NoError;
     BYTE  config[6];
     bool isGroupConfig = false;
 
@@ -1799,7 +1799,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
 INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
     INT  i;
-    INT  status = NORMAL;
+    INT  status = NoError;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
     INT  relay  = parse.getiValue("relaymask", 0);
 
@@ -1941,7 +1941,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
 INT CtiProtocolVersacom::assemblePutStatus(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
     INT   i, iNum;
-    INT   status = NORMAL;
+    INT   status = NoError;
     BYTE  config[6];
 
 

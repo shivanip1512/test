@@ -138,7 +138,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                            xfer.getInBuffer()[xfer.getInCountActual()] == *_EOT)
                         {
                             //SUCCESS!!!!
-                            status = NORMAL;
+                            status = NoError;
                             setCurrentState(getPreviousState());
                             break;
                         }
@@ -169,7 +169,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                     if(getPreviousState() == StateDoNothing)
                     {
                         //this is a loop? Bad.
-                        status = FinalError;
+                        status = Error_Abnormal;
                         _command = Fail;
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -193,7 +193,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             {
                                 _serialNumber = 1;
                                 setCurrentState(StateGeneratePacket);
-                                status = NORMAL;
+                                status = NoError;
                             }
                             else if(getPreviousState() == StateGeneratePacket)
                             {
@@ -216,7 +216,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                                 {
                                     _command = Success;
                                 }
-                                status = NORMAL;
+                                status = NoError;
                             }
 
                         }
@@ -299,7 +299,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
 YukonError_t CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
 {
-    YukonError_t status = NORMAL;
+    YukonError_t status = NoError;
     try
     {
         switch( getCurrentState() )
@@ -412,7 +412,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
 
 YukonError_t CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
 {
-    YukonError_t retVal = NORMAL;
+    YukonError_t retVal = NoError;
     if( OutMessage )
     {
         _outMessage = *OutMessage;
@@ -458,7 +458,7 @@ bool CtiDeviceTnppPagingTerminal::isTransactionComplete()
 
 INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NORMAL;
+    INT nRet = NoError;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)

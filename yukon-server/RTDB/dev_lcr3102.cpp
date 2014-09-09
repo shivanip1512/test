@@ -114,7 +114,7 @@ INT Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow,
         {
             status = Inherited::ResultDecode( InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NORMAL)
+            if(status != NoError)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -371,7 +371,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const 
     }
     else
     {
-        return NOTNORMAL;
+        return Error_Abnormal;
     }
 
     readNum   = function / 4 + 1;
@@ -881,7 +881,7 @@ INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const Cti
     else
     {
         // Somehow we didn't get back either of the two designated functions. Bad!
-        return NOTNORMAL;
+        return Error_Abnormal;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -1030,7 +1030,7 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
                                 OutMessageList &outList,
                                 INT ScanPriority)
 {
-    INT status = NORMAL;
+    INT status = NoError;
 
     if(OutMessage != NULL)
     {

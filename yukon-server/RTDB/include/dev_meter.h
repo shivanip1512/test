@@ -67,10 +67,10 @@ public:
                                               CtiTime aTime,
                                               CtiReturnMsg *aReturnMsg,
                                               USHORT aIntervalType=0,
-                                              std::string aValReport=std::string()) { return YukonBaseError; };
+                                              std::string aValReport=std::string()) { return NoMethod; };
 
    virtual BOOL insertPointIntoReturnMsg( CtiMessage   *aDataPoint,
-                                          CtiReturnMsg *aReturnMsg )            { return YukonBaseError; };
+                                          CtiReturnMsg *aReturnMsg )            { return NoMethod; };
 
    virtual bool isMeter() const;
 

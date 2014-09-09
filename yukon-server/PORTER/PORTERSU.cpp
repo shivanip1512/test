@@ -68,7 +68,7 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " SendError generally requires an OutMessage." << endl;
         }
-        return NORMAL;
+        return NoError;
     }
 
     /* create and send return message if calling process expects it */
@@ -166,7 +166,7 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
     delete (OutMessage);
     OutMessage = 0;
 
-    return(NORMAL);
+    return NoError;
 }
 
 

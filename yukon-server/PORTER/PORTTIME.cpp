@@ -898,7 +898,7 @@ INT LoadXTimeMessage (BYTE *Message)
     Message[12] = HIBYTE (Mod8Time);
     Message[13] = LOBYTE (Mod8Time);
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -996,7 +996,7 @@ INT RefreshMCTTimeSync(OUTMESS *OutMessage)
               timesync_message,
               length );
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -1015,7 +1015,7 @@ INT ILEXHeader (PBYTE Header,          /* Pointer to message */
     if (SubFunction2)
         Header[0] |= 0x08;
     Header[1] = LOBYTE (Remote >> 3);
-    return (NORMAL);
+    return (NoError);
 
 }
 
@@ -1060,7 +1060,7 @@ INT LoadILEXTimeMessage (BYTE *Message, USHORT MilliSecsSkew)
     Message[8] = HIBYTE (TimeSt.tm_year + 1900);
     Message[9] = LOBYTE (TimeSt.tm_year + 1900);
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -1097,7 +1097,7 @@ INT LoadWelcoTimeMessage (BYTE *Message,
     Message[5] = LOBYTE (TimeB.millitm);
     Message[6] = HIBYTE (TimeB.millitm);
 
-    return(NORMAL);
+    return NoError;
 }
 
 
@@ -1134,6 +1134,6 @@ INT LoadSES92TimeMessage (BYTE *Message,
     Message[7] = HIBYTE (TimeB.millitm);
     Message[8] = LOBYTE (TimeB.millitm);
 
-    return(NORMAL);
+    return NoError;
 }
 
