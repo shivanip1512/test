@@ -84,7 +84,7 @@ void CtiConnection::start()
 
         int status = verifyConnection();
 
-        if( status != NoError )
+        if( status )
         {
             logStatus( __FUNCTION__, "connection has error status: " + CtiNumStr(status));
         }
@@ -469,7 +469,7 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
     auto_ptr<CtiMessage> msg( QEnt );
 
     const int status = verifyConnection();
-    if( status != NoError )
+    if( status )
     {
         logStatus( __FUNCTION__, "connection error (" + CtiNumStr(status) + "), message was NOT able to be queued." );
         return status;

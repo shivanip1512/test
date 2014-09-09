@@ -131,7 +131,7 @@ IM_EX_CTIBASE INT UCTFTime (struct timeb *TimeBuffer)
     if(Flags == NULL)
     {
         /* get our share memory */
-        if((rc = getUCTMemoryFlags()) != NoError)
+        if( rc = getUCTMemoryFlags() )
         {
             /* we got some kind of an error */
             return(rc);

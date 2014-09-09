@@ -73,7 +73,7 @@ INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
         {
             status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NoError)
+            if( status )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

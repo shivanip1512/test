@@ -223,7 +223,7 @@ YukonError_t D_Words (
    }
 
    /* check for a nacked */
-   if((Code = NackTst (DWords[7], &Nack, CCU)) != NoError)
+   if( Code = NackTst (DWords[7], &Nack, CCU) )
    {
       return(Code);
    }
@@ -243,7 +243,7 @@ YukonError_t D_Words (
    }
 
    /* decode the first word and get the data from it */
-   if((Code = D1_Word (DWords, DSt->Message, &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm)) != NoError)
+   if( Code = D1_Word (DWords, DSt->Message, &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm) )
    {
       if(Code == EWORDRCV)
       {
@@ -257,7 +257,7 @@ YukonError_t D_Words (
    /* repeat the process for each DWord in the message */
    if(Num > 1)
    {
-      if((Code = NackTst (DWords[15], &Nack, CCU)) != NoError)
+      if( Code = NackTst (DWords[15], &Nack, CCU) )
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -274,7 +274,7 @@ YukonError_t D_Words (
             return(NACK2);
       }
 
-      if((Code = D23_Word (DWords+8, DSt->Message + 3, &DSt->TSync, &Dummy)) != NoError)
+      if( Code = D23_Word (DWords+8, DSt->Message + 3, &DSt->TSync, &Dummy) )
       {
          if(Code == EWORDRCV)
          {
@@ -288,8 +288,7 @@ YukonError_t D_Words (
 
    if(Num > 2)
    {
-
-      if((Code = NackTst (DWords[23], &Nack, CCU)) != NoError)
+      if( Code = NackTst (DWords[23], &Nack, CCU) )
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -306,7 +305,7 @@ YukonError_t D_Words (
             return(NACK3);
       }
 
-      if((Code = D23_Word (DWords+16, DSt->Message + 8, &Dummy, &Dummy)) != NoError)
+      if( Code = D23_Word (DWords+16, DSt->Message + 8, &Dummy, &Dummy) )
       {
          if(Code == EWORDRCV)
          {

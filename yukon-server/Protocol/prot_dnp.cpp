@@ -1181,7 +1181,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
     }
 
     int retVal = getApplicationLayer().generate(xfer);
-    if (retVal != NoError)
+    if( retVal )
     {
         slaveTransactionComplete();
     }

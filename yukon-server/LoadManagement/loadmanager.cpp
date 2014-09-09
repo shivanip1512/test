@@ -971,7 +971,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Porter return received." << endl;
             }
-            if( pcReturn->Status() != NoError &&
+            if( pcReturn->Status() &&
                 pcReturn->Status() != DEVICEINHIBITED &&
                 pcReturn->Status() != REMOTEINHIBITED &&
                 pcReturn->Status() != PORTINHIBITED )

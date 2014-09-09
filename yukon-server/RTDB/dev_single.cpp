@@ -860,7 +860,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
                 }
             }
 
-            if( cnt == outList.size() && status != NoError )
+            if( cnt == outList.size() && status )
             {
                 bLastFail = true;
             }

@@ -530,7 +530,7 @@ INT Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NoError)
+            if( status )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - errors on Inherited::ModelDecode for device \"" + getName() + "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -888,7 +888,7 @@ INT Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
 
         default:
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
-            if (status != NoError)
+            if( status )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

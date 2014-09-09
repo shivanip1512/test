@@ -213,7 +213,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 
                         CtiCommandParser parse(InMessage.Return.CommandStr);
 
-                        if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NoError)
+                        if( i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4) )
                         {
                             ReportError ((USHORT)i); /* Send Error to logger */
                         }
@@ -288,7 +288,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 
                         setIlexSequenceNumber( firstByte & 0x10 );
 
-                        if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NoError)
+                        if( i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList) )
                         {
                             ReportError ((USHORT)i); /* Send Error to logger */
                         }
@@ -444,7 +444,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                                     // CtiCommandParser parse(InMessage.Return.CommandStr);
                                     setIlexSequenceNumber( firstByte & 0x10 );
 
-                                    if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NoError)
+                                    if( i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList) )
                                     {
                                         ReportError ((USHORT)i); /* Send Error to logger */
                                     }
@@ -699,7 +699,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                         InEchoToOut(InMessage, OutMessage);
 
                         CtiCommandParser parse(InMessage.Return.CommandStr);
-                        if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NoError)
+                        if( i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3) )
                         {
                             if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                             {

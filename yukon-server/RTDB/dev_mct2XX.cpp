@@ -97,7 +97,7 @@ INT Mct2xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-            if(status != NoError)
+            if( status )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

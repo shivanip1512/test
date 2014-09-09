@@ -696,7 +696,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
         }
 
 
-        if(status != NoError)
+        if( status )
         {
             /* something is wrong so reset and setup the modem */
             modemReset(Trace, dcdTest);

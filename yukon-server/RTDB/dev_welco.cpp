@@ -409,7 +409,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                         InEchoToOut(InMessage, OutMessage);
 
                         /* This is the Big E so reset the RTU, download the deadbands and clear the demand accums */
-                        if((i = WelCoReset(OutMessage, MAXPRIORITY)) != NoError)
+                        if(i = WelCoReset(OutMessage, MAXPRIORITY))
                         {
                             /* Send Error to logger */
                             ReportError ((USHORT)i);
@@ -427,7 +427,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
 
                     setDeadbandsSent(false);
 
-                    if((i = WelCoDeadBands(InMessage, outList, MAXPRIORITY - 1)) != NoError)
+                    if(i = WelCoDeadBands(InMessage, outList, MAXPRIORITY - 1))
                     {
                         /* Send Error to logger */
                         ReportError (i);
@@ -438,7 +438,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                 if(MyInMessage[2] & (EW_FMW_BIT | EW_PWR_BIT | EW_SYN_BIT))
                 {
                     result += string("Time synchronization sent to RTU\n");
-                    if((i = WelCoTimeSync (InMessage, outList, MAXPRIORITY - 1)) != NoError)
+                    if(i = WelCoTimeSync (InMessage, outList, MAXPRIORITY - 1))
                     {
                         /* Send Error to logger */
                         ReportError (i);
@@ -486,7 +486,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                             Sleep(welcofreezedelay);
                         }
 
-                        if((i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NoError)
+                        if(i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4))
                         {
                             ReportError ((USHORT)i); /* Send Error to logger */
                         }
@@ -1174,7 +1174,7 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
         {
             InEchoToOut(InMessage, OutMessage);
 
-            if((i = WelCoContinue (OutMessage, MAXPRIORITY - 4)) != NoError)
+            if(i = WelCoContinue (OutMessage, MAXPRIORITY - 4))
             {
                 /* Send Error to logger */
                 ReportError (i);

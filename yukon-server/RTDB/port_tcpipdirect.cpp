@@ -193,14 +193,14 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
         _lastConnect = CtiTime::now();
     }
 
-    if((status = reset(true)) != NoError)
+    if( status = reset(true) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error resetting port for dialup on " << getName() << endl;
     }
 
     /* set the modem parameters */
-    if((status = setup(true)) != NoError)
+    if( status = setup(true) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error setting port for dialup modem on " << getName() << endl;
@@ -341,7 +341,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
             CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
             status = inClear();
 
-            if( status != NoError )
+            if( status )
             {
                 shutdownClose(__FILE__, __LINE__);
             }
@@ -388,7 +388,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
                 }
             }  while(Message[0] != 0x7e && Message[0] != 0xfc);
 
-            if(status != NoError && SomeRead)
+            if(status && SomeRead)
             {
                 ::memcpy (Message, SomeMessage, SomeRead);
                 byteCount = SomeRead;
@@ -401,7 +401,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
                     Message[0] = 0x7e;
                 }
 
-                if((status = receiveData(&Message[1], Xfer.getInCountExpected() - 1, Tmot, &byteCount)) != NoError)
+                if( status = receiveData(&Message[1], Xfer.getInCountExpected() - 1, Tmot, &byteCount) )
                 {
                     if(status == BADSOCK)
                     {
@@ -417,7 +417,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
         }
         else
         {
-            if((status = receiveData(Message, Xfer.getInCountExpected(), Tmot, &byteCount)) != NoError)
+            if( status = receiveData(Message, Xfer.getInCountExpected(), Tmot, &byteCount) )
             {
                 if(status == BADSOCK)
                 {
@@ -433,7 +433,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
         {
             INT oldcount = byteCount;
 
-            if((status = receiveData(Message + byteCount, Xfer.getInCountExpected() - byteCount, Tmot, &byteCount)) != NoError)
+            if( status = receiveData(Message + byteCount, Xfer.getInCountExpected() - byteCount, Tmot, &byteCount) )
             {
                 if(status == BADSOCK)
                 {

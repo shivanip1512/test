@@ -85,7 +85,7 @@ void PortPoolDialoutThread(void *pid)
             continue;
         }
 
-        if((status = ParentPort->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NoError )
+        if( status = ParentPort->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries) )
         {
             /*
              *  This is a Read from the CTI queueing structures which will originate from

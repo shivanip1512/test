@@ -188,7 +188,7 @@ void RfnMeterDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandP
         nRet              = ce.error_code;
     }
 
-    if( nRet != NoError )
+    if( nRet )
     {
         std::string result;
 

@@ -183,14 +183,14 @@ void VConfigThread (void *Arg)
       UtilIDsDone = 0;
 
       /* Take a crack at opening the file on an exclusive basis */
-      if((i = CTIOpen (Name,
+      if( i = CTIOpen (Name,
                        &HFile,
                        &Action,
                        0L,
                        FILE_READONLY,
                        FILE_OPEN,
                        OPEN_ACCESS_READONLY | OPEN_SHARE_DENYREADWRITE,
-                       0L)) != NoError)
+                       0L) )
       {
          if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L) )
             PorterQuit = TRUE;

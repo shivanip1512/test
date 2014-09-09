@@ -190,7 +190,7 @@ INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
     INT status = NoError;
 
     /* Load the freeze message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERFREEZE, 0)) != NoError)
+    if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERFREEZE, 0) )
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -212,7 +212,7 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
     setScanFlag(ScanResetting);
 
     /* Load the reset freeze message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERRESET, 0)) != NoError)
+    if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERRESET, 0) )
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -238,7 +238,7 @@ INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to pla
     else
     {
         /* Load the forced scan message */
-        if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANALL, 0)) != NoError)
+        if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANALL, 0) )
             return(status);
 
         /* Load all the other stuff that is needed */
@@ -256,7 +256,7 @@ INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
     INT status = NoError;
 
     /* Load the forced scan message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0)) != NoError)
+    if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0) )
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -273,7 +273,7 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
     INT status = NoError;
 
     /* Load the forced scan message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANEXT, 0)) != NoError)
+    if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANEXT, 0) )
         return(status);
 
     /* Load all the other stuff that is needed */
@@ -320,7 +320,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
                         InEchoToOut(InMessage, OutMessage);
                         CtiCommandParser parse(InMessage.Return.CommandStr);
 
-                        if((status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NoError)
+                        if( status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4) )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -754,7 +754,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
             /* Build MasterComm header */
             if((_lcuType == LCU_LANDG) && OutMessage->Remote != RTUGLOBAL)
             {
-                if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSENDREPLY, (USHORT)(Count + 1))) != NoError)
+                if( i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSENDREPLY, (USHORT)(Count + 1)) )
                 {
                     delete (OutMessage);
                     OutMessage = NULL;
@@ -762,7 +762,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
             }
             else
             {
-                if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSEND, (USHORT)(Count + 1))) != NoError)
+                if( i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)OutMessage->Remote, MASTERSEND, (USHORT)(Count + 1)) )
                 {
                     delete (OutMessage);
                     OutMessage = NULL;
@@ -1720,7 +1720,7 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
                     MyOutMessage->SaveNexus = NULL;
 
                     /* Build MasterComm header */
-                    if((i = MasterHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage->Remote, MASTERSTAGE, 0)) != NoError)
+                    if( i = MasterHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage->Remote, MASTERSTAGE, 0) )
                     {
                         delete (MyOutMessage);
                         MyOutMessage = NULL;
@@ -2302,7 +2302,7 @@ INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool lockout)
     USHORT cmd = (lockout ? MASTERLOCKOUTSET : MASTERLOCKOUTRESET);
 
     /* Load the forced scan message */
-    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), cmd, 0)) != NoError)
+    if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), cmd, 0) )
         return(status);
 
     /* Load all the other stuff that is needed */

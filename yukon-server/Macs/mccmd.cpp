@@ -1945,7 +1945,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
         {
             device_map.insert(PILReturnMap::value_type(dev_id, data));
 
-            if( msg->Status() != NoError )
+            if( msg->Status() )
             {
                 CtiTableMeterReadLog result(0, msg->DeviceId(), 0, msg->Status(), msg->getMessageTime());
                 resultQueue.push_back(result);

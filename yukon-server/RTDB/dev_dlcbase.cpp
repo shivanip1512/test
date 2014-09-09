@@ -148,7 +148,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
         nRet = ExecutionComplete;
     }
 
-    if( nRet != NoError )
+    if( nRet )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

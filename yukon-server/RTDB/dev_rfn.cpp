@@ -84,7 +84,7 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
         }
     }
 
-    if( errorCode != NoError )
+    if( errorCode )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

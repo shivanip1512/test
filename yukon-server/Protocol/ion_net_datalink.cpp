@@ -417,7 +417,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
     YukonError_t retVal = NoError, possibleError = NoError;
     int offset;
 
-    if( status != NoError )
+    if( status )
     {
         switch( status )
         {

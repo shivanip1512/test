@@ -145,7 +145,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
         }
     }
 
-    if( nRet != NoError )
+    if( nRet )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

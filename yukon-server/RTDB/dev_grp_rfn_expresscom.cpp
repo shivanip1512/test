@@ -98,7 +98,7 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
             parse.parse();  // reparse for xcom specific data items....  This is required in case we got here from a group macro.
         }
 
-        if( (nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString)) != NoError )
+        if( nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString) )
         {
             // extractGroupAddressing generates its own error return to the caller
             return nRet;
@@ -108,7 +108,7 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
         xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
         nRet = xcom.parseRequest(parse);
 
-        if(nRet != NoError || xcom.entries() <= 0)
+        if(nRet || xcom.entries() <= 0)
         {
             if (nRet == NoError)
             {

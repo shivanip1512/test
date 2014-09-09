@@ -226,7 +226,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
         status = -1;
     }
 
-    if(status != NoError)
+    if( status )
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Versacom/AWord commands";

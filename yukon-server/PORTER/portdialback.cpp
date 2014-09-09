@@ -64,7 +64,7 @@ void PortDialbackThread(void *pid)
 
             if(portpair.first)  // Port was opened on this pass.
             {
-                if( portpair.second != NoError )
+                if( portpair.second )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

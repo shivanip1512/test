@@ -79,7 +79,7 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
                 YukonError_t i;
 
                 /* set the baud rate bits parity etc! on the port */
-                if((i = setLine()) != NoError)
+                if( i = setLine() )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -89,7 +89,7 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
                 }
 
                 /* set the Read Timeout for the port */
-                if((i = setPortReadTimeOut(1000)) != NoError)
+                if( i = setPortReadTimeOut(1000) )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -99,7 +99,7 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
                 }
 
                 /* set the write timeout for the port */
-                if((i = setPortWriteTimeOut(1000)) != NoError)
+                if( i = setPortWriteTimeOut(1000) )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -114,13 +114,13 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
                 /* Raise DTR */
                 raiseDTR();
 
-                if((status = reset(true)) != NoError)
+                if( status = reset(true) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Error resetting port on " << getName() << endl;
                 }
                 /* set the modem parameters */
-                if((status = setup(true)) != NoError)
+                if( status = setup(true) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Error setting port on " << getName() << endl;
@@ -378,7 +378,7 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
             }
             else
             {
-                if((status = CTIRead(getHandle(), Message, Xfer.getInCountExpected(), &byteCount)) != NoError)
+                if( status = CTIRead(getHandle(), Message, Xfer.getInCountExpected(), &byteCount) )
                 {
                     if(status == ERROR_INVALID_HANDLE)
                     {
@@ -396,7 +396,7 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
             {
                 INT oldcount = byteCount;
 
-                if((status = CTIRead(getHandle(), Message + byteCount, Xfer.getInCountExpected() - byteCount, &byteCount)) != NoError)
+                if( status = CTIRead(getHandle(), Message + byteCount, Xfer.getInCountExpected() - byteCount, &byteCount) )
                 {
                     if(status == ERROR_INVALID_HANDLE)
                     {
@@ -520,7 +520,7 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
 
     *byteCount = pos;
 
-    if( status != NoError )
+    if( status )
     {
         if( status == ERROR_INVALID_HANDLE )
         {

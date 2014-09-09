@@ -314,7 +314,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg     *pReq,
         }
     }
 
-    if( nRet != NoError )
+    if( nRet )
     {
         string resultString;
 

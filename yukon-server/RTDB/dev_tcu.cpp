@@ -141,7 +141,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
    ULONG       BytesWritten;
 
    /* Load the forced scan message */
-   if((i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0)) != NoError)
+   if( i = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0) )
       return(i);
 
    /* Load all the other stuff that is needed */

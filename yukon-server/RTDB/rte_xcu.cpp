@@ -254,7 +254,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     NewOutMessage->OutLength = MASTERLENGTH + Length;
 
                     /* Build MasterComm header */
-                    if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NoError)
+                    if( status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length) )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);

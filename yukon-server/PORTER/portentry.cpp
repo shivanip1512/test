@@ -274,12 +274,12 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
     static UINT defaultExpirationSeconds = gConfigParms.getValueAsULong("DEFAULT_EXPIRATION_SECONDS", 86400);
     INT status = NoError;
 
-    if((status = ValidateOutMessage(OutMessage)) != NoError)
+    if( status = ValidateOutMessage(OutMessage) )
     {
         return status;
     }
 
-    if((status = ValidatePort(OutMessage)) != NoError)
+    if( status = ValidatePort(OutMessage) )
     {
         return status;
     }
@@ -760,7 +760,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
             }
         }
 
-        if(status != NoError)
+        if( status )
         {
             {
                 CtiTime NowTime;

@@ -59,13 +59,13 @@ INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
 
     CtiXfer trx(Message, 5, Reply, 5, &Count, TIMEOUT, FALSE, FALSE, traceMask);
 
-    if( (i = PortRecord->outInMess(trx, RemoteRecord, traceList)) != NoError)
+    if( i = PortRecord->outInMess(trx, RemoteRecord, traceList) )
     {
         return i;
     }
 
     /* check for a valid response */
-    if((i = IDLCua (Reply, &RemoteSequence->Request, &RemoteSequence->Reply)) != NoError)
+    if( i = IDLCua (Reply, &RemoteSequence->Request, &RemoteSequence->Reply) )
     {
         return(i);
     }

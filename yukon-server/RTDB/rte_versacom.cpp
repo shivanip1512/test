@@ -200,7 +200,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         status = -1;
     }
 
-    if(status != NoError)
+    if( status )
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Versacom/AWord commands";
@@ -303,7 +303,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                 NewOutMessage->OutLength = MASTERLENGTH + Length;
 
                 /* Build MasterComm header */
-                if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NoError)
+                if( status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length) )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

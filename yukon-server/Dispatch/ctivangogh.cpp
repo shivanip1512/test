@@ -2255,7 +2255,7 @@ INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiServer::ptr_type &C
         {
             pMyMsg = (CtiMessage*)*itr;
             status = assembleMultiForConnection(Conn, pMyMsg, Ord);
-            if(status != NoError)
+            if( status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

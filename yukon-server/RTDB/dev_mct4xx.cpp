@@ -2046,7 +2046,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
         nRet = NoMethod;
     }
 
-    if( nRet != NoError )
+    if( nRet )
     {
         CtiString resultString;
 

@@ -1492,7 +1492,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     if(parse.isKeyValid("xcgenericaddress"))
     {
         //Add our new target addressing! This overrides all addressing levels!
-        if((status = parseTargetAddressing(parse)) != NoError)
+        if( status = parseTargetAddressing(parse) )
         {
             //We already know it is wrong, quit!
             return status;

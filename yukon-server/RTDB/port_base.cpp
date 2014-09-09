@@ -116,7 +116,7 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceS
 
     if(!isTAP() || (Dev && !Dev->isTAP()))
     {
-        if(Xfer.traceError() && ErrorCode != NoError && ErrorCode != ErrPortSimulated)      // if Error is set, it happened on the InMessage, and we didn't print the outmessage before
+        if(Xfer.traceError() && ErrorCode && ErrorCode != ErrPortSimulated)      // if Error is set, it happened on the InMessage, and we didn't print the outmessage before
         {
             status = traceOut(Xfer, traceList, Dev, ErrorCode);
         }
@@ -331,7 +331,7 @@ INT CtiPort::queueInit(HANDLE hQuit)
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
-        if( (status = CreateQueue (&_portQueue, hQuit)) != NoError )
+        if( status = CreateQueue (&_portQueue, hQuit) )
         {
             CloseQueue( _portQueue );
             _portQueue = NULL;
@@ -843,7 +843,7 @@ pair< bool, YukonError_t > CtiPort::checkCommStatus(CtiDeviceSPtr Device, INT tr
     if(!isViable())
     {
         /* set up the port */
-        if( (status = openPort()) != NoError )
+        if( status = openPort() )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1683,7 +1683,7 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
-        if( (status = CreateQueue (&_portShareQueue, hQuit)) != NoError )
+        if( status = CreateQueue (&_portShareQueue, hQuit) )
         {
             CloseQueue( _portShareQueue );
             _portShareQueue = NULL;

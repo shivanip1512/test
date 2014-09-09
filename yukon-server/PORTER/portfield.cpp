@@ -165,7 +165,7 @@ void PortThread(void *pid)
                 ticks = GetTickCount();
             }
 
-            if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries, timesyncPreference )) != NoError )
+            if( ! OutMessage && (status = GetWork( Port, OutMessage, QueEntries, timesyncPreference )) )
             {
                 if( profiling )
                 {
@@ -215,7 +215,7 @@ void PortThread(void *pid)
              *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
              *   requesting client.
              */
-            if( CheckIfOutMessageIsExpired(OutMessage) != NoError )
+            if( CheckIfOutMessageIsExpired(OutMessage) )
             {
                 continue;
             }
@@ -241,21 +241,21 @@ void PortThread(void *pid)
                 dout << CtiTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
             }
 
-            if((status = CheckInhibitedState(Port, OutMessage, Device)) != NoError)
+            if( status = CheckInhibitedState(Port, OutMessage, Device) )
             {
                 SendError(OutMessage, status);
                 continue;
             }
 
             /* Make sure everything is A-OK with this device */
-            if((status = ValidateDevice(Port, Device, OutMessage)) != NoError)
+            if( status = ValidateDevice(Port, Device, OutMessage) )
             {
                 RequeueReportError(status, OutMessage);
                 continue;
             }
 
             //  See if there is a reason to proceed...  Note that this is where OMs can be queued onto devices
-            if((status = DevicePreprocessing(Port, OutMessage, Device)) != NoError)   /* do any preprocessing according to type */
+            if( status = DevicePreprocessing(Port, OutMessage, Device) )   /* do any preprocessing according to type */
             {
                 RequeueReportError(status, OutMessage);
                 continue;
@@ -267,7 +267,7 @@ void PortThread(void *pid)
             OutEchoToIN(OutMessage, InMessage);
 
             /* Check if this port is dial up and initiate connection. */
-            if((status = EstablishConnection(Port, InMessage, OutMessage, Device)) != NoError)
+            if( status = EstablishConnection(Port, InMessage, OutMessage, Device) )
             {
                 if(status != RETRY_SUBMITTED)
                 {
@@ -675,7 +675,7 @@ YukonError_t CheckInhibitedState(CtiPortSPtr Port, OUTMESS *OutMessage, CtiDevic
         }
     }
 
-    if(status != NoError)
+    if(status)
     {
         /* if this is a dial up port make sure that we hang up if needed */
         Port->disconnect(Device, TraceFlag);
@@ -712,7 +712,7 @@ YukonError_t EstablishConnection(CtiPortSPtr Port, INMESS &InMessage, OUTMESS *O
         }
     }
 
-    if(status != NoError || !Port->connectedTo(Device->getUniqueIdentifier()) )
+    if(status || !Port->connectedTo(Device->getUniqueIdentifier()) )
     {
         /* Must call CheckAndRetry to make the re-queue happen if needed */
         status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device);  // This call may free OutMessages
@@ -1387,7 +1387,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                                 //jump in, check for login, build packets, send messages, etc...
                                 ansi.generate( trx );
                                 status = Port->outInMess( trx, Device, traceList );
-                                if( status != NoError )
+                                if( status )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " "<< ansiDev->getName()<<" loop is A-B-N-O-R-M-A-L " << endl;
@@ -1475,7 +1475,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
                             status = Port->outInMess( trx, Device, traceList );
 
-                            if( status != NoError )
+                            if( status )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " "<< markv->getName() << " loop is A-B-N-O-R-M-A-L " << endl;
@@ -1627,7 +1627,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                             IED->getVerificationObjects(verification_queue);
                             PorterVerificationThread.push(verification_queue);
 
-                            if( status != NoError && !(status == ErrorPageRS || status == ErrorPageNAK || status == ErrorPageNoResponse) )
+                            if( status && !(status == ErrorPageRS || status == ErrorPageNAK || status == ErrorPageNoResponse) )
                             {
                                 IED->setLogOnNeeded(true);      // We did not come through it cleanly, let's kill this connection.
                                 Port->setConnectedDevice(0);
@@ -2682,7 +2682,7 @@ YukonError_t CheckAndRetryMessage(YukonError_t CommResult, CtiPortSPtr Port, INM
     INT targetID = OutMessage->TargetID;
     INT msgFlags = OutMessage->MessageFlags;
 
-    if( (CommResult != NoError && CommResult != ErrPortSimulated) ||
+    if( (CommResult && CommResult != ErrPortSimulated) ||
         (  (GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
            (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) ))
     {
@@ -2841,7 +2841,7 @@ YukonError_t CheckAndRetryMessage(YukonError_t CommResult, CtiPortSPtr Port, INM
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    else if(CommResult != NoError)
+    else if( CommResult )
     {
         try
         {
@@ -2918,7 +2918,7 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
 
                 if( InMessage.TargetID != InMessage.DeviceID ) // The CCU itself is account for elsewhere
                 {
-                    addCommResult(InMessage.TargetID, CommResult != NoError, OutMessage->Retry > 0);
+                    addCommResult(InMessage.TargetID, CommResult, OutMessage->Retry > 0);
                 }
 
                 break;
@@ -2992,7 +2992,7 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
                     InMessage.Buffer.DSt.Time     = InMessage.Time;
                     InMessage.Buffer.DSt.DSTFlag  = InMessage.MilliTime & DSTACTIVE;
 
-                    addCommResult(InMessage.TargetID, CommResult != NoError, OutMessage->Retry > 0);
+                    addCommResult(InMessage.TargetID, CommResult, OutMessage->Retry > 0);
                     break;
                 }
 
@@ -3077,7 +3077,7 @@ YukonError_t DoProcessInMessage(YukonError_t CommResult, CtiPortSPtr Port, INMES
                     CommResult = status;
                 }
 
-                addCommResult(InMessage.TargetID, CommResult != NoError, OutMessage->Retry > 0);
+                addCommResult(InMessage.TargetID, CommResult, OutMessage->Retry > 0);
 
                 break;
             }
@@ -3324,7 +3324,7 @@ YukonError_t ReturnResultMessage(YukonError_t CommResult, INMESS &InMessage, OUT
         {
             InMessage.ErrorCode = CommResult;
 
-            if(CommResult != NoError)
+            if( CommResult )
             {
                 status = SendError( OutMessage, CommResult, &InMessage );
             }
@@ -3565,7 +3565,7 @@ YukonError_t PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, c
 
             if(aOutMessage) processCommStatus(status, aOutMessage->DeviceID, aOutMessage->TargetID, aOutMessage->Retry > 0, dev);
 
-            if(status != NoError)
+            if( status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3592,7 +3592,7 @@ YukonError_t PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, c
                    (aIED->getCurrentState() == CtiDeviceIED::StateScanComplete)));
 
         if( (status == NoError && aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
-            (PorterDebugLevel & PORTER_DEBUG_VERBOSE && status != NoError) )
+            (PorterDebugLevel & PORTER_DEBUG_VERBOSE && status) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

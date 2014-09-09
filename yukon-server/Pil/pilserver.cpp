@@ -1336,8 +1336,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 vgList.splice(vgList.end(), executer.vgList);
 
-                if(status != NoError &&
-                   status != DEVICEINHIBITED)
+                if(status && status != DEVICEINHIBITED)
                 {
                     CtiTime NowTime;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

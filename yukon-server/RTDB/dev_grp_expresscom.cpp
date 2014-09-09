@@ -263,7 +263,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
     {
         OutMessage->TargetID = getID();
 
-        if( (nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString)) != NoError )
+        if( nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString) )
         {
             return nRet;
         }
