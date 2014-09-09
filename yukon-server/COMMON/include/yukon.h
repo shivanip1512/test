@@ -133,20 +133,19 @@ enum CtiAlarm_t
 enum YukonError_t
 {
     NoError = 0,
-    NORMAL = 0,
-    NOTNORMAL = 1,
-    NODWORD,
+    Error_Abnormal,
+    Error_UNUSED_002,
     BADTYPE,
     DLENGTH,
-    BADLOAD,
-    BADTIME,
-    BADLEVEL,
+    Error_UNUSED_005,
+    Error_UNUSED_006,
+    Error_UNUSED_007,
     BADID,
     BADRANGE,
     MISPARAM,
     SYNTAX,
-    BADLATCH,
-    FNI,
+    Error_UNUSED_012,
+    Error_UNUSED_013,
     BADSTATE,
     BADPARITY,
     BADCCU,
@@ -156,13 +155,13 @@ enum YukonError_t
     NACKPAD1,
     NACKPAD2,
     NACKPAD3,
-    BADCCUTYPE,
-    BADCOUNT,
-    BADPAUSE,
+    Error_UNUSED_023,
+    Error_UNUSED_024,
+    Error_UNUSED_025,
     BADPARAM,
     BADROUTE,
     BADBUSS,
-    BADAMP,
+    Error_UNUSED_029,
     READERR,
     READTIMEOUT,
     BADSEQUENCE,
@@ -171,55 +170,55 @@ enum YukonError_t
     BADLENGTH,
     BADUA,
     ERRUNKNOWN,
-    BADADDRESS,
-    BADROLE,
-    INVALIDFIX,
-    INVALIDVOU,
-    INVALIDVIN,
-    INVALIDSTG,
-
-    BADFILE = 45,
+    Error_UNUSED_038,
+    Error_UNUSED_039,
+    Error_UNUSED_040,
+    Error_UNUSED_041,
+    Error_UNUSED_042,
+    Error_UNUSED_043,
+    Error_UNUSED_044,
+    Error_UNUSED_045,
     REQACK,
-    RTFERR,
-    NOTR,
+    Error_UNUSED_047,
+    Error_UNUSED_048,
     RTNF,
-    FNO,
-    RONF,
-    ROFERR,
-    DBFERR,
+    Error_UNUSED_050,
+    Error_UNUSED_051,
+    Error_UNUSED_052,
+    Error_UNUSED_053,
     IDNF,
-    TYFERR,
+    Error_UNUSED_055,
     TYNF,
     EWORDRCV,
-    BADFILL,
+    Error_UNUSED_058,
     SYSTEM,
     BADPORT,
     QUEUE_READ,
     QUEUE_WRITE,
     MEMORY,
-    SEMAPHORE,
+    Error_UNUSED_064,
     NODCD,
-    WRITETIMEOUT,
+    Error_UNUSED_066,
     PORTREAD,
     PORTWRITE,
-    PIPEWRITE,
-    PIPEREAD,
+    Error_UNUSED_069,
+    Error_UNUSED_070,
     QUEUEEXEC,
     DLCTIMEOUT,
     NOATTEMPT,
     ROUTEFAILED,
     TRANSFAILED,
-    JWORDRCV,
-    NOREMOTEPORTER,
+    Error_UNUSED_076,
+    Error_UNUSED_077,
     REMOTEINHIBITED,
     QUEUEFLUSHED,
-    PIPEBROKEN,
+    Error_UNUSED_080,
     PIPEWASBROKEN,
     PIPEOPEN,
     PORTINHIBITED,
     ACCUMSNOTSUPPORTED,
     DEVICEINHIBITED,
-    POINTINHIBITED,
+    Error_UNUSED_086,
     DIALUPERROR,
     WRONGADDRESS,
     TCPCONNECTERROR,
@@ -228,18 +227,18 @@ enum YukonError_t
     ADDRESSERROR,
     ALPHABUFFERERROR,
     MISCONFIG,
-
-    BADSOCK = 98,
+    Error_UNUSED_095,
+    Error_UNUSED_096,
+    Error_UNUSED_097,
+    BADSOCK,
     SOCKWRITE,
     BADBCH,
 
-    // General Errors
-    YukonBaseError = 200,       //  Account for the old DSM/2 Errors
-    MemoryError,
+    MemoryError = 201,
 
     // Device Errors
     NoMethod,
-    NoRefreshMethod,
+    Error_UNUSED_203,
     NoGeneralScanMethod,
     NoIntegrityScanMethod,
     NoAccumulatorScanMethod,
@@ -253,11 +252,8 @@ enum YukonError_t
     NoDecodeResponseMethod,
     NoDataCopyMethod,
     GeneralScanAborted,
+    Error_UNUSED_217,
 
-    // Cmd Line Errors
-    NotNumeric,
-
-    // Connection Errors
     NoConfigData,
     ConfigNotCurrent,
     ConfigCurrent,
@@ -269,26 +265,25 @@ enum YukonError_t
     SubRouteIsMacro,
     ControlInhibitedOnDevice,
     ControlInhibitedOnPoint,
-    ControlRequestComplete,
+    Error_UNUSED_227,
     ErrRequestExpired,
-
-    // CtiConnection Errors
-    InThreadTerminated = 230,
-    OutThreadTerminated,
-    InboundSocketBad,
-    OutboundSocketBad,
+    Error_UNUSED_229,
+    Error_UNUSED_230,
+    Error_UNUSED_231,
+    Error_UNUSED_232,
+    Error_UNUSED_233,
 
     // Non-zero return codes
-    RETRY_SUBMITTED,                    // The OutMessage in question has been requeued onto the portqueue.
-    QUEUED_TO_DEVICE,                   // The OutMessage in question has been enqueud onto a device queue.
-    CONTINUE_LOOP,                      // The propagate a continue to the looping construct above.
+    RETRY_SUBMITTED,              // The OutMessage in question has been requeued onto the portqueue.
+    QUEUED_TO_DEVICE,             // The OutMessage in question has been enqueud onto a device queue.
+    CONTINUE_LOOP,                // The propagate a continue to the looping construct above.
 
     SCAN_ERROR_DEVICE_INHIBITED,
     SCAN_ERROR_GLOBAL_ADDRESS,
     SCAN_ERROR_DEVICE_WINDOW_CLOSED,
 
     // Port and dialup errors
-    ErrPortInitFailed,
+    Error_UNUSED_240,
     ErrPortDialupConnect_Port,        // Error making connection.. Assumed to be the port's fault
     ErrPortDialupConnect_Device,      // Error making connection.. Assumed to be the device's fault
     ErrPortSimulated,                 // The port is being simulated - there will be no inbound
@@ -314,7 +309,7 @@ enum YukonError_t
 
     ErrorQueuePurged,           // Queue purged to clean memory.
 
-    ErrorDeviceIPUnknown,
+    Error_UNUSED_259,
 
     ErrorMACSTimeout,
 
@@ -333,7 +328,7 @@ enum YukonError_t
     ErrorInvalidSSPEC,          // Hardware has an insufficient SSPEC/firmware revision
     ErrorVerifySSPEC,           // Need to verify SSPEC/firmware revision
 
-    ErrorTransmitterBusy,
+    Error_UNUSED_271,
     ErrorUnsupportedDevice,
 
     ErrorPortNotInitialized,
@@ -374,13 +369,9 @@ enum YukonError_t
     ErrorNetworkManagerTimeout,
 
     ErrorRequestPayloadTooLarge,
-    ErrorResponsePayloadTooLarge,
+    Error_UNUSED_295,
 
     ErrorNoPointsOnDevice,
-
-    ErrorUnsupportedFeature,
-
-    FinalError
 };
 
 
