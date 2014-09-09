@@ -43,7 +43,7 @@
             refreshRate: ${pageScope.refreshRate},
             title: '${title}',
             toolbar: [true, "top"],
-            url: "${cti:escapeJavaScript(dataUrl)}",
+            url: "${dataUrl}",
             width: '${pageScope.width}'
         });
     });
@@ -59,8 +59,9 @@
         <div class="fr fwn">
             <a href="#" class="refresh" data-grid-id="${gridId}"><i:inline key="components.refresh" /></a>
             <i:inline key="components.export"/>
-            <a class="excel" href="${cti:escapeJavaScript(csvUrl)}"><i:inline key="components.csv"/></a>
-            <a class="pdf" href="${cti:escapeJavaScript(pdfUrl)}"><i:inline key="components.pdf"/></a>
+            <!-- these already have been cti:url'ed or the moral equivalent previously -->
+            <a class="excel" href="${csvUrl}"><i:inline key="components.csv"/></a>
+            <a class="pdf" href="${pdfUrl}"><i:inline key="components.pdf"/></a>
         </div>
     </div>
 </div>
