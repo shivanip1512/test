@@ -3263,9 +3263,9 @@ INT MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, C
                     }
                 }
 
-                OutTemplate = CTIDBG_new OUTMESS;
+                OutTemplate = new OUTMESS;
 
-                InEchoToOut( InMessage, OutTemplate );
+                InEchoToOut( InMessage, *OutTemplate );
 
                 //  reset the meter
                 pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID, "putstatus reset", InMessage.Return.UserID, InMessage.Return.GrpMsgID, InMessage.Return.RouteID, selectInitialMacroRouteOffset(InMessage.Return.RouteID), InMessage.Return.Attempt);

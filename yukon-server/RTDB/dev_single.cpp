@@ -804,9 +804,9 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
 
         if( processAdditionalRoutes(InMessage, nRet) )
         {
-            OUTMESS *OutTemplate = CTIDBG_new OUTMESS;
+            OUTMESS *OutTemplate = new OUTMESS;
 
-            InEchoToOut( InMessage, OutTemplate );
+            InEchoToOut( InMessage, *OutTemplate );
 
             CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID,
                                                            string(InMessage.Return.CommandStr),

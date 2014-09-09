@@ -610,7 +610,7 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
             {
                 byte_buffer_t dtran_result = _klondike.getDTranResult();
 
-                OutEchoToIN(_current_om, InMessage);
+                OutEchoToIN(*_current_om, InMessage);
 
                 InMessage.Port   = _current_om->Port;
                 InMessage.Remote = _current_om->Remote;
@@ -642,7 +642,7 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
                     {
                         INMESS *im = new INMESS;
 
-                        OutEchoToIN(om, *im);
+                        OutEchoToIN(*om, *im);
 
                         im->Port      = om->Port;
                         im->Remote    = om->Remote;

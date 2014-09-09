@@ -1205,7 +1205,7 @@ void Cti::Porter::UnsolicitedHandler::sendResult(device_record *dr)
 
             INMESS im;
 
-            OutEchoToIN(om, im);
+            OutEchoToIN(*om, im);
 
             //  ignoring the result of this for now - DeviceDnp always returns NoError
             dr->device->sendCommResult(im);

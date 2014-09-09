@@ -402,22 +402,19 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                 if(MyInMessage[2] & (EW_FMW_BIT))
                 {
                     result += string("Firmware error is indicated by RTU\n");
-                    OutMessage = CTIDBG_new OUTMESS;
+                    OutMessage = new OUTMESS;
 
-                    if(OutMessage != NULL)
+                    InEchoToOut(InMessage, *OutMessage);
+
+                    /* This is the Big E so reset the RTU, download the deadbands and clear the demand accums */
+                    if(i = WelCoReset(OutMessage, MAXPRIORITY))
                     {
-                        InEchoToOut(InMessage, OutMessage);
-
-                        /* This is the Big E so reset the RTU, download the deadbands and clear the demand accums */
-                        if(i = WelCoReset(OutMessage, MAXPRIORITY))
-                        {
-                            /* Send Error to logger */
-                            ReportError ((USHORT)i);
-                        }
-                        else
-                        {
-                            outList.push_back(OutMessage);
-                        }
+                        /* Send Error to logger */
+                        ReportError ((USHORT)i);
+                    }
+                    else
+                    {
+                        outList.push_back(OutMessage);
                     }
                 }
 
@@ -472,28 +469,25 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
                     }
 
                     /* then force a scan */
-                    OutMessage = CTIDBG_new OUTMESS;
+                    OutMessage = new OUTMESS;
 
-                    if(OutMessage != NULL)
+                    InEchoToOut(InMessage, *OutMessage);
+
+                    CtiCommandParser parse(InMessage.Return.CommandStr);
+
+                    int welcofreezedelay = gConfigParms.getValueAsInt("WELCO_FREEZE_TO_SCAN_MSEC_DELAY", 0);
+                    if(welcofreezedelay)
                     {
-                        InEchoToOut(InMessage, OutMessage);
+                        Sleep(welcofreezedelay);
+                    }
 
-                        CtiCommandParser parse(InMessage.Return.CommandStr);
-
-                        int welcofreezedelay = gConfigParms.getValueAsInt("WELCO_FREEZE_TO_SCAN_MSEC_DELAY", 0);
-                        if(welcofreezedelay)
-                        {
-                            Sleep(welcofreezedelay);
-                        }
-
-                        if(i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4))
-                        {
-                            ReportError ((USHORT)i); /* Send Error to logger */
-                        }
-                        else
-                        {
-                            setScanFlag(ScanRateGeneral);
-                        }
+                    if(i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4))
+                    {
+                        ReportError ((USHORT)i); /* Send Error to logger */
+                    }
+                    else
+                    {
+                        setScanFlag(ScanRateGeneral);
                     }
                 }
                 else
@@ -1168,22 +1162,19 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
         if(ReturnMsg)                                       // Let clients know there is more data coming.
             ReturnMsg->setExpectMore(true);
 
-        OutMessage = CTIDBG_new OUTMESS;
+        OutMessage = new OUTMESS;
 
-        if(OutMessage != NULL)
+        InEchoToOut(InMessage, *OutMessage);
+
+        if(i = WelCoContinue (OutMessage, MAXPRIORITY - 4))
         {
-            InEchoToOut(InMessage, OutMessage);
-
-            if(i = WelCoContinue (OutMessage, MAXPRIORITY - 4))
-            {
-                /* Send Error to logger */
-                ReportError (i);
-            }
-            else
-            {
-                outList.push_back(OutMessage);
-                setScanFlag(ScanRateGeneral);
-            }
+            /* Send Error to logger */
+            ReportError (i);
+        }
+        else
+        {
+            outList.push_back(OutMessage);
+            setScanFlag(ScanRateGeneral);
         }
     }
 
@@ -1279,21 +1270,14 @@ INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outLi
 {
     INT   status = NoError;
 
-    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+    OUTMESS *OutMessage = new OUTMESS;
 
-    if(OutMessage != NULL)
-    {
-        InEchoToOut(InMessage, OutMessage);
-        status = WelCoTimeSync(OutMessage, MAXPRIORITY - 1);
+    InEchoToOut(InMessage, *OutMessage);
+    status = WelCoTimeSync(OutMessage, MAXPRIORITY - 1);
 
-        if(status == NoError)
-        {
-            outList.push_back(OutMessage);
-        }
-    }
-    else
+    if(status == NoError)
     {
-        status = MEMORY;
+        outList.push_back(OutMessage);
     }
 
     return status;
@@ -1357,22 +1341,11 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 
 INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, OutMessageList &outList, INT Priority)
 {
-    INT status = NoError;
+    OUTMESS *OutMessage = new OUTMESS;
 
-    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+    InEchoToOut(InMessage, *OutMessage);
 
-    if(OutMessage != NULL)
-    {
-        InEchoToOut(InMessage, OutMessage);
-
-        status = WelCoDeadBands(OutMessage, outList, MAXPRIORITY - 1);
-    }
-    else
-    {
-        status = MEMORY;
-    }
-
-    return status;
+    return WelCoDeadBands(OutMessage, outList, MAXPRIORITY - 1);
 }
 
 /* Routine to download deadbands for analogs */

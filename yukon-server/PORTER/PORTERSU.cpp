@@ -81,7 +81,7 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
             //  They didn't pass in an inmessage, so we have to make one
             DefaultInMessage.DeviceID = PORTERSU_DEVID;
 
-            OutEchoToIN( OutMessage, DefaultInMessage );
+            OutEchoToIN( *OutMessage, DefaultInMessage );
 
             DefaultInMessage.InLength  = 0;
             DefaultInMessage.ErrorCode     = ErrorCode;

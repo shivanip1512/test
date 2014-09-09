@@ -413,7 +413,7 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
         {
             OUTMESS *OutMessage = new OUTMESS;
 
-            InEchoToOut(InMessage, OutMessage);
+            InEchoToOut(InMessage, *OutMessage);
 
             //  If there were no errors, start the command on the first macro route
             if( ! InMessage.ErrorCode )

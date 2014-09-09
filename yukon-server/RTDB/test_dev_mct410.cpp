@@ -2729,7 +2729,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
 
             readMsgPriority = om->Priority;
-            OutEchoToIN(om, im);
+            OutEchoToIN(*om, im);
         }
 
         // This validates the read-after-write behavior... write message has higher priority

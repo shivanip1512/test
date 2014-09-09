@@ -313,22 +313,19 @@ INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
                     setLastFreezeNumber(getLastFreezeNumber() + 1);
 
                     /* then force a scan */
-                    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+                    OUTMESS *OutMessage = new OUTMESS;
 
-                    if(OutMessage != NULL)
+                    InEchoToOut(InMessage, *OutMessage);
+                    CtiCommandParser parse(InMessage.Return.CommandStr);
+
+                    if( status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4) )
                     {
-                        InEchoToOut(InMessage, OutMessage);
-                        CtiCommandParser parse(InMessage.Return.CommandStr);
-
-                        if( status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4) )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            delete OutMessage;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
+
+                        delete OutMessage;
                     }
                 }
                 else
@@ -1190,16 +1187,13 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS &InMessage, OutMe
         resetScanFlag(ScanFreezeFailed);
 
         // Need to perform an lcuReset here!
-        OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+        OUTMESS *OutMessage = new OUTMESS;
 
-        if(OutMessage != NULL)
-        {
-            InEchoToOut(InMessage, OutMessage);
-            CtiCommandParser parse(InMessage.Return.CommandStr);
-            lcuReset(OutMessage);
+        InEchoToOut(InMessage, *OutMessage);
+        CtiCommandParser parse(InMessage.Return.CommandStr);
+        lcuReset(OutMessage);
 
-            outList.push_back( OutMessage );
-        }
+        outList.push_back( OutMessage );
     }
 
 

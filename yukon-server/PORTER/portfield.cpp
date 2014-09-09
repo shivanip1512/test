@@ -264,7 +264,7 @@ void PortThread(void *pid)
             timesyncPreference = !timesyncPreference;
 
             // Copy a good portion of the OutMessage to the to-be-formed InMessage
-            OutEchoToIN(OutMessage, InMessage);
+            OutEchoToIN(*OutMessage, InMessage);
 
             /* Check if this port is dial up and initiate connection. */
             if( status = EstablishConnection(Port, InMessage, OutMessage, Device) )

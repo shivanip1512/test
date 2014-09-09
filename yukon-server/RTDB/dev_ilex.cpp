@@ -205,22 +205,19 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                     resetScanFlag(ScanFreezeFailed);
 
                     /* then force a scan */
-                    OutMessage = CTIDBG_new OUTMESS;
+                    OutMessage = new OUTMESS;
 
-                    if(OutMessage != NULL)
+                    InEchoToOut(InMessage, *OutMessage);
+
+                    CtiCommandParser parse(InMessage.Return.CommandStr);
+
+                    if( i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4) )
                     {
-                        InEchoToOut(InMessage, OutMessage);
-
-                        CtiCommandParser parse(InMessage.Return.CommandStr);
-
-                        if( i = IntegrityScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4) )
-                        {
-                            ReportError ((USHORT)i); /* Send Error to logger */
-                        }
-                        else
-                        {
-                            setScanFlag(ScanRateGeneral);
-                        }
+                        ReportError ((USHORT)i); /* Send Error to logger */
+                    }
+                    else
+                    {
+                        setScanFlag(ScanRateGeneral);
                     }
                 }
                 else
@@ -280,22 +277,19 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                 if((firstByte & 0x07) == ILEXSCANPARTIAL)
                 {
                     /* do an exception scan */
-                    OutMessage = CTIDBG_new OUTMESS;
+                    OutMessage = new OUTMESS;
 
-                    if(OutMessage != NULL)
+                    InEchoToOut(InMessage, *OutMessage);
+
+                    setIlexSequenceNumber( firstByte & 0x10 );
+
+                    if( i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList) )
                     {
-                        InEchoToOut(InMessage, OutMessage);
-
-                        setIlexSequenceNumber( firstByte & 0x10 );
-
-                        if( i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList) )
-                        {
-                            ReportError ((USHORT)i); /* Send Error to logger */
-                        }
-                        else
-                        {
-                            setScanFlag(ScanRateGeneral);
-                        }
+                        ReportError ((USHORT)i); /* Send Error to logger */
+                    }
+                    else
+                    {
+                        setScanFlag(ScanRateGeneral);
                     }
                 }
 
@@ -435,23 +429,20 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                             if( getScanRate(ScanRateGeneral) < getScanRate(ScanRateAccum) )
                             {
                                 /* Force a continuation to clean that mother out */
-                                OutMessage = CTIDBG_new OUTMESS;
+                                OutMessage = new OUTMESS;
 
-                                if(OutMessage != NULL)
+                                InEchoToOut(InMessage, *OutMessage);
+
+                                // CtiCommandParser parse(InMessage.Return.CommandStr);
+                                setIlexSequenceNumber( firstByte & 0x10 );
+
+                                if( i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList) )
                                 {
-                                    InEchoToOut(InMessage, OutMessage);
-
-                                    // CtiCommandParser parse(InMessage.Return.CommandStr);
-                                    setIlexSequenceNumber( firstByte & 0x10 );
-
-                                    if( i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList) )
-                                    {
-                                        ReportError ((USHORT)i); /* Send Error to logger */
-                                    }
-                                    else
-                                    {
-                                        setScanFlag(ScanRateGeneral);
-                                    }
+                                    ReportError ((USHORT)i); /* Send Error to logger */
+                                }
+                                else
+                                {
+                                    setScanFlag(ScanRateGeneral);
                                 }
                             }
                         }
@@ -692,26 +683,23 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
                     setLastFreezeNumber( 0 );
 
                     /* now force another scan */
-                    OutMessage = CTIDBG_new OUTMESS;
+                    OutMessage = new OUTMESS;
 
-                    if(OutMessage != NULL)
+                    InEchoToOut(InMessage, *OutMessage);
+
+                    CtiCommandParser parse(InMessage.Return.CommandStr);
+                    if( i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3) )
                     {
-                        InEchoToOut(InMessage, OutMessage);
-
-                        CtiCommandParser parse(InMessage.Return.CommandStr);
-                        if( i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3) )
+                        if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                         {
-                            if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            ReportError ((USHORT)i); /* Send Error to logger */
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-                        else
-                        {
-                            setScanFlag(ScanRateGeneral);
-                        }
+                        ReportError ((USHORT)i); /* Send Error to logger */
+                    }
+                    else
+                    {
+                        setScanFlag(ScanRateGeneral);
                     }
                 }
                 else if(isScanFlagSet(ScanRateGeneral))

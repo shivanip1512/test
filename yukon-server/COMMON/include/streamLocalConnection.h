@@ -45,10 +45,10 @@ public:
     virtual ~StreamLocalConnection();
 
     // virtual methods inherited from StreamConnection
-    virtual bool   isValid () const                                                          override;
-    virtual size_t write   (const void *buf, int len, const Chrono& timeout)                 override;
-    virtual size_t read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
-    virtual size_t peek    (void *buf, int len)                                              override;
+    bool   isValid () const                                                          override;
+    size_t write   (const void *buf, int len, const Chrono& timeout)                 override;
+    size_t read    (void *buf, int len, const Chrono& timeout, const HANDLE *hAbort) override;
+    size_t peek    (void *buf, int len)                                              override;
 
     void setMatchingConnection (StreamLocalConnection<Inbound, Outbound> &connection);
     void purgeRequest          (int request);

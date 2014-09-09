@@ -450,47 +450,39 @@ INT SynchronizedIdGen(string name, int values_needed)
     return(last);
 }
 
-BOOL InEchoToOut(const INMESS &In, OUTMESS *Out)
+void InEchoToOut(const INMESS &In, OUTMESS &Out)
 {
-    BOOL bRet = FALSE;
-
-    Out->TargetID = In.TargetID;
-    Out->ReturnNexus = In.ReturnNexus;
-    Out->Sequence = In.Sequence;
-    Out->Priority = In.Priority;
+    Out.TargetID = In.TargetID;
+    Out.Sequence = In.Sequence;
+    Out.Priority = In.Priority;
+    Out.ReturnNexus = In.ReturnNexus;
     // Out->MessageFlags = In.MessageFlags;
 
-    /* Lotsa stuff requires the InMessage to be loaded so load it */
-    ::memcpy(&(Out->Request), &(In.Return), sizeof(PIL_ECHO));
-
-    return bRet;
+    ::memcpy(&(Out.Request), &(In.Return), sizeof(PIL_ECHO));
 }
-BOOL OutEchoToIN(const OUTMESS *Out, INMESS &In)
-{
-    BOOL bRet = FALSE;
 
+void OutEchoToIN(const OUTMESS &Out, INMESS &In)
+{
     // Clear it...
     ::memset(&In, 0, sizeof(INMESS));
 
-    /* Lotsa stuff requires the InMessage to be loaded so load it */
-    ::memcpy(&(In.Return), &(Out->Request), sizeof(PIL_ECHO));
+    ::memcpy(&(In.Return), &(Out.Request), sizeof(PIL_ECHO));
     //  save this for the macro routes
-    In.Priority = Out->Priority;
+    In.Priority = Out.Priority;
 
-    In.DeviceID            = Out->DeviceID;
-    In.TargetID            = Out->TargetID;
+    In.DeviceID = Out.DeviceID;
+    In.TargetID = Out.TargetID;
 
-    In.Remote              = Out->Remote;
-    In.Port                = Out->Port;
-    In.Sequence            = Out->Sequence;
-    In.ReturnNexus         = Out->ReturnNexus;
-    In.Priority            = Out->Priority;
-    In.MessageFlags        = Out->MessageFlags;
+    In.Remote   = Out.Remote;
+    In.Port     = Out.Port;
+    In.Sequence = Out.Sequence;
+    In.Priority = Out.Priority;
+    In.TrxID    = Out.TrxID;
 
-    In.DeviceIDofLMGroup   = Out->DeviceIDofLMGroup;
-    In.TrxID               = Out->TrxID;
+    In.ReturnNexus  = Out.ReturnNexus;
+    In.MessageFlags = Out.MessageFlags;
 
-    return bRet;
+    In.DeviceIDofLMGroup = Out.DeviceIDofLMGroup;
 }
 
 /*
