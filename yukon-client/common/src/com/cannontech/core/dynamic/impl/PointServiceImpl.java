@@ -23,11 +23,9 @@ public class PointServiceImpl implements PointService {
     @Autowired private StateDao stateDao;
     
     @Override
-    public LiteState getCurrentStateForNonStatusPoint(int pointId) {
+    public LiteState getCurrentStateForNonStatusPoint(LitePoint lp) {
         
-        LitePoint lp = pointDao.getLitePoint(pointId);
-        Set<Signal>  signals = dynamicDataSource.getSignals(pointId);
-        
+        Set<Signal>  signals = dynamicDataSource.getSignals(lp.getPointID());
         return getCurrentStateForNonStatusPoint(lp, signals);
     }
     

@@ -67,7 +67,7 @@ public class UpdateUtil {
                 }else
                 {
                     PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp);
                     if( ls != null ) {          
                         text += ls.getStateRawState();
                         prev = true;
@@ -227,7 +227,7 @@ public class UpdateUtil {
     			boolean foundOne = false;
     			Iterator<Signal> sigIter = dynamicDataSource.getSignals(pointID).iterator();			
     			while(sigIter.hasNext()) {
-    				Signal sig = (Signal) sigIter.next();
+    				Signal sig = sigIter.next();
     				if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
     					if(!foundOne) {
     						text += sig.getDescription();						
@@ -262,7 +262,7 @@ public class UpdateUtil {
                 }else {
                     
                     PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp.getLiteID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp);
                     if( ls != null ) {
                         text += ls.getStateText();
                         prev = true;
@@ -283,7 +283,7 @@ public class UpdateUtil {
                     }
                 } else {
                     PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp);
                     if( ls != null ) {
                         text += ls.getStateRawState();
                         prev = true;
@@ -323,7 +323,7 @@ public class UpdateUtil {
             }else 
             {
                 PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
-                LiteState ls = pointService.getCurrentStateForNonStatusPoint(pointID);
+                LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp);
                 img = YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(ls.getImageID());
             }
     		return img.getImageName();

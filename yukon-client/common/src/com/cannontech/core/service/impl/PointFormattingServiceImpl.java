@@ -87,7 +87,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                         liteState = stateDao.findLiteState(litePoint.getStateGroupID(),(int)data.getValue());
                     } else {
                         //For non-status points, state is determined by alarm conditions (signals)
-                        liteState = pointService.getCurrentStateForNonStatusPoint(litePoint.getPointID());
+                        liteState = pointService.getCurrentStateForNonStatusPoint(litePoint);
                     }
 
 	                if (liteState != null) {

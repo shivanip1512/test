@@ -17,7 +17,7 @@ public interface PointService {
      * 
      * @return LiteState The current state of this point.
      */
-    LiteState getCurrentStateForNonStatusPoint(int pointId);
+    LiteState getCurrentStateForNonStatusPoint(LitePoint lp);
 
     /**
      * Uses alarm signals to derive the state of a non status point.

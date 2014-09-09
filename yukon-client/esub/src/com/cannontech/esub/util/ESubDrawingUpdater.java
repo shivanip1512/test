@@ -73,6 +73,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
      * (non-Javadoc)
      * @see com.cannontech.esub.util.DrawingUpdater#updateDrawing()
      */
+    @Override
     public void updateDrawing() {
         synchronized (drawing) {
             try {
@@ -151,7 +152,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         || liteColorPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteColorPoint.getPointType() == PointTypes.CALCULATED_POINT) {
                     // for analog type points
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteColorPoint.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteColorPoint);
                     if (ls != null) {
                         le.setCurrentColorState(ls);
                         le.updateColor();
@@ -187,7 +188,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         || liteThicknessPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                         || liteThicknessPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteThicknessPoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteThicknessPoint.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteThicknessPoint);
                     if (ls != null) {
                         le.setCurrentThicknessState(ls);
                         le.updateThickness();
@@ -222,7 +223,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         || liteArrowPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                         || liteArrowPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteArrowPoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteArrowPoint.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteArrowPoint);
                     if (ls != null) {
                         le.setCurrentArrowState(ls);
                         le.updateArrow();
@@ -256,7 +257,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         || liteOpacityPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                         || liteOpacityPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteOpacityPoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteOpacityPoint.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteOpacityPoint);
                     if (ls != null) {
                         le.setCurrentOpacityState(ls);
                         le.updateOpacity();
@@ -400,7 +401,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     || lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                     || lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                     || lp.getPointType() == PointTypes.CALCULATED_POINT) {
-                LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp.getPointID());
+                LiteState ls = pointService.getCurrentStateForNonStatusPoint(lp);
                 if (ls != null) {
                     si.setCurrentState(ls);
                     si.updateImage();
@@ -448,7 +449,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     || liteColorPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                     || liteColorPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                     || liteColorPoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteColorPoint.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteColorPoint);
                     if (ls != null) {
                         dt.setCurrentColorState(ls);
                         dt.updateColor();
@@ -480,7 +481,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     || liteTextPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                     || liteTextPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                     || liteTextPoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteTextPoint.getPointID());
+                    LiteState ls = pointService.getCurrentStateForNonStatusPoint(liteTextPoint);
                     if (ls != null) {
                         dt.setCurrentTextState(ls);
                         dt.updateText();
@@ -519,6 +520,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
     /**
      * @see java.lang.Runnable#run()
      */
+    @Override
     public void run() {
         if (drawing == null) {
             return;
@@ -553,6 +555,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
     /**
      * @param b
      */
+    @Override
     public void setUpdateGraphs(boolean b) {
         updateGraphs = b;
     }
