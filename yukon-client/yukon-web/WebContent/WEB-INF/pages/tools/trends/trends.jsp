@@ -2,6 +2,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="tools" page="${pageName}">
 
@@ -37,20 +38,30 @@
     </div>
 
     <div class="column-7-17 clearfix">
-        <div class="column one">
-            <div class="side-nav trend-list">
-                <ul>
-                    <c:forEach var="trend" items="${trends}">
-                        <c:if test="${trendId == trend.graphDefinitionID}"><c:set var="selected" value="selected"/></c:if>
-                        <c:if test="${trendId != trend.graphDefinitionID}"><c:set var="selected" value=""/></c:if>
-                        <li data-graph-id="${trend.graphDefinitionID}" class="${selected}">
-                            <a href="<cti:url value="/tools/trends/${trend.graphDefinitionID}"/>">${fn:escapeXml(trend.name)}</a>
-                        </li>
-                    </c:forEach>
-                </ul>
+        <c:if test="${not empty trends}">
+            <div class="column one">
+                <div class="side-nav trend-list">
+                    <ul>
+                        <c:forEach var="trend" items="${trends}">
+                            <c:if test="${trendId == trend.graphDefinitionID}"><c:set var="selected" value="selected"/></c:if>
+                            <c:if test="${trendId != trend.graphDefinitionID}"><c:set var="selected" value=""/></c:if>
+                            <li data-graph-id="${trend.graphDefinitionID}" class="${selected}">
+                                <a href="<cti:url value="/tools/trends/${trend.graphDefinitionID}"/>">${fn:escapeXml(trend.name)}</a>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div class="column two nogutter trend-container pr" data-trend="${trendId}"><div class="glass"></div></div>
+        </c:if>
+        <c:if test="${empty trends}">
+            <div class="column one">
+                <span class="empty-list"><i:inline key=".trend.noTrends"/></span>
+            </div>
+
+        </c:if>
+        <c:if test="${not empty trends}">
+            <div class="column two nogutter trend-container pr" data-trend="${trendId}"><div class="glass"></div></div>
+        </c:if>
     </div>
     <cti:includeScript link="/JavaScript/yukon.trends.js"/>
 </cti:standardPage>

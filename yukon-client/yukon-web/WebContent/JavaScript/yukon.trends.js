@@ -11,6 +11,8 @@ yukon.trends = (function() {
     var mod = {
         
         init: function (trendId) {
+            var trendList;
+            
             Highcharts.setOptions(yg.highcharts_options);
             yukon.ui.elementGlass.show('[data-trend]');
             $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function(trend) {
@@ -94,7 +96,10 @@ yukon.trends = (function() {
                 });
             });
             
-            $('.trend-list').scrollTo($('.trend-list li.selected'));
+            trendList = $('.trend-list li.selected');
+            if (0 < trendList.length) {
+                $('.trend-list').scrollTo(trendList);
+            }
             $(document).on('click', '.js-print', function(e) {
                 var chart = $('[data-trend]').highcharts();
                 chart.print();
@@ -128,4 +133,9 @@ yukon.trends = (function() {
     return mod;
 }());
 
-$(function () {yukon.trends.init($('[data-trend]').data('trend'));});
+$(function () {
+    var trends = $('[data-trend]').data('trend');
+    if ('' !== trends) {
+        yukon.trends.init(trends);
+    }
+});
