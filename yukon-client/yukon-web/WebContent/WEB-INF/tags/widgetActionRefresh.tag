@@ -23,7 +23,7 @@
 <c:choose>
     <c:when test="${type == 'button'}">
         <c:if test="${not empty pageScope.icon}">
-            <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon }" renderMode="${renderMode}" classes="${pageScope.classes}" data-ok-event="yukon_action_confirm"/>
+            <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon}" renderMode="${renderMode}" classes="${pageScope.classes}" data-ok-event="yukon_action_confirm"/>
         </c:if>
         <c:if test="${empty icon}">
             <cti:button nameKey="${nameKey}" id="${buttonId}" renderMode="${renderMode}" classes="${pageScope.classes}" data-ok-event="yukon_action_confirm"/>
