@@ -95,6 +95,7 @@
 
     <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ThreadCachingScheduledExecutorService">
         <qualifier value="main"/>
+        <constructor-arg value="globalScheduledExecutor"/>
     </bean>
 
     <bean id="globalTaskExecutor" class="org.springframework.scheduling.concurrent.ConcurrentTaskExecutor">
@@ -104,14 +105,10 @@
     <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate">
         <qualifier value="longRunning" />
         <constructor-arg>
-            <bean class="java.util.concurrent.ThreadPoolExecutor">
-                <constructor-arg value="2" />
-                <constructor-arg value="2" />
-                <constructor-arg value="60" />
-                <constructor-arg value="SECONDS" />
-                <constructor-arg>
-                    <bean class="java.util.concurrent.LinkedBlockingQueue" />
-                </constructor-arg>
+            <bean class="com.cannontech.common.util.NamedThreadPoolExecutor">
+                <constructor-arg name="identifier" value="longRunningExecutor" />
+                <constructor-arg name="corePoolSize" value="2" />
+                <constructor-arg name="maximumPoolSize" value="2" />
             </bean>
         </constructor-arg>
     </bean>
@@ -119,14 +116,10 @@
     <bean class="com.cannontech.common.util.ExecutorDelegate">
         <qualifier value="estimatedLoad"/>
         <constructor-arg>
-            <bean class="java.util.concurrent.ThreadPoolExecutor">
-                <constructor-arg value="2" />
-                <constructor-arg value="4" />
-                <constructor-arg value="60" />
-                <constructor-arg value="SECONDS" />
-                <constructor-arg>
-                    <bean class="java.util.concurrent.LinkedBlockingQueue" />
-                </constructor-arg>
+            <bean class="com.cannontech.common.util.NamedThreadPoolExecutor">
+                <constructor-arg name="identifier" value="estimatedLoad" />
+                <constructor-arg name="corePoolSize" value="2" />
+                <constructor-arg name="maximumPoolSize" value="4" />
             </bean>
         </constructor-arg>
     </bean>

@@ -51,7 +51,7 @@ public class ThreadCachingScheduledExecutorServiceTest {
     @Test
     @Ignore
     public void testScheduleRunnableLongTimeUnit() {
-        ThreadCachingScheduledExecutorService service = new ThreadCachingScheduledExecutorService();
+        ThreadCachingScheduledExecutorService service = new ThreadCachingScheduledExecutorService("test");
 
         service.schedule(new ForeverTask("one"), 0, TimeUnit.SECONDS);
         service.schedule(new ForeverTask("two"), 0, TimeUnit.SECONDS);

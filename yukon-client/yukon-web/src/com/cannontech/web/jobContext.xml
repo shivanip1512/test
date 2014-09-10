@@ -25,6 +25,7 @@
 
     <bean id="jobScheduledExecutor" class="com.cannontech.common.util.ThreadCachingScheduledExecutorService">
         <qualifier value="job"/>
+        <constructor-arg value="jobScheduledExecutor"/>
     </bean>
 
     <bean id="jobManagerStub" class="com.cannontech.jobs.service.impl.JobManagerStub" />
