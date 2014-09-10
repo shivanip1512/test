@@ -20,6 +20,7 @@ import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.Nameplate;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 
 /**
@@ -35,30 +36,22 @@ public class MR_CB_Test {
 	{
 		MR_CB_Test test = new MR_CB_Test();
 		try {
-			String endpointURL = "http://localhost:8080/soap/MR_ServerSoap";
-//			endpointURL = "http://demo.cannontech.com/soap/MR_CBSoap";
+			String endpointURL = "http://localhost:8080/yukon/soap/MR_ServerSoap";
+//			endpointURL = "http://pspl-qa008.eatoneaseng.net:8080/soap/MR_ServerSoap";
+//	         endpointURL = "http://demo.cannontech.com/soap/MR_CBSoap";
 //			endpointURL = "http://10.100.10.25:80/soap/MR_CBSoap";
 //			endpointURL = "http://10.106.36.79:8080/soap/MR_CBSoap";  //Mike's computer
 			test.loadInstance(endpointURL);
 
-			//Results container objects
-			Meter[] meters;
-			MeterRead meterRead;
-			MeterRead [] meterReads;
-			FormattedBlock formattedBlock;
-			FormattedBlock[] formattedBlocks;
 			ErrorObject[] objects = null;
 
-			meters = test.getAMRSupportedMeters();
-			printMeters(meters);
+//			test.updateServiceLocation();
+//			Meter[] meters = test.getAMRSupportedMeters();
+//			printMeters(meters);
 			
-			//Readings tests
-			String meterNumber = "1000119";		
-			System.out.println(meterNumber + "- IS AMR METER? " + test.isAMRMeter(meterNumber));
-			
-/*			objects = test.initiateMeterReadByMeterNo();
-			printErrorObjects(objects);
-			
+//			objects = test.initiateMeterReadByMeterNo();
+//			printErrorObjects(objects);
+/*			
 			meterRead = test.getLatestReadingByMeterNo(meterNumber);
 			printMeterRead(meterRead);
 			meterReads = test.getReadingsByMeterNo(meterNumber);
@@ -69,7 +62,7 @@ public class MR_CB_Test {
 
 			
 			//Formatted Block reading tests
-			String readingType = "Outage";	//"Load"
+			/*String readingType = "Outage";	//"Load"
 			formattedBlock = test.getLatestReadingByMeterNoAndType(meterNumber, readingType);
 			printFormattedBlock(formattedBlock);
 			formattedBlocks = test.getReadingsByDateAndType(meterNumber, readingType);
@@ -78,9 +71,11 @@ public class MR_CB_Test {
 			printFormattedBlocks(formattedBlocks);
 			formattedBlocks = test.getReadingsByMeterNoAndType(meterNumber, readingType);
 			printFormattedBlocks(formattedBlocks);
+			*/
 			
 			//Meter change process tests
 //			objects = test.meterAddNotification();
+			test.largeTest();
 			
 			//Meter Group tests
 /*			String groupName = "/Meters/Test/Stacey";
@@ -95,7 +90,8 @@ public class MR_CB_Test {
 
 //			printMeterRead(meterRead);
 //			printMeterReads(meterReads);
-//			printErrorObjects(objects);
+//			test.initiateMeterReadByMeterNoAndType_RFN();
+			printErrorObjects(objects);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,7 +100,7 @@ public class MR_CB_Test {
 
 	
 	private ErrorObject[] initiateMeterReadByMeterNo() throws RemoteException {
-		String[] meterNumbers = new String[]{"0300031", "10620108"};
+		String[] meterNumbers = new String[]{"1010071"};
 		ErrorObject[] errorObject = instance.initiateMeterReadByMeterNumber(meterNumbers, null, "999", Float.MIN_NORMAL);
 		return errorObject;
 	}
@@ -139,19 +135,62 @@ public class MR_CB_Test {
 	private ErrorObject[] meterAddNotification() throws RemoteException {
 		ErrorObject[] objects;
 		
-		Meter meter = buildMeter("Cart #1 MCT-410cL (0300031)", "Cart #1 MCT-410cL (0320819)", "1234567", "1234567", 
-				"1234567", "SUBSTATION 1", "320819");
+		String meterNo = "556689";
+		String paoNameId = "556689";
+		        
+		Meter meter = buildMeter("MSP_RFN_420fD", meterNo, paoNameId, paoNameId, paoNameId, "ADAMS", "10556689");
 		
 		objects = instance.meterAddNotification(new Meter[]{meter});
 		return objects;
 	}
+	
+    private void largeTest() throws RemoteException {
+        // Using Account Number as primary, auto meter_number lookup
+        // Add plc new meter. MeterNumber:901000 DeviceName:901000an Address:911000
+        Meter meter1 = buildMeter("!MCT-410fL Template", "901000", "901000an", "901000ci", "901000ea", "ADAMS", "911000");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter1}));
+
+        // Add plc new meter, meter number already exists. Treat as "update". MeterNumber:901000 DeviceName:901001an Address:911001
+        Meter meter2 = buildMeter("!MCT-410fL Template", "901000", "901001an", "901001ci", "901001ea", "ADAMS", "911001");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter2 }));
+        
+        // Add plc new meter, device name already exists. Treat as "update". Meter Number not found, but device name will find.
+        // MeterNumber:901001 DeviceName:901001an Address:911000
+        Meter meter3 = buildMeter("!MCT-410fL Template", "901001", "901001an", "901000ci", "901000ea", "ADAMS", "911000");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter3 }));
+        
+        // Add plc new meter, address already exists
+        // MeterNumber:901002 DeviceName:901002an Address:911000
+        Meter meter4 = buildMeter("!MCT-410fL Template", "901002", "901002an", "901000ci", "901000ea", "ADAMS", "911000");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter4 }));
+
+        // Add rfn new meter with RfnId in template name
+        // MeterNumber:902000 DeviceName:901002an RFNId:ITRN, C2SX-SD, 912000
+        Meter meter5 = buildMeter("*RfnTemplate_ITRN_C2SX-SD", "902000", "902000an", "902000ci", "902000ea", "", "912000");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter5 }));
+
+        // Add rfn new meter with RfnId in template name
+        // MeterNumber:902001 902001an:901002an RFNId: LGYR, FocuskWh, 912001
+        Meter meter6 = buildMeter("109129076", "902001", "902001an", "902001ci", "902001ea", "", "912001");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter6 }));
+
+        // Change rfn meter to PLC meter, should fail
+        Meter meter7 = buildMeter("901002an", "902001", "902001an", "902001ci", "902001ea", "DODAH", "912001");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter7 }));
+        
+        // Change rfn-420fL meter to rfn-420cL meter, should pass
+        Meter meter8 = buildMeter("88638107", "902001", "902001an", "902001ci", "902001ea", "BLING", "912001");
+        printErrorObjects(instance.meterAddNotification(new Meter[] { meter8 }));
+
+        instance.meterRemoveNotification(new Meter[]{meter1, meter2, meter3, meter4, meter5, meter6, meter7, meter8});
+    }
 
 	private void loadInstance(String endpointURL) throws AxisFault, MalformedURLException {
 		instance = new MR_ServerSoap_BindingStub(new URL(endpointURL), new Service());
 		
 		YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-//		msgHeader.setCompany("Cannon MSP1");
-		msgHeader.setCompany("Cannon");
+		msgHeader.setCompany("Cannon MSP1");
+//		msgHeader.setCompany("MSP1");
 		
 		SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 		instance.setHeader(header);
@@ -216,6 +255,7 @@ public class MR_CB_Test {
 		UtilityInfo utilityInfo = new UtilityInfo();
 		utilityInfo.setAccountNumber(accountNumber);
 		utilityInfo.setCustID(customerId);
+		utilityInfo.setServLoc(accountNumber);
 		
 		EaLoc eaLocObject = new EaLoc();
 		eaLocObject.setName(eaLoc);
@@ -326,4 +366,46 @@ public class MR_CB_Test {
 			}
 		}
 	}
+	
+	private void updateServiceLocation() throws RemoteException {
+	    ServiceLocation serviceLocation = new ServiceLocation();
+	    serviceLocation.setObjectID("JESSMETER 46");   //JESSMETER 4609
+	    ServiceLocation[]serviceLocations = new ServiceLocation[] {serviceLocation};
+	    instance.serviceLocationChangedNotification(serviceLocations);
+	}
+	
+   private void initiateMeterReadByMeterNoAndType_RFN() throws RemoteException {
+       
+       // local RFN
+
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("109129076", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("109129080", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("109129118", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("109129452", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("109129453", null, "Load", "999", Float.MIN_NORMAL));
+       // local PLC
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("01102073", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("01102074", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("01102078", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("01102080", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("01102081", null, "Load", "999", Float.MIN_NORMAL));
+       printErrorObjects(instance.initiateMeterReadByMeterNoAndType("01102083", null, "Load", "999", Float.MIN_NORMAL));
+       //QA008 meters
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("068498683", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("068498684", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("068498685", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("068498686", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("103399179", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("103399180", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("103399181", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("103399211", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("103399212", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("103399213", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("103399214", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("108951738", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("108951739", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("108951740", null, "Load", "999", Float.MIN_NORMAL));
+//        printErrorObjects(instance.initiateMeterReadByMeterNoAndType("108951741", null, "Load", "999", Float.MIN_NORMAL));
+    }
+
 }
