@@ -46,6 +46,32 @@ boost::optional<typename Map::mapped_type &> mapFindRef( Map &m, const typename 
     return itr->second;
 }
 
+template <class Cont, class UnaryPredicate>
+boost::optional<typename Cont::value_type> findIf(Cont& c, UnaryPredicate pred)
+{
+    Cont::const_iterator itr = std::find_if(c.begin(), c.end(), pred);
+
+    if( itr == c.end() )
+    {
+        return boost::none;
+    }
+
+    return *itr;
+}
+
+template <class Cont, class UnaryPredicate>
+boost::optional<typename Cont::reference> findIfRef(Cont& c, UnaryPredicate pred)
+{
+    Cont::iterator itr = std::find_if(c.begin(), c.end(), pred);
+
+    if( itr == c.end() )
+    {
+        return boost::none;
+    }
+
+    return *itr;
+}
+
 namespace Logging {
 namespace Vector {
 namespace Hex {

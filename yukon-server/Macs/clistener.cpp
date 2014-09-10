@@ -1,8 +1,10 @@
 #include "precompiled.h"
+
 #include "dllbase.h"
 #include "logger.h"
 #include "amq_constants.h"
 #include "mc.h"
+#include "std_helper.h"
 #include "clistener.h"
 
 
@@ -55,6 +57,23 @@ void CtiMCClientListener::interrupt(int id)
     }
 }
 
+namespace {
+
+struct CheckHasConnection
+{
+    void* const _connPtr;
+
+    CheckHasConnection(void* connPtr) : _connPtr(connPtr)
+    {}
+
+    bool operator()(const CtiMCConnection& conn) const
+    {
+        return conn.hasConnection(_connPtr);
+    }
+};
+
+} // namespace anonymous
+
 /*----------------------------------------------------------------------------
   BroadcastMessage
 
@@ -63,26 +82,43 @@ void CtiMCClientListener::interrupt(int id)
 ----------------------------------------------------------------------------*/
 void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, void *ConnectionPtr )
 {
+    std::auto_ptr<CtiMessage> toSend(msg); // take ownership
+
     try
     {
-        CtiLockGuard<CtiMutex> guard(_connmutex);
-
-        for( ConnectionVec::iterator itr = _connections.begin() ; itr != _connections.end() ; ++itr )
+        if( ConnectionPtr ) // send message to a single connection
         {
-            CtiMCConnection& connection = *itr;
+            CtiLockGuard<CtiMutex> guard(_connmutex);
 
-            // replicate message makes a deep copy
-            if( connection.isValid() && ( ConnectionPtr == NULL || connection.hasConnection( ConnectionPtr )))
+            boost::optional<CtiMCConnection&> conn = Cti::findIfRef(_connections, CheckHasConnection(ConnectionPtr));
+
+            if( conn && conn->isValid() )
             {
-                std::auto_ptr<CtiMessage> replicated_msg( msg->replicateMessage() );
-
                 if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                 {
                     CtiLockGuard< CtiLogger > g(dout);
-                    dout << CtiTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
+                    dout << CtiTime() << " Broadcasting classID:  " << toSend->isA() << endl;
                 }
 
-                connection.write( replicated_msg.release() );
+                conn->write(toSend.release());
+            }
+        }
+        else // broadcast message to all
+        {
+            CtiLockGuard<CtiMutex> guard(_connmutex);
+
+            for( ConnectionVec::iterator connItr = _connections.begin() ; connItr != _connections.end() ; ++connItr )
+            {
+                if( connItr->isValid() )
+                {
+                    if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
+                    {
+                        CtiLockGuard< CtiLogger > g(dout);
+                        dout << CtiTime() << " Broadcasting classID:  " << toSend->isA() << endl;
+                    }
+
+                    connItr->write(toSend->replicateMessage());
+                }
             }
         }
     }
@@ -92,8 +128,6 @@ void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, void *ConnectionPtr
         dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
              ")  An unknown exception has occurred." << endl;
     }
-
-    delete msg;
 }
 
 /*---------------------------------------------------------------------------
@@ -136,6 +170,8 @@ void CtiMCClientListener::run()
         // main loop
         for(;!_doquit;)
         {
+            checkConnections();
+            
             if( !_listenerConnection.verifyConnection() )
             {
                 removeAllConnections();

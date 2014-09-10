@@ -17,6 +17,8 @@
 #include "mc_script.h"
 #include "mc_scheduler.h"
 #include "mc_fileint.h"
+#include "worker_thread.h"
+#include "connection_client.h"
 
 #include <time.h>
 #include <deque>
@@ -74,10 +76,16 @@ private:
     // pool of interpreters to use
     CtiInterpreterPool _interp_pool;
 
+    // dispatch connection
+    CtiClientConnection _dispatchConnection;
+    Cti::WorkerThread   _dispatchThread;
+    
+    void dispatchThreadFunc();
+
     bool init();
     bool deinit();
 
-    bool processMessage(CtiMessage* msg);
+    bool processMessage(const CtiMessage& msg);
     bool processEvent(const ScheduledEvent& event);
 
     bool loadDB();
@@ -112,6 +120,8 @@ private:
     CtiTime stripSeconds(const CtiTime& now) const;
     bool isToday(const CtiTime& now) const;
 
-    static unsigned long secondsToNextMinute();
-    static unsigned long secondsToTime(const CtiTime& t);
+    void adjustTimeout(CtiTime& timeout) const;
+
+    static CtiTime       getNextMinute();
+    static unsigned long getRemainingMillis(const CtiTime& timeout);
 };

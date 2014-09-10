@@ -442,9 +442,12 @@ void CtiConnection::close()
 
         forceTermination();
 
-        if( _inQueue && _localQueueAlloc && _inQueue->entries() )
+        if( _inQueue && _localQueueAlloc )
         {
-            _inQueue->clearAndDestroy();      // Get rid of the evidence...
+            _inQueue->clearAndDestroy(); // Get rid of the evidence...
+
+            // interrupt the current or the next getQueue() call
+            _inQueue->interruptBlockingRead();
         }
 
         releaseResources();

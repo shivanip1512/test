@@ -27,6 +27,7 @@
 #include "msg_signal.h"
 #include "msg_dbchg.h"
 #include "msg_notif_email.h"
+#include "msg_cmd.h"
 #include "tbl_devicereadrequestlog.h"
 #include "ctibase.h"
 #include "collectable.h"
@@ -192,7 +193,7 @@ void _MessageThrFunc()
             {
                 // If it is a command message (are you there)
                 // message then echo it right back
-                if( vgMsg->isA() == MSG_COMMAND )
+                if( vgMsg->isA() == MSG_COMMAND && ((CtiCommandMsg*)vgMsg)->getOperation() == CtiCommandMsg::AreYouThere )
                 {
                     VanGoghConnection->WriteConnQue(vgMsg);
                 }
