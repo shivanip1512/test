@@ -1,16 +1,16 @@
-<%@ attribute name="columnInfo" required="true" type="java.util.ArrayList"%>
-<%@ attribute name="dataUrl" required="true" type="java.lang.String"%>
-<%@ attribute name="height" required="true" type="java.lang.Integer"%>
-<%@ attribute name="width" required="true" type="java.lang.String"%>
-<%@ attribute name="showLoadMask" required="false" type="java.lang.String" description="Possible values: 'enable', 'disable', 'block'"%>
+<%@ attribute name="columnInfo" required="true" type="java.util.ArrayList" %>
+<%@ attribute name="dataUrl" required="true" type="java.lang.String" description="Assumed to have had ServletUtil.buildSafeQueryStringFromMap applied" %>
+<%@ attribute name="height" required="true" type="java.lang.Integer" %>
+<%@ attribute name="width" required="true" type="java.lang.String" %>
+<%@ attribute name="showLoadMask" required="false" type="java.lang.String" description="Possible values: 'enable', 'disable', 'block'" %>
 <%@ attribute name="refreshRate" required="false" type="java.lang.Integer" description="ms between refreshes.  0 Represents NO REFRESH." %>
 
-<%@ attribute name="title" required="true" type="java.lang.String"%>
-<%@ attribute name="csvUrl" required="true" type="java.lang.String"%>
-<%@ attribute name="pdfUrl" required="true" type="java.lang.String"%>
+<%@ attribute name="title" required="true" type="java.lang.String" %>
+<%@ attribute name="csvUrl" required="true" type="java.lang.String" description="Assumed to have had cti:url applied" %>
+<%@ attribute name="pdfUrl" required="true" type="java.lang.String" description="Assumed to have had cti:url applied" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:uniqueIdentifier var="gridId" prefix="gridId_"/>
@@ -59,7 +59,6 @@
         <div class="fr fwn">
             <a href="#" class="refresh" data-grid-id="${gridId}"><i:inline key="components.refresh" /></a>
             <i:inline key="components.export"/>
-            <!-- these already have been cti:url'ed or the moral equivalent previously -->
             <a class="excel" href="${csvUrl}"><i:inline key="components.csv"/></a>
             <a class="pdf" href="${pdfUrl}"><i:inline key="components.pdf"/></a>
         </div>
