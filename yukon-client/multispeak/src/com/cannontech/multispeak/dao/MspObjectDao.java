@@ -137,6 +137,7 @@ public interface MspObjectDao {
     
     /**
      * Creates an entry in the System log and prints a debug statement.
+     * TODO All of this logging (SystemLog) can be removed following completion of MultiSpeak EventLogs.
      * @param method
      * @param description
      * @param userName

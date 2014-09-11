@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -42,12 +43,13 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
 {
     private final Logger log = YukonLogManager.getLogger(CD_ServerImpl.class);
     
-    @Autowired public MultispeakMeterService multispeakMeterService;
-    @Autowired public MultispeakFuncs multispeakFuncs;
-    @Autowired public MspMeterDao mspMeterDao;
-    @Autowired public MspValidationService mspValidationService;
     @Autowired public AttributeService attributeService;
     @Autowired public DynamicDataSource dynamicDataSource;
+    @Autowired public MspMeterDao mspMeterDao;
+    @Autowired public MspValidationService mspValidationService;
+    @Autowired public MultispeakEventLogService multispeakEventLogService;
+    @Autowired public MultispeakMeterService multispeakMeterService;
+    @Autowired public MultispeakFuncs multispeakFuncs;
     @Autowired public PaoDefinitionDao paoDefinitionDao;
 
     private void init() throws RemoteException{
@@ -88,7 +90,8 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
     public Meter[] getCDSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-
+        multispeakEventLogService.methodInvoked("getCDSupportedMeters", vendor.getCompanyName());
+        
         MspMeterReturnList meterList = null;
         Date timerStart = new Date();
         meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
@@ -97,7 +100,10 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         
         Meter[] meters = new Meter[meterList.getMeters().size()];
         meterList.getMeters().toArray(meters);
-        log.info("Returning " + meters.length + " CD Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
+        log.info("Returning " + meters.length + " CD Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        multispeakEventLogService.returnObjects(meters.length, meterList.getObjectsRemaining(), "Meter", meterList.getLastSent(),
+                                                "getCDSupportedMeters", vendor.getCompanyName());
+
         return meters;
     }
     
@@ -111,7 +117,8 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
     public LoadActionCode getCDMeterState(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-
+        multispeakEventLogService.methodInvoked("getCDMeterState", vendor.getCompanyName());
+        
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
 
         boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
@@ -132,11 +139,12 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
             ConnectDisconnectEvent[] cdEvents, String responseURL,
             String transactionID, Float expirationTime) throws RemoteException {
         init();
-        ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateConnectDisconnect", vendor.getCompanyName());
+        
         String actualResponseURL = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_CD_STR, MultispeakDefines.CB_Server_STR);
-        errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionID, actualResponseURL);
+        ErrorObject[] errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionID, actualResponseURL);
         
         multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "initiateConnectDisconnect", errorObjects);
         return errorObjects;

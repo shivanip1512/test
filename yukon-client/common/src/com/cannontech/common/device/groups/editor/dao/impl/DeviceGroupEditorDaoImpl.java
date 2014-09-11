@@ -108,13 +108,13 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     @Override
     @Transactional
-    public void addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos) {
-        addDevices(group, yukonPaos.iterator());
+    public int addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos) {
+        return addDevices(group, yukonPaos.iterator());
     }
     
     @Override
     @Transactional
-    public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos) {
+    public int addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(deviceGroupMemberInsertSql);
         int rowsAffected = 0;
@@ -135,6 +135,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                                         DbChangeCategory.DEVICE_GROUP_MEMBER, 
                                         group.getId());
         }
+        return rowsAffected;
     }
 
     private boolean isDeviceValid(YukonPao yukonPao) {
@@ -236,9 +237,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     @Override
-    public void addDevices(StoredDeviceGroup group, YukonPao... yukonPao) {
+    public int addDevices(StoredDeviceGroup group, YukonPao... yukonPao) {
         List<YukonPao> yukonPaos = Arrays.asList(yukonPao);
-        addDevices(group, yukonPaos);
+        return addDevices(group, yukonPaos);
     }
     
     @Override
@@ -469,19 +470,19 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     @Override
-    public void removeDevices(StoredDeviceGroup group, YukonPao... yukonPao) {
+    public int removeDevices(StoredDeviceGroup group, YukonPao... yukonPao) {
         List<YukonPao> yukonPaos = Arrays.asList(yukonPao);
-        removeDevices(group, yukonPaos);
+        return removeDevices(group, yukonPaos);
     }
     
     @Override
-    public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonPao> yukonPaos) {
+    public int removeDevices(StoredDeviceGroup group, Collection<? extends YukonPao> yukonPaos) {
         Collection<Integer> paoIds = new MappingCollection<YukonPao, Integer>(yukonPaos, new YukonPaoToIdMapper());
-        removeDevicesById(group, paoIds);
+        return removeDevicesById(group, paoIds);
     }
     
     @Override
-    public void removeDevicesById(StoredDeviceGroup group,
+    public int removeDevicesById(StoredDeviceGroup group,
             Collection<Integer> deviceIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from DeviceGroupMember");
@@ -495,6 +496,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                                         DbChangeCategory.DEVICE_GROUP_MEMBER, 
                                         group.getId());
         }
+        return rowsAffected;
     }
 
     @Override

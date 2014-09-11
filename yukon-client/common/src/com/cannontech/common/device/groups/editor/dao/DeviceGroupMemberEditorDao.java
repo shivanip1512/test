@@ -37,18 +37,21 @@ public interface DeviceGroupMemberEditorDao {
      * Method to add a list of devices to a group (quietly ignores duplicates)
      * @param group - Group to add devices to
      * @param devices - Devices to add
+     * @return number of added devices 
      */
-    public void addDevices(StoredDeviceGroup group, YukonPao... yukonPao);
+    public int addDevices(StoredDeviceGroup group, YukonPao... yukonPao);
     
     /**
      * Add devices to the group. Illegal or duplicate devices will be silently ignored.
+     * @return number of added devices
      */
-    public void addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos);
+    public int addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos);
     
     /**
      * Add devices to the group. Illegal or duplicate devices will be silently ignored.
+     * @return number of added devices 
      */
-    public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos);
+    public int addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos);
     
     /**
      * Remove child devices under group that are contained in the devices collection.
@@ -56,16 +59,18 @@ public interface DeviceGroupMemberEditorDao {
      * silently ignored.
      * @param group
      * @param device
+     * @return number of removed devices
      */
-    public void removeDevices(StoredDeviceGroup group, YukonPao... yukonPao);
+    public int removeDevices(StoredDeviceGroup group, YukonPao... yukonPao);
     
     /**
      * Remove child devices from the given group by device id (yukon pao id). Devices that 
      * exist in the collection but are not a member of the group are silently ignored.
      * @param group
      * @param deviceIds
+     * @return number of removed devices
      */
-    public void removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds);
+    public int removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds);
     
     /**
      * Remove child devices under group that are contained in the devices collection.
@@ -73,8 +78,9 @@ public interface DeviceGroupMemberEditorDao {
      * silently ignored.
      * @param group
      * @param devices
+     * @return number of removed devices 
      */
-    public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonPao> yukonPao);
+    public int removeDevices(StoredDeviceGroup group, Collection<? extends YukonPao> yukonPao);
     
     /**
      * Removes all child devices under group.

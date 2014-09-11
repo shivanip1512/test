@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -86,18 +87,19 @@ import com.google.common.collect.Sets;
 
 public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
-    @Autowired private MultispeakMeterService multispeakMeterService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DemandResetService demandResetService;
+    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private MspMeterDao mspMeterDao;
-    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
     @Autowired private MspValidationService mspValidationService;
-    @Autowired private AttributeService attributeService;
-    @Autowired private MeterReadProcessingService meterReadProcessingService;
-    @Autowired private DynamicDataSource dynamicDataSource;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private MultispeakEventLogService multispeakEventLogService;
+    @Autowired private MultispeakMeterService multispeakMeterService;
+    @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private PaoDao paoDao;
-    @Autowired private DemandResetService demandResetService;
-    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     private BasicServerConnection porterConnection;
     private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
 
@@ -135,7 +137,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     private void init() throws RemoteException {
         multispeakFuncs.init();
     }
-    
+
     @Override
     public ErrorObject[] pingURL() throws java.rmi.RemoteException {
         init();
@@ -168,6 +170,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public Meter[] getAMRSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getAMRSupportedMeters", vendor.getCompanyName());
 
         MspMeterReturnList meterList = null;
         Date timerStart = new Date();
@@ -177,8 +180,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         Meter[] meters = new Meter[meterList.getMeters().size()];
         meterList.getMeters().toArray(meters);
-        log.info("Returning " + meters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
-
+        log.info("Returning " + meters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        multispeakEventLogService.returnObjects(meters.length, meterList.getObjectsRemaining(), "Meter", meterList.getLastSent(),
+                                                "getAMRSupportedMeters", vendor.getCompanyName());
+        
         return meters;
     }
     
@@ -191,13 +196,19 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public boolean isAMRMeter(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
+//          Commenting out for now, not sure if we want this logged or not, it could be a lot...and doesn't have much impact to the system
+//        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+//        multispeakEventLogService.methodInvoked("isAMRMeter", vendor.getCompanyName());
 
+        boolean isAmrMeter = false;
         try {
             mspValidationService.isYukonMeterNumber(meterNo);
+            isAmrMeter = true;
         }catch (RemoteException e){
-            return false;
+            isAmrMeter = false;
         }
-        return true;
+        log.debug("isAMRMeter " + isAmrMeter + " for " + meterNo + ".");
+        return isAmrMeter;
     }
     
     @Override
@@ -205,6 +216,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     	init();
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getReadingsByDate", vendor.getCompanyName());
+        
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
                                                                           null, 	//get all
                                                                           startDate.getTime(), 
@@ -216,6 +229,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
         mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
+        log.info("Returning " + meterReadArray.length + " Readings By Date.");
+        multispeakEventLogService.returnObjects(meterReadArray.length, mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
+                                                mspMeterReadReturnList.getLastSent(), "getReadingsByDate", vendor.getCompanyName());
+
         return meterReadArray;
     }
 
@@ -223,10 +240,12 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public MeterRead[] getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
         init(); //init is already performed on the call to isAMRMeter()
         
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getReadingsByMeterNo", vendor.getCompanyName());
+        
         //Validate the meterNo is a Yukon meterNumber
         mspValidationService.isYukonMeterNumber(meterNo);
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, 
                                                                           meterNo, 
                                                                           startDate.getTime(), 
@@ -239,6 +258,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         
         MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
         mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
+        log.info("Returning " + meterReadArray.length + " Readings By MeterNo.");
+        multispeakEventLogService.returnObjects(meterReadArray.length, mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
+                                                mspMeterReadReturnList.getLastSent(), "getReadingsByMeterNo", vendor.getCompanyName());
         return meterReadArray;
     }
 
@@ -246,10 +268,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
         init(); //init is already performed on the call to isAMRMeter()
 
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getLatestReadingByMeterNo", vendor.getCompanyName());
+        
         //Validate the meterNo is a Yukon meterNumber
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
-        
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         
     	boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
     	
@@ -258,7 +281,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             
             // Don't know the responseURL as it's not provided in this method (by definition!) Using default for SEDC.
             String responseUrl = multispeakFuncs.getResponseUrl(vendor, null, MultispeakDefines.CB_Server_STR);
-        	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, responseUrl);
+        	MeterRead meterRead = multispeakMeterService.getLatestReadingInterrogate(vendor, meter, responseUrl);
+        	multispeakEventLogService.returnObject("MeterRead", meterNo, "getLatestReadingByMeterNo", vendor.getCompanyName());
+        	return meterRead;
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
@@ -277,6 +302,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                         //it's okay...just skip
                     }
                 }
+                multispeakEventLogService.returnObject("MeterRead", meterNo, "getLatestReadingByMeterNo", vendor.getCompanyName());
     	        return meterRead;
             } catch (DynamicDataAccessException e) {
                 String message = "Connection to dispatch is invalid";
@@ -345,6 +371,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] initiateUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateUsageMonitoring", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
@@ -353,6 +380,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] cancelUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("cancelUsageMonitoring", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
@@ -361,6 +389,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] initiateDisconnectedStatus(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateDisconnectedStatus", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.initiateDisconnectedStatus(vendor, meterNos);
         return errorObject;
     }
@@ -369,6 +398,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] cancelDisconnectedStatus(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("cancelDisconnectedStatus", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.cancelDisconnectedStatus(vendor, meterNos);
         return errorObject;
     }
@@ -382,6 +412,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateMeterReadByMeterNumber", vendor.getCompanyName());
+        
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         
         if ( ! porterConnection.isValid() ) {
@@ -406,6 +438,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("serviceLocationChangedNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.serviceLocationChanged(vendor, changedServiceLocations);
         return errorObject;
     }
@@ -414,6 +447,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("meterChangedNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.meterChanged(vendor, changedMeters);
         return errorObject;
     }
@@ -422,6 +456,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterRemoveNotification(Meter[] removedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("meterRemoveNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.meterRemove(vendor, removedMeters);
         return errorObject;
     }
@@ -430,6 +465,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterAddNotification(Meter[] addedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("meterAddNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
         return errorObject;
     }
@@ -439,6 +475,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("deleteMeterGroup", vendor.getCompanyName());
         return multispeakMeterService.deleteGroup(meterGroupID, vendor);
     }
 
@@ -447,7 +484,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, vendor);
+        multispeakEventLogService.methodInvoked("establishMeterGroup", vendor.getCompanyName());
+        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "establishMeterGroup", vendor);
         return errorObject;
     }
 
@@ -472,10 +510,12 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             String meterGroupID) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("insertMeterInMeterGroup", vendor.getCompanyName());
+        
         MeterGroup meterGroup = new MeterGroup();
         meterGroup.setMeterList(meterNumbers);
         meterGroup.setGroupName(meterGroupID);
-        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, vendor);
+        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "insertMeterInMeterGroup", vendor);
         return errorObject;
     }
 
@@ -498,6 +538,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             String meterGroupID) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("removeMetersFromMeterGroup", vendor.getCompanyName());
+        
         ErrorObject[] errorObject = multispeakMeterService.removeMetersFromGroup(meterGroupID, meterNumbers, vendor);
         return errorObject;
     }
@@ -575,13 +617,19 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-
+        multispeakEventLogService.methodInvoked("getLatestReadings", vendor.getCompanyName());
+        
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
 
         MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
         mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
+        
+        log.info("Returning " + meterReadArray.length + " latest Readings.");
+        multispeakEventLogService.returnObjects(meterReadArray.length, mspMeterReadReturnList.getObjectsRemaining(), "MeterRead", 
+                                                mspMeterReadReturnList.getLastSent(), "getLatestReadings", vendor.getCompanyName());
+
         return meterReadArray;
     }
     
@@ -590,6 +638,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             String readingType, String formattedBlockTemplateName,
             String[] fieldName) throws RemoteException {
         init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getLatestReadingByMeterNoAndType", vendor.getCompanyName());
+        
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
         
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
@@ -613,6 +664,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                 }
             }
             FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(block);
+            multispeakEventLogService.returnObject("FormattedBlock", meterNo, "getLatestReadingByMeterNoAndType", vendor.getCompanyName());
             return formattedBlock;
             
         } catch (DynamicDataAccessException e) {
@@ -628,16 +680,21 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             String[] fieldName) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getLatestReadingByType", vendor.getCompanyName());
 
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
             mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
 
         MspBlockReturnList mspBlockReturnList = mspRawPointHistoryDao.retrieveLatestBlock(formattedBlockProcessingService, 
                                                                        lastReceived, vendor.getMaxReturnRecords());
+        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
         
         FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
-        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
+        
+        multispeakEventLogService.returnObjects(formattedBlocks.length, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
+                                                mspBlockReturnList.getLastSent(), "getLatestReadingByType", vendor.getCompanyName());
+
         return formattedBlocks;
     }
     
@@ -648,7 +705,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-
+        multispeakEventLogService.methodInvoked("getReadingsByDateAndType", vendor.getCompanyName());
+        
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
             mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
 
@@ -658,10 +716,14 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                                                                  endDate.getTime(),
                                                                  lastReceived,
                                                                  vendor.getMaxReturnRecords());
-
+        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
+        
         FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
-        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
+        
+        multispeakEventLogService.returnObjects(formattedBlocks.length, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
+                                                mspBlockReturnList.getLastSent(), "getReadingsByDateAndType", vendor.getCompanyName());
+
         return formattedBlocks;
     }
 
@@ -672,6 +734,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             String[] fieldName) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getReadingsByMeterNoAndType", vendor.getCompanyName());
         
         //Validate the meterNo is in Yukon
         mspValidationService.isYukonMeterNumber(meterNo); 
@@ -686,11 +749,14 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                                                                  null,  //don't use lastReceived, we know there is only one
                                                                  vendor.getMaxReturnRecords());
 
-        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
-        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
-     
         // There is only one MeterNo in the response, so does it make sense to update the header with lastSent?
         // updateResponseHeader(mspBlockReturnList);
+
+        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
+        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
+
+        multispeakEventLogService.returnObjects(formattedBlocks.length, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock", 
+                                                mspBlockReturnList.getLastSent(), "getReadingsByMeterNoAndType", vendor.getCompanyName());
 
         return formattedBlocks;
     }
@@ -698,6 +764,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public String[] getSupportedReadingTypes() throws RemoteException {
         init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getSupportedReadingTypes", vendor.getCompanyName());
+        
         Set<String> keys = readingTypesMap.keySet();
         String[] types = new String[keys.size()];
         keys.toArray(types);
@@ -713,6 +782,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateMeterReadByMeterNoAndType", vendor.getCompanyName());
+        
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
@@ -725,7 +796,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         
         errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ, transactionID, actualResponseUrl);
 
-        multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
+        multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNoAndTypeRequest", errorObjects);
         return errorObjects;
     }
     @Override
@@ -863,6 +934,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateDemandReset", vendor.getCompanyName());
         
         List<ErrorObject> errors = Lists.newArrayList();
         boolean hasFatalErrors = false;
@@ -870,8 +942,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         
         // Do a basic URL check. This only validates that it's not empty.
-        ErrorObject errorObject = mspValidationService.validateResponseURL(actualResponseUrl, "Meter",
-                                                                          "InitiateDemandReset");
+        ErrorObject errorObject = mspValidationService.validateResponseURL(actualResponseUrl, "Meter", "InitiateDemandReset");
         if (errorObject != null) {
             errors.add(errorObject);
             hasFatalErrors = true;
@@ -919,7 +990,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                                                 responseURL, transactionId);
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
-
+        // TODO - some logging for number supported or not, for demand reset
         return errors.toArray(new ErrorObject[errors.size()]);
     }
 

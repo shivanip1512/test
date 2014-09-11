@@ -20,6 +20,7 @@ import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
@@ -38,7 +39,9 @@ import com.cannontech.common.events.model.MappedEventLog;
 import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
@@ -139,6 +142,26 @@ public class EventLogServiceImpl implements EventLogService {
                 return new Instant(from).toDate();
             }
         }));
+        builder.add(ArgumentMapper.create(PaoIdentifier.class, Types.VARCHAR, new ObjectMapper<PaoIdentifier, String>() {
+
+            @Override
+            public String map(PaoIdentifier from) throws ObjectMappingException {
+                return from.toString();
+            }
+        }));
+        builder.add(ArgumentMapper.create(YukonMeter.class, Types.VARCHAR, new ObjectMapper<YukonMeter, String>() {
+            @Override
+            public String map(YukonMeter from) throws ObjectMappingException {
+                return from.toString();
+            }
+        }));
+        builder.add(ArgumentMapper.create(RfnIdentifier.class, Types.VARCHAR, new ObjectMapper<RfnIdentifier, String>() {
+            @Override
+            public String map(RfnIdentifier from) throws ObjectMappingException {
+                return from.getCombinedIdentifier();
+            }
+        }));
+        
         argumentMappers = builder.build();
     }
 

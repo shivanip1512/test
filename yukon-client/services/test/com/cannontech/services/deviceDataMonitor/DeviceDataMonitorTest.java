@@ -152,7 +152,7 @@ public class DeviceDataMonitorTest {
         };
         deviceGroupMemberEditorDao = new DeviceGroupEditorDaoImpl() {
             @Override
-            public void addDevices(StoredDeviceGroup group, YukonPao... pao) {
+            public int addDevices(StoredDeviceGroup group, YukonPao... pao) {
                 List<YukonPao> paos = Lists.newArrayList(pao);
                 HashSet<PaoIdentifier> paoIdentifiers = Sets.newHashSet(Lists.transform(paos, new Function<YukonPao, PaoIdentifier>() {
                     @Override
@@ -162,18 +162,23 @@ public class DeviceDataMonitorTest {
                 }));
                 if (!deviceGroupPaos.containsKey(group)) {
                     deviceGroupPaos.put(group, paoIdentifiers);
+                    return 1;
                 } else {
                     deviceGroupPaos.get(group).addAll(paoIdentifiers);
+                    return 0;
                 }
             }
             @Override
-            public void removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
+            public int removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
+                int numAffected = 0;
                 HashSet<PaoIdentifier> paoIds = deviceGroupPaos.get(group);
                 for (YukonPao yukonPao : paoIds) {
                     if (deviceIds.contains(yukonPao.getPaoIdentifier().getPaoId())) {
                         deviceGroupPaos.get(group).remove(yukonPao.getPaoIdentifier());
+                        numAffected++;
                     }
                 }
+                return numAffected;
             }
         };
         deviceGroupDao = new DeviceGroupProviderDaoMain() {

@@ -82,6 +82,10 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.DisconnectEventLogService"/>
     </bean>
     
+    <bean class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.MultispeakEventLogService"/>
+    </bean>
+    
     <bean id="demandResetEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.DemandResetEventLogService"/>
     </bean>

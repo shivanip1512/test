@@ -24,6 +24,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
     private PaoDefinitionService paoDefinitionService;
     private DeviceUpdateService deviceUpdateService;
     
+    @Override
     public SimpleDevice changeDeviceType(SimpleDevice device, PaoType newDeviceType ) {
 
         try {
@@ -42,7 +43,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
             if (!applicableDefinitions.contains(selectedPaoDefinition)) {
 
                 LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
-                String errorMsg = selectedPaoDefinition.getDisplayName() + " is not an applicable type for device: " + devicePao.getPaoName();
+                String errorMsg = selectedPaoDefinition.getDisplayName() + " is not an compatible type for device: " + devicePao.getPaoName() + "; Type:" + devicePao.getPaoType();
                 throw new ProcessingException(errorMsg);
             }
             else {

@@ -4,10 +4,11 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
@@ -24,6 +25,8 @@ import com.cannontech.multispeak.service.MspValidationService;
 public class MspValidationServiceImpl implements MspValidationService {
     @Autowired private MspMeterDao mspMeterDao;
     @Autowired private MspObjectDao mspObjectDao;
+    
+    private final Logger log = YukonLogManager.getLogger(MspValidationService.class);
 
     @Override
     public FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
@@ -31,7 +34,7 @@ public class MspValidationServiceImpl implements MspValidationService {
         FormattedBlockProcessingService<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null) {
             String message = readingType + " is NOT a supported ReadingType.";
-            CTILogger.error(message);
+            log.error(message);
             throw new RemoteException(message);
         }
         return formattedBlock;
@@ -40,14 +43,18 @@ public class MspValidationServiceImpl implements MspValidationService {
     @Override
     public YukonMeter isYukonMeterNumber(String meterNumber) throws RemoteException {
         YukonMeter yukonMeter;
-        if( StringUtils.isBlank(meterNumber))
-            throw new RemoteException("Meter Number is invalid.  Meter number is blank or null");
-
+        if( StringUtils.isBlank(meterNumber)) {
+            String errorMessage = "Meter Number is invalid.  Meter number is blank or null";
+            log.error(errorMessage);
+            throw new RemoteException(errorMessage);
+        }
+        
         try {
             yukonMeter = mspMeterDao.getMeterForMeterNumber(meterNumber);
         }catch (NotFoundException e){
-            CTILogger.info("Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");
-            throw new RemoteException( "Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");
+            String errorMessage = "Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.";
+            log.error(errorMessage);
+            throw new RemoteException(errorMessage);
         }
         return yukonMeter;
     }

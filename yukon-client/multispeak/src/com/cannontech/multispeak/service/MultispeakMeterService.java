@@ -121,7 +121,7 @@ public interface MultispeakMeterService {
     /**
      * Adds meters to a group.  If the group doesn't exist, a new group will be created
      */
-    public ErrorObject[] addMetersToGroup(MeterGroup meterGroup, MultispeakVendor mspVendor);
+    public ErrorObject[] addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor);
     
     /**
      * Removes meterNumbers from groupName.

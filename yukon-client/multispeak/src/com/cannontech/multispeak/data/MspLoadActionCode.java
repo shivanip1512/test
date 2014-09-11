@@ -19,7 +19,7 @@ public enum MspLoadActionCode {
 //    OPEN(LoadActionCode.Open),                                          //not suupported
 //    CLOSED(LoadActionCode.Closed),                                      //not supported
     ARMED(LoadActionCode.Armed, RfnDisconnectStatusState.ARMED, Disconnect410State.CONNECT_ARMED),
-    UNKNOWN(LoadActionCode.Unknown, RfnDisconnectStatusState.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED), //??? not sure what the plc equivalent is, default point status of 0?
+    UNKNOWN(LoadActionCode.Unknown, RfnDisconnectStatusState.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED), // Old CDEvent code mapped PLC unconfirmedDisconnect to LoadActionCode.Disconnect....
     ;
 
     private final LoadActionCode loadActionCode;    

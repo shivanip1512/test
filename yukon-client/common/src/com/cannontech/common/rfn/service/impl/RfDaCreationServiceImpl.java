@@ -34,8 +34,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
                 rfnIdentifier.getSensorSerialNumber(), true);
         RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), rfnIdentifier);
         
-        rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getPaoIdentifier().getPaoId(), 
-                device.getRfnIdentifier().getCombinedIdentifier(), "N/A", deviceName);
+        rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getRfnIdentifier(), "N/A", device.getPaoIdentifier());
 
         dbChangeManager.processPaoDbChange(newDevice, DbChangeType.ADD);
 

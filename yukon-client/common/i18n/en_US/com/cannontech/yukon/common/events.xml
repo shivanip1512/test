@@ -9,21 +9,38 @@
     <entry key="yukon.common.events.commandRequestExecutionContextId">Command Request Execution Context Id</entry>
     <entry key="yukon.common.events.commandRequestExecutionId">Command Request Execution Id</entry>
     <entry key="yukon.common.events.commandRequestExecutionType">Command Request Execution Type</entry>
+    <entry key="yukon.common.events.commandRequestString">Command</entry>
+    <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
     <entry key="yukon.common.events.contactName">Contact Name</entry>
     <entry key="yukon.common.events.controlAreaName">Control Area Name</entry>
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
+    <entry key="yukon.common.events.deviceGroup">Device Group</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
-    <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
+    <entry key="yukon.common.events.email">Email</entry>
+    <entry key="yukon.common.events.endReportDate">End Date</entry>
     <entry key="yukon.common.events.energyCompanyId">Energy Company Id</entry>
+    <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
     <entry key="yukon.common.events.energyCompanySettingType">Energy Company Setting</entry>
     <entry key="yukon.common.events.energyCompanySettingValue">Energy Company Setting Value</entry>
-    <entry key="yukon.common.events.eventSource">Event Source</entry>    
+    <entry key="yukon.common.events.eventSource">Event Source</entry>
+    <entry key="yukon.common.events.failureRequests">Failure Requests</entry>
     <entry key="yukon.common.events.fileName">File Name</entry>
     <entry key="yukon.common.events.gatewayName">Gateway Name</entry>
     <entry key="yukon.common.events.gearName">Gear Name</entry>
+    <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
+    <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
+    <entry key="yukon.common.events.hardwareType">Hardware Type</entry>
+    <entry key="yukon.common.events.inventoryId">Inventory Id</entry>
+    <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
     <entry key="yukon.common.events.message">Message</entry>
+    <entry key="yukon.common.events.meterDescription">Meter Description</entry>
     <entry key="yukon.common.events.meterName">Meter Name</entry>
+    <entry key="yukon.common.events.meterNumber">Meter Number</entry>
+    <entry key="yukon.common.events.mspMethod">Method</entry>
+    <entry key="yukon.common.events.mspTransactionId">Transaction Id</entry>
+    <entry key="yukon.common.events.mspVendor">Vendor</entry>
+    <entry key="yukon.common.events.notAttemptedRequests">Not Attempted Requests</entry>
     <entry key="yukon.common.events.paoId">Pao Id</entry>
     <entry key="yukon.common.events.paoName">Pao Name</entry>
     <entry key="yukon.common.events.paoType">Pao Type</entry>
@@ -34,25 +51,23 @@
     <entry key="yukon.common.events.pointValue">Point Value</entry>
     <entry key="yukon.common.events.programName">Program Name</entry>
     <entry key="yukon.common.events.remoteAddress">Remote Address</entry>
+    <entry key="yukon.common.events.rfnId">RFN Id</entry>
     <entry key="yukon.common.events.routeId">Route Id</entry>
+    <entry key="yukon.common.events.routeName">Route Name</entry>
     <entry key="yukon.common.events.scenarioName">Scenario Name</entry>
     <entry key="yukon.common.events.scheduleName">Schedule Name</entry>
     <entry key="yukon.common.events.serialNumber">Serial Number</entry>
     <entry key="yukon.common.events.shedDuration">Shed Duration</entry>
+    <entry key="yukon.common.events.substationName">Substation Name</entry>
+    <entry key="yukon.common.events.successRequests">Success Requests</entry>
+    <entry key="yukon.common.events.syncIssueType">Sync Type</entry>
     <entry key="yukon.common.events.tagSet">Tag Set</entry>
+    <entry key="yukon.common.events.taskName">Task Name</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
+    <entry key="yukon.common.events.totalRequests">Total Requests</entry>
     <entry key="yukon.common.events.username">Username</entry>
-    <entry key="yukon.common.events.email">Email</entry>
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
-    <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
-    <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
-    <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
-    <entry key="yukon.common.events.commandRequestString">Command</entry>
-    <entry key="yukon.common.events.totalRequests">Total Requests</entry>
-    <entry key="yukon.common.events.successRequests">Success Requests</entry>
-    <entry key="yukon.common.events.failureRequests">Failure Requests</entry>
-    <entry key="yukon.common.events.notAttemptedRequests">Not Attempted Requests</entry>
 
 <!-- Event log message text and column names -->
 <!-- Account -->
@@ -168,10 +183,8 @@
     
     <entry key="yukon.common.events.amr.schedules.scheduleDeleted">User {1} deleted schedule {2}.</entry>
     
-    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically">New meter created from {2} for {1} with meter number of {3} based on archive request: {7}</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.1">RFN ID</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.2">Template</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.3">Meter Number</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically">New meter created from {2} for {1}; Id:{3}</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.2">Template Name</entry>
     
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate">Unable to create meter because template {1} does not exist.</entry>
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate.1">Template Name</entry>
@@ -209,7 +222,7 @@
     <entry key="yukon.common.events.amr.demand.reset.verifyDemandResetAttempted">Demand Reset verification (Total Requests:{7} Not Attempted:{8}) by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.initDemandResetAttempted">Demand Reset initiated (Total Requests:{7} Not Attempted:{8}) by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted">Demand Reset attempted on {2} by {1}.</entry>
-    <entry key="yukon.common.events.amr.demand.reset.groupCancelAttempted">Demand Reset canceled by {1}.</entry>
+    <entry key="yukon.common.events.amr.demand.reset.cancelAttempted">Demand Reset canceled by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCompletedResults">Demand Reset Results: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10}). Demand Reset collection action initiated by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCompleted">Demand Reset initiated by {1} is complete.</entry>
     
@@ -451,5 +464,58 @@
     <entry key="yukon.common.events.ecobee.syncIssueFixed">User {1} fixed an ecobee sync issue of type {2}.</entry>
     <entry key="yukon.common.events.ecobee.allSyncIssuesFixed">User {1} fixed all ecobee sync issues.</entry>
     <entry key="yukon.common.events.ecobee.dataDownloaded">User {1} attempted to download an ecobee data report with start: {11}, end: {12}, load group ids: {2}.</entry>
+
+    <!-- MultiSpeak log events -->
+    <entry key="yukon.common.events.multispeak.methodInvoked">Received {1} from {2}.</entry>
+    <entry key="yukon.common.events.multispeak.returnObjects">Returning {7} {1}(s), ObjectsRemaining:{8}, LastSent:{2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.returnObjects.1">Type</entry>
+    <entry key="yukon.common.events.multispeak.returnObjects.7">Number Returned</entry>
+    <entry key="yukon.common.events.multispeak.returnObjects.8">Objects Remaining</entry>
+    <entry key="yukon.common.events.multispeak.returnObject">Returning {1} for meter number {2}. {3} {4}.</entry>
+    <entry key="yukon.common.events.multispeak.returnObject.1">Object Type</entry>
     
+    <entry key="yukon.common.events.multispeak.meterCreated">Created new meter named {1}: {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.meterRemoved">Disabled meter {1}: {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.meterFound">Found existing meter {1}: {2}. {3} by {4}.</entry>
+    
+    <entry key="yukon.common.events.multispeak.meterNotFound">Meter number {1} not found. {2} by {3}.</entry>
+    <entry key="yukon.common.events.multispeak.meterNotFoundByPaoName">No meters found for name {1}. {2} by {3}.</entry>
+    <entry key="yukon.common.events.multispeak.substationNotFound">Substation {1} not found for meter number {2}. No route locate will occur. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.routeNotFound">No route(s) found for substation {1}. Meter number {3} set to route {3}. {4} by {5}.</entry>
+    <entry key="yukon.common.events.multispeak.objectNotFoundByVendor">No records returned from {2} for objectId {1}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.objectNotFoundByVendor.1">Object Id</entry>
+    <entry key="yukon.common.events.multispeak.objectNotFoundByVendor.2">Method</entry>
+    
+    <entry key="yukon.common.events.multispeak.addMetersToGroup">Added {7} meters to device group {1}. {2} by {3}.</entry>
+    <entry key="yukon.common.events.multispeak.addMetersToGroup.7">Number Added</entry>
+    <entry key="yukon.common.events.multispeak.removeMetersFromGroup">Removed {7} meters from device group {1}. {2} by {3}.</entry>
+    <entry key="yukon.common.events.multispeak.removeMetersFromGroup.7">Number Removed</entry>
+    <entry key="yukon.common.events.multispeak.addMeterToGroup">Added meter number {1} to device group {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.removeMeterFromGroup">Removed meter number {1} from device group {2}. {3} by {4}.</entry>
+    
+    <entry key="yukon.common.events.multispeak.initiateMeterReadRequest">Meter reads requested for {7} meters. {1} by {2}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateMeterReadRequest.7">Number Requested</entry>
+    <entry key="yukon.common.events.multispeak.initiateMeterRead">Meter read initiated for meter number {1}: {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateCDRequest">Connect/Disconnect requested for {7} meters. {2} by {3}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateCDRequest.7">Number Requested</entry>
+    <entry key="yukon.common.events.multispeak.initiateCD">{3} initiated due to {4} for meter number {1}: {2}. {5} by {6}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateCD.3">Command</entry>
+    <entry key="yukon.common.events.multispeak.initiateCD.4">Reason</entry>
+
+    <entry key="yukon.common.events.multispeak.routeUpdated">Meter number {2} set to route {1} (no discovery). {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.routeUpdatedByDiscovery">Meter number {2} initially set to route {1}. Discovery started on routes: {3}. {4} by {5}.</entry>
+    <entry key="yukon.common.events.multispeak.routeUpdatedByDiscovery.3">Possible Routes</entry>
+    
+    <entry key="yukon.common.events.multispeak.paoNameUpdated">Updated pao name. {1} changed to {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.paoNameUpdated.1">Old Pao Name</entry>
+    <entry key="yukon.common.events.multispeak.serialNumberOrAddressUpdated">Updated serial number/address. {1} changed to {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.serialNumberOrAddressUpdated.1">Old Serial Number</entry>
+    <entry key="yukon.common.events.multispeak.meterNumberUpdated">Updated meter number. {1} changed to {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.meterNumberUpdated.1">Old Meter Number</entry>
+    <entry key="yukon.common.events.multispeak.deviceTypeUpdated">Updated device type. {1} changed to {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.deviceTypeUpdated.1">Old Device Type</entry>
+    <entry key="yukon.common.events.multispeak.enableDevice">Enabled meter {1}: {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.disableDevice">Disabled meter {1}: {2}. {3} by {4}.</entry>
+
+    <entry key="yukon.common.events.multispeak.errorObject">Encountered error: {1}. {2} by {3}.</entry>
 </properties>

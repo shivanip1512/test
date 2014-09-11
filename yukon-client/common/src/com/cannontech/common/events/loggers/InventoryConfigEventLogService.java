@@ -16,11 +16,11 @@ public interface InventoryConfigEventLogService {
     public void itemConfigSucceeded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
             @Arg(ArgEnum.serialNumber) String serialNumber,
             @Arg(ArgEnum.inventoryId) int inventoryId,
-            @Arg(ArgEnum.commandRequestExecutionIdentifier) int commandRequestExecutionIdentifier);
+            @Arg(ArgEnum.commandRequestExecutionId) int commandRequestExecutionId);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
     public void itemConfigFailed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
             @Arg(ArgEnum.serialNumber) String serialNumber,
             @Arg(ArgEnum.inventoryId) int inventoryId,
-            @Arg(ArgEnum.commandRequestExecutionIdentifier) int commandRequestExecutionIdentifier);
+            @Arg(ArgEnum.commandRequestExecutionId) int commandRequestExecutionId);
 }
