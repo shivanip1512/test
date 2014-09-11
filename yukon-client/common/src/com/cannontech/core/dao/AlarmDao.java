@@ -7,15 +7,8 @@ import com.cannontech.message.dispatch.message.Signal;
 public interface AlarmDao {
 
     /**
-     * Return a list of signals for the given point id
-     * @param 
-     * @return	List<Signal>
-     */
-    public List<Signal> getSignalsForPoint(int pointId);
-
-    /**
      * Return a list of signals for the given point ids
-     * @param 
+     * @param
      * @return	List<Signal>
      */
     public List<Signal> getSignalsForPoints(List<Integer> pointIds);

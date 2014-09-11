@@ -14,20 +14,15 @@ import com.cannontech.core.service.impl.PaoLoader;
 
 public interface MeterDao {
     public String getFormattedDeviceName(YukonMeter device);
-    
+
     public YukonMeter getForMeterNumber(String meterNumber);
-    
-    /**
-     * Specific to PLC meters. Only use this if you really only want PLC meters.
-     */
-    public PlcMeter getForPhysicalAddress(String address);
 
     public YukonMeter getForPaoName(String paoName);
-    
+
     public YukonMeter findForPaoName(String paoName);
 
     public YukonMeter getForId(Integer id);
-    
+
     public SimpleMeter getSimpleMeterForId(int id);
 
     /**
@@ -35,24 +30,25 @@ public interface MeterDao {
      * Throws NotFoundException if id is not found for Plc Meter
      */
     public PlcMeter getPlcMeterForId(int id);
+
     /**
      * Specific to Rfn meters. Only use this if you really only want Rfn meters.
      * Throws NotFoundException if id is not found for Rfn Meter
      */
     public RfnMeter getRfnMeterForId(int id);
-    
+
     public List<YukonMeter> getMetersForMeterNumbers(List<String> meterNumbers);
-    
+
     public Comparator<YukonMeter> getMeterComparator();
-    
+
     public void update(YukonMeter newMeterInfo);
-    
+
     public PaoLoader<DisplayablePao> getDisplayableDeviceLoader();
-    
+
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();
-    
+
     public List<YukonMeter> getMetersForYukonPaos(Iterable<? extends YukonPao> identifiers);
-    
+
     public int getMeterCount();
 
     /*

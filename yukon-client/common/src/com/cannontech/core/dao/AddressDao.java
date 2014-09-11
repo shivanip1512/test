@@ -9,26 +9,18 @@ import com.cannontech.database.data.lite.LiteAddress;
 
 public interface AddressDao {
 
-    public boolean add(LiteAddress address);
-    
-    public boolean remove(LiteAddress address);
-    
-    public boolean update(LiteAddress address);
-    
-    public LiteAddress getByAddressId(int addressId) throws DataAccessException;
-    
-    public Map<Integer,LiteAddress> getAddresses(List<Integer> addressIdList);
-    
-    public List<LiteAddress> getByCityName(String cityName);
-    
-    public List<LiteAddress> getByStateCode(String stateCode);
-    
-    public List<LiteAddress> getByZipCode(String zipCode);
-    
-    public List<LiteAddress> getByCounty(String county);
-    
-    public List<LiteAddress> getAll();
+    boolean add(LiteAddress address);
 
-    public void remove(int addressId);
-    
+    boolean remove(LiteAddress address);
+
+    boolean update(LiteAddress address);
+
+    LiteAddress getByAddressId(int addressId) throws DataAccessException;
+
+    Map<Integer, LiteAddress> getAddresses(List<Integer> addressIdList);
+
+    List<LiteAddress> getAll();
+
+    void remove(int addressId);
+
 }

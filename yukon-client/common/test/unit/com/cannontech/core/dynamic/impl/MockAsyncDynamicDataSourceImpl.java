@@ -48,22 +48,7 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     }
 
     @Override
-    public void registerForSignals(SignalListener l, Set<Integer> pointIds) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public void registerForAllAlarms(SignalListener listener) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void unRegisterForSignals(SignalListener l, Set<Integer> pointIds) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void unRegisterForSignals(SignalListener l) {
         throw new MethodNotImplementedException();
     }
 
@@ -111,6 +96,6 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     public void removeDBChangeLiteListener(DBChangeLiteListener l) {
         throw new MethodNotImplementedException();
     }
-    
+
 
 }

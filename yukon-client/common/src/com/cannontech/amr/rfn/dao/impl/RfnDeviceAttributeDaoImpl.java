@@ -34,7 +34,7 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     @Value("classpath:metricIdToAttributeMapping.json") private Resource inputFile;
-    
+
     private Map<Integer, BuiltInAttribute> attributeLookup = null;
     private Set<BuiltInAttribute> metricAttributes = null;
 
@@ -42,14 +42,18 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
         public static class MetricIdAttribute {
             Integer metricId;
             BuiltInAttribute attribute;
+
             public void setMetricId(int value) {
                 metricId = value;
             }
+
             public void setAttribute(BuiltInAttribute attr) {
                 attribute = attr;
             }
         }
+
         List<MetricIdAttribute> metricMapping;
+
         public void setMetricMapping(List<MetricIdAttribute> map) {
             metricMapping = map;
         }
@@ -66,8 +70,8 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
 
         for (MetricIdAttributeMapping.MetricIdAttribute m : metricList.metricMapping) {
             try {
-                //BuiltInAttribute attr = BuiltInAttribute.valueOf(m.attributeName);
-                //Integer metric = Integer.valueOf(m.metricId);
+                // BuiltInAttribute attr = BuiltInAttribute.valueOf(m.attributeName);
+                // Integer metric = Integer.valueOf(m.metricId);
                 attributeLookup.put(m.metricId, m.attribute);
                 metricAttributes.add(m.attribute);
             } catch (NumberFormatException ex) {
@@ -87,21 +91,16 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     public Collection<BuiltInAttribute> getAttributesForPaoTypes(Set<PaoType> paoTypes) {
 
         Set<BuiltInAttribute> paoAttributes = new HashSet<>();
-        
+
         paoAttributes.addAll(metricAttributes);
 
         Multimap<PaoType, Attribute> definedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
 
         for (PaoType type : paoTypes) {
-            paoAttributes = Sets.intersection(paoAttributes,  new HashSet<>(definedAttributes.get(type)));
+            paoAttributes = Sets.intersection(paoAttributes, new HashSet<>(definedAttributes.get(type)));
         }
 
         return paoAttributes;
-    }
-
-    @Override
-    public BuiltInAttribute getAttributeForMetricId(Integer metricId) {
-        return attributeLookup.get(metricId);
     }
 
     public void setInputFile(Resource inputFile) {

@@ -24,67 +24,53 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class AddressDaoImpl implements AddressDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    
+
     private static final String insertSql;
     private static final String removeSql;
     private static final String updateSql;
     private static final String selectAllSql;
     private static final String selectByIdSql;
-    private static final String selectByCityName;
-    private static final String selectByStateCode;
-    private static final String selectByZipCode;
-    private static final String selectByCounty;
     public static final ParameterizedRowMapper<LiteAddress> rowMapper;
 
     static {
-        insertSql = "INSERT INTO Address (AddressID,LocationAddress1,LocationAddress2,CityName,StateCode,ZipCode,County) " +
-                    "VALUES (?,?,?,?,?,?,?)";
-        
+        insertSql =
+            "INSERT INTO Address (AddressID,LocationAddress1,LocationAddress2,CityName,StateCode,ZipCode,County) "
+                + "VALUES (?,?,?,?,?,?,?)";
+
         removeSql = "DELETE FROM Address WHERE AddressID = ?";
-        
-        updateSql = "UPDATE Address SET LocationAddress1 = ?, LocationAddress2 = ?, CityName = ?, StateCode = ?, ZipCode = ?, County = ? " +
-                    "WHERE AddressID = ?";
-        
-        selectAllSql = "SELECT AddressID,LocationAddress1,LocationAddress2,CityName,StateCode,ZipCode,County " +
-                       "FROM Address";
-        
+
+        updateSql =
+            "UPDATE Address SET LocationAddress1 = ?, LocationAddress2 = ?, CityName = ?, StateCode = ?, ZipCode = ?, County = ? "
+                + "WHERE AddressID = ?";
+
+        selectAllSql =
+            "SELECT AddressID,LocationAddress1,LocationAddress2,CityName,StateCode,ZipCode,County " + "FROM Address";
+
         selectByIdSql = selectAllSql + " WHERE AddressID = ?";
-        
-        selectByCityName = selectAllSql + " WHERE CityName = ?";
-        
-        selectByStateCode = selectAllSql + " WHERE StateCode = ?";
-        
-        selectByZipCode = selectAllSql + " WHERE ZipCode = ?";
-        
-        selectByCounty = selectAllSql + " WHERE County = ?";
-        
+
         rowMapper = createRowMapper();
     }
-    
+
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(final LiteAddress address) {
         int nextAddressId = nextValueHelper.getNextValue("Address");
         address.setAddressID(nextAddressId);
-        
+
         String locationAddress1 = SqlUtils.convertStringToDbValue(address.getLocationAddress1());
-		String locationAddress2 = SqlUtils.convertStringToDbValue(address.getLocationAddress2());
-		String cityName = SqlUtils.convertStringToDbValue(address.getCityName());
-		String stateCode = SqlUtils.convertStringToDbValue(address.getStateCode());
-		String zipCode = SqlUtils.convertStringToDbValue(address.getZipCode());
-		String county = SqlUtils.convertStringToDbValue(address.getCounty());
-		
-		int rowsAffected = jdbcTemplate.update(insertSql, address.getAddressID(),
-                                                                locationAddress1,
-                                                                locationAddress2,
-                                                                cityName,
-                                                                stateCode,
-                                                                zipCode,
-                                                                county);
+        String locationAddress2 = SqlUtils.convertStringToDbValue(address.getLocationAddress2());
+        String cityName = SqlUtils.convertStringToDbValue(address.getCityName());
+        String stateCode = SqlUtils.convertStringToDbValue(address.getStateCode());
+        String zipCode = SqlUtils.convertStringToDbValue(address.getZipCode());
+        String county = SqlUtils.convertStringToDbValue(address.getCounty());
+
+        int rowsAffected =
+            jdbcTemplate.update(insertSql, address.getAddressID(), locationAddress1, locationAddress2, cityName,
+                stateCode, zipCode, county);
         boolean result = (rowsAffected == 1);
         return result;
     }
-    
+
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void remove(int addressId) {
@@ -103,22 +89,18 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(LiteAddress address) {
-    	
-    	String locationAddress1 = SqlUtils.convertStringToDbValue(address.getLocationAddress1());
-		String locationAddress2 = SqlUtils.convertStringToDbValue(address.getLocationAddress2());
-		String cityName = SqlUtils.convertStringToDbValue(address.getCityName());
-		String stateCode = SqlUtils.convertStringToDbValue(address.getStateCode());
-		String zipCode = SqlUtils.convertStringToDbValue(address.getZipCode());
-		String county = SqlUtils.convertStringToDbValue(address.getCounty());
-		
-		int rowsAffected = jdbcTemplate.update(updateSql, locationAddress1,
-                                                                locationAddress2,
-                                                                cityName,
-                                                                stateCode,
-                                                                zipCode,
-                                                                county,
-                                                                address.getAddressID());
-    	
+
+        String locationAddress1 = SqlUtils.convertStringToDbValue(address.getLocationAddress1());
+        String locationAddress2 = SqlUtils.convertStringToDbValue(address.getLocationAddress2());
+        String cityName = SqlUtils.convertStringToDbValue(address.getCityName());
+        String stateCode = SqlUtils.convertStringToDbValue(address.getStateCode());
+        String zipCode = SqlUtils.convertStringToDbValue(address.getZipCode());
+        String county = SqlUtils.convertStringToDbValue(address.getCounty());
+
+        int rowsAffected =
+            jdbcTemplate.update(updateSql, locationAddress1, locationAddress2, cityName, stateCode, zipCode, county,
+                address.getAddressID());
+
         boolean result = (rowsAffected == 1);
         return result;
     }
@@ -129,12 +111,12 @@ public class AddressDaoImpl implements AddressDao {
         LiteAddress address = jdbcTemplate.queryForObject(selectByIdSql, rowMapper, addressId);
         return address;
     }
-    
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public Map<Integer,LiteAddress> getAddresses(final List<Integer> addressIdList) {
+    public Map<Integer, LiteAddress> getAddresses(final List<Integer> addressIdList) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        
+
         final List<LiteAddress> addressList = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {
@@ -147,48 +129,20 @@ public class AddressDaoImpl implements AddressDao {
                 return sql;
             }
         }, addressIdList, rowMapper);
-        
+
         final Map<Integer, LiteAddress> resultMap = new HashMap<Integer, LiteAddress>(addressIdList.size());
         for (final LiteAddress address : addressList) {
             Integer key = address.getAddressID();
             resultMap.put(key, address);
         }
-        
+
         return resultMap;
     }
-    
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteAddress> getAll() {
-        List<LiteAddress> list = jdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-        return list;
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LiteAddress> getByCityName(final String cityName) {
-        List<LiteAddress> list = jdbcTemplate.query(selectByCityName, rowMapper, cityName);
-        return list;
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LiteAddress> getByCounty(final String county) {
-        List<LiteAddress> list = jdbcTemplate.query(selectByCounty, rowMapper, county);
-        return list;
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LiteAddress> getByStateCode(final String stateCode) {
-        List<LiteAddress> list = jdbcTemplate.query(selectByStateCode, rowMapper, stateCode);
-        return list;
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LiteAddress> getByZipCode(final String zipCode) {
-        List<LiteAddress> list = jdbcTemplate.query(selectByZipCode, rowMapper, zipCode);
+        List<LiteAddress> list = jdbcTemplate.query(selectAllSql, rowMapper, new Object[] {});
         return list;
     }
 
