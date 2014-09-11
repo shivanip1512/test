@@ -87,24 +87,24 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 
     // We need at least 3 bytes
 
-    validate( Condition( response.size() >= 3, ErrorInvalidData )
+    validate( Condition( response.size() >= 3, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate the Response code
 
-    validate( Condition( response[0] == CommandCode_Response, ErrorInvalidData )
+    validate( Condition( response[0] == CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
     // Validate the Operation code
 
-    validate( Condition( response[1] == _operation, ErrorInvalidData )
+    validate( Condition( response[1] == _operation, ClientErrors::InvalidData )
             << "Invalid Operation Code (" << CtiNumStr(response[1]).xhex(2) << ")" );
 
     // Validate Status code
 
     boost::optional<std::string> status = mapFind( statusResolver, response[2] );
 
-    validate( Condition( status, ErrorInvalidData )
+    validate( Condition( status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
     result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
@@ -123,27 +123,27 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 RfnSetTemperatureAlarmConfigurationCommand::RfnSetTemperatureAlarmConfigurationCommand( const AlarmConfiguration & configuration )
     :   RfnTemperatureAlarmCommand( Operation_SetConfiguration, configuration )
 {
-    validate( Condition( configuration.alarmHighTempThreshold >= Limit_HighTempThresholdMinimum, BADPARAM )
+    validate( Condition( configuration.alarmHighTempThreshold >= Limit_HighTempThresholdMinimum, ClientErrors::BadParameter )
             << "Invalid High Temperature Threshold: (" << configuration.alarmHighTempThreshold
             << ") underflow (minimum: "<< Limit_HighTempThresholdMinimum << ")" );
 
-    validate( Condition( configuration.alarmHighTempThreshold <= Limit_HighTempThresholdMaximum, BADPARAM )
+    validate( Condition( configuration.alarmHighTempThreshold <= Limit_HighTempThresholdMaximum, ClientErrors::BadParameter )
             << "Invalid High Temperature Threshold: (" << configuration.alarmHighTempThreshold
             << ") overflow (maximum: " << Limit_HighTempThresholdMaximum << ")" );
 
-    validate( Condition( configuration.alarmRepeatInterval >= Limit_RepeatIntervalMinimum, BADPARAM )
+    validate( Condition( configuration.alarmRepeatInterval >= Limit_RepeatIntervalMinimum, ClientErrors::BadParameter )
             << "Invalid Repeat Interval: (" << configuration.alarmRepeatInterval
             << ") underflow (minimum: "<< Limit_RepeatIntervalMinimum << ")" );
 
-    validate( Condition( configuration.alarmRepeatInterval <= Limit_RepeatIntervalMaximum, BADPARAM )
+    validate( Condition( configuration.alarmRepeatInterval <= Limit_RepeatIntervalMaximum, ClientErrors::BadParameter )
             << "Invalid Repeat Interval: (" << configuration.alarmRepeatInterval
             << ") overflow (maximum: " << Limit_RepeatIntervalMaximum << ")" );
 
-    validate( Condition( configuration.alarmRepeatCount >= Limit_RepeatCountMinimum, BADPARAM )
+    validate( Condition( configuration.alarmRepeatCount >= Limit_RepeatCountMinimum, ClientErrors::BadParameter )
             << "Invalid Repeat Count: (" << configuration.alarmRepeatCount
             << ") underflow (minimum: "<< Limit_RepeatCountMinimum << ")" );
 
-    validate( Condition( configuration.alarmRepeatCount <= Limit_RepeatCountMaximum, BADPARAM )
+    validate( Condition( configuration.alarmRepeatCount <= Limit_RepeatCountMaximum, ClientErrors::BadParameter )
             << "Invalid Repeat Count: (" << configuration.alarmRepeatCount
             << ") overflow (maximum: " << Limit_RepeatCountMaximum << ")" );
 }
@@ -189,12 +189,12 @@ RfnCommandResult RfnSetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 
     // We need 4 bytes
 
-    validate( Condition( response.size() == 4, ErrorInvalidData )
+    validate( Condition( response.size() == 4, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate TLV count is 0
 
-    validate( Condition( response[3] == 0, ErrorInvalidData )
+    validate( Condition( response[3] == 0, ClientErrors::InvalidData )
             << "Invalid TLV count (" << response[3] << ")" );
 
     return result;
@@ -235,33 +235,33 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 
     // We need 13 bytes
 
-    validate( Condition( response.size() == 13, ErrorInvalidData )
+    validate( Condition( response.size() == 13, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate TLV count is 1
 
-    validate( Condition( response[3] == 1, ErrorInvalidData )
+    validate( Condition( response[3] == 1, ClientErrors::InvalidData )
             << "Invalid TLV count (" << response[3] << ")" );
 
     // Decode the TLV
 
     const std::vector<TypeLengthValue> tlvs = getTlvsFromBytes( Bytes( response.begin() + 3 , response.end() ));
 
-    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
+    validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Invalid TLV count (" << tlvs.size() << ")" );
 
     const TypeLengthValue &tlv = tlvs[0];
 
     // Validate TLV type
 
-    validate( Condition( tlv.type == TlvType_TemperatureAlarmConfiguration, ErrorInvalidData )
+    validate( Condition( tlv.type == TlvType_TemperatureAlarmConfiguration, ClientErrors::InvalidData )
             << "Invalid TLV type (" << CtiNumStr(tlv.type).xhex(2) << ")" );
 
     // Validate the Alarm State
 
     boost::optional<std::string> enabledState = mapFind( alarmStateResolver, tlv.value[0] );
 
-    validate( Condition( enabledState, ErrorInvalidData )
+    validate( Condition( enabledState, ClientErrors::InvalidData )
             << "Invalid Alarm Enabled State ( " << tlv.value[0] << ")" );
 
     _configuration.alarmEnabled = ( tlv.value[0] == AlarmState_AlarmEnabled );

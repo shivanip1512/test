@@ -371,7 +371,7 @@ bool ApplicationLayer::errorCondition( void ) const
 
 YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( _transport.isTransactionComplete() )
     {
@@ -420,7 +420,7 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
             {
                 //  eventually, we should respect the results from _transport.initForOutput and _transport.initForInput - they could fail, too
                 _appState = Failed;
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
 
                 break;
             }
@@ -438,7 +438,7 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
 
 YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( retVal = _transport.decode(xfer, status) )
     {

@@ -21,7 +21,7 @@ DlcCommand::request_ptr Lcr3102TamperReadCommand::decodeReading(CtiTime now, con
     if (tamper_info > 3 || tamper_info < 0)
     {
         description = "Returned value is outside the range of acceptable values (" + CtiNumStr(tamper_info) + ")";
-        throw CommandException(ErrorInvalidData, description);
+        throw CommandException(ClientErrors::InvalidData, description);
     }
 
     point_data circuit, runtime;

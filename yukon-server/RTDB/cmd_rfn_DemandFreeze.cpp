@@ -66,12 +66,12 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
     // We need at least 4 bytes
 
-    validate( Condition( response.size() >= 4, ErrorInvalidData )
+    validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate the first 4 bytes
 
-    validate( Condition( response[0] == CommandCode_Response, ErrorInvalidData )
+    validate( Condition( response[0] == CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
     // validate status
@@ -86,7 +86,7 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
     boost::optional<std::string> additionalStatus = findDescriptionForAscAsq( response[2], response[3] );
 
-    validate( Condition( additionalStatus, ErrorInvalidData )
+    validate( Condition( additionalStatus, ClientErrors::InvalidData )
             << "Invalid Additional Status (ASC: " << CtiNumStr(response[2]).xhex(2) << ", ASCQ: " << CtiNumStr(response[3]).xhex(2) << ")" );
 
     result.description += "\nAdditional Status: " + *additionalStatus  + " (ASC: " + CtiNumStr(response[2]).xhex(2) + ", ASCQ: " +  CtiNumStr(response[3]).xhex(2) + ")";
@@ -99,7 +99,7 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
 void RfnDemandFreezeCommand::validateStatus(const unsigned char status, const unsigned char asc, const unsigned char ascq, const std::string &description )
 {
-    validate( Condition( status == 0x00 && asc == 0x00 && ascq == 0x00, ErrorInvalidData )
+    validate( Condition( status == 0x00 && asc == 0x00 && ascq == 0x00, ClientErrors::InvalidData )
             << description );
 }
 
@@ -140,10 +140,10 @@ RfnCommandResult RfnDemandFreezeConfigurationCommand::decodeCommand( const CtiTi
 {
     RfnCommandResult  result = decodeResponseHeader( now, response );
 
-    validate( Condition( response.size() == 5, ErrorInvalidData )
+    validate( Condition( response.size() == 5, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
-    validate( Condition( response[4] == 0, ErrorInvalidData )
+    validate( Condition( response[4] == 0, ClientErrors::InvalidData )
             << "Invalid TLV count (" << response[4] << ")" );
 
     return result;
@@ -162,7 +162,7 @@ RfnImmediateDemandFreezeCommand::RfnImmediateDemandFreezeCommand()
 
 void RfnImmediateDemandFreezeCommand::validateStatus( const unsigned char status, const unsigned char asc, const unsigned char ascq, const std::string &description )
 {
-    validate( Condition( status == 0x00 && asc == 0x04 && ascq == 0x00, ErrorInvalidData )
+    validate( Condition( status == 0x00 && asc == 0x04 && ascq == 0x00, ClientErrors::InvalidData )
             << description );
 }
 
@@ -172,10 +172,10 @@ RfnCommandResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime n
 {
     RfnCommandResult  result = decodeResponseHeader( now, response );
 
-    validate( Condition( response.size() == 5, ErrorInvalidData )
+    validate( Condition( response.size() == 5, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
-    validate( Condition( response[4] == 0, ErrorInvalidData )
+    validate( Condition( response[4] == 0, ClientErrors::InvalidData )
             << "Invalid TLV count (" << response[4] << ")" );
 
     return result;
@@ -344,7 +344,7 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
 
     RfnCommandResult result = decodeResponseHeader( now, response );
 
-    validate( Condition( response.size() >= 5, ErrorInvalidData )
+    validate( Condition( response.size() >= 5, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     unsigned tlvCount   = 0;
@@ -359,7 +359,7 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
 
         totalBytes += 2;
 
-        validate( Condition( totalBytes + tlvLength <= response.size(), ErrorInvalidData )
+        validate( Condition( totalBytes + tlvLength <= response.size(), ClientErrors::InvalidData )
                 << "Invalid TLV length (" << std::distance(current, response.end()) << ") expected " << tlvLength );
 
         unsigned int  tlvValue  = std::accumulate( current, current + tlvLength, 0u, Accumulator() );
@@ -394,13 +394,13 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
                     break;
                 }
 
-                throw RfnCommand::CommandException( ErrorInvalidData,
+                throw RfnCommand::CommandException( ClientErrors::InvalidData,
                                                     "Missing decode for TLV type (" + CtiNumStr(tlvType).xhex(2) + ")" );
             }
         }
     }
 
-    validate( Condition( response[4] == tlvCount, ErrorInvalidData )
+    validate( Condition( response[4] == tlvCount, ClientErrors::InvalidData )
             << "Invalid TLV count (" << tlvCount << ") expected " << response[4] );
 
     result.description += describeFreezeData(_freezeData);

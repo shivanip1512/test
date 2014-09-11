@@ -27,7 +27,7 @@ public:
 
     typedef std::vector<unsigned char> byte_buffer_t;
 
-    enum Errors;
+    enum KlondikeErrors;
     enum Command;
     enum PLCProtocols;
     //enum ProtocolWrap;
@@ -35,11 +35,11 @@ public:
     struct queue_result_t
     {
         void *requester;
-        Errors error;
+        KlondikeErrors error;
         unsigned long timestamp;
         byte_buffer_t message;
 
-        queue_result_t(void *requester_, Errors error_, unsigned long timestamp_, const byte_buffer_t &message_) :
+        queue_result_t(void *requester_, KlondikeErrors error_, unsigned long timestamp_, const byte_buffer_t &message_) :
             requester(requester_),
             error    (error_),
             timestamp(timestamp_),
@@ -83,7 +83,7 @@ private:
 
     byte_buffer_t _raw_command;
 
-    Errors _error;
+    KlondikeErrors _error;
 
     int _wrap_errors;
     int _read_toggle;
@@ -349,8 +349,8 @@ public:
 
     bool isTransactionComplete(void) const;
 
-    bool   errorCondition() const;
-    Errors errorCode() const;
+    bool errorCondition() const;
+    KlondikeErrors errorCode() const;
 
     // --  these functions may be called at any time by another thread, meaning that their data must be muxed
     std::string describeCurrentStatus(void) const;
@@ -415,7 +415,7 @@ public:
         Command_Raw
     };
 
-    enum Errors
+    enum KlondikeErrors
     {
         Error_None,
 

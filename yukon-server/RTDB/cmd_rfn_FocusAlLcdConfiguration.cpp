@@ -136,7 +136,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
      *
      */
 
-    validate( Condition( response.size() >= 3, ErrorInvalidData )
+    validate( Condition( response.size() >= 3, ClientErrors::InvalidData )
             << "Response too small - (" << response.size() << ", expecting >= 3)" );
 
     const unsigned char commandCode         = response[0],
@@ -144,7 +144,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
                         displayItemDuration = response[2];
 
     // check command
-    validate( Condition( commandCode == FocusLcdConfig_CommandCode_Response, ErrorInvalidData )
+    validate( Condition( commandCode == FocusLcdConfig_CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid command - (" << commandCode << ", expecting " << FocusLcdConfig_CommandCode_Response << ")" );
 
     // update display item duration
@@ -156,7 +156,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
     const unsigned responseSizeExp = 3 + displayItemNbr*3;
 
-    validate( Condition( response.size() == responseSizeExp, ErrorInvalidData )
+    validate( Condition( response.size() == responseSizeExp, ClientErrors::InvalidData )
             << "Invalid response size (" << response.size() << ", expecting " << responseSizeExp << ")" );
 
     _displayItemsReceived = MetricVector();
@@ -176,7 +176,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
         const boost::optional<MetricDescription> metric = mapFind( MetricDescriptions, metric_code );
 
-        validate( Condition( metric, ErrorInvalidData )
+        validate( Condition( metric, ClientErrors::InvalidData )
                 << "Invalid metric code (" << metric_code << ")" );
 
         std::string alphamericId;
@@ -187,7 +187,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
             const boost::optional<char> alpha_char = convertCodeToAscii( alpha_code );
 
-            validate( Condition( alpha_char, ErrorInvalidData )
+            validate( Condition( alpha_char, ClientErrors::InvalidData )
                     << "Invalid alpha display code (" << alpha_code << ")" );
 
             alphamericId += *alpha_char;
@@ -289,22 +289,22 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
      *
      */
 
-    validate( Condition( response.size() == 2, ErrorInvalidData )
+    validate( Condition( response.size() == 2, ClientErrors::InvalidData )
             << "Response size unexpected - (" << response.size() << ", expecting 2)" );
 
     const unsigned char commandCode = response[0],
                         statusCode  = response[1];
 
     // check command
-    validate( Condition( commandCode == FocusLcdConfig_CommandCode_Response, ErrorInvalidData )
+    validate( Condition( commandCode == FocusLcdConfig_CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid command - (" << commandCode << ", expecting " << FocusLcdConfig_CommandCode_Response << ")" );
 
     const boost::optional<std::string> status = mapFind(statusResolver, statusCode);
 
-    validate( Condition( status, ErrorInvalidData )
+    validate( Condition( status, ClientErrors::InvalidData )
             << "Invalid Status (" << statusCode << ")");
 
-    validate( Condition( statusCode == 0x00, ERRUNKNOWN )
+    validate( Condition( statusCode == 0x00, ClientErrors::Unknown )
             << "Failure Status (" << statusCode << ")");
 
     result.description += "Status: " + *status + " (" + CtiNumStr(statusCode) + ")";
@@ -326,7 +326,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
     {
         const boost::optional<MetricDescription> metric = mapFind( MetricDescriptions, m );
 
-        validate( Condition( metric, ErrorInvalidData )
+        validate( Condition( metric, ClientErrors::InvalidData )
                 << "Invalid metric code (" << m << ")" );
 
         result.description += "\nDisplay metric " + CtiNumStr(++item) + " : " + metric->description;

@@ -34,7 +34,7 @@ Mct440HolidaysCommand::Mct440HolidaysCommand(const CtiTime Now, const std::set<C
 
     if( holidays.size() > 15 )
     {
-        throw CommandException(BADPARAM, "Maximum 15 holidays supported (" + CtiNumStr(holidays.size()) + " provided)");
+        throw CommandException(ClientErrors::BadParameter, "Maximum 15 holidays supported (" + CtiNumStr(holidays.size()) + " provided)");
     }
 
     for each( const CtiDate &holiday in holidays )
@@ -43,7 +43,7 @@ Mct440HolidaysCommand::Mct440HolidaysCommand(const CtiTime Now, const std::set<C
             holiday >= NextYear )
         {
             throw CommandException(
-               BADPARAM,
+               ClientErrors::BadParameter,
                "Invalid holiday (" + holiday.asStringUSFormat() + "),"
                    " must be after " + Today.asStringUSFormat() +
                    " and before " + NextYear.asStringUSFormat());
@@ -82,7 +82,7 @@ DlcCommand::request_ptr Mct440HolidaysCommand::decodeCommand(const CtiTime now, 
             if( payload->size() < holidayCount * 2 )
             {
                 throw CommandException(
-                    ErrorDataMissing,
+                    ClientErrors::DataMissing,
                     "Payload too small ("
                         + CtiNumStr(payload->size())  + " received, "
                         + CtiNumStr(holidayCount * 2) + " required)");

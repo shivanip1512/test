@@ -159,7 +159,7 @@ void CtiIONNetworkLayer::setToInput( void )
 
 YukonError_t CtiIONNetworkLayer::generate( CtiXfer &xfer )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     switch( _ioState )
     {
@@ -179,7 +179,7 @@ YukonError_t CtiIONNetworkLayer::generate( CtiXfer &xfer )
             }
 
             _ioState = Failed;
-            retVal = BADRANGE;
+            retVal = ClientErrors::BadRange;
 
             xfer.setOutBuffer(NULL);
             xfer.setOutCount(0);

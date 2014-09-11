@@ -69,7 +69,7 @@ private:
          Loadprofile_size  = 50000
       };
 
-      enum Errors
+      enum TransdataErrors
       {
          Working     = 0,
          Failed

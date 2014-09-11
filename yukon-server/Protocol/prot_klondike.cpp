@@ -1,5 +1,6 @@
 #include "precompiled.h"
 
+#include "yukon.h"
 #include "logger.h"
 #include "utility.h"
 #include "prot_klondike.h"
@@ -250,7 +251,7 @@ YukonError_t KlondikeProtocol::setCommand( int command, byte_buffer_t payload, u
 
     if( !nextCommandState() )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     _io_state = IO_Output;
@@ -259,7 +260,7 @@ YukonError_t KlondikeProtocol::setCommand( int command, byte_buffer_t payload, u
 
     _wrap->init();
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -843,7 +844,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                                 {
                                     if( rejected_entry.requester )
                                     {
-                                        Errors error = Error_Unknown;
+                                        KlondikeErrors error = Error_Unknown;
 
                                         switch( rejected_nak_code )
                                         {
@@ -1094,7 +1095,7 @@ bool KlondikeProtocol::errorCondition( void ) const
 
 
 
-KlondikeProtocol::Errors KlondikeProtocol::errorCode() const
+KlondikeProtocol::KlondikeErrors KlondikeProtocol::errorCode() const
 {
     return _error;
 }

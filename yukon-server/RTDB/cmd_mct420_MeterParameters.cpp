@@ -14,12 +14,12 @@ Mct420MeterParametersCommand::Mct420MeterParametersCommand(const unsigned cycleT
 {
     if( !_cycleTime || _cycleTime > 15 )
     {
-        throw CommandException(BADPARAM, "Invalid LCD cycle time (" + CtiNumStr(_cycleTime) + "), must be 1-15");
+        throw CommandException(ClientErrors::BadParameter, "Invalid LCD cycle time (" + CtiNumStr(_cycleTime) + "), must be 1-15");
     }
 
     if( _transformerRatio && (!*_transformerRatio || *_transformerRatio > 255) )
     {
-        throw CommandException(BADPARAM, "Invalid transformer ratio (" + CtiNumStr(*_transformerRatio) + "), must be 1-255");
+        throw CommandException(ClientErrors::BadParameter, "Invalid transformer ratio (" + CtiNumStr(*_transformerRatio) + "), must be 1-255");
     }
 }
 

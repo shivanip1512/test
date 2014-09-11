@@ -62,7 +62,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decodeCommand(CtiTime now, 
         if(startTime != _utcSeconds)
         {
             description = "Device did not respond with the correct hourly log start time (" + CtiNumStr(startTime).xhex() + ")";
-            throw CommandException(ErrorInvalidTimestamp, description);
+            throw CommandException(ClientErrors::InvalidTimestamp, description);
         }
         else
         {
@@ -118,21 +118,21 @@ void Lcr3102HourlyDataLogCommand::validateFlags(const unsigned char &flags)
     if(flags & Flag_Error)
     {
         description = "Device responded with a data log dispute. (" + CtiNumStr(flags).xhex(2) + ")";
-        throw CommandException(Error_Abnormal, description);
+        throw CommandException(ClientErrors::Abnormal, description);
     }
 
     // These bits should NEVER be set from the LCR since it doesn't support them.
     if(flags & Flag_Setpoint || flags & Flag_Temperature)
     {
         description = "Device responded with invalid data types (" + CtiNumStr(flags).xhex(2) + ")";
-        throw CommandException(Error_Abnormal, description);
+        throw CommandException(ClientErrors::Abnormal, description);
     }
 
     // These bits should ALWAYS be set from the LCR.
     if(!(flags & Flag_ShedTime) || !(flags & Flag_RunTime))
     {
         description = "Device did not respond with expected shedtime and runtime data (" + CtiNumStr(flags).xhex(2) + ")";
-        throw CommandException(Error_Abnormal, description);
+        throw CommandException(ClientErrors::Abnormal, description);
     }
 }
 

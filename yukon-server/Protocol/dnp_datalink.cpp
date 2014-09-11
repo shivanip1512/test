@@ -146,7 +146,7 @@ void DatalinkLayer::setToInput( void )
 
 YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( isControlPending() )
     {
@@ -191,7 +191,7 @@ YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
             }
             case State_IO_Failed:
             {
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
 
                 xfer.setOutBuffer(NULL);
                 xfer.setOutCount(0);
@@ -208,7 +208,7 @@ YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
 
 YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
     int toCopy, srcLen, packetSize;
     unsigned char *dst, *src;
 
@@ -218,9 +218,9 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 
         switch( status )
         {
-            case BADPORT:
-            case PORTWRITE:
-            case PORTREAD:
+            case ClientErrors::BadPort:
+            case ClientErrors::PortWrite:
+            case ClientErrors::PortRead:
                 break;
 
             default:
@@ -269,7 +269,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                     {
                         _io_state = State_IO_Failed;
 
-                        retVal = BADCRC;
+                        retVal = ClientErrors::BadCrc;
                     }
                     //  a possible optimization could be that all control packets are known
                     //    to be DatalinkPacket::HeaderLength long, so we don't need the isEntirePacket()
@@ -281,7 +281,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         {
                             _io_state = State_IO_Failed;
 
-                            retVal = BADCRC;
+                            retVal = ClientErrors::BadCrc;
                         }
                         //  check to see if the packet is okay
                         else if( processControl(_packet) )
@@ -297,7 +297,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                             {
                                 _io_state = State_IO_Failed;
 
-                                retVal = WRONGADDRESS;
+                                retVal = ClientErrors::WrongAddress;
                             }
                         }
                         else
@@ -381,7 +381,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
     if( _protocol_errors > ProtocolRetryCount )
     {
         _io_state = State_IO_Failed;
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
 
     return retVal;
@@ -687,7 +687,7 @@ bool DatalinkLayer::processControl( const DatalinkLayer::packet_t &packet )
 
 YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     switch( _control_state )
     {
@@ -763,7 +763,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
                 dout << CtiTime() << " **** Checkpoint - unhandled state " << _control_state << " in Cti::Protocol::DNP::Datalink::generateControl() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
 
             break;
         }
@@ -775,7 +775,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 
 YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( status )
     {

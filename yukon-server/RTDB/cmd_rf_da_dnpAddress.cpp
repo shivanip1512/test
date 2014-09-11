@@ -58,12 +58,12 @@ RfnCommandResult RfDaReadDnpSlaveAddressCommand::decodeCommand( const CtiTime no
 {
     // We need 3 bytes
 
-    validate( Condition( response.size() == 3, ErrorInvalidData )
+    validate( Condition( response.size() == 3, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate response code
 
-    validate( Condition( response[0] == CommandCode_Response, ErrorInvalidData )
+    validate( Condition( response[0] == CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid response code (" << (unsigned)response[0] << ")" );
 
     _dnp3SlaveAddress = (response[1] << 8) | response[2];

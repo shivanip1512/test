@@ -43,7 +43,7 @@ INT CtiProtocolVersacom::setNibble (INT iNibble, INT iValue)
     else
         _vst.back()->Message[Nibble / 2] |= (Value << 4) & 0x00f0;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -73,7 +73,7 @@ INT CtiProtocolVersacom::initVersacomMessage()
 
     setNibble (1, _addressMode);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiProtocolVersacom::assembleCommandToMessage()
@@ -119,9 +119,13 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
 
             /* see if we have anything to send */
             if(!(i) && !(Mask))
-                return(BADPARAM);               // There is no valids relay specified on this command.
+            {
+                return ClientErrors::BadParameter;               // There is no valids relay specified on this command.
+            }
             else
+            {
                 setNibble ( 2, (USHORT)i);
+            }
 
             break;
 
@@ -595,12 +599,12 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             break;
         }
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiProtocolVersacom::assembleAddressing()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     ULONG IAddress = 0;
 
     /* Now go ahead and figure out the addressing */
@@ -628,7 +632,7 @@ INT CtiProtocolVersacom::assembleAddressing()
                 RWMutexLock::LockGuard  guard(coutMux);
                 cout << "**** ADDRESSING ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                status = ADDRESSERROR;
+                status = ClientErrors::Address;
             }
 
             /* Now build up the addressing */
@@ -709,7 +713,7 @@ INT CtiProtocolVersacom::assembleAddressing()
 
 INT CtiProtocolVersacom::updateVersacomMessage()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     status = initVersacomMessage();     // Prime the message buffer and the constants
     if(!status) status = assembleCommandToMessage();
@@ -757,7 +761,7 @@ CtiProtocolVersacom& CtiProtocolVersacom::setTransmitterType(INT type)
  *-------------------------------------------------------------------------*/
 INT CtiProtocolVersacom::adjustVersacomAddress(VSTRUCT &vTemp, ULONG Serial, UINT Uid, UINT Section, UINT Class, UINT Division)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(!(Serial))
     {
@@ -1329,7 +1333,7 @@ INT CtiProtocolVersacom::VersacomCountResetCommand(UINT resetmask)
 
 INT CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     VSTRUCT *newvst = CTIDBG_new VSTRUCT;
 
     if(newvst)
@@ -1339,7 +1343,7 @@ INT CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
         _last = _vst.size() - 1;      // This is the one we are working on?
     }
     else
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
 
     return status;
 }
@@ -1357,7 +1361,7 @@ void CtiProtocolVersacom::removeLastVStruct()
 
 INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
 
     switch(parse.getCommand())
     {
@@ -1384,7 +1388,7 @@ INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &a
                 dout << CtiTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
             }
 
-            status = ErrorInvalidRequest;
+            status = ClientErrors::InvalidRequest;
 
             break;
         }
@@ -1416,7 +1420,7 @@ void CtiProtocolVersacom::dumpMessageBuffer()
 INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
     INT   i, IAddress, iNum;
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
     BYTE  config[6];
     bool isGroupConfig = false;
 
@@ -1799,7 +1803,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
 INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
     INT  i;
-    INT  status = NoError;
+    INT  status = ClientErrors::None;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
     INT  relay  = parse.getiValue("relaymask", 0);
 
@@ -1941,7 +1945,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
 INT CtiProtocolVersacom::assemblePutStatus(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
     INT   i, iNum;
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
     BYTE  config[6];
 
 

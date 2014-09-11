@@ -54,7 +54,7 @@ YukonError_t ModbusProtocol::generate( CtiXfer &xfer )
 {
     if( _points_start == _points_finish )
     {
-        return ErrorNoPointsOnDevice;
+        return ClientErrors::NoPointsOnDevice;
     }
 
     _asciiOutput = false;
@@ -141,13 +141,13 @@ YukonError_t ModbusProtocol::generate( CtiXfer &xfer )
     }
 
 
-    return NoError;//FIX_ME JESS
+    return ClientErrors::None;//FIX_ME JESS
 }
 
 
 YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
     bool final = true;
         //  this block is for commands that return anything besides non-pointdata
         switch( _command )
@@ -163,7 +163,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             {//CRC ERROR!!!!
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - crc error in received data " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                retVal = UnknownError;//some error code should be set!
+                                retVal = ClientErrors::Unknown;//some error code should be set!
 
                                 if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
                                 {
@@ -187,7 +187,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                                 if(_points_start == _points.end())
                                 {
                                     _status = End;
-                                    retVal = NoError;
+                                    retVal = ClientErrors::None;
                                     clearPoints();
                                 }
                                 break;
@@ -199,14 +199,14 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 _string_results.push_back(CTIDBG_new string("There is a read with function " + CtiNumStr((*_points_start).pointType) + " starting at point " + CtiNumStr((*_points_start).pointOffset) +
                                                                             " that cannot be read."));
-                                retVal = UnknownError;//some error code should be set!
+                                retVal = ClientErrors::Unknown;//some error code should be set!
 
                                 _status = Continue;
                                 _points_start = _points_finish;//ok, that didnt work, and it wont work if we try it again, so dont.
                                 if(_points_start == _points.end())
                                 {
                                     _status = End;
-                                    retVal = NoError;//I dont want to repeat!
+                                    retVal = ClientErrors::None;//I dont want to repeat!
                                     clearPoints();
                                 }
                                 break;
@@ -216,7 +216,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                                 //unknown data??
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - unknown data received " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                retVal = UnknownError;//some error code should be set, we can retry!
+                                retVal = ClientErrors::Unknown;//some error code should be set, we can retry!
 
                                 if(_retries++>Retries_Default)//retry and if that doesnt work, quit!
                                 {
@@ -236,7 +236,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            retVal = NoMethod;//some error code should be set!
+                            retVal = ClientErrors::NoMethod;//some error code should be set!
                             _status = End;
                             clearPoints();
                             break;
@@ -247,7 +247,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                     }
                     else
                     {
-                        retVal = PORTREAD;
+                        retVal = ClientErrors::PortRead;
                         clearPoints();
                         _status = End;
                         break;
@@ -256,7 +256,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
             case Command_Error:
             default:
             {
-                retVal = UnknownError;
+                retVal = ClientErrors::Unknown;
                 _status = End;
                 break;
             }

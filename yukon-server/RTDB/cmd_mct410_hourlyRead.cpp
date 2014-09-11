@@ -36,7 +36,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::executeCommand(CtiTime now)
 
         if( _date_end < _request.date )
         {
-            throw CommandException(BADPARAM, "Invalid end date (" + _date_end.asStringUSFormat() + ") for hourly read request; must be after begin date (" + _request.date.asStringUSFormat() + ")");
+            throw CommandException(ClientErrors::BadParameter, "Invalid end date (" + _date_end.asStringUSFormat() + ") for hourly read request; must be after begin date (" + _request.date.asStringUSFormat() + ")");
         }
     }
 
@@ -63,7 +63,7 @@ DlcCommand::read_request_t Mct410HourlyReadCommand::requestDay(const CtiDate &da
 {
     if( channel == 0 || channel > 2 )
     {
-        throw CommandException(BADPARAM, "Invalid channel (" + CtiNumStr(channel) + ") for hourly read request; must be 1 or 2");
+        throw CommandException(ClientErrors::BadParameter, "Invalid channel (" + CtiNumStr(channel) + ") for hourly read request; must be 1 or 2");
     }
 
     validateDate(date_begin, Yesterday);
@@ -89,12 +89,12 @@ void Mct410HourlyReadCommand::validateDate(const CtiDate &d, const CtiDate &Yest
 
     if( d > Yesterday )
     {
-        throw CommandException(BADPARAM, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be before today (" + (Yesterday + 1).asStringUSFormat() + ")");
+        throw CommandException(ClientErrors::BadParameter, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be before today (" + (Yesterday + 1).asStringUSFormat() + ")");
     }
 
     if( d < Yesterday - DaysBack )
     {
-        throw CommandException(BADPARAM, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be no more than 7 days ago (" + (Yesterday - DaysBack).asStringUSFormat() + ")");
+        throw CommandException(ClientErrors::BadParameter, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be no more than 7 days ago (" + (Yesterday - DaysBack).asStringUSFormat() + ")");
     }
 }
 
@@ -127,7 +127,7 @@ Mct410Device::point_info Mct410HourlyReadCommand::extractMidnightKwh(const Bytes
     //  we have to manually check this here because we're using Mct4xxDevice::getData(), which only knows pointers
     if( payload.size() < 13 )
     {
-        throw CommandException(Error_Abnormal, "Payload too small");
+        throw CommandException(ClientErrors::Abnormal, "Payload too small");
     }
 
     return getAccumulatorData(&payload.front() + 10, 3);
@@ -233,7 +233,7 @@ try
     {
         description = "Day of week does not match (" + CtiNumStr(weekday) + " != " + CtiNumStr(_request.date.weekDay()) + ")";
 
-        throw CommandException(ErrorInvalidTimestamp, description);
+        throw CommandException(ClientErrors::InvalidTimestamp, description);
     }
 
     validateRead(_request, function, now);
@@ -308,7 +308,7 @@ void Mct410HourlyReadCommand::validateRead(const request_pointer &rp, const unsi
 {
     if( !!(function % 2) != rp.reading_day_end )
     {
-        throw CommandException(ErrorInvalidTimestamp, "Wrong read performed (" + CtiNumStr(function).xhex() + ")");
+        throw CommandException(ClientErrors::InvalidTimestamp, "Wrong read performed (" + CtiNumStr(function).xhex() + ")");
     }
 
     validateDate(rp.date, make_yesterday(decode_time));

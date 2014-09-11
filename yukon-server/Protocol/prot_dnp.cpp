@@ -409,7 +409,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
 
                                 if( ao->getStatus() )
                                 {
-                                    retVal = Error_Abnormal;
+                                    retVal = ClientErrors::Abnormal;
 
                                     o << "unsuccessful\n";
 
@@ -430,7 +430,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                     }
                 }
 
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
 
                 _string_results.push_back(new string("Analog output block not echoed"));
 
@@ -482,7 +482,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                                     str += ")";
 
                                     _string_results.push_back(CTIDBG_new string(str));
-                                    retVal = Error_Abnormal;
+                                    retVal = ClientErrors::Abnormal;
                                 }
                             }
                             else
@@ -493,7 +493,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                                 }
 
                                 _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
-                                retVal = Error_Abnormal;
+                                retVal = ClientErrors::Abnormal;
                             }
                         }
 
@@ -502,13 +502,13 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                     else
                     {
                         _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
-                        retVal = Error_Abnormal;
+                        retVal = ClientErrors::Abnormal;
                     }
                 }
                 else
                 {
                     _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
-                    retVal = Error_Abnormal;
+                    retVal = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -525,7 +525,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                     || !_object_blocks.front()->at(0).object )
                 {
                     _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
-                    retVal = Error_Abnormal;
+                    retVal = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -638,7 +638,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                     else
                     {
                         _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
-                        retVal = Error_Abnormal;
+                        retVal = ClientErrors::Abnormal;
                     }
                 }
                 else
@@ -1057,10 +1057,10 @@ YukonError_t DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
     if( xfer.getOutBuffer()[10] & 0x80 )
     {
         slaveTransactionComplete();
-        return NoError;
+        return ClientErrors::None;
     }
 
-    return getApplicationLayer().decode(xfer, NoError);
+    return getApplicationLayer().decode(xfer, ClientErrors::None);
 }
 
 int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )

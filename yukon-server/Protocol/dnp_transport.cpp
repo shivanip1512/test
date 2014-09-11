@@ -68,7 +68,7 @@ void TransportLayer::resetLink( void )
 
 int TransportLayer::initForOutput(unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     _source_address      = srcAddr;
     _destination_address = dstAddr;
@@ -104,7 +104,7 @@ int TransportLayer::initForOutput(unsigned char *buf, unsigned len, unsigned sho
 
 int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     _payload_in.data   = buf;
     _payload_in.length = max_len;
@@ -120,7 +120,7 @@ int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 
 YukonError_t TransportLayer::generate( CtiXfer &xfer )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( _datalink.isTransactionComplete() )
     {
@@ -157,7 +157,7 @@ YukonError_t TransportLayer::generate( CtiXfer &xfer )
             }
             case Failed:
             {
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
             }
         }
     }
@@ -173,7 +173,7 @@ YukonError_t TransportLayer::generate( CtiXfer &xfer )
 
 YukonError_t TransportLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( retVal = _datalink.decode(xfer, status) )
     {

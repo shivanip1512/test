@@ -33,7 +33,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(parse.getCommand())
     {
@@ -59,7 +59,7 @@ INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPS
                 dout << CtiTime() << " Unsupported command on fisher pierce route Command = " << parse.getCommand() << endl;
             }
 
-            status = ErrorInvalidRequest;
+            status = ClientErrors::InvalidRequest;
 
             break;
         }
@@ -84,13 +84,13 @@ INT CtiProtocolFisherPierceCBC::assemblePutConfig(CtiCommandParser  &parse, cons
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
     INT   i, iNum;
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
     BOOL  firstOneDone = FALSE;
     BYTE  config[6];
 
@@ -146,7 +146,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
 
 INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
 
     UINT  CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
@@ -172,7 +172,7 @@ INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const 
 
 INT CtiProtocolFisherPierceCBC::primeFPStruct(const FPSTRUCT &FPstTemplate)
 {
-    INT      status = NoError;
+    INT      status = ClientErrors::None;
 
     FPSTRUCT  *fpst = CTIDBG_new FPSTRUCT;
 
@@ -185,7 +185,7 @@ INT CtiProtocolFisherPierceCBC::primeFPStruct(const FPSTRUCT &FPstTemplate)
     }
     else
     {
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
     }
 
     return status;
@@ -210,7 +210,7 @@ INT CtiProtocolFisherPierceCBC::capacitorControlCommand(BOOL Trip)
         last_ptr->u.PCC.F[1] = '3';
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 FPSTRUCT CtiProtocolFisherPierceCBC::getFPStruct(INT pos) const

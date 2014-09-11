@@ -138,7 +138,7 @@ void CtiProtocolLMI::setDeadbands( const vector<unsigned> &points, const vector<
 
 int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList )
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     OUTMESS seriesv_outmess;
 
     lmi_outmess_struct tmp_om_struct;
@@ -161,7 +161,7 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* >
     }
     else
     {
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -321,7 +321,7 @@ YukonError_t CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
     _in_count = 0;
     _in_total = 0;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -360,7 +360,7 @@ YukonError_t CtiProtocolLMI::sendCommResult( INMESS  &InMessage )
     //  store the total length
     InMessage.InLength = offset;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -508,7 +508,7 @@ void CtiProtocolLMI::getStatuses(pointlist_t &points)
 
 YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
     bool reply_expected = true;
     CtiTime NowTime;
     CtiDate NowDate;
@@ -580,7 +580,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 
                 _transaction_complete = true;
 
-                retval = Error_Abnormal;
+                retval = ClientErrors::Abnormal;
             }
             //  if we've never downloaded the system parameters, send them out (once per day by default)
             else if( _config_sent < (CtiTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
@@ -843,7 +843,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
                             }
                             else
                             {
-                                retval = Error_Abnormal;
+                                retval = ClientErrors::Abnormal;
                             }
                         }
 
@@ -900,7 +900,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 
 YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
     unsigned long  tmp_crc, inbound_crc;
     CtiXfer seriesv_xfer;
     unsigned long seriesv_incount_actual;
@@ -1158,7 +1158,7 @@ YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
                                     }
                                     else
                                     {
-                                        retval = Error_Abnormal;
+                                        retval = ClientErrors::Abnormal;
                                     }
                                 }
 
@@ -1213,24 +1213,24 @@ YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
                         _inbound.body_header.message_type == _outbound.body_header.message_type &&
                         _inbound.body_header.flush_codes  == _outbound.body_header.flush_codes )
                     {
-                        retval = ErrPortEchoResponse;
+                        retval = ClientErrors::PortEchoedResponse;
                     }
                     else
                     {
-                        retval = ADDRESSERROR;
+                        retval = ClientErrors::Address;
                     }
                 }
             }
             else
             {
-                retval = BADCRC;
+                retval = ClientErrors::BadCrc;
             }
 
             _in_total = 0;
         }
     }
 
-    if( status == ErrPortSimulated )
+    if( status == ClientErrors::PortSimulated )
     {
         if( _outbound.body_header.message_type == Opcode_DownloadSystemData )
         {
@@ -1281,7 +1281,7 @@ YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
             _transaction_complete = true;
         }
 
-        retval = NoError;
+        retval = ClientErrors::None;
     }
     else if( status )
     {

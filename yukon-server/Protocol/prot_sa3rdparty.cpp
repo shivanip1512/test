@@ -54,7 +54,7 @@ CtiProtocolSA3rdParty::~CtiProtocolSA3rdParty()
 
 INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     _sa._commandType = parse.getCommand();
 
@@ -98,7 +98,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
         {
             _sa._function = parse.getiValue("sa_function");
 
-            if( !solveStrategy(parse) && NoError == (status = assembleControl( parse )) )
+            if( !solveStrategy(parse) && ClientErrors::None == (status = assembleControl( parse )) )
             {
                 loadControl();
                 _messageReady = true;
@@ -107,7 +107,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
         }
     case PutConfigRequest:
         {
-            if( NoError == (status = assemblePutConfig( parse )) )
+            if( ClientErrors::None == (status = assemblePutConfig( parse )) )
             {
                 if(  parse.isKeyValid("sa_assign") && parse.isKeyValid("serial") )
                 {
@@ -254,7 +254,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                 dout << CtiTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
             }
 
-            status = ErrorInvalidRequest;
+            status = ClientErrors::InvalidRequest;
 
             break;
         }
@@ -266,7 +266,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
 {
     INT  i;
-    INT  status = NoError;
+    INT  status = ClientErrors::None;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
@@ -279,7 +279,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
             parse.setValue("control_reduction", 100 );
         }
         else
-            status = BADPARAM;
+            status = ClientErrors::BadParameter;
 
     }
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
@@ -299,7 +299,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
 
         if(_sa._groupType != SA205 && _sa._groupType != SA105)
         {
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** CONTROL RESTORE? **** Cannot restore this type of group." << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -338,7 +338,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Unsupported command.  Command = " << parse.getCommand() << endl;
-        status = NoMethod;
+        status = ClientErrors::NoMethod;
     }
 
     return status;
@@ -346,7 +346,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
 
 INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     string   temp, token;
     string   str = parse.getCommandStr();
@@ -470,7 +470,7 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 
 INT CtiProtocolSA3rdParty::loadControl()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     SA_CODE scode;
     INT retCode = 0;
@@ -551,7 +551,7 @@ INT CtiProtocolSA3rdParty::loadControl()
 
 INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     INT retCode = 0;
 
@@ -586,7 +586,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
 
 INT CtiProtocolSA3rdParty::restoreLoadControl()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -598,7 +598,7 @@ INT CtiProtocolSA3rdParty::restoreLoadControl()
 
 int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     bool dlc_control = (parse.getCommandStr().find(" dlc")!=string::npos);      // if set, we want DLC (not DI) control!
 
     // We only try to predict it if it has not already been fully identified for us.
@@ -656,7 +656,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
@@ -715,7 +715,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
@@ -747,7 +747,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
@@ -823,7 +823,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
@@ -867,7 +867,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
@@ -916,7 +916,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
@@ -971,7 +971,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
@@ -1109,7 +1109,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    status = BADPARAM;
+                    status = ClientErrors::BadParameter;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;

@@ -68,12 +68,12 @@ RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
 
     // We need 2 bytes
 
-    validate( Condition( response.size() == 2, ErrorInvalidData )
+    validate( Condition( response.size() == 2, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate the bytes
 
-    validate( Condition( response[0] == Operation_OvUvConfigurationResponse, ErrorInvalidData )
+    validate( Condition( response[0] == Operation_OvUvConfigurationResponse, ClientErrors::InvalidData )
             << "Invalid Response Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
     // validate response
@@ -82,10 +82,10 @@ RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
 
     // invalid status byte -- not found in map
 
-    validate( Condition( status, ErrorInvalidData )
+    validate( Condition( status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[1] << ")" );
 
-    validate( Condition( response[1] == 0x01, ErrorInvalidData ) // success
+    validate( Condition( response[1] == 0x01, ClientErrors::InvalidData ) // success
             << "Status: " << *status << " (" << response[1] << ")" );
 
     result.description += "Status: " + *status + " (" + CtiNumStr(response[1]) + ")";
@@ -126,10 +126,10 @@ RfnSetOvUvNewAlarmReportIntervalCommand::RfnSetOvUvNewAlarmReportIntervalCommand
     :   RfnOvUvConfigurationCommand( Operation_SetOvUvNewAlarmReportingInterval ),
         reportingInterval( interval_minutes )
 {
-    validate( Condition( interval_minutes >= 2, BADPARAM )
+    validate( Condition( interval_minutes >= 2, ClientErrors::BadParameter )
             << "Invalid Reporting Interval: (" << interval_minutes << ") underflow (minimum: 2)" );
 
-    validate( Condition( interval_minutes <= 30, BADPARAM )
+    validate( Condition( interval_minutes <= 30, ClientErrors::BadParameter )
             << "Invalid Reporting Interval: (" << interval_minutes << ") overflow (maximum: 30)" );
 }
 
@@ -154,10 +154,10 @@ RfnSetOvUvAlarmRepeatIntervalCommand::RfnSetOvUvAlarmRepeatIntervalCommand( cons
     :   RfnOvUvConfigurationCommand( Operation_SetOvUvAlarmRepeatInterval ),
         repeatInterval( interval_minutes )
 {
-    validate( Condition( interval_minutes >= 60, BADPARAM )
+    validate( Condition( interval_minutes >= 60, ClientErrors::BadParameter )
             << "Invalid Repeat Interval: (" << interval_minutes << ") underflow (minimum: 60)" );
 
-    validate( Condition( interval_minutes <= 240, BADPARAM )
+    validate( Condition( interval_minutes <= 240, ClientErrors::BadParameter )
             << "Invalid Repeat Interval: (" << interval_minutes << ") overflow (maximum: 240)" );
 }
 
@@ -182,10 +182,10 @@ RfnSetOvUvAlarmRepeatCountCommand::RfnSetOvUvAlarmRepeatCountCommand( const unsi
     :   RfnOvUvConfigurationCommand( Operation_SetOvUvAlarmRepeatCount ),
         repeatCount( repeat_count )
 {
-    validate( Condition( repeat_count >= 1, BADPARAM )
+    validate( Condition( repeat_count >= 1, ClientErrors::BadParameter )
             << "Invalid Repeat Count: (" << repeat_count << ") underflow (minimum: 1)" );
 
-    validate( Condition( repeat_count <= 3, BADPARAM )
+    validate( Condition( repeat_count <= 3, ClientErrors::BadParameter )
             << "Invalid Repeat Count: (" << repeat_count << ") overflow (maximum: 3)" );
 }
 
@@ -214,10 +214,10 @@ RfnSetOvUvSetThresholdCommand::RfnSetOvUvSetThresholdCommand( const MeterID mete
         _eventID( event_id ),
         _thresholdValue( threshold_volts * 1000 )
 {
-    validate( Condition( meter_id != Unspecified, BADPARAM )
+    validate( Condition( meter_id != Unspecified, ClientErrors::BadParameter )
             << "Invalid Meter ID: Unspecified (" << meter_id << ")" );
 
-    validate( Condition( isInteger( threshold_volts * 1000.0 ), BADPARAM )
+    validate( Condition( isInteger( threshold_volts * 1000.0 ), ClientErrors::BadParameter )
             << "Invalid threshold " << threshold_volts << ": Precision should not exceed 0.001" );
 }
 
@@ -289,7 +289,7 @@ RfnGetOvUvAlarmConfigurationCommand::RfnGetOvUvAlarmConfigurationCommand( const 
         _meterID( meter_id ),
         _eventID( event_id )
 {
-    validate( Condition( meter_id != Unspecified, BADPARAM )
+    validate( Condition( meter_id != Unspecified, ClientErrors::BadParameter )
             << "Invalid Meter ID: Unspecified (" << meter_id << ")" );
 }
 
@@ -366,41 +366,41 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 ///        2   -- UoM modifier 1
 ///        2   -- UoM modifier 2
 
-    validate( Condition( response.size() == 19, ErrorInvalidData )
+    validate( Condition( response.size() == 19, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate the bytes
 
-    validate( Condition( response[0] == Operation_GetOvUvAlarmConfigurationInfoResponse, ErrorInvalidData )
+    validate( Condition( response[0] == Operation_GetOvUvAlarmConfigurationInfoResponse, ClientErrors::InvalidData )
             << "Invalid Response Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
     // UoM is always in volts for Ov/Uv (0x10)
 
-    validate( Condition( response[14] == Uom_Volts, ErrorInvalidData )
+    validate( Condition( response[14] == Uom_Volts, ClientErrors::InvalidData )
             << "Invalid UoM Code (" << CtiNumStr(response[14]).xhex(2) << ")" );
 
     // UoM modifier 1 is always 0x8000 for Ov/Uv
 
     const unsigned uom_modifier1 = (response[15] << 8) + response[16];
 
-    validate( Condition( uom_modifier1 == 0x8000, ErrorInvalidData )
+    validate( Condition( uom_modifier1 == 0x8000, ClientErrors::InvalidData )
             << "Invalid UoM Modifier 1 Code (" << CtiNumStr(uom_modifier1).xhex(4) << ")" );
 
     // UoM modifier 2 is always 0x01c0 for Ov/Uv
 
     const unsigned uom_modifier2 = (response[17] << 8) + response[18];
 
-    validate( Condition( uom_modifier2 == 0x01c0, ErrorInvalidData )
+    validate( Condition( uom_modifier2 == 0x01c0, ClientErrors::InvalidData )
             << "Invalid UoM Modifier 2 Code (" << CtiNumStr(uom_modifier2).xhex(4) << ")" );
 
     // Parse and report the rest
 
     boost::optional<std::string> meterID = Cti::mapFind( meterIdResolver, response[1] );
 
-    validate( Condition( meterID, ErrorInvalidData )
+    validate( Condition( meterID, ClientErrors::InvalidData )
             << "Invalid Meter ID (" << response[1] << ")" );
 
-    validate( Condition( response[1] == _meterID, ErrorInvalidData )
+    validate( Condition( response[1] == _meterID, ClientErrors::InvalidData )
             << "Meter ID mismatch (" << response[1] << ") expected (" << _meterID << ")" );
 
     result.description += "Meter ID: " + *meterID + " (" + CtiNumStr(response[1]) + ")";
@@ -409,17 +409,17 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     boost::optional<std::string> eventID = Cti::mapFind( eventIdResolver, eventIDvalue );
 
-    validate( Condition( eventID, ErrorInvalidData )
+    validate( Condition( eventID, ClientErrors::InvalidData )
             << "Invalid Event ID (" << eventIDvalue << ")" );
 
-    validate( Condition( eventIDvalue == _eventID, ErrorInvalidData )
+    validate( Condition( eventIDvalue == _eventID, ClientErrors::InvalidData )
             << "Event ID mismatch (" << eventIDvalue << ") expected (" << _eventID << ")" );
 
     result.description += "\nEvent ID: " + *eventID + " (" + CtiNumStr(eventIDvalue) + ")";
 
     boost::optional<std::string> ovuvState = Cti::mapFind( ovuvStateResolver, response[4] );
 
-    validate( Condition( ovuvState, ErrorInvalidData )
+    validate( Condition( ovuvState, ClientErrors::InvalidData )
             << "Invalid OV/UV State (" << response[4] << ")" );
 
     result.description += "\nOV/UV State: " + *ovuvState + " (" + CtiNumStr(response[4]) + ")";
@@ -431,7 +431,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     boost::optional<std::string> severity = Cti::mapFind( severityResolver, response[9] );
 
-    validate( Condition( severity, ErrorInvalidData )
+    validate( Condition( severity, ClientErrors::InvalidData )
             << "Invalid severity (" << response[9] << ")" );
 
     result.description += "\nSeverity: " + *severity + " (" + CtiNumStr(response[9]) + ")";

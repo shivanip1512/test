@@ -29,12 +29,12 @@ public:
 
     virtual YukonError_t generate(CtiXfer &xfer)
     {
-        return NoError;
+        return ClientErrors::None;
     };
 
     virtual YukonError_t decode(CtiXfer &xfer, YukonError_t status)
     {
-        return NoError;
+        return ClientErrors::None;
     };
 
     virtual void getInboundData( std::vector<unsigned char> &buf )
@@ -64,7 +64,7 @@ struct Test_Klondike : public KlondikeProtocol
 void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_buffer &outbound, const byte_buffer &inbound)
 {
     //  first do the send...
-    BOOST_CHECK_EQUAL(tk.generate(xfer), NoError);
+    BOOST_CHECK_EQUAL(tk.generate(xfer), ClientErrors::None);
 
     // check what was assigned into our Test_Wrap object
     BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -73,14 +73,14 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_buffer 
         outbound.begin(),
         outbound.end());
 
-    BOOST_CHECK_EQUAL(tk.decode(xfer, NoError), NoError);
+    BOOST_CHECK_EQUAL(tk.decode(xfer, ClientErrors::None), ClientErrors::None);
     BOOST_CHECK(!tk.errorCondition());
 
     tw.sent.clear();
     tw.received.clear();
 
     //  then do the receive
-    BOOST_CHECK_EQUAL(tk.generate(xfer), NoError);
+    BOOST_CHECK_EQUAL(tk.generate(xfer), ClientErrors::None);
 
     BOOST_CHECK_EQUAL(tw.sent.size(), 0);
 
@@ -90,7 +90,7 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_buffer 
         inbound.begin(),
         inbound.end());
 
-    BOOST_CHECK_EQUAL(tk.decode(xfer, NoError), NoError);
+    BOOST_CHECK_EQUAL(tk.decode(xfer, ClientErrors::None), ClientErrors::None);
     BOOST_CHECK(!tk.errorCondition());
 
     tw.sent.clear();
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
     cout.width(2);
 
     //  load up a timesync command
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_TimeSync), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_TimeSync), ClientErrors::None);
 
     test_klondike.time = 0x456789ab;
 
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
                                 0);
 
     //  and set the command
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadQueue), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadQueue), ClientErrors::None);
 
     //  verify it grabs the status from the CCU first
     do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x11),
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
     cout.setf(ios::hex, ios::basefield);
     cout.width(2);
 
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadRoutes), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadRoutes), ClientErrors::None);
 
     test_klondike.addRoute(1, 27, 3, 6);
 
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
     do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x31, 0x01, 0x00, 0xdb, 0x31),
                                             (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
 
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadRoutes), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadRoutes), ClientErrors::None);
 
     test_klondike.addRoute(2, 16, 5, 2);
 

@@ -120,7 +120,7 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Byt
 
     if( itr == bytes.end() )
     {
-        throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
+        throw CommandException(ClientErrors::InvalidData, "Incomplete data for TLV");
     }
 
     unsigned count = *itr++;
@@ -129,7 +129,7 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Byt
     {
         if( itr == bytes.end() )
         {
-            throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
+            throw CommandException(ClientErrors::InvalidData, "Incomplete data for TLV");
         }
 
         //
@@ -144,7 +144,7 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Byt
 
         if( itr == bytes.end() )
         {
-            throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
+            throw CommandException(ClientErrors::InvalidData, "Incomplete data for TLV");
         }
 
         unsigned tlv_length = *itr++; // byte default we expect the tlv length field to be on 1 byte
@@ -153,7 +153,7 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Byt
         {
             if( itr == bytes.end() )
             {
-                throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
+                throw CommandException(ClientErrors::InvalidData, "Incomplete data for TLV");
             }
 
             tlv.isLongTlv = true;
@@ -170,7 +170,7 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Byt
         {
             if( itr == bytes.end() )
             {
-                throw CommandException(ErrorInvalidData, "Incomplete data for TLV");
+                throw CommandException(ClientErrors::InvalidData, "Incomplete data for TLV");
             }
 
             tlv.value.push_back(*itr++);

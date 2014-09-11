@@ -134,7 +134,7 @@ int CtiProtocolSixnet::NextSeq(void)
 //
 int CtiProtocolSixnet::assemble()
 {
-    int status = MEMORY;
+    int status = ClientErrors::MemoryAccess;
     uint16 nassembleCrc;
     int i;
 
@@ -187,7 +187,7 @@ int CtiProtocolSixnet::assemble()
         /*
          *  pTX now has a message ready to be sent in it.!
          */
-        status = NoError;
+        status = ClientErrors::None;
 
         _state = GETLEAD;
     }

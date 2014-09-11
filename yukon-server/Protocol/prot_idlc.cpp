@@ -259,7 +259,7 @@ bool IDLC::isCompleteFrame(const frame &f, unsigned bytes_received)
 
 YukonError_t IDLC::generate( CtiXfer &xfer )
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
 
     if( control_pending() )
     {
@@ -280,7 +280,7 @@ YukonError_t IDLC::generate( CtiXfer &xfer )
                     dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_operation << ") in Cti::Protocol::IDLC::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                retval = BADRANGE;
+                retval = ClientErrors::BadRange;
             }
         }
     }
@@ -304,13 +304,13 @@ YukonError_t IDLC::generate_control( CtiXfer &xfer )
             break;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 YukonError_t IDLC::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
     _in_data.clear();
 
     if( control_pending() )
@@ -395,11 +395,11 @@ YukonError_t IDLC::decode( CtiXfer &xfer, YukonError_t status )
 
         if ( _framing_seek_length >= MaximumFramingSeekLength )
         {
-            retval = FRAMEERR;
+            retval = ClientErrors::Framing;
         }
         else if ( _input_loops > MaximumInputLoops )
         {
-            retval = READTIMEOUT;
+            retval = ClientErrors::ReadTimeout;
         }
         else if ( status )
         {
@@ -407,7 +407,7 @@ YukonError_t IDLC::decode( CtiXfer &xfer, YukonError_t status )
         }
         else
         {
-            retval = Error_Abnormal;
+            retval = ClientErrors::Abnormal;
         }
     }
 
@@ -417,7 +417,7 @@ YukonError_t IDLC::decode( CtiXfer &xfer, YukonError_t status )
 
 YukonError_t IDLC::decode_control( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
 
     switch( _control_state )
     {
@@ -467,7 +467,7 @@ YukonError_t IDLC::decode_control( CtiXfer &xfer, YukonError_t status )
 
 YukonError_t IDLC::process_control( frame in_frame )
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
 
     if( in_frame.header.control.code == ControlCode_ResetAcknowledge )
     {

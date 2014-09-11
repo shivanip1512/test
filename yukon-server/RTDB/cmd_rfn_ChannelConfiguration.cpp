@@ -352,7 +352,7 @@ struct MetricQualifierFields
     {
         boost::optional<std::string> desc = mapFind( resolverMap, val );
 
-        validate( Condition( desc, ErrorInvalidData )
+        validate( Condition( desc, ClientErrors::InvalidData )
                 << "Invalid metric qualifier value for \"" << name << "\" ("<< val << ")" );
 
         if( *desc == "" )
@@ -388,23 +388,23 @@ RfnCommand::Bytes RfnChannelConfigurationCommand::getCommandData()
 void RfnChannelConfigurationCommand::decodeHeader( const Bytes &response, RfnCommandResult &result )
 {
     // We need at least 4 bytes for Command code, operation, status and the number of TLVs
-    validate( Condition( response.size() >= 4, ErrorInvalidData )
+    validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
             << "Invalid Response Length (" << response.size() << ")" );
 
-    validate( Condition( response[0] == getResponseCommandCode(), ErrorInvalidData )
+    validate( Condition( response[0] == getResponseCommandCode(), ClientErrors::InvalidData )
             << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
-    validate( Condition( response[1] == getOperation(), ErrorInvalidData )
+    validate( Condition( response[1] == getOperation(), ClientErrors::InvalidData )
             << "Invalid Operation Code (" << CtiNumStr(response[1]).xhex(2) << ")" );
 
     boost::optional<std::string> status = mapFind( responseStatusResolver, response[2] );
 
     // invalid status byte -- not found in map
-    validate( Condition( status, ErrorInvalidData )
+    validate( Condition( status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
     // make sure status is success
-    validate( Condition( response[2] == 0, ErrorInvalidData )
+    validate( Condition( response[2] == 0, ClientErrors::InvalidData )
             << "Status: " << *status << " (" << response[2] << ")" );
 
     result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")\n";
@@ -412,7 +412,7 @@ void RfnChannelConfigurationCommand::decodeHeader( const Bytes &response, RfnCom
 
 void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, RfnCommandResult &result )
 {
-    validate( Condition( response.size() >= 1, ErrorInvalidData )
+    validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
             << "Number of bytes for list of metric IDs received 0, expected >= 1" );
 
     unsigned offset = 0;
@@ -420,7 +420,7 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
     const unsigned totalMetricsIds = response[offset++];
     const unsigned expectedSize = 1 + (totalMetricsIds * 2);
 
-    validate( Condition( expectedSize == response.size(), ErrorInvalidData )
+    validate( Condition( expectedSize == response.size(), ClientErrors::InvalidData )
             << "Number of bytes for list of metric IDs received " << response.size() << ", expected " << expectedSize );
 
     result.description += "Metric(s) list:\n";
@@ -445,7 +445,7 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
 
 void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response, RfnCommandResult &result )
 {
-    validate( Condition( response.size() >= 1, ErrorInvalidData )
+    validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received 0, expected >= 1" );
 
     unsigned offset = 0;
@@ -453,7 +453,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
     const unsigned totalChannelDescriptors = response[offset++];
     const unsigned expectedSize = 1 + (totalChannelDescriptors * 4);
 
-    validate( Condition( expectedSize == response.size(), ErrorInvalidData )
+    validate( Condition( expectedSize == response.size(), ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received " << response.size() << ", expected " << expectedSize );
 
     result.description += "Metric(s) descriptors:\n";
@@ -482,7 +482,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         const MetricQualifierFields metricQFields( metricQualifier );
 
-        validate( Condition( ! metricQFields.extensionBit, ErrorInvalidData )
+        validate( Condition( ! metricQFields.extensionBit, ClientErrors::InvalidData )
                 << "Metric qualifier expected extension bit to be zero" );
 
         if( metricQFields.coincidentValue == 0 )
@@ -504,7 +504,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         {
             const unsigned coincidentValueExp = (coincidentValue < 7) ? ++coincidentValue : 0;
 
-            validate( Condition( metricQFields.coincidentValue == coincidentValueExp, ErrorInvalidData )
+            validate( Condition( metricQFields.coincidentValue == coincidentValueExp, ClientErrors::InvalidData )
                     << "Received unexpected coincident value: " << metricQFields.coincidentValue << " (expected: " << coincidentValueExp << "), "
                     << metricDescription << " (" << metricId << ")" );
 
@@ -553,12 +553,12 @@ RfnCommandResult RfnChannelSelectionCommand::decodeCommand( const CtiTime now,
 
 void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, const unsigned char tlvTypeExpected )
 {
-    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
+    validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
 
     const TypeLengthValue & tlv = tlvs[0];
 
-    validate( Condition( tlv.type == tlvTypeExpected, ErrorInvalidData )
+    validate( Condition( tlv.type == tlvTypeExpected, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)tlvTypeExpected << ")" );
 
     switch( tlv.type )
@@ -586,14 +586,14 @@ RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricIds& m
 {
     const unsigned maxMetrics = 80;
 
-    validate( Condition( metrics.size() <= maxMetrics, BADPARAM )
+    validate( Condition( metrics.size() <= maxMetrics, ClientErrors::BadParameter )
             << "Number of metrics " << metrics.size() << ", expected <= " << maxMetrics );
 
     _setChannelSelectionTlvPayload.push_back( metrics.size() );
 
     for each( unsigned metricId in metrics )
     {
-        validate( Condition( metricIdResolver.count(metricId), BADPARAM )
+        validate( Condition( metricIdResolver.count(metricId), ClientErrors::BadParameter )
                 << "Invalid metric id (" << metricId << ")" );
 
         insertValue_bEndian<2> ( _setChannelSelectionTlvPayload, metricId );
@@ -667,7 +667,7 @@ RfnCommandResult RfnChannelIntervalRecordingCommand::decodeCommand( const CtiTim
 
     TlvList tlvs = getTlvsFromBytes( Bytes( response.begin() + 3, response.end()) );
 
-    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
+    validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
 
     decodeTlv( tlvs[0], result );
@@ -692,14 +692,14 @@ SetConfigurationCommand::SetConfigurationCommand( const MetricIds& metrics,
 
     const unsigned maxMetrics = 15;
 
-    validate( Condition( metrics.size() <= maxMetrics, BADPARAM )
+    validate( Condition( metrics.size() <= maxMetrics, ClientErrors::BadParameter )
             << "Number of metrics " << metrics.size() << ", expected <= " << maxMetrics );
 
     _setIntervalRecordingTlvPayload.push_back( metrics.size() );
 
     for each( unsigned metricId in metrics )
     {
-        validate( Condition( metricIdResolver.count(metricId), BADPARAM )
+        validate( Condition( metricIdResolver.count(metricId), ClientErrors::BadParameter )
                 << "Invalid metric id (" << metricId << ")" );
 
         insertValue_bEndian<2> ( _setIntervalRecordingTlvPayload, metricId );
@@ -719,7 +719,7 @@ unsigned char SetConfigurationCommand::getOperation() const
 
 void SetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
 {
-    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveChannels, ErrorInvalidData )
+    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveChannels, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveChannels << ")" );
 
     result.description += "Channel Interval Recording Full Description:\n";
@@ -752,7 +752,7 @@ unsigned char GetConfigurationCommand::getOperation() const
 
 void GetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
 {
-    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_Configuration, ErrorInvalidData )
+    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_Configuration, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_Configuration << ")" );
 
     result.description += "Channel Interval Recording Configuration:\n";
@@ -761,7 +761,7 @@ void GetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandR
 
 void GetConfigurationCommand::decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result )
 {
-    validate( Condition( response.size() >= 9, ErrorInvalidData )
+    validate( Condition( response.size() >= 9, ClientErrors::InvalidData )
             << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
 
     unsigned offset = 0;
@@ -804,7 +804,7 @@ unsigned char GetActiveConfigurationCommand::getOperation() const
 
 void GetActiveConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
 {
-    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveConfiguration, ErrorInvalidData )
+    validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveConfiguration, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveConfiguration << ")" );
 
     result.description += "Channel Interval Recording Active Configuration:\n";
@@ -813,7 +813,7 @@ void GetActiveConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCo
 
 void GetActiveConfigurationCommand::decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result )
 {
-    validate( Condition( response.size() >= 9, ErrorInvalidData )
+    validate( Condition( response.size() >= 9, ClientErrors::InvalidData )
             << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
 
     unsigned offset = 0;

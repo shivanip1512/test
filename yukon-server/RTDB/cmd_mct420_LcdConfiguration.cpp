@@ -66,7 +66,7 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::executeCommand(CtiTime no
     //  now that ExecuteRequest() is wrapped in a try/catch, we could move this check to the constructor
     if( _display_metrics.size() > TotalDisplayMetricSlots )
     {
-        throw CommandException(BADPARAM, "Invalid number of display metrics (" + CtiNumStr(_display_metrics.size()) + ")");
+        throw CommandException(ClientErrors::BadParameter, "Invalid number of display metrics (" + CtiNumStr(_display_metrics.size()) + ")");
     }
 
     return doCommand();

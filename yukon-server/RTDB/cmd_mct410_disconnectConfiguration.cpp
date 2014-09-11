@@ -41,22 +41,22 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const
         }
     }
 
-    validate(Condition(_disconnectAddress < (1 << 22), BADPARAM)
+    validate(Condition(_disconnectAddress < (1 << 22), ClientErrors::BadParameter)
              << "Invalid disconnect address (" << _disconnectAddress << "), must be 0-4194303");
 
-    validate(Condition(_disconnectDemandThreshold >= 0.0 && _disconnectDemandThreshold <= 400.0, BADPARAM)
+    validate(Condition(_disconnectDemandThreshold >= 0.0 && _disconnectDemandThreshold <= 400.0, ClientErrors::BadParameter)
              << "Invalid disconnect demand threshold (" << _disconnectDemandThreshold << "), must be 0.0-400.0");
 
-    validate(Condition(_connectDelay <= 10, BADPARAM)
+    validate(Condition(_connectDelay <= 10, ClientErrors::BadParameter)
              << "Invalid connect delay (" << _connectDelay << "), must be 0-10");
 
-    validate(Condition(_disconnectMinutes >= 5 && _disconnectMinutes <= 60, BADPARAM)
+    validate(Condition(_disconnectMinutes >= 5 && _disconnectMinutes <= 60, ClientErrors::BadParameter)
              << "Invalid number of disconnect minutes (" << _disconnectMinutes << "), must be 5-60");
 
-    validate(Condition(_connectMinutes >= 5 && _connectMinutes <= 60, BADPARAM)
+    validate(Condition(_connectMinutes >= 5 && _connectMinutes <= 60, ClientErrors::BadParameter)
              << "Invalid number of connect minutes (" << _connectMinutes << "), must be 5-60");
 
-    validate(Condition(_demandInterval > 0, BADPARAM)
+    validate(Condition(_demandInterval > 0, ClientErrors::BadParameter)
              << "Invalid demand interval (" << _demandInterval << "), must be a positive integer");
 }
 

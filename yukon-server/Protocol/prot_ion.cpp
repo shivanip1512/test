@@ -116,7 +116,7 @@ void CtiProtocolION::restoreCommand( IONCommand command )
 {
     _executingCommand.command = command;
     _protocolErrors = 0;
-    _abortStatus    = NoError;
+    _abortStatus    = ClientErrors::None;
     _infoString     = "";
 
     _ionState   = State_Init;
@@ -129,7 +129,7 @@ void CtiProtocolION::restoreCommand( IONCommand command, unsigned int unsigned_i
     _executingCommand.command                = command;
     _executingCommand.unsigned_int_parameter = unsigned_int_parameter;
     _protocolErrors = 0;
-    _abortStatus    = NoError;
+    _abortStatus    = ClientErrors::None;
     _infoString     = "";
 
     _ionState   = State_Init;
@@ -175,7 +175,7 @@ void CtiProtocolION::setConfigRead( bool read )
 
 YukonError_t CtiProtocolION::generate( CtiXfer &xfer )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( _appLayer.isTransactionComplete() )
     {
@@ -250,7 +250,7 @@ YukonError_t CtiProtocolION::generate( CtiXfer &xfer )
         xfer.setOutCount(0);
         xfer.setInCountExpected(0);
 
-        retVal = BADRANGE;
+        retVal = ClientErrors::BadRange;
     }
 
     return retVal;
@@ -2182,7 +2182,7 @@ unsigned long CtiProtocolION::getEventLogLastPosition( void )
 
 int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     ion_outmess_struct tmp_om_struct;
 
@@ -2203,7 +2203,7 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &out
     }
     else
     {
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -2212,7 +2212,7 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &out
 
 int CtiProtocolION::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &outList )
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     const unsigned char *buf;
     unsigned long len, offset;
@@ -2437,7 +2437,7 @@ bool CtiProtocolION::areEventLogsComplete( void )
 
 YukonError_t CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
     ion_outmess_struct tmpOM;
 
     memcpy(&tmpOM, OutMessage->Buffer.OutMessage, sizeof(tmpOM));
@@ -2463,7 +2463,7 @@ YukonError_t CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 
 YukonError_t CtiProtocolION::sendCommResult( INMESS &InMessage )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( _ionState == State_Abort )
     {
@@ -2487,7 +2487,7 @@ YukonError_t CtiProtocolION::sendCommResult( INMESS &InMessage )
         InMessage.InLength = 0;
 
         //  oh well, closest thing to reality - not enough room in outmess
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;

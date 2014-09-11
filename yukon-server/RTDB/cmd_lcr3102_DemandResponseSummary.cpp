@@ -32,7 +32,7 @@ void Lcr3102DemandResponseSummaryCommand::decodeResponseByte(const unsigned char
         ((drSummaryByte & 0x08) && (drSummaryByte & 0x04)) )   // Both activated bits are set: can't be both controlled and not controlled.
     {
        description = "LCR returned a conflicted account of its currently controlled state (" + CtiNumStr(drSummaryByte) + ")";
-       throw CommandException(ErrorInvalidData, description);
+       throw CommandException(ClientErrors::InvalidData, description);
     }
 
     description += (drSummaryByte & Summary_ColdLoadPickup) ? "In cold load pickup\n" : "Not in cold load pickup\n";

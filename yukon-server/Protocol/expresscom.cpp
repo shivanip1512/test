@@ -123,7 +123,7 @@ INT CtiProtocolExpresscom::addAddressing( UINT    serial,
 
     resolveAddressLevel();
 
-    return valid ? NoError : BADPARAM;
+    return valid ? ClientErrors::None : ClientErrors::BadParameter;
 }
 
 INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
@@ -140,7 +140,7 @@ INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 
     resolveAddressLevel();
 
-    return validateParseAddressing(parse) ? NoError : BADPARAM;
+    return validateParseAddressing(parse) ? ClientErrors::None : ClientErrors::BadParameter;
 }
 
 INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
@@ -158,7 +158,7 @@ INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
     resolveAddressLevel();
 
     // Either not using unique address, or unique address is > 0
-    return (validateParseAddressing(parse) && (_uniqueAddress > 0 || _addressLevel != atIndividual)) ? NoError : BADPARAM;
+    return (validateParseAddressing(parse) && (_uniqueAddress > 0 || _addressLevel != atIndividual)) ? ClientErrors::None : ClientErrors::BadParameter;
 }
 
 void CtiProtocolExpresscom::addressMessage()
@@ -225,7 +225,7 @@ void CtiProtocolExpresscom::addressMessage()
 
 INT CtiProtocolExpresscom::sync()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     _message.push_back(mtSync);
     incrementMessageCount();
     return status;
@@ -233,7 +233,7 @@ INT CtiProtocolExpresscom::sync()
 
 INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiTime delayedTime = local + ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
     CtiDate theDate     = delayedTime.dateGMT();
@@ -259,7 +259,7 @@ INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
 
 INT CtiProtocolExpresscom::tamperInformation()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     _message.push_back( mtTamper );
     _message.push_back( 0x03 ); // Requests both of the tamper bits from the LCR 3102.
@@ -270,7 +270,7 @@ INT CtiProtocolExpresscom::tamperInformation()
 
 INT CtiProtocolExpresscom::demandResponseSummary()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     _message.push_back( mtDemandResponseSummary );
 
@@ -281,7 +281,7 @@ INT CtiProtocolExpresscom::demandResponseSummary()
 
 INT CtiProtocolExpresscom::signalTest(BYTE test)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(test)
     {
@@ -312,7 +312,7 @@ INT CtiProtocolExpresscom::signalTest(BYTE test)
 
 INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin, BYTE randout, USHORT delay )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flag;
     BYTE shedtime = 0;
     BYTE load;
@@ -373,7 +373,7 @@ INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds
 
 INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE random, USHORT delay )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flag;
     BYTE load;
 
@@ -413,7 +413,7 @@ INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE random, USHORT
 
 INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flag;
     BYTE load;
 
@@ -459,7 +459,7 @@ INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BY
 //Very similar to cycleLoadControl, however different enough that I didnt want to mangle the cycleLoadControl function
 INT CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle, CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     int kwhValue = 0;
     BYTE flag;
     BYTE load;
@@ -537,7 +537,7 @@ INT CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, BYTE cycle
 
 INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay, INT controltemperature, BYTE limittemperature, BYTE limitfallbackpercent, CHAR maxdeltaperhour, BYTE deltafallbackpercent, bool noramp)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     BYTE flaghi = (_heatingMode ? 0x10 : 0x00) | (_coolingMode ? 0x08 : 0x00) | (_celsiusMode ? 0x04 : 0x00);
     BYTE flaglo = (noramp ? 0x80 : 0x00);
@@ -632,7 +632,7 @@ INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercen
  */
 INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp, USHORT T_r, USHORT T_a, USHORT T_b, BYTE delta_S_b, USHORT T_c, USHORT T_d, BYTE delta_S_d, USHORT T_e, USHORT T_f, BYTE delta_S_f, bool hold, bool bumpFlag, BYTE stage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     BYTE flaghi = 0x00;
     BYTE flaglo = (hold ? 0x80 : 0x00);
@@ -747,7 +747,7 @@ INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCyc
     _message.push_back( cycPeriod );
 
     incrementMessageCount();
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
@@ -798,7 +798,7 @@ INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE min
     }
 
     incrementMessageCount();
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -814,7 +814,7 @@ INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE d
     }
 
     incrementMessageCount();
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiProtocolExpresscom::rawconfiguration(string str)
@@ -872,7 +872,7 @@ INT CtiProtocolExpresscom::rawmaintenance(string str)
 
 INT CtiProtocolExpresscom::maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     _message.push_back( mtMaintenance );
     _message.push_back( function );
@@ -888,7 +888,7 @@ INT CtiProtocolExpresscom::maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE
 
 INT CtiProtocolExpresscom::service(BYTE action)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE load;
 
     _message.push_back( mtService );
@@ -901,7 +901,7 @@ INT CtiProtocolExpresscom::service(BYTE action)
 
 INT CtiProtocolExpresscom::service(UINT loadMask, bool activate)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE load;
 
     for(load = 0; load < 15; load++)
@@ -923,7 +923,7 @@ INT CtiProtocolExpresscom::service(UINT loadMask, bool activate)
 
 INT CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool deactiveColdLoad, bool deactiveLights)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flags = (cancel ? 0x80 : 0x00) | (deactiveColdLoad ? 0x02 : 0x00) | (deactiveLights ? 0x01 : 0x00);
 
     _message.push_back( mtTemporaryService );
@@ -961,7 +961,7 @@ INT CtiProtocolExpresscom::data(string str, BYTE configByte)
 
 INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, string str)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flags = 0;
     BYTE msgBlock[124];
     INT i = 0;
@@ -993,7 +993,7 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
 
 INT CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, BYTE targetPort)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE txTypePort = 0;
     txTypePort |= ((dataTransmitType << 4) & 0xf0);
     txTypePort |= (targetPort & 0x0f);
@@ -1014,7 +1014,7 @@ INT CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, 
 
 INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, BYTE data2)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     _message.push_back( mtCapcontrol );
     _message.push_back( action );
@@ -1076,7 +1076,7 @@ INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, B
 
 INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     addressMessage();
 
@@ -1159,7 +1159,7 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
                 dout << CtiTime() << " Unsupported command on expresscom route Command = " << command << endl;
             }
 
-            status = ErrorInvalidRequest;
+            status = ClientErrors::InvalidRequest;
 
             break;
         }
@@ -1167,7 +1167,7 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
 
     calcCRC(_message.begin(), _message.size());
 
-    return validateParseAddressing(parse) ? status : BADPARAM;
+    return validateParseAddressing(parse) ? status : ClientErrors::BadParameter;
 }
 
 
@@ -1226,7 +1226,7 @@ BYTE CtiProtocolExpresscom::getStopByte() const
 
 INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
 {
-    INT  status = NoError;
+    INT  status = ClientErrors::None;
 
     if(parse.isKeyValid("xctamper"))
     {
@@ -1248,7 +1248,7 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
 INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
 {
     INT  i;
-    INT  status = NoError;
+    INT  status = ClientErrors::None;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
     INT  relaymask  = parse.getiValue("relaymask", 0);
 
@@ -1404,7 +1404,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     int serial = parse.getiValue("xc_serial", 0);
     int relaymask  = parse.getiValue("relaymask", 0);
@@ -1474,7 +1474,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
                 go = true;
             else
             {
-                status = BADPARAM;
+                status = ClientErrors::BadParameter;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Incompatible addressing modes.  Assigning load level addressing to a group without load level addressing is not allowed." << endl;
@@ -1507,9 +1507,9 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 
         // If either succeeds, we are ok. Unless we have MISPARAM which indicates
         // we would be sending something unexpected based on user input.
-        if(tempStatus == NoError && status != MISPARAM)
+        if(tempStatus == ClientErrors::None && status != ClientErrors::MissingParameter)
         {
-            status = NoError;
+            status = ClientErrors::None;
         }
     }
 
@@ -1707,7 +1707,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(parse.isKeyValid("xcproptest"))
     {
@@ -1728,7 +1728,7 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     //This is here to work around firmware bug. We always send the timesync with this message now.
     if(gConfigParms.isTrue("PREPEND_TSTAT_CONTROL_TIMESYNC", true))
@@ -1749,7 +1749,7 @@ INT CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
 
 INT CtiProtocolExpresscom::compareRSSI()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     _message.push_back(mtCompareRSSI);
 
     incrementMessageCount();
@@ -1758,7 +1758,7 @@ INT CtiProtocolExpresscom::compareRSSI()
 
 INT CtiProtocolExpresscom::commandInitiator(BYTE commandId)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
      _message.push_back(mtCommandInitiator);
      _message.push_back(commandId);
 
@@ -1768,7 +1768,7 @@ INT CtiProtocolExpresscom::commandInitiator(BYTE commandId)
 
 INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     INT numUsageValues = parse.getiValue("xcnumutilvalues", 0);
     _message.push_back( mtUpdateUtilityUsage );
     _message.push_back( numUsageValues );
@@ -1800,7 +1800,7 @@ INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
 INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
                                                      BOOL currencyInCents, string optionalString)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE config = 0x00;
     BYTE utilFlags = 0x00;
 
@@ -1851,7 +1851,7 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost
 
 INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     BYTE dow;
     BYTE pod;
@@ -1905,7 +1905,7 @@ INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(schedule.size() > 1)
     {
@@ -1927,7 +1927,7 @@ INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
 
 INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
 {
-    INT status = BADPARAM;
+    INT status = ClientErrors::BadParameter;
 
     BYTE length = 1;
     BYTE raw[20];
@@ -1988,7 +1988,7 @@ INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
 // Takes a list of programs, splinters, and loads and possibly sends multiple commands
 INT CtiProtocolExpresscom::configureLoadMaskAddressing(CtiCommandParser &parse)
 {
-    INT status = BADPARAM;
+    INT status = ClientErrors::BadParameter;
 
     BYTE length = 1;
     BYTE raw[8];
@@ -2044,7 +2044,7 @@ INT CtiProtocolExpresscom::configureLoadMaskAddressing(CtiCommandParser &parse)
 // Returns BADPARAM if the parameters are non existang, and MISPARAM if half of the parameters exist
 INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
 {
-    INT status = BADPARAM;
+    INT status = ClientErrors::BadParameter;
 
     BYTE length = 1;
     BYTE raw[8];
@@ -2067,7 +2067,7 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     {
         // If we dont have the combination of load and program or splinter, but we do have
         // One of them, this is a different error.
-        status = MISPARAM;
+        status = ClientErrors::MissingParameter;
     }
 
     return status;
@@ -2075,7 +2075,7 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, bool restore, int timeout_min, int setpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flaghi;
     BYTE flaglo;
     BYTE load;
@@ -2148,7 +2148,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
 
 INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool temporary, bool restore, int timeout_min, int setcoolpoint, int setheatpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flaghi;
     BYTE flaglo;
     BYTE load;
@@ -2236,7 +2236,7 @@ INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool tem
 INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int display, int timeout, int delay)
 {
 
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE flags;
     _message.push_back( mtExtendedTierMsg );
 
@@ -2282,7 +2282,7 @@ INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int
 
 INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     BYTE config[3];
     USHORT time;
 
@@ -2322,7 +2322,7 @@ INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::configureLCRMode(CtiCommandParser &parse)
 {
-    INT status = SYNTAX;
+    INT status = ClientErrors::Syntax;
     BYTE config = 0;
 
     /*  Length: 1 byte
@@ -2360,7 +2360,7 @@ INT CtiProtocolExpresscom::configureLCRMode(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::configureEmetconGoldAddress(CtiCommandParser &parse)
 {
-    INT status = SYNTAX;
+    INT status = ClientErrors::Syntax;
     BYTE config = 0;
 
     config = parse.getiValue("gold");
@@ -2378,7 +2378,7 @@ INT CtiProtocolExpresscom::configureEmetconGoldAddress(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse)
 {
-    INT status = SYNTAX;
+    INT status = ClientErrors::Syntax;
     BYTE config = 0;
 
     config = parse.getiValue("silver");
@@ -2403,7 +2403,7 @@ INT CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
     {
         if(channel >= 108.05 || channel <= 63.95) // 64-108 are known possible in hardware. Compensting for floating point errors.
         {
-            return BADPARAM;
+            return ClientErrors::BadParameter;
         }
         int hundrethsOfMhz = ((channel * 100)+.5); // Positive only rounding, works for my use.
         config.push_back(hundrethsOfMhz>>8);
@@ -2416,7 +2416,7 @@ INT CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
     }
     else
     {
-        return BADPARAM;
+        return ClientErrors::BadParameter;
     }
 }
 
@@ -2437,7 +2437,7 @@ INT CtiProtocolExpresscom::configureTargetLoadAmps(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::priority(BYTE priority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(priority > 3) priority = 3;
 

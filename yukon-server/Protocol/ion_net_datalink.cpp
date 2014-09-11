@@ -170,7 +170,7 @@ int CtiIONDatalinkLayer::getPayloadLength( void )
 
 YukonError_t CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     _inActual = 0;
 
@@ -287,7 +287,7 @@ YukonError_t CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             xfer.setInCountExpected(0);
 
             _ioState = Failed;
-            retVal   = BADRANGE;
+            retVal   = ClientErrors::BadRange;
 
             break;
         }
@@ -414,16 +414,16 @@ void CtiIONDatalinkLayer::generateOutputNack( ion_output_frame *out_frame, const
 
 YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal = NoError, possibleError = NoError;
+    YukonError_t retVal = ClientErrors::None, possibleError = ClientErrors::None;
     int offset;
 
     if( status )
     {
         switch( status )
         {
-            case BADPORT:
-            case PORTWRITE:
-            case PORTREAD:
+            case ClientErrors::BadPort:
+            case ClientErrors::PortWrite:
+            case ClientErrors::PortRead:
             default:
             {
                 if( isDebugLudicrous() )
@@ -490,7 +490,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         //  we didn't read the sync byte this try
                         ++_framingErrorCount;
 
-                        possibleError = FRAMEERR;
+                        possibleError = ClientErrors::Framing;
                     }
                 }
                 else
@@ -563,7 +563,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                                 //  they sent the wrong packet
                                 ++_packetErrorCount;
 
-                                possibleError = ADDRESSERROR;  //  ...  not quite, but close
+                                possibleError = ClientErrors::Address;  //  ...  not quite, but close
 
                                 if( _inFrame.header.cntlframetype == DataAcknakEnbl )
                                 {
@@ -586,7 +586,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                             _inTotal = 0;
                             _ioState = InputHeader;
 
-                            possibleError = WRONGADDRESS;
+                            possibleError = ClientErrors::WrongAddress;
                         }
                     }
                     else
@@ -594,7 +594,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         //  bad CRC - this read failed
                         //    it's impossible to recover from this, so kick us out
                         _packetErrorCount = PacketRetries + 1;
-                        possibleError = BADCRC;
+                        possibleError = ClientErrors::BadCrc;
                     }
                 }
 
@@ -651,7 +651,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         //  we didn't read the sync byte
                         ++_framingErrorCount;
 
-                        possibleError = FRAMEERR;
+                        possibleError = ClientErrors::Framing;
                     }
                 }
                 else
@@ -688,7 +688,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                             {
                                 //  we were NACK'd, so fail to the upper levels - maybe regenerating the packet will help
                                 _packetErrorCount = PacketRetries + 1;
-                                possibleError     = NACK1;  //  not quite what it originally meant, but close enough...
+                                possibleError     = ClientErrors::Word1Nack;  //  not quite what it originally meant, but close enough...
 
                                 _ioState = Output;
                             }
@@ -701,7 +701,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                                 }
 
                                 _packetErrorCount++;
-                                possibleError = ADDRESSERROR;
+                                possibleError = ClientErrors::Address;
 
                                 //  try reading again
                                 _inTotal = 0;
@@ -713,7 +713,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                             //  they sent the wrong packet
                             ++_packetErrorCount;
 
-                            possibleError = ADDRESSERROR;  //  ...  not quite, but close
+                            possibleError = ClientErrors::Address;  //  ...  not quite, but close
 
 /*                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
                             {
@@ -739,7 +739,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         //  bad CRC - this read failed
                         //    it's impossible to recover from this, so kick us out and fully regenerate
                         _packetErrorCount = PacketRetries + 1;
-                        possibleError = BADCRC;
+                        possibleError = ClientErrors::BadCrc;
                     }
                 }
 
@@ -754,7 +754,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                 }
 
                 _ioState = Failed;
-                retVal   = BADRANGE;
+                retVal   = ClientErrors::BadRange;
 
                 break;
             }

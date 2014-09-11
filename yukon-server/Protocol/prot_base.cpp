@@ -8,14 +8,14 @@
 namespace Cti {
 namespace Protocol {
 
-YukonError_t Interface::generate( CtiXfer &xfer )                       {   return NoMethod;   }
-YukonError_t Interface::decode  ( CtiXfer &xfer, YukonError_t status )  {   return NoMethod;   }
+YukonError_t Interface::generate( CtiXfer &xfer )                       {   return ClientErrors::NoMethod;   }
+YukonError_t Interface::decode  ( CtiXfer &xfer, YukonError_t status )  {   return ClientErrors::NoMethod;   }
 
-int Interface::sendCommRequest( OUTMESS *&OutMessage,    std::list< OUTMESS* > &outList )   {   return NoMethod;    }
-int Interface::recvCommResult ( const INMESS &InMessage, std::list< OUTMESS* > &outList )   {   return NoMethod;    }
+int Interface::sendCommRequest( OUTMESS *&OutMessage,    std::list< OUTMESS* > &outList )   {   return ClientErrors::NoMethod;    }
+int Interface::recvCommResult ( const INMESS &InMessage, std::list< OUTMESS* > &outList )   {   return ClientErrors::NoMethod;    }
 
-YukonError_t Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMethod;    }
-YukonError_t Interface::sendCommResult ( INMESS   &InMessage  )   {   return NoMethod;    }
+YukonError_t Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return ClientErrors::NoMethod;    }
+YukonError_t Interface::sendCommResult ( INMESS   &InMessage  )   {   return ClientErrors::NoMethod;    }
 
 bool Interface::isTransactionComplete( void ) const {   return true;    }
 bool Interface::errorCondition       ( void ) const {   return false;   }

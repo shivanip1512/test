@@ -499,7 +499,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
 // Interesting
 INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     // These elements of addressing must be defined.
     if(_utility <= 0) _utility = parse.getiValue("sa_utility");
@@ -556,14 +556,14 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
                 dout << CtiTime() << " Unsupported command on sa305 route. Command = " << parse.getCommand() << endl;
             }
 
-            status = ErrorInvalidRequest;
+            status = ClientErrors::InvalidRequest;
 
             break;
         }
     }
 
     if(_transmitterType != TYPE_RTC) appendCRCToMessage();
-    if(status == NoError) _messageReady = true;
+    if(status == ClientErrors::None) _messageReady = true;
     // dumpBits();
 
     return status;
@@ -639,7 +639,7 @@ void CtiProtocolSA305::addressMessage(int command_type, int command_description)
 INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
     INT  i;
-    INT  status = NoError;
+    INT  status = ClientErrors::None;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
     _repetitions = parse.getiValue("sa_reps", 0);
@@ -658,7 +658,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
             timedLoadControl();
         }
         else
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
     }
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
@@ -690,7 +690,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     }
     else
     {
-        status = NoMethod;
+        status = ClientErrors::NoMethod;
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Unsupported sa305 command.  Command = " << parse.getCommand() << endl;
     }
@@ -700,7 +700,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
 
 INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if( _strategy != 0 )
     {
@@ -735,7 +735,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         }
         else
         {
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
         }
 
         addBits(_priority, 2);
@@ -809,7 +809,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
 
             if(!configed)
             {
-                status = NoMethod;
+                status = ClientErrors::NoMethod;
             }
         }
         else if( 0 <= (val = parse.getiValue("sa_lorm0",-1)) )
@@ -905,7 +905,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         }
         else
         {
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
         }
     }
     return status;
@@ -914,7 +914,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
 
 INT CtiProtocolSA305::timedLoadControl( )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     // Ok, the flags and addressing are all stuffed on the message, we also believe that the stratey, function etc are ready for us to use!
 
@@ -929,7 +929,7 @@ INT CtiProtocolSA305::timedLoadControl( )
 
 INT CtiProtocolSA305::restoreLoadControl( )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     _strategy = 61;
 
@@ -945,7 +945,7 @@ INT CtiProtocolSA305::restoreLoadControl( )
 
 INT CtiProtocolSA305::cycleLoadControl()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     // Ok, the flags and addressing are all stuffed on the message, we also believe that the stratey, function etc are ready for us to use!
 

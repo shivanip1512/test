@@ -11,7 +11,7 @@ const std::map<std::string, Mct420MeterParametersDisplayDigitsCommand::DisplayDi
     ("5x1", Five_Digits)
     ("6x1", Six_Digits);
 
-Mct420MeterParametersDisplayDigitsCommand::Mct420MeterParametersDisplayDigitsCommand(const unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio, 
+Mct420MeterParametersDisplayDigitsCommand::Mct420MeterParametersDisplayDigitsCommand(const unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio,
                                                                                      boost::optional<std::string> parseStr, boost::optional<unsigned char> dynamicValue) :
     Mct420MeterParametersCommand(cycleTime, disconnectDisplayDisabled, transformerRatio),
     _parseStr(parseStr),
@@ -24,11 +24,11 @@ Mct420MeterParametersDisplayDigitsCommand::Mct420MeterParametersDisplayDigitsCom
         if( itr == _digit_mapping.end() )
         {
             // Not a valid value!
-            throw CommandException(BADPARAM, "Invalid LCD display digit configuration specified (" + *_parseStr + ")");
+            throw CommandException(ClientErrors::BadParameter, "Invalid LCD display digit configuration specified (" + *_parseStr + ")");
         }
 
         _displayDigits = itr->second;
-    } 
+    }
     else if( _dynamicValue )
     {
         // Use this, regardless of what it was.
@@ -37,7 +37,7 @@ Mct420MeterParametersDisplayDigitsCommand::Mct420MeterParametersDisplayDigitsCom
     else
     {
         // We got nothing.
-       throw CommandException(BADPARAM, "No LCD display digit configuration specified.");
+       throw CommandException(ClientErrors::BadParameter, "No LCD display digit configuration specified.");
     }
 }
 

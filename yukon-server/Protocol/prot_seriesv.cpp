@@ -119,7 +119,7 @@ void CtiProtocolSeriesV::setAnalogOutPoints( int min, int max )
 
 int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     seriesv_outmess_struct tmp_om_struct;
 
@@ -139,7 +139,7 @@ int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > 
     }
     else
     {
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -198,7 +198,7 @@ YukonError_t CtiProtocolSeriesV::recvCommRequest( OUTMESS *OutMessage )
         setCommand(request.command);
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -220,7 +220,7 @@ YukonError_t CtiProtocolSeriesV::sendCommResult( INMESS &InMessage )
 
     InMessage.InLength = sizeof(seriesv_inmess_struct) + (sizeof(seriesv_pointdata) * response.num_points);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -236,7 +236,7 @@ YukonError_t CtiProtocolSeriesV::generate( CtiXfer &xfer )
                   param1 = 0,
                   param2 = 0,
                   points_requested = 0;
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
 
     if( !_configRead )
     {
@@ -558,7 +558,7 @@ void CtiProtocolSeriesV::setRange( int point_count, int point_min, int point_max
 
 YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
     seriesv_pointdata pd;
     CtiTime Now;
     unsigned long in_actual = xfer.getInCountActual();
@@ -584,7 +584,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
                     dout << CtiTime() << " **** Checkpoint - incoming address (" << (int)packet.station_id << ") doesn't match (" << (int)_address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                retval = ADDRESSERROR;
+                retval = ClientErrors::Address;
             }
             else
             {
@@ -603,7 +603,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
                         dout << CtiTime() << " **** Checkpoint - RTU status: request questionable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    retval = Error_Abnormal;
+                    retval = ClientErrors::Abnormal;
                 }
                 else if( !_configRead )
                 {
@@ -776,12 +776,12 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
         }
         else
         {
-            retval = BADCRC;
+            retval = ClientErrors::BadCrc;
         }
     }
     else
     {
-        retval = Error_Abnormal;
+        retval = ClientErrors::Abnormal;
     }
 
     if( retval )
@@ -789,7 +789,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
         if( ++_retry_count < Retries )
         {
             //  since we didn't change anything, we'll just whip around for another pass
-            retval = NoError;
+            retval = ClientErrors::None;
         }
     }
 

@@ -68,23 +68,23 @@ RfnCommandResult RfnRemoteDisconnectConfigurationCommand::decodeResponseHeader( 
     RfnCommandResult result;
 
     // We need at least three bytes
-    validate( Condition( response.size() >= 3, ErrorInvalidData )
+    validate( Condition( response.size() >= 3, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     // Validate the first 3 bytes
-    validate( Condition( response[0] == CommandCode_Response, ErrorInvalidData )
+    validate( Condition( response[0] == CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
 
-    validate( Condition( response[1] == _operation, ErrorInvalidData )
+    validate( Condition( response[1] == _operation, ClientErrors::InvalidData )
             << "Invalid Operation Code (" << CtiNumStr(response[1]).xhex(2) << ")" );
 
     boost::optional<std::string> status = mapFind( remoteDisconnectStatusResolver, response[2] );
 
     // invalid status byte -- not found in map
-    validate( Condition( status, ErrorInvalidData )
+    validate( Condition( status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
-    validate( Condition( response[2] == 0, ErrorInvalidData ) // success
+    validate( Condition( response[2] == 0, ClientErrors::InvalidData ) // success
             << "Status: " << *status << " (" << response[2] << ")" );
 
     result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
@@ -94,7 +94,7 @@ RfnCommandResult RfnRemoteDisconnectConfigurationCommand::decodeResponseHeader( 
 
 BaseCmd::TlvList RfnRemoteDisconnectConfigurationCommand::getTlvsFromPayload( const RfnResponsePayload & response )
 {
-    validate( Condition( response.size() >= 5, ErrorInvalidData )
+    validate( Condition( response.size() >= 5, ClientErrors::InvalidData )
             << "Response too small (" << response.size() << " < 5)" );
 
     const RfnResponsePayload payload( response.begin() + 4, response.end() );
@@ -118,7 +118,7 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
 
     _disconnectMode = mapFind( disconnectModes, tlv.type );
 
-    validate( Condition( _disconnectMode, ErrorInvalidData )
+    validate( Condition( _disconnectMode, ClientErrors::InvalidData )
             << "Invalid TLV type received in response (" << tlv.type << ")" );
 
     description << "\nDisconnect mode: " << *mapFind( disconnectModeResolver, *_disconnectMode );
@@ -127,7 +127,7 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
     boost::optional<Reconnect> reconnect = mapFind( remoteDisconnectReconnectResolver, tlv.value[0] );
 
     // invalid reconnect byte -- not found in map
-    validate( Condition( reconnect, ErrorInvalidData )
+    validate( Condition( reconnect, ClientErrors::InvalidData )
             << "Response reconnect param invalid (" << tlv.value[0]
             << ") expecting 0 or 1" );
 
@@ -140,7 +140,7 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
     {
         case DisconnectMode_DemandThreshold:
         {
-            validate( Condition( tlv.value.size() == 5, ErrorInvalidData )
+            validate( Condition( tlv.value.size() == 5, ClientErrors::InvalidData )
             << "Response TLV too small (" << tlv.value.size() << " != 5)");
 
             // Byte 1 - demand interval
@@ -193,10 +193,10 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
         }
         case DisconnectMode_Cycling:
         {
-            validate( Condition( tlv.value.size() == 5, ErrorInvalidData )
+            validate( Condition( tlv.value.size() == 5, ClientErrors::InvalidData )
                     << "Response TLV too small (" << tlv.value.size() << " != 5)" );
 
-            validate( Condition( getReconnectParam() == Reconnect_Immediate, ErrorInvalidData ) // must be 1 for cycling!
+            validate( Condition( getReconnectParam() == Reconnect_Immediate, ClientErrors::InvalidData ) // must be 1 for cycling!
                     << "Response reconnect param invalid " << getReconnectParam()
                     << ") expecting 1)" );
 
@@ -260,14 +260,14 @@ RfnCommandResult RfnRemoteDisconnectSetConfigurationCommand::decodeCommand( cons
     RfnCommandResult result = decodeResponseHeader( now, response );
 
     // We're a success, we should have a current disconnect mode and TLV.
-    validate( Condition( response.size() >= 4, ErrorInvalidData )
+    validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
 
     currentDisconnectMode = response[3];
 
     const TlvList tlvs = getTlvsFromPayload( response );
 
-    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
+    validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Invalid TLV count (" << tlvs.size() << ")" );
 
     result.description += decodeDisconnectConfigTlv( tlvs[0] );
@@ -328,20 +328,20 @@ RfnRemoteDisconnectSetThresholdConfigurationCommand::RfnRemoteDisconnectSetThres
         maxDisconnects( max_disconnects )
 {
     std::string underVal = CtiNumStr( demand_threshold, 1 );
-    validate( Condition( demand_threshold >= 0.5, BADPARAM )
+    validate( Condition( demand_threshold >= 0.5, ClientErrors::BadParameter )
             << "Invalid Demand Threshold: (" << underVal
             << ") underflow (minimum 0.5)" );
 
     std::string overVal = CtiNumStr( demand_threshold, 1 );
-    validate( Condition( demand_threshold <= 12.0, BADPARAM )
+    validate( Condition( demand_threshold <= 12.0, ClientErrors::BadParameter )
             << "Invalid Demand Threshold: (" << overVal
             << ") overflow (maximum 12.0)" );
 
-    validate( Condition( connect_delay <= 30, BADPARAM )
+    validate( Condition( connect_delay <= 30, ClientErrors::BadParameter )
             << "Invalid Connect Delay: (" << connect_delay
             << ") overflow (maximum 30)" );
 
-    validate( Condition( max_disconnects <= 20, BADPARAM )
+    validate( Condition( max_disconnects <= 20, ClientErrors::BadParameter )
             << "Invalid Max Disconnects: (" << max_disconnects
             << ") overflow (maximum 20)" );
 }
@@ -383,19 +383,19 @@ RfnRemoteDisconnectSetCyclingConfigurationCommand::RfnRemoteDisconnectSetCycling
     :   disconnectMinutes( disconnect_minutes ),
         connectMinutes( connect_minutes )
 {
-    validate( Condition( disconnect_minutes >= 5, BADPARAM )
+    validate( Condition( disconnect_minutes >= 5, ClientErrors::BadParameter )
             << "Invalid Disconnect Minutes: (" << disconnect_minutes
             << ") underflow (minimum 5)" );
 
-    validate( Condition( disconnect_minutes <= 1440, BADPARAM )
+    validate( Condition( disconnect_minutes <= 1440, ClientErrors::BadParameter )
             << "Invalid Disconnect Minutes: (" << disconnect_minutes
             << ") overflow (maximum 1440)" );
 
-    validate( Condition( connect_minutes >= 5, BADPARAM )
+    validate( Condition( connect_minutes >= 5, ClientErrors::BadParameter )
             << "Invalid Connect Minutes: (" << connect_minutes
             << ") underflow (minimum 5)" );
 
-    validate( Condition( connect_minutes <= 1440, BADPARAM )
+    validate( Condition( connect_minutes <= 1440, ClientErrors::BadParameter )
             << "Invalid Connect Minutes: (" << connect_minutes
             << ") overflow (maximum 1440)" );
 }
@@ -443,7 +443,7 @@ RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( cons
 
     const TlvList tlvs = getTlvsFromPayload( response );
 
-    validate( Condition( tlvs.size() == 1, ErrorInvalidData )
+    validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Invalid TLV count (" << tlvs.size() << " != 1)" );
 
     result.description += decodeDisconnectConfigTlv( tlvs[0] );

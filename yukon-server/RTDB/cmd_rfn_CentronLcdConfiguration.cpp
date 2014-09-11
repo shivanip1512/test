@@ -163,20 +163,20 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
 {
     std::ostringstream resultDescription;
 
-    validate(Condition(response.size() >= 3, ErrorInvalidData)
+    validate(Condition(response.size() >= 3, ClientErrors::InvalidData)
             << "Response too small - (" << response.size() << ", expecting >=3)");
 
-    validate(Condition(response[0] == LcdConfiguration_CommandCode_Response, ErrorInvalidData)
+    validate(Condition(response[0] == LcdConfiguration_CommandCode_Response, ClientErrors::InvalidData)
             << "Invalid command code - (" << response[0] << ", expecting LcdConfiguration_CommandCode_Response)");
 
     const OptionalString status = mapFind(StatusItems, response[1]);
 
-    validate(Condition(status, ErrorInvalidData)
+    validate(Condition(status, ClientErrors::InvalidData)
             << "Invalid status code - (" << response[1] << ")");
 
     const int metrics_nbr = response[2];
 
-    validate(Condition((metrics_nbr * 2) == (response.size() - 3), ErrorInvalidData)
+    validate(Condition((metrics_nbr * 2) == (response.size() - 3), ClientErrors::InvalidData)
             << "Invalid display metric length - (" << (response.size() - 3) << ", expecting " << (metrics_nbr * 2)  + ")");
 
     for( unsigned i = 0; i < metrics_nbr; ++i )
@@ -254,20 +254,20 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
 {
     std::ostringstream resultDescription;
 
-    validate(Condition(response.size() >= 3, ErrorInvalidData)
+    validate(Condition(response.size() >= 3, ClientErrors::InvalidData)
             << "Response too small - (" << response.size() << ", expecting >= 3)");
 
-    validate(Condition(response[0] == LcdConfiguration_CommandCode_Response, ErrorInvalidData)
+    validate(Condition(response[0] == LcdConfiguration_CommandCode_Response, ClientErrors::InvalidData)
             << "Invalid command code - (" << response[0] << ", expecting LcdConfiguration_CommandCode_Response)");
 
     const OptionalString status = mapFind(StatusItems, response[1]);
 
-    validate(Condition(status, ErrorInvalidData)
+    validate(Condition(status, ClientErrors::InvalidData)
             << "Invalid status code - (" << response[1] << ")");
 
     const int metrics_nbr = response[2];
 
-    validate(Condition(metrics_nbr == 0, ErrorInvalidData)
+    validate(Condition(metrics_nbr == 0, ClientErrors::InvalidData)
             << "Invalid number of display metrics - (" << metrics_nbr << ", expecting 0)");
 
     resultDescription << "Display metrics successfully set" << describeMetrics(display_metrics);
