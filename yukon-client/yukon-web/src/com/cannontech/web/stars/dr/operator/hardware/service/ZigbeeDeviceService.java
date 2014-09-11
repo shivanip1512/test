@@ -2,16 +2,11 @@ package com.cannontech.web.stars.dr.operator.hardware.service;
 
 import java.util.List;
 
-import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.Pair;
-import com.cannontech.stars.dr.digi.model.GatewayDto;
 import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
-import com.cannontech.thirdparty.digi.model.DigiGateway;
 
 public interface ZigbeeDeviceService {
-
-    public GatewayDto createGatewayDto(DigiGateway digiGateway, Hardware hardware);
 
     /**
      * Returns a list of zigbee devices for an account not including gateways.

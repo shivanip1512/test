@@ -19,7 +19,6 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
 
 public class ServiceCompanyServiceImpl implements ServiceCompanyService {
@@ -115,8 +114,8 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         List<DesignationCodeDto> existingDesignationCodes =
             designationCodeDao.getDesignationCodesByServiceCompanyId(serviceCompany.getCompanyId());
         List<DesignationCodeDto> newDesignationCodes = serviceCompany.getDesignationCodes();
-        List<DesignationCodeDto> addDesignationCodes = new ArrayList<DesignationCodeDto>();
-        List<DesignationCodeDto> removeDesignationCodes = new ArrayList<DesignationCodeDto>();
+        List<DesignationCodeDto> addDesignationCodes = new ArrayList<>();
+        List<DesignationCodeDto> removeDesignationCodes = new ArrayList<>();
 
         // buildup the list of designation codes to remove
         for (DesignationCodeDto designationCode : existingDesignationCodes) {
@@ -151,11 +150,6 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     }
 
     @Override
-    public void deleteServiceCompany(int serviceCompanyId) {
-        deleteServiceCompany(getServiceCompany(serviceCompanyId));
-    }
-
-    @Override
     @Transactional
     public void deleteServiceCompany(ServiceCompanyDto serviceCompany) {
         // Remove all of the inventory attached to this service company
@@ -178,11 +172,6 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
             contactDao.deleteContact(serviceCompany.getPrimaryContact());
         }
         sendServiceCompanyChangeMessage(serviceCompany.getCompanyId(), DbChangeType.DELETE);
-    }
-
-    @Override
-    public List<ServiceCompanyDesignationCode> getDesignationCodesForServiceCompany(ServiceCompanyDto serviceCompany) {
-        return ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(serviceCompany.getCompanyId());
     }
 
     private void sendServiceCompanyChangeMessage(Integer serviceCompanyId, DbChangeType dbChangeType) {

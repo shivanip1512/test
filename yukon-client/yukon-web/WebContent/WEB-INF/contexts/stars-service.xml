@@ -3,8 +3,6 @@
 
 <beans>
 
-	<bean id="switchContextService" class="com.cannontech.web.stars.service.impl.SwitchContextServiceImpl"/>
-	
-	<bean id="timeConsumingTaskService" class="com.cannontech.web.stars.service.impl.TimeConsumingTaskServiceImpl"/>
+    <bean id="switchContextService" class="com.cannontech.web.stars.service.impl.SwitchContextServiceImpl" />
 
 </beans>

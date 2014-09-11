@@ -28,15 +28,6 @@ public interface ChartService {
                                  ConverterType converterType, YukonUserContext userContext);
 
     /**
-     * Method to get the x-axis tick marks for a given time period and interval
-     * @param startDate - Start date for tick marks
-     * @param stopDate - End date for tick marks
-     * @param interval - Interval between tick marks
-     * @return A list of x-axis values
-     */
-    public List<ChartValue<Date>> getXAxisData(Date startDate, Date stopDate, ChartInterval unit, YukonUserContext userContext);
-    
-    /**
      * Method to get the number of x-axis values only. Does not create list of actual CharValues.
      * Does much less work than the getXAxisData method if all you are interested in is the count.
      * @param startDate

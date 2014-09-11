@@ -27,18 +27,16 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
-import com.cannontech.web.dev.DevDbSetupTask;
 
 public abstract class DevObjectCreationBase {
     protected static final Logger log = YukonLogManager.getLogger(DevObjectCreationBase.class);
-    protected DevDbSetupTask devDbSetupTask;
     @Autowired protected ConfigurationSource configurationSource;
     @Autowired protected PaoDao paoDao;
     @Autowired protected DeviceDao deviceDao;
     @Autowired protected DeviceCreationService deviceCreationService;
     @Autowired protected DBPersistentDao dbPersistentDao;
     @Autowired protected CustomerAccountDao customerAccountDao;
-    
+
     @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
     @Autowired private RoleDao roleDao;
@@ -77,7 +75,7 @@ public abstract class DevObjectCreationBase {
 
         return smartDB;
     }
-    
+
     protected boolean canAddRole(LiteYukonGroup group, YukonRole yukonRole) {
         if (!roleDao.getRolesForGroup(group.getGroupID()).contains(yukonRole)) {
             try {
@@ -88,20 +86,23 @@ public abstract class DevObjectCreationBase {
         }
         return true;
     }
-    
-    protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal)  {
 
-        roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
-        log.debug("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
+    protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal) {
+        roleDao.updateGroupRoleProperty(group, yukonRoleProperty.getRole().getRoleId(),
+            yukonRoleProperty.getPropertyId(), newVal);
+        log.debug("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name()
+            + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
 
     protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, boolean newVal) {
-        GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(group, yukonRoleProperty.getRole(), true);
+        GroupRolePropertyValueCollection propertyValues =
+            rolePropertyEditorDao.getForGroupAndRole(group, yukonRoleProperty.getRole(), true);
         Map<YukonRoleProperty, Object> valueMap = propertyValues.getValueMap();
         valueMap.put(yukonRoleProperty, newVal);
         propertyValues.putAll(valueMap);
         rolePropertyEditorDao.save(propertyValues);
-        log.debug("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
+        log.debug("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name()
+            + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
-    
+
 }

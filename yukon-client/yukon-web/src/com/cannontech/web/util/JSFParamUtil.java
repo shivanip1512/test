@@ -40,16 +40,7 @@ public class JSFParamUtil {
 			return null;
 		}
 
-		return (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(paramName);		
-	}
-
-	/**
-	 * Allows a JSF variable to be removed from the session scope
-	 */
-	public static void removeJSFVar(String varName) {
-		if(varName != null) {
-			FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(varName);
-		}
+		return (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(paramName);
 	}
 
 	/**
@@ -86,7 +77,7 @@ public class JSFParamUtil {
 			}
 		}
 
-		return "";		
+		return "";
 	}
 
 	/**
@@ -111,7 +102,7 @@ public class JSFParamUtil {
 	public static void goToPointEditor(Integer parentID, final FacesMessage fm) {
 		try {
 			//make sure the point form will have the pao id
-			//of the cbc 
+			//of the cbc
 			String red = "pointBase.jsf?parentId=" + parentID.toString() + "&itemid=";
 			String val = getJSFReqParam("ptID");
 			String location = red + val;
@@ -129,5 +120,5 @@ public class JSFParamUtil {
 				FacesContext.getCurrentInstance().addMessage("point_click", fm);
 			}
 		}
-	}    
+	}
 }

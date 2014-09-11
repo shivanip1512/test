@@ -18,12 +18,12 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class WarehouseServiceImpl implements WarehouseService {
-    
+
     @Autowired private AddressDao addressDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private StarsEventLogService starsEventLogService;
-    
+
     private final Function<Warehouse, WarehouseDto> warehouseToDtoFunction = new Function<Warehouse, WarehouseDto>() {
         @Override
         public WarehouseDto apply(Warehouse from) {
@@ -49,24 +49,22 @@ public class WarehouseServiceImpl implements WarehouseService {
         warehouseDto.getWarehouse().setAddressID(warehouseDto.getAddress().getAddressID());
         warehouseDao.create(warehouseDto.getWarehouse());
 
-        dbChangeManager.processDbChange(DbChangeType.ADD, 
-                                        DbChangeCategory.WAREHOUSE, 
-                                        warehouseDto.getWarehouse().getWarehouseID());
-        
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.WAREHOUSE,
+            warehouseDto.getWarehouse().getWarehouseID());
+
         starsEventLogService.addWarehouse(warehouseDto.getWarehouse().getWarehouseName());
     }
 
     @Override
     @Transactional
     public void updateWarehouse(WarehouseDto warehouseDto) {
-        //update warehouse & address
+        // update warehouse & address
         warehouseDao.update(warehouseDto.getWarehouse());
         addressDao.update(warehouseDto.getAddress());
 
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, 
-                                        DbChangeCategory.WAREHOUSE, 
-                                        warehouseDto.getWarehouse().getWarehouseID());
-        
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.WAREHOUSE,
+            warehouseDto.getWarehouse().getWarehouseID());
+
         starsEventLogService.updateWarehouse(warehouseDto.getWarehouse().getWarehouseName());
     }
 
@@ -76,17 +74,9 @@ public class WarehouseServiceImpl implements WarehouseService {
         warehouseDao.delete(warehouseDto.getWarehouse());
         addressDao.remove(warehouseDto.getAddress());
 
-        dbChangeManager.processDbChange(DbChangeType.DELETE, 
-                                        DbChangeCategory.WAREHOUSE, 
-                                        warehouseDto.getWarehouse().getWarehouseID());
-        
-        starsEventLogService.deleteWarehouse(warehouseDto.getWarehouse().getWarehouseName());
-    }
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.WAREHOUSE,
+            warehouseDto.getWarehouse().getWarehouseID());
 
-    @Override
-    @Transactional
-    public void deleteWarehouse(int warehouseId) {
-        WarehouseDto warehouseDto = getWarehouse(warehouseId);
-        deleteWarehouse(warehouseDto);
+        starsEventLogService.deleteWarehouse(warehouseDto.getWarehouse().getWarehouseName());
     }
 }
