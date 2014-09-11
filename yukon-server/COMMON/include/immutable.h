@@ -14,7 +14,6 @@ class Immutable
 {
     typedef boost::shared_ptr<const T> SharedPtr;
 
-    // using Atomic makes this class noncopyable
     Atomic<SharedPtr*> _content;
 
     mutable Atomic<unsigned>             _readers;
