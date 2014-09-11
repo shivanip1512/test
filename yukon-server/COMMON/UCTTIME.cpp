@@ -49,7 +49,7 @@ int IM_EX_CTIBASE getUCTMemoryFlags (void)
         if(NULL == (Flags = (_dstFlags_t*)malloc(sizeof(*Flags))))
         {
             /* we got no memory from the system */
-            return(MEMORY);
+            return ClientErrors::MemoryAccess;
         }
 
         /* because we had to create the memory we need to set it */
@@ -117,7 +117,7 @@ int IM_EX_CTIBASE getUCTMemoryFlags (void)
         InitTZFlag = TRUE;  /* the time zone must be initialized for each program that uses this DLL.  This flag says so */
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -154,7 +154,7 @@ IM_EX_CTIBASE INT UCTFTime (struct timeb *TimeBuffer)
     /* flags is the dst ruler set return value */
     TimeBuffer->dstflag = (SHORT)Flags->MyDSTFlag;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

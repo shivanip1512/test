@@ -817,7 +817,7 @@ INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type)
 
 string& traceBuffer(string &str, BYTE *Message, ULONG Length)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     ULONG i;
     ULONG offset = 0;
 
@@ -1727,7 +1727,7 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
 INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount)
 {
    BYTEUSHORT  CRC;
-   INT         retval = Error_Abnormal;
+   INT         retval = ClientErrors::Abnormal;
 
 
    switch(Id)
@@ -1742,7 +1742,7 @@ INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount)
            CRC.ch[1] == InBuffer[InCount - 1]
            )
          {
-            retval = NoError;
+            retval = ClientErrors::None;
          }
          break;
       }
@@ -1750,7 +1750,7 @@ INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount)
 
       if(InCount < 3)
       {
-         retval = NoError;
+         retval = ClientErrors::None;
       }
       else
       {
@@ -1761,7 +1761,7 @@ INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount)
            CRC.ch[1] == InBuffer[InCount - 2]
            )
          {
-            retval = NoError;
+            retval = ClientErrors::None;
          }
       }
    }

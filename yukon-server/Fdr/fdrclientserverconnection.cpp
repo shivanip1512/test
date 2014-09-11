@@ -218,7 +218,7 @@ ostream& CtiFDRClientServerConnection::logNow()
 void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     try
     {
@@ -263,7 +263,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
                     << queueReturn << ")" << endl;
                 break;
             }
-            if (queueReturn == NoError)
+            if (queueReturn == ClientErrors::None)
             {
                 ULONG bytesSent;
                 retVal = writeSocket(buffer, bytesRead, bytesSent);
@@ -358,7 +358,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
 void CtiFDRClientServerConnection::threadFunctionHealth( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     try
     {
@@ -423,7 +423,7 @@ void CtiFDRClientServerConnection::threadFunctionHealth( void )
 
 INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG &aBytesWritten)
 {
-    INT retVal = NoError;
+    INT retVal = ClientErrors::None;
 
     aBytesWritten = 0;
 
@@ -562,7 +562,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
 
 INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead)
 {
-    INT retVal = NoError;
+    INT retVal = ClientErrors::None;
 
     // initialize
     aBytesRead = 0;

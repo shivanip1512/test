@@ -347,7 +347,7 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
   pMsg->insert(ctiPoint->getPointID());  // The pointid which failed
   pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,
                                   //  ScanRateIntegrity, or if unknown -> ScanRateInvalid
-  pMsg->insert(UnknownError);     // The error number from dsm2.h or yukon.h which was reported.
+  pMsg->insert(ClientErrors::Unknown);     // The error number from dsm2.h or yukon.h which was reported.
 
   queueMessageToDispatch(pMsg);
 

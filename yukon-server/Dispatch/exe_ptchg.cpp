@@ -28,7 +28,7 @@ using namespace std;
 
 INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
 {
-   INT nRet = NoError;
+   INT nRet = ClientErrors::None;
 
    CtiVanGogh *VG = (CtiVanGogh *)Svr;
 

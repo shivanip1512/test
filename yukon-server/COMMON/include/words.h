@@ -115,8 +115,6 @@ struct ESTRUCT
 };
 
 
-enum YukonError_t;
-
 int          IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
 int          IM_EX_CTIBASE B_Word  (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
 int          IM_EX_CTIBASE C_Word  (PBYTE, const PBYTE, USHORT);

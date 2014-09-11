@@ -25,7 +25,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 INT CtiSignalExecutor::ServerExecute(CtiServer *Svr)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
 
     CtiVanGogh *VG = (CtiVanGogh *)Svr;
 

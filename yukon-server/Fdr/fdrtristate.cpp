@@ -114,7 +114,7 @@ bool CtiFDR_Tristate::sendMessageToForeignSys ( CtiMessage *aMessage )
 
 INT CtiFDR_Tristate::processMessageFromForeignSystem (CHAR *data)
 {
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -122,7 +122,7 @@ int CtiFDR_Tristate::decodeFile ()
 {
     int fileHandle;
     FILE *controlFile;
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     FLOAT current = 0.0, average = 0.0;
 
     CHAR buffer[300];
@@ -143,7 +143,7 @@ int CtiFDR_Tristate::decodeFile ()
             desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
 
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
         }
         else
         {
@@ -153,7 +153,7 @@ int CtiFDR_Tristate::decodeFile ()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Tristate file failed to open after download " << endl;
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
             }
             else
             {
@@ -235,17 +235,17 @@ int CtiFDR_Tristate::decodeFile ()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Tristate file failed to open after download " << endl;
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
 
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 int CtiFDR_Tristate::fail ()
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     string           translationName;
     CtiFDRPoint         point;
@@ -298,7 +298,7 @@ int CtiFDR_Tristate::fail ()
 
 int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30MinuteAvg)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     string           translationName;
     CtiFDRPoint         point;
     bool                 flag = true;

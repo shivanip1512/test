@@ -251,7 +251,7 @@ int CtiFDRSocketInterface::sendAllPoints()
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 bool CtiFDRSocketInterface::alwaysSendRegistrationPoints()

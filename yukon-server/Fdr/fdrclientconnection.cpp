@@ -48,7 +48,7 @@ int CtiFDRClientConnection::init ()
     // this will be false only if the client and server are using the same socket
     if( !getAddr() )
     {
-        retVal = NoError;
+        retVal = ClientErrors::None;
     }
     else
     {
@@ -62,7 +62,7 @@ int CtiFDRClientConnection::run ()
 {
     iThreadSend.start();
     iThreadHeartbeat.start();
-    return NoError;
+    return ClientErrors::None;
 }
 
 int CtiFDRClientConnection::stop ()
@@ -70,7 +70,7 @@ int CtiFDRClientConnection::stop ()
     closeAndFailConnection();
     iThreadSend.requestCancellation();
     iThreadHeartbeat.requestCancellation();
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -87,7 +87,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
     CHAR *buffer=NULL;
     ULONG bytesSent,bytesRead;
     UCHAR priority;
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     int connectionBadCount=0;
     int outCount=0;
 
@@ -180,7 +180,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Error reading from " << getParent()->getName() << " out queue" << queueReturn << endl;
                         }
-                        else if (queueReturn == NoError)
+                        else if (queueReturn == ClientErrors::None)
                         {
                             pSelf.serviceCancellation( );
                             retVal = writeSocket(buffer, getParent()->getMessageSize(buffer), bytesSent);
@@ -427,14 +427,14 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
 
     setConnection(tmpConnection);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesWritten)
 {
     ULONG    bytesAvailable  = 0;
     ULONG    bytesSent  = 0;
-    INT      retVal             = NoError;
+    INT      retVal             = ClientErrors::None;
     ULONG    totalByteCnt    = 0;
 
     aBytesWritten = 0;

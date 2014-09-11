@@ -99,7 +99,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(Cti::Fdr::ServerConnectio
             }
     }
 
-    return retVal ? NoError : Error_Abnormal;
+    return retVal ? ClientErrors::None : ClientErrors::Abnormal;
 
 }
 

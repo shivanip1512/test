@@ -1339,7 +1339,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
         {
             ReaderGuard guard( _dispatchConnectionLock );
 
-            if( _dispatchConnection && _dispatchConnection->verifyConnection() == NoError )
+            if( _dispatchConnection && _dispatchConnection->verifyConnection() == ClientErrors::None )
             {
                 return _dispatchConnection; // use the current connection if its valid
             }
@@ -1349,7 +1349,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
             WriterGuard guard( _dispatchConnectionLock );
 
             // the connection state might have change, lets re-check it
-            if( _dispatchConnection && _dispatchConnection->verifyConnection() == NoError )
+            if( _dispatchConnection && _dispatchConnection->verifyConnection() == ClientErrors::None )
             {
                 return _dispatchConnection;
             }
@@ -1391,7 +1391,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
         {
             ReaderGuard guard( _pilConnectionLock );
 
-            if( _pilConnection && _pilConnection->verifyConnection() == NoError )
+            if( _pilConnection && _pilConnection->verifyConnection() == ClientErrors::None )
             {
                 return _pilConnection; // use the current connection if its valid
             }
@@ -1401,7 +1401,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
             WriterGuard guard( _pilConnectionLock );
 
             // the connection state might have change, lets re-check it
-            if( _pilConnection && _pilConnection->verifyConnection() == NoError )
+            if( _pilConnection && _pilConnection->verifyConnection() == ClientErrors::None )
             {
                 return _pilConnection;
             }
@@ -3717,7 +3717,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
     {
         return;
     }
-    if( status == ErrorPortNotInitialized && expectMore )
+    if( status == ClientErrors::PortNotInitialized && expectMore )
     {
         return;
     }
@@ -3755,7 +3755,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
 
             const BankOperationType operationType = resolveOperationTypeForPointId(commandString, currentCapBank->getControlPointId());
 
-            if( status == NoError )
+            if( status == ClientErrors::None )
             {
                 if ( !currentCapBank->isControlDeviceTwoWay() &&
                      !currentSubstationBus->getVerificationFlag() )

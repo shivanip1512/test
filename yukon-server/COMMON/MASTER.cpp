@@ -57,7 +57,7 @@ int MasterHeader (PBYTE Message, USHORT Remote, USHORT Command, USHORT Length)
    /* Length Byte */
    Message[3] = (UCHAR)Length;
 
-   return NoError;
+   return ClientErrors::None;
 
 }
 
@@ -72,7 +72,7 @@ int PreMaster (PBYTE Message, USHORT Length)
    Message[Length]     = LOBYTE (CRC);
    Message[Length + 1] = HIBYTE (CRC);
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -81,14 +81,18 @@ int PreMaster (PBYTE Message, USHORT Length)
 YukonError_t PostMaster (PBYTE  Message, USHORT Remote, PULONG   Length)
 {
    if(Message[0] != 0x01)
-      return(FRAMEERR);
+   {
+      return ClientErrors::Framing;
+   }
 
    if(Message[1] != Remote)
-      return(BADCCU);
+   {
+      return ClientErrors::BadCcu;
+   }
 
    *Length = Message[3];
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -102,11 +106,15 @@ YukonError_t MasterReply (PBYTE Message,
    CRC = SCrcCalc_C (Message, Length - 2);
 
    if(LOBYTE (CRC) != Message[Length - 2])
-      return(BADCRC);
+   {
+      return ClientErrors::BadCrc;
+   }
 
    if(HIBYTE (CRC) != Message[Length - 1])
-      return(BADCRC);
+   {
+      return ClientErrors::BadCrc;
+   }
 
-   return NoError;
+   return ClientErrors::None;
 
 }

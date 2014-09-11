@@ -300,7 +300,7 @@ CtiFDRSocketLayer& CtiFDRSocketLayer::setName (string aName)
 
 int CtiFDRSocketLayer::init ()
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     iThreadConnectionStatus = rwMakeThreadFunction(*this,
                                           &CtiFDRSocketLayer::threadFunctionConnectionStatus);
@@ -315,7 +315,7 @@ int CtiFDRSocketLayer::init ()
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << __FILE__ << " (" << __LINE__ << ") Failed to retrieve address info for \"" << iName << "\" port " << CtiNumStr(getPortNumber()).toString() << "(Error: " << pAddrInfo.getError() << ")" << endl;
             }
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
         }
         else
         {
@@ -378,7 +378,7 @@ int CtiFDRSocketLayer::run ()
             dout << CtiTime() << __FILE__ << " (" << __LINE__ <<") NOT IMPLEMENTED YET "<< getName()<< endl;
         }
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 int CtiFDRSocketLayer::stop ()
@@ -395,12 +395,12 @@ int CtiFDRSocketLayer::stop ()
         iOutBoundConnection->stop();
     }
     sendLinkState (FDR_NOT_CONNECTED);
-    return NoError;
+    return ClientErrors::None;
 }
 
 int CtiFDRSocketLayer::closeAndFailConnection()
 {
-    int retVal=NoError;
+    int retVal=ClientErrors::None;
 
     // send a shutdown message
 
@@ -432,7 +432,7 @@ int CtiFDRSocketLayer::closeAndFailConnection()
 
 INT CtiFDRSocketLayer::write (CHAR *aBuffer, int aPriority)
 {
-    INT retVal = NoError;
+    INT retVal = ClientErrors::None;
 
     if (iOutBoundConnection->getQueueHandle() != NULL)
     {
@@ -448,13 +448,13 @@ INT CtiFDRSocketLayer::write (CHAR *aBuffer, int aPriority)
                 dout << CtiTime() << " Error sending data to "<< getName()<< endl;
             }
             delete []aBuffer;
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
         }
     }
     else
     {
         delete []aBuffer;
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
     return retVal;
 }
@@ -591,7 +591,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
 
 int CtiFDRSocketLayer::initializeClientConnection ()
 {
-    int retVal=NoError;
+    int retVal=ClientErrors::None;
 
     // create a new connection
     if (iInBoundConnection != NULL)
@@ -627,7 +627,7 @@ int CtiFDRSocketLayer::initializeClientConnection ()
         }
     }
     else
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
 
     return retVal;
 }

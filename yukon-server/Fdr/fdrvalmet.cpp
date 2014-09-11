@@ -454,7 +454,7 @@ string CtiFDR_Valmet::decodeClientName(CHAR * aBuffer)
 
 int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
     CtiTime              timestamp;
@@ -471,7 +471,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
         }
         desc = getInterfaceName() + string (" time sync request was invalid ") + string (data->TimeStamp);
         logEvent (desc,action,true);
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
     else
     {
@@ -480,7 +480,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
         if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
             timestamp.seconds() < (now.seconds()+getTimeSyncVariation()))
         {
-            retVal = NoError;
+            retVal = ClientErrors::None;
         }
         else
         {
@@ -542,7 +542,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
                         desc += timestamp.asString() + " failed";
                         action = string ("System time update API failed");
                         logEvent (desc,action,true);
-                        retVal = Error_Abnormal;
+                        retVal = ClientErrors::Abnormal;
                     }
                 }
                 else
@@ -555,7 +555,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
                     desc += timestamp.asString() + " failed";
                     action = string ("System time update API failed");
                     logEvent (desc,action,true);
-                    retVal = Error_Abnormal;
+                    retVal = ClientErrors::Abnormal;
                 }
             }
             else
@@ -580,7 +580,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
 
 int CtiFDR_Valmet::processValueMessage(CHAR *aData)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
     string           translationName;
@@ -644,7 +644,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
                       translationName.c_str(),
                       point->getPointID());
             logEvent (desc,string (action));
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
         }
         else
         {
@@ -652,7 +652,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
             {
                 CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, value);
                 sendMessageToDispatch(aoMsg);
-                return  NoError;
+                return  ClientErrors::None;
             }
             pData = new CtiPointDataMsg(point->getPointID(),
                                             value,
@@ -705,7 +705,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
 
         }
 
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
 
     return retVal;
@@ -714,7 +714,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
 
 int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
     string           translationName;
@@ -766,7 +766,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
                       translationName.c_str(),
                       point->getPointID());
             logEvent (desc,string (action));
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
         }
         else
         {
@@ -836,7 +836,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
                 logEvent (desc,string (action));
             }
         }
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
 
     return retVal;
@@ -860,15 +860,15 @@ int CtiFDR_Valmet::processScanMessage(CHAR *aData)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Processed Scan Request for All Valmet Translation Points." << endl;
         }
-        return NoError;
+        return ClientErrors::None;
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 int CtiFDR_Valmet::processControlMessage(CHAR *aData)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
     string           translationName;
@@ -915,7 +915,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
                           translationName.c_str(),
                           point->getPointID());
                 logEvent (desc,string (action));
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
             }
             else
             {
@@ -1023,7 +1023,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
                 logEvent (desc,string (action));
             }
         }
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
 
     return retVal;

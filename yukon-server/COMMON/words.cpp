@@ -24,7 +24,7 @@ INT IM_EX_CTIBASE A_Word (PBYTE AWord, const ASTRUCT &ASt, BOOL Double)      /* 
    AWord[3] = BCHCalc_C (AWord, 24) & 0xfc;
 
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 /* Routine to create a "B" type word */
@@ -51,7 +51,7 @@ INT IM_EX_CTIBASE B_Word (PBYTE BWord, const BSTRUCT &BSt, unsigned wordCount, B
    BWord[5] |= (BCH = BCHCalc_C (BWord, 46)) >> 6;
    BWord[6] = BCH << 2;
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -86,7 +86,7 @@ INT IM_EX_CTIBASE C_Word (PBYTE CWord,                        /* result */
    CWord[5] |= (BCH = BCHCalc_C (CWord, 46)) >> 6;
    CWord[6] = BCH << 2;
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -111,7 +111,7 @@ INT IM_EX_CTIBASE C_Words (unsigned char * CWords,             /* results */
 
    if( cword_count )  *cword_count = i;
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -126,7 +126,7 @@ YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
 {
    if( ! isBchValid(DWord) )
    {
-      return BADBCH;
+      return ClientErrors::BadBch;
    }
 
    /* check if we actually have a DWord */
@@ -134,9 +134,13 @@ YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
    {
       /* well if it isnt is it an e word? */
       if((DWord[0] & 0xf0) != 0xe0)
-         return(BADTYPE);
+      {
+         return ClientErrors::BadType;
+      }
       else
-         return(EWORDRCV);
+      {
+         return ClientErrors::EWordReceived;
+      }
    }
 
    /* decode the overhead stuff */
@@ -151,7 +155,7 @@ YukonError_t D1_Word (const unsigned char *DWord,  /* D word to be decoded */
       Mess[i] = DWord[i+2] << 4 | DWord[i+3] >> 4;
    }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -165,7 +169,7 @@ YukonError_t D23_Word(
 {
    if( ! isBchValid(DWord) )
    {
-      return BADBCH;
+      return ClientErrors::BadBch;
    }
 
    /* make sure that we received a d word */
@@ -173,9 +177,13 @@ YukonError_t D23_Word(
    {
       /* if it is not a d word is it an e word? */
       if((DWord[0] & 0xf0) != 0xe0)
-         return(BADTYPE);
+      {
+         return ClientErrors::BadType;
+      }
       else
-         return(EWORDRCV);
+      {
+         return ClientErrors::EWordReceived;
+      }
    }
 
    /* decode the status bits */
@@ -188,7 +196,7 @@ YukonError_t D23_Word(
       Mess[i] = DWord[i] << 4 | DWord[i+1] >> 4;
    }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -211,7 +219,7 @@ YukonError_t D_Words (
 
    if(Num == 0 || Num > 3)
    {
-      return(DLENGTH);
+      return ClientErrors::DLength;
    }
 
    /* if it's not a D word, and it's not a NACK, we got garbage */
@@ -219,7 +227,7 @@ YukonError_t D_Words (
        ((DWords[0] & 0xf0) != 0xe0) &&
        !isNackPadded(DWords, 1, CCU) )
    {
-       return BADTYPE;
+       return ClientErrors::BadType;
    }
 
    /* check for a nacked */
@@ -234,18 +242,18 @@ YukonError_t D_Words (
        //  This is only checking the first 3 bytes of the first D word... ?
        if(isNackPadded (DWords, 3, CCU))
        {
-           return(NACKPAD1);
+           return ClientErrors::Word1NackPadded;
        }
        else
        {
-           return(NACK1);
+           return ClientErrors::Word1Nack;
        }
    }
 
    /* decode the first word and get the data from it */
    if( Code = D1_Word (DWords, DSt->Message, &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm) )
    {
-      if(Code == EWORDRCV)
+      if(Code == ClientErrors::EWordReceived)
       {
          /* try to decode the E word we just found */
          return E_Word(DWords, ESt);
@@ -269,14 +277,18 @@ YukonError_t D_Words (
       if(Nack)
       {
          if(isNackPadded (DWords + 8, 5, CCU))
-            return(NACKPAD2);
+         {
+            return ClientErrors::Word2NackPadded;
+         }
          else
-            return(NACK2);
+         {
+            return ClientErrors::Word2Nack;
+         }
       }
 
       if( Code = D23_Word (DWords+8, DSt->Message + 3, &DSt->TSync, &Dummy) )
       {
-         if(Code == EWORDRCV)
+         if(Code == ClientErrors::EWordReceived)
          {
             /* try to decode the E word we just found */
             return E_Word(DWords+8, ESt);
@@ -300,14 +312,18 @@ YukonError_t D_Words (
       if(Nack)
       {
          if(isNackPadded (DWords+16, 5, CCU))
-            return(NACKPAD3);
+         {
+            return ClientErrors::Word3NackPadded;
+         }
          else
-            return(NACK3);
+         {
+            return ClientErrors::Word3Nack;
+         }
       }
 
       if( Code = D23_Word (DWords+16, DSt->Message + 8, &Dummy, &Dummy) )
       {
-         if(Code == EWORDRCV)
+         if(Code == ClientErrors::EWordReceived)
          {
             /* try to decode the E word we just found */
             return E_Word(DWords+16, ESt);
@@ -320,7 +336,7 @@ YukonError_t D_Words (
    /* compute the Length of the returned data */
    DSt->Length = (Num - 1) * 5 + 3;
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -331,13 +347,13 @@ YukonError_t E_Word (
 {
    if( ! isBchValid(EWord) )
    {
-      return BADBCH;
+      return ClientErrors::BadBch;
    }
 
    /* Check to be sure type is right */
    if((EWord[0] & 0xf0) != 0xe0)
    {
-      return BADTYPE;
+      return ClientErrors::BadType;
    }
 
    /* decode the information and place it in the e word structure */
@@ -358,7 +374,7 @@ YukonError_t E_Word (
    ESt->diagnostics.repeater_code_mismatch   = diagnostic_data & 0x10;
    ESt->diagnostics.weak_signal              = diagnostic_data & 0x20;
 
-   return EWORDRCV;
+   return ClientErrors::EWordReceived;
 }
 
 
@@ -395,7 +411,7 @@ bool isNackPadded (const unsigned char *Message,  /* Message to check */
    {
       Code = NackTst (Message[Count], &Nack, CCU);
 
-      if(Code == BADPARITY || (!Nack))
+      if(Code == ClientErrors::BadParity || (!Nack))
       {
          return false;
       }
@@ -415,7 +431,7 @@ YukonError_t NackTst (
    /* check for proper parity */
    if(Reply != (BYTE)Parity_C(Reply))
    {
-      return(BADPARITY);
+      return ClientErrors::BadParity;
    }
 
    /* calculate out the ack character for this CCU and compare */
@@ -425,9 +441,11 @@ YukonError_t NackTst (
       *NAck = 1;
 
    if((Reply & 0x03) != (CCU & 0x03))
-      return(BADCCU);
+   {
+      return ClientErrors::BadCcu;
+   }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -466,7 +484,7 @@ INT IM_EX_CTIBASE APreamble (PBYTE Pre, const ASTRUCT &ASt)             /* A wor
     for(i = 0; i < 3; i++)
         Pre[i] = Parity_C (Pre[i]);
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -503,6 +521,6 @@ INT IM_EX_CTIBASE BPreamble (PBYTE Pre, const BSTRUCT &BSt, INT wordsToFollow)  
     for(i = 0; i < 3; i++)
         Pre[i] = Parity_C (Pre[i]);
 
-    return NoError;
+    return ClientErrors::None;
 }
 

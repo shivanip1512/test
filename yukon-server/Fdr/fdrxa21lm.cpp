@@ -551,7 +551,7 @@ string CtiFDR_XA21LM::decodeClientName(CHAR * aBuffer)
  */
 int CtiFDR_XA21LM::processMessageFromForeignSystem(CHAR *aBuffer)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     XA21LMMESS *lm_mess = (XA21LMMESS*)aBuffer;
 
     {
@@ -591,13 +591,13 @@ int CtiFDR_XA21LM::processMessageFromForeignSystem(CHAR *aBuffer)
 
 int CtiFDR_XA21LM::processRegistrationMessage(CHAR *aData)
 {
-    int retVal = Error_Abnormal;
+    int retVal = ClientErrors::Abnormal;
     return retVal;
 }
 
 int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 {
-    int retVal = Error_Abnormal;
+    int retVal = ClientErrors::Abnormal;
     XA21LMMESS* xa21_msg = (XA21LMMESS*) aData;
     CtiFDRPoint point;
     USHORT area_code = ntohs(xa21_msg->Message.MPC.AreaCode);
@@ -669,7 +669,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
             if(translation_name.length() > 0) {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " Unable to find translation: " << translation_name << " len: " << translation_name.length() << endl;
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
             }
         }
     }
@@ -755,16 +755,16 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " **Checkpoint** " <<  " Received unknown control function of " << xa21_msg->Function << __FILE__ << "(" << __LINE__ << ")" << endl;
         }
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
         }
 
         if(ack_msg != NULL && getLayer()->write(ack_msg))
         {
-            retVal = Error_Abnormal;
+            retVal = ClientErrors::Abnormal;
         }
         else
         {
-            retVal = NoError;
+            retVal = ClientErrors::None;
         }
     }
     else
@@ -926,7 +926,7 @@ ULONG CtiFDR_XA21LM::YukonToXA21Time (time_t time, bool my_dst_flag, XA21TIME* X
     XA21Time->DSTFlag = (my_dst_flag ? htons (1) : htons(0));
     XA21Time->MilliSeconds = htons (0);
 
-    return (NoError);
+    return ClientErrors::None;
 }
 
 void CtiFDR_XA21LM::dumpXA21LMMessage(XA21LMMESS* xa21_msg)

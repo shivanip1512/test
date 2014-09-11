@@ -89,7 +89,7 @@ IM_EX_CTIBASE INT LogEvent(SYSTEMLOGMESS *LogMessage)
         dout << " " << *LogMessage << endl;              // Stupid trick.
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

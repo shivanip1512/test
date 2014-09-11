@@ -35,7 +35,7 @@ IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
    {
       if( Wait != WAIT )
       {
-         return PIPEOPEN;
+         return ClientErrors::PipeNotOpened;
       }
 
       if( ! (waitCount++ % 60) )
@@ -47,10 +47,9 @@ IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
       Sleep(1000);
    }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
-/* Routine that gets run when we go tits up */
 IM_EX_CTIBASE void PortPipeCleanup (ULONG Reason)
 {
     PorterNexus.close();     // Close it if it is open.

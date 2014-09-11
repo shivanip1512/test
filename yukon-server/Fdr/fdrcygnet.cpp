@@ -409,7 +409,7 @@ bool CtiFDRCygnet::sendMessageToForeignSys ( CtiMessage *aMessage )
 */
 INT CtiFDRCygnet::processMessageFromForeignSystem (CHAR *data)
 {
-    return NoError;
+    return ClientErrors::None;
 }
 /************************************************************************
 * Function Name: CtiFDRCygnet::connectToAnalogService()
@@ -848,7 +848,7 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                         pCmdMsg->insert(CtiCommandMsg::OP_POINTID);                    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                         pCmdMsg->insert(point->getPointID());  // The id (device or point which failed)
                         pCmdMsg->insert(ScanRateGeneral);               // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-                        pCmdMsg->insert(UnknownError);                  // The error number from dsm2.h or yukon.h which was reported.
+                        pCmdMsg->insert(ClientErrors::Unknown);                  // The error number from dsm2.h or yukon.h which was reported.
 
                         // consumes and deletes pData memory
                         //sendMessageToDispatch(pCmdMsg);
@@ -1129,7 +1129,7 @@ bool CtiFDRCygnet::retrieveStatusPoints()
                     pCmdMsg->insert(CtiCommandMsg::OP_POINTID);                    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                     pCmdMsg->insert(point->getPointID());  // The id (device or point which failed)
                     pCmdMsg->insert(ScanRateGeneral);               // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-                    pCmdMsg->insert(UnknownError);                  // The error number from dsm2.h or yukon.h which was reported.
+                    pCmdMsg->insert(ClientErrors::Unknown);                  // The error number from dsm2.h or yukon.h which was reported.
 
 
                     // consumes and deletes pData memory

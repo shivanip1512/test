@@ -454,7 +454,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                                 break;
                         }
 
-                        ptr->msgUnion.value.AlarmState = NoError;
+                        ptr->msgUnion.value.AlarmState = ClientErrors::None;
 
                         /**************************
                         * if we get this far, the connection list must exist so no null check
@@ -798,7 +798,7 @@ int CtiFDR_Rccs::readConfig( void )
 
 int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     InetInterface_t *data = (InetInterface_t*)aBuffer;
     string clientName(data->SourceName);
@@ -865,7 +865,7 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
 
 int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     string           translationName (data->msgUnion.value.DeviceName);
     int                 quality;
@@ -954,7 +954,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                               translationName.c_str(),
                               point.getPointID());
                     logEvent (desc,string (action));
-                    retVal = Error_Abnormal;
+                    retVal = ClientErrors::Abnormal;
                 }
 
                 if (controlState != -1)
@@ -1036,7 +1036,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     }
                 }
 
-                retVal = Error_Abnormal;
+                retVal = ClientErrors::Abnormal;
             }
         }
     }

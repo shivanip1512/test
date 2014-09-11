@@ -1320,7 +1320,7 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
          pCmdMsg->insert( CtiCommandMsg::OP_POINTID );                     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
          pCmdMsg->insert( pointid );            // The id (device or point which failed)
          pCmdMsg->insert( ScanRateGeneral );                // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-         pCmdMsg->insert( UnknownError );                   // The error number from dsm2.h or yukon.h which was reported.
+         pCmdMsg->insert( ClientErrors::Unknown );                   // The error number from dsm2.h or yukon.h which was reported.
 
          // consumes and deletes pData memory
          sendMessageToDispatch(pCmdMsg);
@@ -1874,7 +1874,7 @@ bool CtiFDRTelegyr::sendMessageToForeignSys( CtiMessage *aMessage )
 
 INT CtiFDRTelegyr::processMessageFromForeignSystem( CHAR *data )
 {
-   return NoError;
+   return ClientErrors::None;
 }
 
 //=================================================================================================================================

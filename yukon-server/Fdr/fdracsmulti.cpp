@@ -523,7 +523,7 @@ bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection* connecti
 
 bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection* connection, const char* data, unsigned int size)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
     int                 quality =NormalQuality;
@@ -544,7 +544,7 @@ bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection* connect
 
 bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection* connection, const char* data, unsigned int size)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     CtiPointDataMsg     *pData;
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
     CtiTime              timestamp;
@@ -565,7 +565,7 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection* connec
     if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
         timestamp.seconds() < (now.seconds()+getTimeSyncVariation()))
     {
-        retVal = NoError;
+        retVal = ClientErrors::None;
     }
     else
     {

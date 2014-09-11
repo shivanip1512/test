@@ -429,7 +429,7 @@ bool CtiFDRSingleSocket::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
 
 int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     USHORT *function = (USHORT *)aBuffer;
 
     switch (ntohs (*function))
@@ -506,35 +506,35 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
 
 int CtiFDRSingleSocket::processValueMessage(CHAR *data)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     return retVal;
 }
 
 int CtiFDRSingleSocket::processStatusMessage(CHAR *data)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     return retVal;
 }
 
 int CtiFDRSingleSocket::processRegistrationMessage(CHAR *data)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     return retVal;
 }
 
 int CtiFDRSingleSocket::processControlMessage(CHAR *data)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     return retVal;
 }
 int CtiFDRSingleSocket::processScanMessage(CHAR *data)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     return retVal;
 }
 int CtiFDRSingleSocket::processTimeSyncMessage(CHAR *data)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
     return retVal;
 }
 

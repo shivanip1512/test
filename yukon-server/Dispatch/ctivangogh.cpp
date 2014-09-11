@@ -439,7 +439,7 @@ void CtiVanGogh::VGMainThread()
 
                 try
                 {
-                    nRet = NoError;
+                    nRet = ClientErrors::None;
 
                     if( MsgPtr->isValid() )
                     {
@@ -664,7 +664,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
 int CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistrationMsg &aReg)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     CtiTime     NowTime;
 
     CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)pCM.get();
@@ -770,7 +770,7 @@ int CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistration
 // Assumes lock on _server_exclusion has been obtained.
 int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     int i;
 
     switch( Cmd->getOperation() )
@@ -1409,7 +1409,7 @@ void CtiVanGogh::clientShutdown(CtiServer::ptr_type CM)
  */
 int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 {
-    int                     nRet = NoError;
+    int                     nRet = ClientErrors::None;
     ptr_type                Mgr;
     CHAR                    temp[80];
 
@@ -1884,7 +1884,7 @@ void CtiVanGogh::processStalePoint(const CtiPointBase &point, CtiDynamicPointDis
 
 INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     try
     {
@@ -1912,7 +1912,7 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 
                 pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Signal Relay");
                 pSig->setUser(aSig.getUser());
-                status = IDNF; // Error is ID not found!
+                status = ClientErrors::IdNotFound; // Error is ID not found!
             }
         }
 
@@ -1935,7 +1935,7 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 
 INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     try
     {
@@ -1984,7 +1984,7 @@ INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
  *--------------------------------------------------------------------*/
 INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     try
     {
@@ -2092,7 +2092,7 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
 INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
 {
     INT i;
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiMultiMsg  *pMulti;
 
@@ -2174,7 +2174,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
 
 CtiMultiMsg* CtiVanGogh::generateMultiMessageForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg)
 {
-    INT            status   = NoError;
+    INT            status   = ClientErrors::None;
 
     CtiMultiMsg    *pMulti  = CTIDBG_new CtiMultiMsg;
 
@@ -2190,7 +2190,7 @@ CtiMultiMsg* CtiVanGogh::generateMultiMessageForConnection(const CtiServer::ptr_
 
 INT CtiVanGogh::assembleMultiForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &aOrdered)
 {
-    INT status   = NoError;
+    INT status   = ClientErrors::None;
 
     switch(pMsg->isA())
     {
@@ -2242,7 +2242,7 @@ INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiServer::ptr_type &C
                                                     CtiMultiMsg_vec                         &Ord)
 {
     INT            i;
-    INT            status   = NoError;
+    INT            status   = ClientErrors::None;
     CtiMultiMsg    *pMulti  = (CtiMultiMsg*)pMsg;      // Uses the inheritance nature of MSG_PCRETURN
     CtiMessage     *pMyMsg;
 
@@ -2274,7 +2274,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiServer::ptr_type &
                                                      CtiMessage                        *pMsg,
                                                      CtiMultiMsg_vec                         &Ord)
 {
-    INT            status   = NoError;
+    INT            status   = ClientErrors::None;
     CtiSignalMsg   *pSig    = (CtiSignalMsg*)pMsg;
 
     try
@@ -2311,7 +2311,7 @@ INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiServer::ptr_type &Con
                                                   CtiMessage                        *pMsg,
                                                   CtiMultiMsg_vec                         &Ord)
 {
-    INT            status   = NoError;
+    INT            status   = ClientErrors::None;
     CtiTagMsg      *pTag    = (CtiTagMsg*)pMsg;
 
     try
@@ -2341,7 +2341,7 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiServer::ptr_typ
                                                         CtiMessage                        *pMsg,
                                                         CtiMultiMsg_vec                         &Ord)
 {
-    INT               status   = NoError;
+    INT               status   = ClientErrors::None;
     CtiPointDataMsg   *pDat    = (CtiPointDataMsg*)pMsg;
 
     try
@@ -2528,7 +2528,7 @@ BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn,
  */
 int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     bool isPseudo = false;
     PtVerifyTriggerSPtr verificationPtr;
 
@@ -2668,7 +2668,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
 int CtiVanGogh::processMessage(CtiMessage *pMsg)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     CtiMultiWrapper MultiWrapper;
 
     CtiServerExclusion guard(_server_exclusion);
@@ -2695,7 +2695,7 @@ int CtiVanGogh::processMessage(CtiMessage *pMsg)
 INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 {
     INT i;
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiTableSignal *pSig;
     CtiMultiMsg    *pMulti  = CTIDBG_new CtiMultiMsg;
@@ -3232,7 +3232,7 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
  */
 INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
 {
-    INT status   = NoError;
+    INT status   = ClientErrors::None;
 
     switch(pMsg->isA())
     {
@@ -3295,7 +3295,7 @@ INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
 INT CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMultiWrapper &aWrap)
 {
     INT            i;
-    INT            status   = NoError;
+    INT            status   = ClientErrors::None;
     CtiMessage     *pMyMsg;
 
     if(pMulti != NULL)
@@ -3315,7 +3315,7 @@ INT CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMultiWrapper
 
 INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aWrap)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(pSig->getText().empty() && pSig->getAdditionalInfo().empty())
     {
@@ -3355,21 +3355,21 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 {
     if( ! pData )
     {
-        return NoError;
+        return ClientErrors::None;
     }
 
     CtiPointSPtr pPoint = PointMgr.getCachedPoint(pData->getId());
 
     if ( ! pPoint )
     {
-        return IDNF;
+        return ClientErrors::IdNotFound;
     }
 
     CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPoint);
 
     if ( ! pDyn )
     {
-        return IDNF;
+        return ClientErrors::IdNotFound;
     }
 
     if(pData->getType() == InvalidPointType)
@@ -3498,12 +3498,12 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapper &aWrap)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiCommandMsg::CtiOpArgList_t &Op = pCmd->getOpArgList();
 
@@ -3541,7 +3541,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
 
 INT CtiVanGogh::markPointNonUpdated(const CtiPointBase &point, CtiMultiWrapper &aWrap)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if( !(point.getType() == StatusPointType && point.getPointOffset() == 2000) ) // If not a comm status point
     {
@@ -3957,7 +3957,7 @@ void CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &
 
 INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     vector<int> group_ids;
 
     group_ids.push_back(grp.getGroupID());
@@ -4009,7 +4009,7 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 {
     extern bool isQuestionable(CtiServer::ptr_type &ptr, void* narg);
 
-    int status = NoError;
+    int status = ClientErrors::None;
     CtiServer::ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
@@ -4039,7 +4039,7 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 
 int  CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
 {
-    int         nRet = NoError;
+    int         nRet = ClientErrors::None;
     CtiTime      NowTime;
     RWBoolean   validEntry(TRUE);
     RWBoolean   questionedEntry(FALSE);
@@ -4184,7 +4184,7 @@ int  CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
  *----------------------------------------------------------------------------*/
 int  CtiVanGogh::clientArbitrationWinner(CtiServer::ptr_type CM)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     CtiServer::ptr_type Mgr;
 
     CtiServerExclusion guard(_server_exclusion);
@@ -5707,7 +5707,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
         sigList.insert(dbChange);
     }
 
-    return ( paobjectSuccess && deviceSuccess ) ? NoError : UnknownError;
+    return ( paobjectSuccess && deviceSuccess ) ? ClientErrors::None : ClientErrors::Unknown;
 }
 
 INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, string user, CtiMultiMsg &Multi)
@@ -5757,7 +5757,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
         Multi.insert(dbChange);
     }
 
-    return ( pointSuccess && pointStatusSuccess ) ? NoError : UnknownError;
+    return ( pointSuccess && pointStatusSuccess ) ? ClientErrors::None : ClientErrors::Unknown;
 }
 
 /**
@@ -5973,7 +5973,7 @@ unsigned CtiVanGogh::writeRawPointHistory(boost::ptr_deque<CtiTableRawPointHisto
 
 int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig )
 {
-    int alarm = NoError;
+    int alarm = ClientErrors::None;
     string text;
     CtiPointClientManager::ReasonabilityLimitStruct limits = PointMgr.getReasonabilityLimits(pointNumeric);
 
@@ -6538,7 +6538,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( const CtiPointBase &point, const Cti
 
 int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     int resultAction = _tagManager.processTagMsg(tagMsg);
 

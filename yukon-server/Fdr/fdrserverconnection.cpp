@@ -61,20 +61,20 @@ int CtiFDRServerConnection::init ()
 {
     iThreadReceive = rwMakeThreadFunction(*this,
                                           &CtiFDRServerConnection::threadFunctionGetDataFrom);
-   return NoError;
+   return ClientErrors::None;
 }
 
 int CtiFDRServerConnection::run ()
 {
     iThreadReceive.start();
-    return NoError;
+    return ClientErrors::None;
 }
 
 int CtiFDRServerConnection::stop ()
 {
     closeAndFailConnection();
     iThreadReceive.requestCancellation();
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -260,7 +260,7 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
 {
     ULONG    bytesAvailable  = 0;
     LONG    bytesReceived  = 0;
-    INT      retVal             = NoError;
+    INT      retVal             = ClientErrors::None;
     CHAR     *bPtr           = aBuffer;
     ULONG    totalByteCnt    = 0;
 

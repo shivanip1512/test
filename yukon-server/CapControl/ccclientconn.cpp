@@ -48,7 +48,7 @@ CtiCCClientConnection::~CtiCCClientConnection()
 ---------------------------------------------------------------------------*/
 bool CtiCCClientConnection::isValid()
 {
-    if( _connection.verifyConnection() != NoError )
+    if( _connection.verifyConnection() != ClientErrors::None )
     {
         _valid = false;
     }
