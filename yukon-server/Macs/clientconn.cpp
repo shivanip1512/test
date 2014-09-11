@@ -49,9 +49,9 @@ void CtiMCConnection::start()
 ---------------------------------------------------------------------------*/
 bool CtiMCConnection::isValid()
 {
-    if( _connection.verifyConnection() != ClientErrors::None )
+    if( ! _connection.isConnectionUsable() )
     {
-        _valid = FALSE;
+        _valid = false;
     }
 
     return _valid;

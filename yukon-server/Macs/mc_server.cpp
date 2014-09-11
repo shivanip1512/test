@@ -45,7 +45,7 @@ void CtiMCServer::dispatchThreadFunc()
 {
     auto_ptr<CtiMessage> msg;
 
-    while( _dispatchConnection.verifyConnection() == ClientErrors::None )
+    while( _dispatchConnection.isConnectionUsable() )
     {
         msg.reset(_dispatchConnection.ReadConnQue(1000*30));
 

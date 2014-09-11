@@ -82,11 +82,9 @@ void CtiConnection::start()
             threadInitiate();
         }
 
-        int status = verifyConnection();
-
-        if( status )
+        if( ! isConnectionUsable() )
         {
-            logStatus( __FUNCTION__, "connection has error status: " + CtiNumStr(status));
+            logStatus( __FUNCTION__, "connection has error status");
         }
     }
     catch(...)
@@ -471,11 +469,10 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
     // take ownership of the message
     auto_ptr<CtiMessage> msg( QEnt );
 
-    const int status = verifyConnection();
-    if( status )
+    if( ! isConnectionUsable() )
     {
-        logStatus( __FUNCTION__, "connection error (" + CtiNumStr(status) + "), message was NOT able to be queued." );
-        return status;
+        logStatus( __FUNCTION__, "connection error, message was NOT able to be queued." );
+        return ClientErrors::Abnormal;
     }
 
     if( _outQueue.isFull() )
@@ -540,9 +537,10 @@ void CtiConnection::writeIncomingMessageToQueue( CtiMessage *msg )
 
 /**
  * verify connection status flags and threads status.
- * @return NORMAL if connection is started and still viable, NOTNORMAL otherwise
+ * @return true if connection is started and still viable,
+ *         false otherwise
  */
-int CtiConnection::verifyConnection()
+bool CtiConnection::isConnectionUsable()
 {
     try
     {
@@ -551,12 +549,12 @@ int CtiConnection::verifyConnection()
 
             if( ! isViable() || ! _connectCalled )
             {
-                return ClientErrors::Abnormal;
+                return false;
             }
 
             if( _outthread.isRunning() )
             {
-                return ClientErrors::None;
+                return true;
             }
         }
 
@@ -565,7 +563,7 @@ int CtiConnection::verifyConnection()
 
             if( ! isViable() )
             {
-                return ClientErrors::Abnormal;
+                return false;
             }
 
             if( ! _outthread.isRunning() )
@@ -583,12 +581,12 @@ int CtiConnection::verifyConnection()
 
                         forceTermination();
 
-                        return ClientErrors::Abnormal;
+                        return false;
                     }
                 }
             }
 
-            return ClientErrors::None; // the thread has been restarted
+            return true; // the thread has been restarted
         }
     }
     catch(...)
@@ -597,7 +595,7 @@ int CtiConnection::verifyConnection()
 
         Sleep(5000);
 
-        return ClientErrors::Abnormal;
+        return false;
     }
 }
 

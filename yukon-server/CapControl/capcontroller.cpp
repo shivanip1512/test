@@ -1339,7 +1339,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
         {
             ReaderGuard guard( _dispatchConnectionLock );
 
-            if( _dispatchConnection && _dispatchConnection->verifyConnection() == ClientErrors::None )
+            if( _dispatchConnection && _dispatchConnection->isConnectionUsable() )
             {
                 return _dispatchConnection; // use the current connection if its valid
             }
@@ -1349,7 +1349,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
             WriterGuard guard( _dispatchConnectionLock );
 
             // the connection state might have change, lets re-check it
-            if( _dispatchConnection && _dispatchConnection->verifyConnection() == ClientErrors::None )
+            if( _dispatchConnection && _dispatchConnection->isConnectionUsable() )
             {
                 return _dispatchConnection;
             }
@@ -1391,7 +1391,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
         {
             ReaderGuard guard( _pilConnectionLock );
 
-            if( _pilConnection && _pilConnection->verifyConnection() == ClientErrors::None )
+            if( _pilConnection && _pilConnection->isConnectionUsable() )
             {
                 return _pilConnection; // use the current connection if its valid
             }
@@ -1401,7 +1401,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
             WriterGuard guard( _pilConnectionLock );
 
             // the connection state might have change, lets re-check it
-            if( _pilConnection && _pilConnection->verifyConnection() == ClientErrors::None )
+            if( _pilConnection && _pilConnection->isConnectionUsable() )
             {
                 return _pilConnection;
             }

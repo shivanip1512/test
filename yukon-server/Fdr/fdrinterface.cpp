@@ -539,7 +539,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
     try
     {
-        if( iDispatchConn && iDispatchConn->verifyConnection() == ClientErrors::None )
+        if( iDispatchConn && iDispatchConn->isConnectionUsable() )
         {
             return true;
         }
@@ -572,7 +572,7 @@ bool CtiFDRInterface::connectWithDispatch()
         iDispatchConn->setName( "FDR to Dispatch: " + getInterfaceName() );
         iDispatchConn->start();
 
-        if( iDispatchConn->verifyConnection() != ClientErrors::None )
+        if( ! iDispatchConn->isConnectionUsable() )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -880,7 +880,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 {
                     ReaderGuard guard(iDispatchLock);
 
-                    if( iDispatchConn && iDispatchConn->verifyConnection() == ClientErrors::None )
+                    if( iDispatchConn && iDispatchConn->isConnectionUsable() )
                     {
                         incomingMsg.reset( iDispatchConn->ReadConnQue( 1000 ));
                         continue;
@@ -1681,7 +1681,7 @@ bool CtiFDRInterface::verifyDispatchConnection()
     {
         ReaderGuard guard(iDispatchLock);
 
-        if( iDispatchConn && iDispatchConn->verifyConnection() == ClientErrors::None )
+        if( iDispatchConn && iDispatchConn->isConnectionUsable() )
         {
             return true;
         }

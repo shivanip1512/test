@@ -209,7 +209,7 @@ void CtiCalcLogicService::Run( )
 
         while( !UserQuit )
         {
-            if( ! dispatchConnection || dispatchConnection->verifyConnection() != ClientErrors::None )
+            if( ! dispatchConnection || ! dispatchConnection->isConnectionUsable() )
             {
                 if( _threadsStarted )
                 {

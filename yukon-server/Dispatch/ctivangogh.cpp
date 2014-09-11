@@ -7149,9 +7149,9 @@ CtiConnection* CtiVanGogh::getNotificationConnection()
 {
     try
     {
-        if( _notificationConnection == NULL || (_notificationConnection != NULL && _notificationConnection->verifyConnection()) )
+        if( ! _notificationConnection || ! _notificationConnection->isConnectionUsable() )
         {
-            if( _notificationConnection != NULL && _notificationConnection->verifyConnection() )
+            if( _notificationConnection && ! _notificationConnection->isConnectionUsable() )
             {
                 delete _notificationConnection;
                 _notificationConnection = NULL;

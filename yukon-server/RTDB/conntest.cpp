@@ -160,7 +160,7 @@ void runClient( string name )
     conn.setName( name );
     conn.start();
 
-    if( conn.verifyConnection() != ClientErrors::None  )
+    if( ! conn.isConnectionUsable() )
     {
         cout << CtiTime() << " Client connection is failed" << endl;
         return;

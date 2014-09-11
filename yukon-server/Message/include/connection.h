@@ -56,12 +56,12 @@ protected:
     std::string _name;
     std::string _peerName;
     const std::string _title;
-    
+
     const Cti::Timing::Chrono _termDuration;
-    
+
     CtiTime _lastInQueueWrite;
     CtiTime _peerConnectTime;
-    
+
     Cti::WorkerThread _outthread;
 
     Que_t  _outQueue; // contains message to send
@@ -149,7 +149,7 @@ public:
     Que_t& getOutQueueHandle();
     Que_t& getInQueueHandle();
 
-    int  verifyConnection();
+    bool isConnectionUsable();
     int  outQueueCount() const;
     bool isViable() const;
     bool valid() const;

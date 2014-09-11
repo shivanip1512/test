@@ -673,7 +673,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
 {
     try
     {
-        if( _dispatchConnection.get() == NULL || _dispatchConnection->verifyConnection() != ClientErrors::None )
+        if( ! _dispatchConnection || ! _dispatchConnection->isConnectionUsable() )
         {
             //Connect to Dispatch
             _dispatchConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
@@ -705,7 +705,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
 {
     try
     {
-        if( _pilConnection.get() == NULL || _pilConnection->verifyConnection() != ClientErrors::None )
+        if( ! _pilConnection || ! _pilConnection->isConnectionUsable() )
         {
             //Connect to Pil
             _pilConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
@@ -737,7 +737,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
 {
     try
     {
-        if( _notificationConnection.get() == NULL || _notificationConnection->verifyConnection() != ClientErrors::None )
+        if( ! _notificationConnection || ! _notificationConnection->isConnectionUsable() )
         {
             //Connect to Pil
             _notificationConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification ));
