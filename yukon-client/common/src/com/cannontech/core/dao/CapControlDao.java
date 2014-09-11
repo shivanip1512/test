@@ -15,24 +15,18 @@ import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public interface CapControlDao {
-    
-    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcID);
 
-    public  List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user);
+    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps(Integer cbcID);
+
+    public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user);
 
     public List<LitePoint> getPaoPoints(YukonPAObject sub);
 
-    public Integer getParentForController(int id);
-
-    public Integer getParentForPoint(int id);
-    
     public CapControlType getCapControlType(int id);
-    
+
     public List<OrphanCBC> getOrphanedCBCs();
-    
-    public List<LiteCapBankAdditional> getCapBankAdditional (List<Integer> deviceIds);
-    
-    
+
+    public List<LiteCapBankAdditional> getCapBankAdditional(List<Integer> deviceIds);
 
     /**
      * Returns the events for the capcontrol object.

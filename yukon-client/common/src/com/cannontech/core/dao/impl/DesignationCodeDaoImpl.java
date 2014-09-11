@@ -22,7 +22,7 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DesignationCodeDaoImpl implements DesignationCodeDao {
-    
+
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private DbChangeManager dbChangeManager;
@@ -30,27 +30,28 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao {
     private SimpleTableAccessTemplate<DesignationCodeDto> designationCodeTemplate;
 
     // DesignationCodeDto -> to -> sql
-    private final FieldMapper<DesignationCodeDto> designationCodeDtoFieldMapper = new FieldMapper<DesignationCodeDto>() {
+    private final FieldMapper<DesignationCodeDto> designationCodeDtoFieldMapper =
+        new FieldMapper<DesignationCodeDto>() {
 
-        @Override
-        public void extractValues(MapSqlParameterSource p, DesignationCodeDto designationCodeDto) {
-            p.addValue("DesignationCodeID", designationCodeDto.getId());
-            p.addValue("DesignationCodeValue", designationCodeDto.getValue());        
-            p.addValue("ServiceCompanyID", designationCodeDto.getServiceCompanyId());
-        }
+            @Override
+            public void extractValues(MapSqlParameterSource p, DesignationCodeDto designationCodeDto) {
+                p.addValue("DesignationCodeID", designationCodeDto.getId());
+                p.addValue("DesignationCodeValue", designationCodeDto.getValue());
+                p.addValue("ServiceCompanyID", designationCodeDto.getServiceCompanyId());
+            }
 
-        @Override
-        public Number getPrimaryKey(DesignationCodeDto object) {
-            return object.getId();
-        }
+            @Override
+            public Number getPrimaryKey(DesignationCodeDto object) {
+                return object.getId();
+            }
 
-        @Override
-        public void setPrimaryKey(DesignationCodeDto object, int value) {
-            object.setId(value);
-        }
-    };
-    
-    // Row Mappers  sql -> to -> DesignationCodeDto
+            @Override
+            public void setPrimaryKey(DesignationCodeDto object, int value) {
+                object.setId(value);
+            }
+        };
+
+    // Row Mappers sql -> to -> DesignationCodeDto
     private static class DesignationCodeDtoRowMapper implements YukonRowMapper<DesignationCodeDto> {
 
         @Override
@@ -60,28 +61,28 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao {
             designationCodeDto.setId(rs.getInt("DesignationCodeID"));
             designationCodeDto.setValue(rs.getString("DesignationCodeValue"));
             designationCodeDto.setServiceCompanyId(rs.getInt("ServiceCompanyID"));
-            
+
             return designationCodeDto;
         }
     }
-    
+
     @PostConstruct
     public void init() throws Exception {
-        designationCodeTemplate = new SimpleTableAccessTemplate<DesignationCodeDto>(yukonJdbcTemplate, nextValueHelper);
+        designationCodeTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         designationCodeTemplate.setTableName("ServiceCompanyDesignationCode");
         designationCodeTemplate.setPrimaryKeyField("DesignationCodeID");
         designationCodeTemplate.setFieldMapper(designationCodeDtoFieldMapper);
         designationCodeTemplate.setPrimaryKeyValidOver(0);
     }
 
-    //CRUD
+    // CRUD
     @Override
     public DesignationCodeDto getServiceCompanyDesignationCode(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM ServiceCompanyDesignationCode");
         sql.append("WHERE DesignationCodeID").eq(id);
-        
+
         return yukonJdbcTemplate.queryForObject(sql, new DesignationCodeDtoRowMapper());
     }
 
@@ -91,33 +92,20 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao {
         sql.append("SELECT *");
         sql.append("FROM ServiceCompanyDesignationCode");
         sql.append("WHERE ServiceCompanyID").eq(serviceCompanyId);
-        
+
         return yukonJdbcTemplate.query(sql, new DesignationCodeDtoRowMapper());
     }
 
     @Override
-    public void add(DesignationCodeDto designationCode) {
-        designationCodeTemplate.save(designationCode);
-        sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.ADD);
-    }
-
-    @Override
     public void bulkAdd(List<DesignationCodeDto> designationCodes) {
-        for(DesignationCodeDto designationCode : designationCodes) {
+        for (DesignationCodeDto designationCode : designationCodes) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO ServiceCompanyDesignationCode");
-            sql.values(nextValueHelper.getNextValue("ServiceCompanyDesignationCode"),
-                       designationCode.getValue(),
-                       designationCode.getServiceCompanyId());
+            sql.values(nextValueHelper.getNextValue("ServiceCompanyDesignationCode"), designationCode.getValue(),
+                designationCode.getServiceCompanyId());
             yukonJdbcTemplate.update(sql);
             sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.ADD);
         }
-    }
-
-    @Override
-    public void update(DesignationCodeDto designationCode) {
-        designationCodeTemplate.save(designationCode);
-        sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.UPDATE);
     }
 
     @Override
@@ -130,13 +118,8 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao {
     }
 
     @Override
-    public void delete(int id) {
-        delete(getServiceCompanyDesignationCode(id));
-    }
-
-    @Override
     public void bulkDelete(List<DesignationCodeDto> designationCodes) {
-        for(DesignationCodeDto designationCode : designationCodes) {
+        for (DesignationCodeDto designationCode : designationCodes) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM ServiceCompanyDesignationCode");
             sql.append("WHERE DesignationCodeID").eq(designationCode.getId());
@@ -144,10 +127,9 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao {
             sendDesignationCodeChangeMessage(designationCode.getId(), DbChangeType.DELETE);
         }
     }
-    
+
     private void sendDesignationCodeChangeMessage(Integer designationCodeId, DbChangeType dbChangeType) {
-        dbChangeManager.processDbChange(dbChangeType, 
-                                        DbChangeCategory.SERVICE_COMPANY_DESIGNATION_CODE, 
-                                        designationCodeId);
+        dbChangeManager.processDbChange(dbChangeType, DbChangeCategory.SERVICE_COMPANY_DESIGNATION_CODE,
+            designationCodeId);
     }
 }

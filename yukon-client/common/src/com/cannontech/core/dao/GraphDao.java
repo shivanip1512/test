@@ -10,8 +10,6 @@ public interface GraphDao {
 
     List<LiteYukonPAObject> getLiteYukonPaobjects(int graphDefinitionId);
 
-    List<GraphDataSeries> getAllGraphDataSeries();
-
     List<GraphDataSeries> getAllGraphDataSeriesByType(int type);
 
     LiteGraphDefinition getLiteGraphDefinition(int graphDefinitionId);
@@ -19,8 +17,6 @@ public interface GraphDao {
     List<LiteGraphDefinition> getGraphDefinitions();
 
     List<LiteGraphDefinition> getGraphDefinitionsForUser(int userId);
-    
-    List<LiteGraphDefinition> getGraphDefinitionsForEnergyCompany(int ecId);
 
     List<GraphDataSeries> getGraphDataSeries(int graphDefinitionId);
 

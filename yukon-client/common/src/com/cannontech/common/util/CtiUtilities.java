@@ -77,9 +77,6 @@ public final class CtiUtilities {
     public static final String TRUE_STRING = "true";
     public static final String FALSE_STRING = "false";
 
-    public static final String ENABLED_STRING = "enabled";
-    public static final String DISABLED_STRING = "disabled";
-
     // PAOExclusion functionID constants
     public static final String EXCLUSION_TIME_INFO = "TimeInfo";
     public static final Integer EXCLUSION_TIMING_FUNC_ID = new Integer(2);
@@ -88,7 +85,7 @@ public final class CtiUtilities {
 
     private static GregorianCalendar gc1990 = null;
     private static GregorianCalendar gc2035 = null;
-    
+
     public static final int DEFAULT_ITEMS_PER_PAGE = 25;
     public static final int MAX_ITEMS_PER_PAGE = 1000;
 
@@ -153,14 +150,14 @@ public final class CtiUtilities {
         }
 
     }
-    
+
     /**
      * Creates a random UUID and returns its String representation sans hyphen.
      */
     public static String getUuidString() {
     	return StringUtils.replace(UUID.randomUUID().toString(), "-", "");
     }
-    
+
     /**
      * This method does a deep copy on any Serializable object.
      * If the object has references to other objects, thos referenced objects
@@ -338,7 +335,7 @@ public final class CtiUtilities {
         }
         return path;
     }
-    
+
     public final static Character getFalseCharacter() {
         return falseChar;
     }
@@ -701,7 +698,7 @@ public final class CtiUtilities {
     /**
      * Given a map (A) of key = default value, and a map (B) of key = other value
      * override matching keys from
-     * 
+     *
      * @param <K>
      * @param <V>
      * @param possible
@@ -792,7 +789,7 @@ public final class CtiUtilities {
             return input.toDate();
         }
     };
-    
+
     public final static Function<Date, Instant> INSTANT_FROM_DATE = new Function<Date, Instant>() {
         @Override
         public Instant apply(Date input) {
@@ -815,13 +812,13 @@ public final class CtiUtilities {
             this.translated = translated;
         }
     }
-    
+
     /**
      * Sort the given list using the natural sort order on the results of calling the function. As a
      * rule, this would be better done using Guava's Ordering class but this method promises to only
      * call the function once for each item in the list so it can be used where that call may be not
      * so super cheap.
-     * 
+     *
      * @param toSort The list to sort.
      * @param translator A function to translate the item in the list to the value that it is sorted
      *            on. If this is is just a simple translator that does no work, consider using
@@ -850,7 +847,7 @@ public final class CtiUtilities {
         };
         return Lists.transform(itemsWithTranslations, itemOutFunction);
     }
-    
+
     /**
      * Determine the number of items per page to use, given the specified number of items.  If it is null, the
      * default will be returned.  If it is not null, it will be validated against the maximum allowed.
@@ -859,7 +856,7 @@ public final class CtiUtilities {
         return specifiedItemsPerPage == null
                 ? DEFAULT_ITEMS_PER_PAGE : Math.min(MAX_ITEMS_PER_PAGE, specifiedItemsPerPage);
     }
-    
+
     public final static double calculatePercentage(int count, int total) {
         return ((double)count / total) * 100;
     }

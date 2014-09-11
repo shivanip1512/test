@@ -17,7 +17,7 @@ public interface DeviceGroupUiService {
      * @return
      */
     public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> predicate);
-    
+
     /**
      * Given an existing hierarchy, filters out groups that do not pass predicate and returns new hierarchy.
      * @param hierarchy
@@ -25,35 +25,21 @@ public interface DeviceGroupUiService {
      * @return
      */
     public DeviceGroupHierarchy getFilteredDeviceGroupHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate);
-    
+
     /**
      * Return a list of groups that meet the predicate constraint.
      * @param deviceGroupPredicate
      * @return
      */
     public List<DeviceGroup> getGroups(Predicate<DeviceGroup> deviceGroupPredicate);
-    
-    /**
-     * Get a list of DisplayablePao objects for the specified group.
-     * @param group
-     * @return
-     */
-    public List<DisplayablePao> getDevicesByGroup(DeviceGroup group);
-    
+
     /**
      * Get a list of up to maxRecordCount DisplayablePao objects for the specified group.
      * @param group
      * @return
      */
     public List<DisplayablePao> getDevicesByGroup(DeviceGroup group, int maxRecordCount);
-    
-    /**
-     * Get a list of DisplayablePao objects for the direct children of the specified group.
-     * @param group
-     * @return
-     */
-    public List<DisplayablePao> getChildDevicesByGroup(DeviceGroup group);
-    
+
     /**
      * Get a list of up to maxRecordCount DisplayablePao objects for the direct children of the specified group.
      * @param group

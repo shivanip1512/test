@@ -28,55 +28,61 @@ import com.google.common.collect.SetMultimap;
  */
 public interface PaoDefinitionDao {
 
-	// ATTRIBUTES
-	//============================================
+    // ATTRIBUTES
+    // ============================================
     public abstract Set<AttributeDefinition> getDefinedAttributes(PaoType paoType);
-    
+
     public Multimap<PaoType, Attribute> getPaoTypeAttributesMultiMap();
-    
+
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap();
-    
-    public abstract <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute) throws IllegalUseOfAttribute;
-    
+
+    public abstract <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute)
+            throws IllegalUseOfAttribute;
+
     /**
-     * Returns the BuiltInAttribute for the pao type and point template or null if no attribute is 
+     * Returns the BuiltInAttribute for the pao type and point template or null if no attribute is
      * defined for that pao type, pointIdentifier combination
+     * 
      * @param paoTypePointIdentifier
      * @return BuiltInAttribute
      */
     public Set<BuiltInAttribute> findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
-    
+
     /**
      * Helper method to support legacy implementation of one attribute per paoTypeAndPoint. Do Not Use!
+     * 
      * @param paoTypePointIdentifier
      * @return (randomly) returns one builtInAttribute from the multiSet.
      * @deprecated use findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier)
      */
-    @Deprecated public BuiltInAttribute findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
+    @Deprecated
+    public BuiltInAttribute findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
 
     // DEVICE CONFIGURATION
-    //============================================
-    
+    // ============================================
+
     public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap();
-    
+
     public Set<Category> getCategoriesForPaoType(PaoType paoType);
-    
+
     public Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes);
-    
+
     public boolean isDnpConfigurationType(PaoType paoType);
-    
+
     // POINTS
-    //============================================
+    // ============================================
 
     /**
      * Method to get all of the point templates for a given pao
+     * 
      * @param pao - Pao to get point templates for
      * @return An unmodifiable set of all point templates for the pao
      */
     public abstract Set<PointTemplate> getAllPointTemplates(PaoType paoType);
-    
+
     /**
      * Method to get all of the point templates for a given pao definition
+     * 
      * @param paoDefiniton - Pao definition to get point templates for
      * @return A unmodifiable set of all point templates for the pao
      */
@@ -85,23 +91,26 @@ public interface PaoDefinitionDao {
     /**
      * Method to get all of the point templates for a given pao that should
      * be initialized
+     * 
      * @param pao - Pao to get point templates for
      * @return A unmodifiable set of all point templates for the pao that should be
      *         initialized
      */
     public abstract Set<PointTemplate> getInitPointTemplates(PaoType paoType);
-    
+
     /**
      * Method to get all of the point templates for a given pao definition
      * that should be initialized
+     * 
      * @param newDefinition - Pao definition to get point templates for
      * @return A unmodifiable set of all point templates for the pao that should be
      *         initialized
      */
     public abstract Set<PointTemplate> getInitPointTemplates(PaoDefinition newDefinition);
-    
+
     /**
      * Method to get a point template for a pao based on point type and offset
+     * 
      * @param pao - Pao to get point template for
      * @param offset - Offset of point template
      * @param pointType - Type of point template
@@ -110,37 +119,43 @@ public interface PaoDefinitionDao {
     public abstract PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier);
 
     // COMMANDS
-    //============================================
+    // ============================================
     /**
      * Method to get a list of command definitions for the given pao which
      * affect one or more of the points in the given set of points
+     * 
      * @param pao - Pao to get commands for
      * @param pointSet - Set of points to get affecting commands for
      * @return The set of commands affecting one or more of the points
      */
     public Set<CommandDefinition> getCommandsThatAffectPoints(PaoType paoType, Set<? extends PointIdentifier> pointSet);
-    
+
     public Set<CommandDefinition> getAvailableCommands(PaoDefinition newDefinition);
-    
+
     // TAGS
-    //============================================
+    // ============================================
     public Set<PaoTag> getSupportedTags(PaoType paoType);
+
     public Set<PaoTag> getSupportedTags(PaoDefinition paoDefiniton);
-    
+
     public Set<PaoDefinition> getPaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
+
     public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
-    
+
     public Set<PaoDefinition> getCreatablePaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags);
+
     public boolean isTagSupported(PaoType paoType, PaoTag feature);
+
     public String getValueForTagString(PaoType paoType, PaoTag tag);
-    
+
     // DEFINITIONS
-    //============================================
+    // ============================================
     public abstract Set<PaoDefinition> getAllPaoDefinitions();
-    
+
     /**
      * Method to get a map of pao display groups and their associated pao
      * types
+     * 
      * @return An immutable map with key: display group name, value: list of
      *         pao display
      */
@@ -148,23 +163,20 @@ public interface PaoDefinitionDao {
 
     /**
      * Method used to get a pao definition for a pao
+     * 
      * @param pao - Pao to get definition for
      * @return The pao's pao definition
      */
     public abstract PaoDefinition getPaoDefinition(PaoType paoType);
-    
+
     /**
      * Method to get a set of PaoDefinitions into which the given PAO can change.
      * Result is guaranteed not to contain the paoDefinition that was passed in.
-     * 
+     *
      * @param paoDefinition - Definition of PAO to change
      * @return An immutable set of PaoDefinition
      */
     public abstract Set<PaoDefinition> getPaosThatPaoCanChangeTo(PaoDefinition paoDefinition);
-    
-    // MISC
-    //============================================
-    public String getPointLegendHtml(String displayGroup);
 
     /**
      * Takes an iterable of type T and returns a new Iterable of items that support
@@ -180,6 +192,7 @@ public interface PaoDefinitionDao {
 
     /**
      * Method to return set of paoDefinitions that are creatable.
+     * 
      * @return An unmodifiable set of paoDefinition
      */
     public Set<PaoDefinition> getCreatablePaoDefinitions();
@@ -189,7 +202,7 @@ public interface PaoDefinitionDao {
     /**
      * Uses the cached pao definition of the given type to return the point identifier matching
      * the given default point name Throws {@link NotFoundException} when no point identifier
-     * matches that default point name. 
+     * matches that default point name.
      */
     public PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName)
             throws NotFoundException;

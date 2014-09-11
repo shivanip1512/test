@@ -37,13 +37,12 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.SimpleYukonUserContext;
-import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 
 /**
  * Holds session information for client programs.
  * Start with the static establishSession methods.
- * 
+ *
  */
 public class ClientSession {
     private static ClientSession instance;
@@ -130,30 +129,6 @@ public class ClientSession {
         } else {
             CTILogger.debug("Login was not successful");
         }
-        return success;
-    }
-
-    /**
-     * Establishes local login with a default user. Used by Java servers that should
-     * not prompt for login credentials.
-     * 
-     * Assumes the loginID of USER_ADMIN_ID (Admin user).
-     */
-    public synchronized boolean establishDefServerSession() {
-        boolean success = false;
-        CTILogger.info("Attempting local load of database properties for SERVER login...");
-
-        int userID = UserUtils.USER_ADMIN_ID;
-        LiteYukonUser u = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID);
-        if (u != null) {
-            CTILogger.debug("  Assuming SERVER loginID to be " + userID);
-            setSessionInfo(u);
-            success = true;
-        } else {
-            CTILogger.info("Unable to find default SERVER loginID of " + userID);
-            success = false;
-        }
-
         return success;
     }
 
@@ -265,7 +240,7 @@ public class ClientSession {
 
     /**
      * Stores the username and or password based on rememberMeSetting.
-     * 
+     *
      * For local logins the rememberMeSetting should come straight from globalSettingDao.
      * For remote logins, the preference will be set so LoginPrefs.getRememberMeSetting() should be
      * used.

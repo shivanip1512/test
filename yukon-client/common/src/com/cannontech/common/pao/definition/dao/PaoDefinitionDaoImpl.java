@@ -3,8 +3,6 @@ package com.cannontech.common.pao.definition.dao;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,12 +22,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -143,28 +135,26 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Set<PaoDefinition> creatablePaoDefinitions = null;
     private List<String> fileIdOrder = null;
     private SetMultimap<Pair<PaoType, PointIdentifier>, BuiltInAttribute> paoAndPointToAttributeMap;
-    
+
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private StateDao stateDao;
     @Autowired private PointDao pointDao;
     @Autowired private DeviceDefinitionDao deviceDefinitionDao;
 
     /**
-     * Enum used to filter when retrieving paos that support tags. 
-     *      YES returns only Paos that are creatable.
-     *      NO returns only Paos that are not creatable.
-     *      DONT_CARE returns all paos regardless of whether or not they are creatable
+     * Enum used to filter when retrieving paos that support tags.
+     * YES returns only Paos that are creatable.
+     * NO returns only Paos that are not creatable.
+     * DONT_CARE returns all paos regardless of whether or not they are creatable
      */
     private enum Creatable {
-        YES,
-        NO,
-        DONT_CARE;
+        YES, NO, DONT_CARE;
     }
 
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
     }
-    
+
     public void setSchemaFile(Resource schemaFile) {
         this.schemaFile = schemaFile;
     }
@@ -172,9 +162,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public void setPointLegendFile(Resource pointLegendFile) {
         this.pointLegendFile = pointLegendFile;
     }
-    
+
     // ATTRIBUTES
-    //============================================
+    // ============================================
     @Override
     public <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute)
             throws IllegalUseOfAttribute {
@@ -188,12 +178,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         return attributeDefinition;
     }
-    
+
     @Override
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap() {
         return paoAttributeAttrDefinitionMap;
     }
-    
+
     @Override
     public Multimap<PaoType, Attribute> getPaoTypeAttributesMultiMap() {
         return paoTypeAttributesMultiMap;
@@ -218,12 +208,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public Set<PointTemplate> getInitPointTemplates(PaoDefinition paoDefinition) {
         return getInitPointTemplates(paoDefinition.getType());
     }
-    
+
     @Override
     public PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier) {
 
-    	PointType pointType = pointIdentifier.getPointType();
-    	int offset = pointIdentifier.getOffset();
+        PointType pointType = pointIdentifier.getPointType();
+        int offset = pointIdentifier.getOffset();
 
         Set<PointTemplate> allPointTemplates = getAllPointTemplates(paoType);
 
@@ -234,26 +224,29 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             }
         }
 
-        throw new NotFoundException("Point template not found for pao type: " + paoType + ", point type: " + pointType + ", offset: " + offset);
+        throw new NotFoundException("Point template not found for pao type: " + paoType + ", point type: " + pointType
+            + ", offset: " + offset);
     }
-    
+
     @Override
     public Set<PointTemplate> getAllPointTemplates(PaoType paoType) {
         Set<PointTemplate> templates = paoAllPointTemplateMap.get(paoType);
         return Collections.unmodifiableSet(templates);
     }
-    
+
     @Override
     public Set<PointTemplate> getInitPointTemplates(PaoType paoType) {
         Set<PointTemplate> templates = paoInitPointTemplateMap.get(paoType);
         return Collections.unmodifiableSet(templates);
     }
-    
+
     @Override
     public Set<BuiltInAttribute> findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
-        Pair<PaoType, PointIdentifier> paoAndPoint = new Pair<PaoType, PointIdentifier>(paoTypePointIdentifier.getPaoType(), paoTypePointIdentifier.getPointIdentifier());
+        Pair<PaoType, PointIdentifier> paoAndPoint =
+            new Pair<PaoType, PointIdentifier>(paoTypePointIdentifier.getPaoType(),
+                paoTypePointIdentifier.getPointIdentifier());
         Set<BuiltInAttribute> builtInAttributes = paoAndPointToAttributeMap.get(paoAndPoint);
-        return Collections.unmodifiableSet(builtInAttributes);        
+        return Collections.unmodifiableSet(builtInAttributes);
     }
 
     @Override
@@ -265,9 +258,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         return null;
     }
-    
+
     // COMMANDS
-    //============================================
+    // ============================================
     @Override
     public Set<CommandDefinition> getCommandsThatAffectPoints(PaoType paoType, Set<? extends PointIdentifier> pointSet) {
 
@@ -286,76 +279,75 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
         return commandSet;
     }
-    
+
     @Override
     public Set<CommandDefinition> getAvailableCommands(PaoDefinition newDefinition) {
-    	
-    	PaoType paoType = newDefinition.getType();
+
+        PaoType paoType = newDefinition.getType();
         Set<CommandDefinition> allCommandSet = paoCommandMap.get(paoType);
         return Collections.unmodifiableSet(allCommandSet);
     }
-    
+
     // TAGS
-    //============================================
+    // ============================================
     @Override
     public ImmutableBiMap<PaoTag, PaoTagDefinition> getSupportedTagsForPaoType(PaoType paoType) {
         return supportedTagsByType.get(paoType);
     }
-    
+
     private BiMap<PaoType, PaoDefinition> getPaoDefinitionsThatSupportTag(PaoTag tag, Creatable creatability) {
         BiMap<PaoType, PaoDefinition> biMap = EnumHashBiMap.create(PaoType.class);
-        
+
         for (Entry<PaoType, PaoDefinition> entry : typesBySupportedTag.get(tag).entrySet()) {
             boolean isCreatable = entry.getValue().isCreatable();
-            
-            if (creatability == Creatable.DONT_CARE ||
-                (!isCreatable && creatability == Creatable.NO) || 
-                (isCreatable && creatability == Creatable.YES)) {
+
+            if (creatability == Creatable.DONT_CARE || (!isCreatable && creatability == Creatable.NO)
+                || (isCreatable && creatability == Creatable.YES)) {
                 // This entry doesn't match our criteria.
                 biMap.put(entry.getKey(), entry.getValue());
             }
         }
-        
+
         return biMap;
     }
-    
+
     @Override
     public Set<PaoTag> getSupportedTags(PaoType paoType) {
         // no need to wrap, already immutable
-    	return getSupportedTagsForPaoType(paoType).keySet();
+        return getSupportedTagsForPaoType(paoType).keySet();
     }
-    
+
     @Override
     public Set<PaoTag> getSupportedTags(PaoDefinition paoDefiniton) {
         // no need to wrap, already immutable
-    	return getSupportedTagsForPaoType(paoDefiniton.getType()).keySet();
+        return getSupportedTagsForPaoType(paoDefiniton.getType()).keySet();
     }
-    
+
     private Set<PaoDefinition> getPaosThatSupportTag(Creatable creatability, PaoTag firstTag, PaoTag... otherTags) {
         // handle common single tag case to prevent new object instantiation
         if (otherTags.length == 0) {
             return Collections.unmodifiableSet(getPaoDefinitionsThatSupportTag(firstTag, creatability).values());
         }
-        
+
         ImmutableSet.Builder<PaoDefinition> definitions = ImmutableSet.builder();
         for (PaoTag tag : Lists.asList(firstTag, otherTags)) {
             Set<PaoDefinition> definitionsForTag = getPaoDefinitionsThatSupportTag(tag, creatability).values();
             definitions.addAll(definitionsForTag);
         }
-        
+
         return definitions.build();
     }
-    
+
     @Override
     public Set<PaoDefinition> getPaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
         return getPaosThatSupportTag(Creatable.DONT_CARE, firstTag, otherTags);
     }
-    
+
     @Override
     public Set<PaoDefinition> getCreatablePaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
         return getPaosThatSupportTag(Creatable.YES, firstTag, otherTags);
     }
-    
+
     private Set<PaoType> getPaoTypesThatSupportTag(Creatable creatability, PaoTag firstTag, PaoTag... otherTags) {
         // handle common single tag case to prevent new object instantiation
         if (otherTags.length == 0) {
@@ -367,10 +359,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             Set<PaoType> types = getPaoDefinitionsThatSupportTag(tag, Creatable.DONT_CARE).keySet();
             paoTypes.addAll(types);
         }
-        
+
         return Collections.unmodifiableSet(paoTypes);
     }
-    
+
     @Override
     public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
         return getPaoTypesThatSupportTag(Creatable.DONT_CARE, firstTag, otherTags);
@@ -384,8 +376,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 return isTagSupported(input.getPaoIdentifier().getPaoType(), tag);
             }
         };
-        
-        return Iterables.filter(paos, supportsTagPredicate);    
+
+        return Iterables.filter(paos, supportsTagPredicate);
     }
 
     @Override
@@ -397,7 +389,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             }
         };
 
-        return Sets.filter(paos, supportsTagPredicate);    
+        return Sets.filter(paos, supportsTagPredicate);
     }
 
     @Override
@@ -409,7 +401,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public <T> T getConvertedValueForTag(PaoType paoType, PaoTag tag, Class<T> returnType) {
         Validate.isTrue(tag.isTagHasValue(), "Tag does not support an attached value");
         LogHelper.debug(log, "getting converted value of %s for %s as %s", tag, paoType, returnType.getSimpleName());
-        Validate.isTrue(returnType.isAssignableFrom(tag.getValueType().getTypeClass()), "can't convert " + tag + " to " + returnType);
+        Validate.isTrue(returnType.isAssignableFrom(tag.getValueType().getTypeClass()), "can't convert " + tag + " to "
+            + returnType);
         PaoTagDefinition tagDefinition = getSupportedTag(paoType, tag);
         if (tagDefinition == null) {
             throw new RuntimeException("no value of " + tag + " for " + paoType + " that is supported");
@@ -426,43 +419,42 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         PaoTagDefinition supportedTag = getSupportedTag(paoType, tag);
         return supportedTag != null;
     }
-    
+
     private PaoTagDefinition getSupportedTag(PaoType paoType, PaoTag tag) {
         Map<PaoTag, PaoTagDefinition> supportedTags = getSupportedTagsForPaoType(paoType);
         // ok if this returns null when tag isn't in map
         return supportedTags.get(tag);
     }
-    
+
     // DEFINITIONS
-    //============================================
+    // ============================================
     @Override
     public Set<PaoDefinition> getCreatablePaoDefinitions() {
         return Collections.unmodifiableSet(creatablePaoDefinitions);
     }
-    
+
     @Override
     public Set<PaoDefinition> getAllPaoDefinitions() {
-    	
-    	Set<PaoDefinition> allDefinitions = Collections.unmodifiableSet(paoTypeMap.values());
-    	return allDefinitions;
+
+        Set<PaoDefinition> allDefinitions = Collections.unmodifiableSet(paoTypeMap.values());
+        return allDefinitions;
     }
-    
+
     @Override
     public ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap() {
         return paoDisplayGroupMap;
     }
-    
+
     @Override
     public PaoDefinition getPaoDefinition(PaoType paoType) {
-        
+
         if (paoTypeMap.containsKey(paoType)) {
             return paoTypeMap.get(paoType);
         } else {
-            throw new IllegalArgumentException("Pao type " + paoType
-                    + " is not supported.");
+            throw new IllegalArgumentException("Pao type " + paoType + " is not supported.");
         }
     }
-    
+
     @Override
     public Set<PaoDefinition> getPaosThatPaoCanChangeTo(PaoDefinition paoDefinition) {
 
@@ -472,38 +464,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             Set<PaoDefinition> definitions = changeGroupPaosMap.get(changeGroup);
             return SetUtils.minusOne(definitions, paoDefinition).immutableCopy();
         } else {
-            throw new IllegalArgumentException("No pao types found for change group: "
-                    + changeGroup);
-        }
-    }
-    
-    // MISC
-    //============================================
-    @Override
-    public String getPointLegendHtml(String displayGroup) {
-        try {
-            log.debug("Transforming notification");
-            log.debug("javax.xml: " + System.getProperty("javax.xml.transform.TransformerFactory"));
-            Writer resultWriter = new StringWriter();
-            Result result = new StreamResult(resultWriter);
-            Source inputSource = new StreamSource(inputFile.getInputStream());
-            Source xslSource = new StreamSource(pointLegendFile.getInputStream());
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer(xslSource);
-            transformer.setParameter("group", displayGroup);
-            transformer.transform(inputSource, result);
-            String resultString = resultWriter.toString();
-            return resultString;
-        } catch (Exception e) {
-            log.warn("Unable to translate paoDefinition.xml file for displayGroup=" + displayGroup, e);
-            return "Error rendering point legends: " + e.toString();
+            throw new IllegalArgumentException("No pao types found for change group: " + changeGroup);
         }
     }
 
     @Override
-    public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName) 
-    throws NotFoundException {
-        
+    public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName)
+            throws NotFoundException {
+
         Set<PointTemplate> templates = getAllPointTemplates(type);
         for (PointTemplate template : templates) {
             if (template.getName().equals(defaultPointName)) {
@@ -522,7 +490,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     // INITALIZATION
-    //============================================
+    // ============================================
     /**
      * For unit tests, the setCustomInputFile method must be called BEFORE you call this initialize method.
      */
@@ -543,14 +511,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         typesBySupportedTag = Maps.newEnumMap(PaoTag.class);
         for (PaoTag paoTag : PaoTag.values()) {
             // fill map with empty maps that will be added to as each PaoType is processed
-            typesBySupportedTag.put(paoTag, EnumHashBiMap.<PaoType, PaoDefinition>create(PaoType.class));
+            typesBySupportedTag.put(paoTag, EnumHashBiMap.<PaoType, PaoDefinition> create(PaoType.class));
         }
         supportedTagsByType = Maps.newEnumMap(PaoType.class);
         for (PaoType paoType : PaoType.values()) {
             // fill map with placeholders, value will be replaced as PaoType is processed
-            supportedTagsByType.put(paoType, ImmutableBiMap.<PaoTag,PaoTagDefinition>of());
+            supportedTagsByType.put(paoType, ImmutableBiMap.<PaoTag, PaoTagDefinition> of());
         }
-        
+
         // definition resources (in order from lowest level overrides to highest)
         List<InputStreamProvider> definitionResources = new ArrayList<>();
         InputStream customDefinitions = deviceDefinitionDao.findCustomDeviceDefinitions();
@@ -560,53 +528,56 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 @Override
                 public InputStream openStream() throws IOException {
                     return deviceDefinitionDao.findCustomDeviceDefinitions();
-                }});
+                }
+            });
         }
         validateXmlSchema(inputFile.getInputStream());
         definitionResources.add(new InputStreamProvider() {
             @Override
             public InputStream openStream() throws IOException {
                 return inputFile.getInputStream();
-            }});
+            }
+        });
 
         // merge resources, sort
         Map<String, PaoStore> paoStores;
         try {
             paoStores = mergeDefinitionResourcesIntoPaoStoreMap(definitionResources);
         } catch (Exception e) {
-            log.warn("Unable to read PAO definitions. Check that there is not a <deviceDefinitions> element in the custom deviceDefinition.xml file (see YUK-8738).", e);
+            log.warn(
+                "Unable to read PAO definitions. Check that there is not a <deviceDefinitions> element in the custom deviceDefinition.xml file (see YUK-8738).",
+                e);
             throw e;
         }
         Map<String, PaoStore> sortedPaoStores = new LinkedHashMap<String, PaoStore>();
         for (String id : fileIdOrder) {
-    		sortedPaoStores.put(id, paoStores.remove(id));
+            sortedPaoStores.put(id, paoStores.remove(id));
         }
         sortedPaoStores.putAll(paoStores);
-        
-        
+
         // inherit definitions
         List<PaoStore> finalPaoStores = new ArrayList<PaoStore>();
         for (PaoStore paoStore : sortedPaoStores.values()) {
-        	if (paoStore != null){
-	        	mergeInheritedPaoStoresOntoPaoStore(paoStore, sortedPaoStores);
-	        	
-	        	if (!paoStore.isAbstract()) {
-	        		finalPaoStores.add(paoStore);
-	        	}
-        	} else {
-        		log.error("Iterating through sortedPaoStores.values() got a null object.");
-        	}
-    	}
-        
-        // final paos are ready to have data added to the dao data maps 
+            if (paoStore != null) {
+                mergeInheritedPaoStoresOntoPaoStore(paoStore, sortedPaoStores);
+
+                if (!paoStore.isAbstract()) {
+                    finalPaoStores.add(paoStore);
+                }
+            } else {
+                log.error("Iterating through sortedPaoStores.values() got a null object.");
+            }
+        }
+
+        // final paos are ready to have data added to the dao data maps
         for (PaoStore paoStore : finalPaoStores) {
             try {
                 addPao(paoStore);
             } catch (Exception e) {
-                log.error("type will be unavailable and PAO definitions may be inconsistent: " + paoStore.getId() , e);
+                log.error("type will be unavailable and PAO definitions may be inconsistent: " + paoStore.getId(), e);
             }
         }
-        
+
         Builder<PaoType, Attribute> builder = ImmutableListMultimap.builder();
         for (Map.Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : paoAttributeAttrDefinitionMap.entrySet()) {
             builder.putAll(entry.getKey(), entry.getValue().keySet());
@@ -615,59 +586,59 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     private void mergeInheritedPaoStoresOntoPaoStore(PaoStore paoStore, Map<String, PaoStore> paoStores) {
-    	
-    	List<String> inheritedIds = paoStore.getInheritedIds();
-    	for (String inheritedId : inheritedIds) {
-    		
-    		PaoStore inheritedPaoStore = paoStores.get(inheritedId);
-    		mergeInheritedPaoStoresOntoPaoStore(inheritedPaoStore, paoStores);
-    		paoStore.mergePaoStore(inheritedPaoStore);
-    	}
+
+        List<String> inheritedIds = paoStore.getInheritedIds();
+        for (String inheritedId : inheritedIds) {
+
+            PaoStore inheritedPaoStore = paoStores.get(inheritedId);
+            mergeInheritedPaoStoresOntoPaoStore(inheritedPaoStore, paoStores);
+            paoStore.mergePaoStore(inheritedPaoStore);
+        }
     }
-    
+
     private Map<String, PaoStore> mergeDefinitionResourcesIntoPaoStoreMap(List<InputStreamProvider> definitionFiles)
             throws Exception {
-    	Map<String, PaoStore> paoStores = new LinkedHashMap<String, PaoStore>();
+        Map<String, PaoStore> paoStores = new LinkedHashMap<String, PaoStore>();
 
-    	int resourceCount = 0;
-    	boolean isLastResource = false;
-    	for (InputStreamProvider definitionResource : definitionFiles) {
-    		resourceCount++;
-    		if (resourceCount == definitionFiles.size()) {
-    			isLastResource = true;
-    		}
+        int resourceCount = 0;
+        boolean isLastResource = false;
+        for (InputStreamProvider definitionResource : definitionFiles) {
+            resourceCount++;
+            if (resourceCount == definitionFiles.size()) {
+                isLastResource = true;
+            }
 
-    		try (InputStreamReader reader = new InputStreamReader(definitionResource.openStream())) {
-	            JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
-	            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-	            PaoDefinitions definition = (PaoDefinitions) unmarshaller.unmarshal(reader);
-			    
-	            for (Pao pao : definition.getPao()) {
-	        		if (pao.isEnabled()) {
-	                
-	        			PaoStore paoStore = new PaoStore(pao);
-	        			String id = paoStore.getId();
-	        			
-	        			if (paoStores.get(id) == null) {
-	        				paoStores.put(id, paoStore);
-	        			} else {
-	        				PaoStore existingPaoStore = paoStores.get(id);
-	        				existingPaoStore.mergePaoStore(paoStore);
-	        			}
-	        			
-	        			if (isLastResource) {
-		        			fileIdOrder.add(id);
-		        		}
-	        		}
-	            }
-			}
-    	}
-    	
-    	return paoStores;
+            try (InputStreamReader reader = new InputStreamReader(definitionResource.openStream())) {
+                JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                PaoDefinitions definition = (PaoDefinitions) unmarshaller.unmarshal(reader);
+
+                for (Pao pao : definition.getPao()) {
+                    if (pao.isEnabled()) {
+
+                        PaoStore paoStore = new PaoStore(pao);
+                        String id = paoStore.getId();
+
+                        if (paoStores.get(id) == null) {
+                            paoStores.put(id, paoStore);
+                        } else {
+                            PaoStore existingPaoStore = paoStores.get(id);
+                            existingPaoStore.mergePaoStore(paoStore);
+                        }
+
+                        if (isLastResource) {
+                            fileIdOrder.add(id);
+                        }
+                    }
+                }
+            }
+        }
+
+        return paoStores;
     }
 
-    private void validateXmlSchema(InputStream currentDefinition) throws IOException,
-            SAXException, ParserConfigurationException {
+    private void validateXmlSchema(InputStream currentDefinition) throws IOException, SAXException,
+            ParserConfigurationException {
         URL schemaUrl = schemaFile.getURL();
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false); // this is for DTD, so we want it off
@@ -696,17 +667,17 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 throw exception;
             }
         });
-        
-        
+
         xmlReader.parse(new InputSource(currentDefinition));
         currentDefinition.close();
     }
-    
+
     // ADD PAO
-    //============================================
+    // ============================================
     /**
      * Helper method to add the pao and its point templates to the
      * appropriate maps
+     *
      * @param pao - Pao to add
      */
     private void addPao(PaoStore pao) {
@@ -720,12 +691,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         String group = pao.getDisplayGroup();
 
-        PaoDefinition paoDefinition = new PaoDefinitionImpl(paoType,
-                                                            displayName,
-                                                            group,
-                                                            javaConstant,
-                                                            pao.getChangeGroup(),
-                                                            pao.isCreatable());
+        PaoDefinition paoDefinition =
+            new PaoDefinitionImpl(paoType, displayName, group, javaConstant, pao.getChangeGroup(), pao.isCreatable());
 
         // Add paoDefinition to type map
         paoTypeMap.put(paoType, paoDefinition);
@@ -743,45 +710,48 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
 
         Map<String, PointTemplate> pointNameTemplateMap = new HashMap<String, PointTemplate>();
-        
+
         // Add device configuration categories
         for (Category category : pao.getCategories()) {
             paoCategoryMap.put(paoType, category);
             categoryToPaoMap.put(category, paoType);
         }
-        
+
         // Add pao points (non-calculated)
         populatePointMapsWithNonCalcPoints(pao, paoType, pointNameTemplateMap, javaConstant);
 
         // Add pao points (calculated)
         populatePointMapsWithCalcPoints(pao, paoType, pointNameTemplateMap, javaConstant);
-        
+
         // Add pao attributes
         Map<Attribute, AttributeDefinition> attributeMap = new HashMap<Attribute, AttributeDefinition>();
         List<AttributesType.Attribute> attributes = pao.getEnabledAttributes();
         for (AttributesType.Attribute attribute : attributes) {
-        	
-            AttributeDefinition attributeDefinition = createAttributeDefinition(attribute.getName(), attribute.getBasicLookup(), pointNameTemplateMap);
+
+            AttributeDefinition attributeDefinition =
+                createAttributeDefinition(attribute.getName(), attribute.getBasicLookup(), pointNameTemplateMap);
             BuiltInAttribute pointAttribute = BuiltInAttribute.valueOf(attribute.getName());
-        	
+
             if (attributeMap.containsKey(pointAttribute)) {
-                throw new RuntimeException("Attribute: " + attribute.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - attribute names must be unique within a pao type");
+                throw new RuntimeException("Attribute: " + attribute.getName() + " is used twice for pao type: "
+                    + javaConstant
+                    + " in the paoDefinition.xml file - attribute names must be unique within a pao type");
             }
-        	attributeMap.put(pointAttribute, attributeDefinition);
-        	Pair<PaoType, PointIdentifier> paoAndPoint = new Pair<PaoType, PointIdentifier>(pao.getPaoType(), attributeDefinition.getPointTemplate().getPointIdentifier());
-        	paoAndPointToAttributeMap.put(paoAndPoint, pointAttribute);
-        }   
+            attributeMap.put(pointAttribute, attributeDefinition);
+            Pair<PaoType, PointIdentifier> paoAndPoint =
+                new Pair<PaoType, PointIdentifier>(pao.getPaoType(),
+                    attributeDefinition.getPointTemplate().getPointIdentifier());
+            paoAndPointToAttributeMap.put(paoAndPoint, pointAttribute);
+        }
         paoAttributeAttrDefinitionMap.put(paoType, attributeMap);
 
         // Add pao commands
         List<Command> commands = pao.getEnabledCommands();
         for (Command command : commands) {
-            CommandDefinition definition = createCommandDefinition(pao.getDisplayName(), 
-                                                                   command,
-                                                                   pointNameTemplateMap);
+            CommandDefinition definition = createCommandDefinition(pao.getDisplayName(), command, pointNameTemplateMap);
             paoCommandMap.put(paoType, definition);
         }
-        
+
         // Add pao tags
         List<Tag> tags = pao.getTags();
         ImmutableBiMap.Builder<PaoTag, PaoTagDefinition> supportedTagsBuilder = ImmutableBiMap.builder();
@@ -793,55 +763,55 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             }
         }
         supportedTagsByType.put(paoType, supportedTagsBuilder.build());
-        
+
         // Add pao to creatable list
-        if( paoDefinition.isCreatable()) {
+        if (paoDefinition.isCreatable()) {
             creatablePaoDefinitions.add(paoDefinition);
         }
     }
-    
-    private void populatePointMapsWithNonCalcPoints(PaoStore pao, PaoType paoType, Map<String, PointTemplate> pointNameTemplateMap,
-                                                 String javaConstant) {
+
+    private void populatePointMapsWithNonCalcPoints(PaoStore pao, PaoType paoType,
+            Map<String, PointTemplate> pointNameTemplateMap, String javaConstant) {
         List<Point> points = pao.getEnabledPoints();
         for (Point point : points) {
             PointTemplate template = createPointTemplate(point);
             addPointTemplateToMaps(paoType, point, template, pointNameTemplateMap, javaConstant);
         }
     }
-    
+
     private void populatePointMapsWithCalcPoints(PaoStore pao, PaoType paoType,
-                                                 Map<String, PointTemplate> pointNameTemplateMap,
-                                                 String javaConstant) {
+            Map<String, PointTemplate> pointNameTemplateMap, String javaConstant) {
         List<Point> points = pao.getEnabledCalcPoints();
         for (Point point : points) {
             PointTemplate template = createCalcPointTemplate(point, pointNameTemplateMap);
             addPointTemplateToMaps(paoType, point, template, pointNameTemplateMap, javaConstant);
         }
     }
-    
+
     private void addPointTemplateToMaps(PaoType paoType, Point point, PointTemplate template,
-                                        Map<String, PointTemplate> pointNameTemplateMap,
-                                        String javaConstant) {
+            Map<String, PointTemplate> pointNameTemplateMap, String javaConstant) {
         paoAllPointTemplateMap.put(paoType, template);
-        
+
         if (point.isInit()) {
             paoInitPointTemplateMap.put(paoType, template);
         }
-        
+
         if (pointNameTemplateMap.containsKey(template.getName())) {
-            throw new RuntimeException("Point name: " + template.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - point names must be unique within a pao type");
+            throw new RuntimeException("Point name: " + template.getName() + " is used twice for pao type: "
+                + javaConstant + " in the paoDefinition.xml file - point names must be unique within a pao type");
         }
         pointNameTemplateMap.put(template.getName(), template);
     }
 
     /**
      * Helper method to convert a jaxb AttributeLookup object to a AttributeLookup definition
+     *
      * @param lookup - The BasicLookup of this attribute
-     * @param pointNameTemplateMap 
+     * @param pointNameTemplateMap
      * @return The AttributeLookup definition representing the jaxb CHOICE lookup
      */
-	private AttributeDefinition createAttributeDefinition(String attributeName,
-            BasicLookup lookup, Map<String, PointTemplate> pointNameTemplateMap) {
+    private AttributeDefinition createAttributeDefinition(String attributeName, BasicLookup lookup,
+            Map<String, PointTemplate> pointNameTemplateMap) {
 
         AttributeDefinition attributeDefinition = null;
         BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeName);
@@ -850,15 +820,16 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         if (pointTemplate == null) {
             throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + "'");
         }
-        
+
         attributeDefinition = new AttributeDefinition(attribute, pointTemplate, pointDao);
 
         return attributeDefinition;
 
     }
-	
+
     /**
      * Helper method to convert a jaxb command to a command definition
+     *
      * @param paoName - Name of pao for commands
      * @param command - Command to convert
      * @param pointNameTemplateMap
@@ -877,7 +848,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         // Add point reference
         for (PointRef pointRef : command.getPointRef()) {
             if (!pointNameTemplateMap.containsKey(pointRef.getName())) {
-                throw new RuntimeException("Point name: " + pointRef.getName() + " not found for pao: " + paoName + ".  command pointRefs must reference a point name from the same pao in the paoDefinition.xml file. Point is not on pao, or point has been named incorrectly in a custom file.");
+                throw new RuntimeException(
+                    "Point name: "
+                        + pointRef.getName()
+                        + " not found for pao: "
+                        + paoName
+                        + ".  command pointRefs must reference a point name from the same pao in the paoDefinition.xml file. Point is not on pao, or point has been named incorrectly in a custom file.");
             }
             PointTemplate template = pointNameTemplateMap.get(pointRef.getName());
             PointIdentifier pi = new PointIdentifier(template.getPointType(), template.getOffset());
@@ -891,75 +867,77 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
      * Helper method to convert a jaxb tag to tag definition.
      */
     private PaoTagDefinition createPaoTagDefinition(String tagName, String value, String context) {
-    	
-    	PaoTag tag = PaoTag.valueOf(tagName);
-    	Object convertedValue = null;
-    	if (tag.isTagHasValue()) {
-    	    convertedValue = InputTypeFactory.convertPropertyValue(tag.getValueType(), value);
+
+        PaoTag tag = PaoTag.valueOf(tagName);
+        Object convertedValue = null;
+        if (tag.isTagHasValue()) {
+            convertedValue = InputTypeFactory.convertPropertyValue(tag.getValueType(), value);
             if (convertedValue == null) {
                 throw new RuntimeException("converted value of " + tag + " for " + context + " was null");
             }
-    	} else {
-    	    if (StringUtils.isNotBlank(value)) {
-    	        throw new RuntimeException("tag " + tag + " for " + context + " has value, but it is not allowed to");
-    	    }
-    	}
-    	PaoTagDefinition definition = new PaoTagDefinition(tag, convertedValue);
-    	return definition;
+        } else {
+            if (StringUtils.isNotBlank(value)) {
+                throw new RuntimeException("tag " + tag + " for " + context + " has value, but it is not allowed to");
+            }
+        }
+        PaoTagDefinition definition = new PaoTagDefinition(tag, convertedValue);
+        return definition;
     }
 
     /**
      * Helper method to convert a jaxb point to a point template
+     *
      * @param point - Point to convert
      * @return The point template representing the jaxb point
      */
     private PointTemplate createPointTemplate(Point point) {
-        PointIdentifier pointIdentifier = new PointIdentifier(PointType.getForString(point.getType()), point.getOffset());
+        PointIdentifier pointIdentifier =
+            new PointIdentifier(PointType.getForString(point.getType()), point.getOffset());
         PointTemplate template = new PointTemplate(pointIdentifier);
 
         template.setName(point.getName());
 
         int unitOfMeasure = UnitOfMeasure.INVALID.getId();
         int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
-        
-        if(point.getMultiplier() != null) {
+
+        if (point.getMultiplier() != null) {
             template.setMultiplier(point.getMultiplier().getValue().doubleValue());
         }
-        if(point.getDataOffset() != null) {
+        if (point.getDataOffset() != null) {
             template.setDataOffset(point.getDataOffset().getValue().doubleValue());
         }
-        
-        if(point.getUnitofmeasure() != null) {
+
+        if (point.getUnitofmeasure() != null) {
             String unitOfMeasureName = point.getUnitofmeasure().getValue();
             LiteUnitMeasure unitMeasure = null;
             try {
                 unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
             } catch (EmptyResultDataAccessException e) {
-                throw new NotFoundException("Unit of measure does not exist: "
-                        + unitOfMeasureName + ". Check the paoDefinition.xml file ", e);
+                throw new NotFoundException("Unit of measure does not exist: " + unitOfMeasureName
+                    + ". Check the paoDefinition.xml file ", e);
             }
             unitOfMeasure = unitMeasure.getUomID();
         }
-        
-        if(point.getDecimalplaces() != null) {
+
+        if (point.getDecimalplaces() != null) {
             decimalPlaces = point.getDecimalplaces().getValue();
         }
-        
+
         template.setUnitOfMeasure(unitOfMeasure);
         template.setDecimalPlaces(decimalPlaces);
-        
+
         ArchiveDefaults archive = point.getArchive();
         if (archive != null) {
-        	template.setPointArchiveType(PointArchiveType.valueOf(archive.getType()));
-        	template.setPointArchiveInterval(PointArchiveInterval.valueOf(archive.getInterval()));
+            template.setPointArchiveType(PointArchiveType.valueOf(archive.getType()));
+            template.setPointArchiveInterval(PointArchiveInterval.valueOf(archive.getInterval()));
         }
-        
+
         int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
-        int initialState =  StateGroupUtils.DEFAULT_STATE;
+        int initialState = StateGroupUtils.DEFAULT_STATE;
         String stateGroupName = null;
         String initialStateStr = null;
         boolean stateGroupSet = false;
-        
+
         // if we have Status Point elements set
         if (point.getStategroup() != null) {
             if (point.getControlOffset() != null) {
@@ -970,11 +948,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 template.setControlType(controlType);
             }
             if (point.getStateZeroControl() != null) {
-                ControlStateType stateZeroControl = ControlStateType.valueOf(point.getStateZeroControl().getValue().value());
+                ControlStateType stateZeroControl =
+                    ControlStateType.valueOf(point.getStateZeroControl().getValue().value());
                 template.setStateZeroControl(stateZeroControl);
             }
             if (point.getStateOneControl() != null) {
-                ControlStateType stateOneControl = ControlStateType.valueOf(point.getStateOneControl().getValue().value());
+                ControlStateType stateOneControl =
+                    ControlStateType.valueOf(point.getStateOneControl().getValue().value());
                 template.setStateOneControl(stateOneControl);
             }
             if (point.getStategroup() != null) {
@@ -983,24 +963,24 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 initialStateStr = point.getStategroup().getInitialState();
             }
         }
-        
+
         // if we have the Analog State Group set
-        if(point.getAnalogstategroup() != null) {
+        if (point.getAnalogstategroup() != null) {
             stateGroupSet = true;
             stateGroupName = point.getAnalogstategroup().getValue();
             initialStateStr = point.getAnalogstategroup().getInitialState();
         }
-        
-        if(stateGroupSet) {
+
+        if (stateGroupSet) {
             LiteStateGroup stateGroup = null;
             try {
                 stateGroup = stateDao.getLiteStateGroup(stateGroupName);
             } catch (NotFoundException e) {
                 throw new NotFoundException("State group does not exist: " + stateGroupName
-                        + ". Check the paoDefinition.xml file ", e);
+                    + ". Check the paoDefinition.xml file ", e);
             }
             stateGroupId = stateGroup.getStateGroupID();
-            
+
             if (initialStateStr != null) {
                 List<LiteState> states = stateGroup.getStatesList();
                 boolean notFound = true;
@@ -1011,19 +991,20 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                         break;
                     }
                 }
-                
+
                 if (notFound) {
-                    throw new IllegalArgumentException("Initial State was not found in the State Group: " + initialStateStr);
+                    throw new IllegalArgumentException("Initial State was not found in the State Group: "
+                        + initialStateStr);
                 }
             }
         }
-        
+
         template.setStateGroupId(stateGroupId);
         template.setInitialState(initialState);
-        
+
         return template;
     }
-    
+
     private PointTemplate createCalcPointTemplate(Point point, Map<String, PointTemplate> pointNameTemplateMap) {
         PointTemplate pointTemplate = createPointTemplate(point);
 
@@ -1031,12 +1012,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         if (calculation == null) {
             return null;
         }
-        
+
         int periodicRate = calculation.getPeriodicRate();
         boolean forceQualityNormal = calculation.isForceQualityNormal();
         UpdateTypeType updateType = calculation.getUpdateType();
         CalcPointInfo calcPointInfo = new CalcPointInfo(updateType.value(), periodicRate, forceQualityNormal);
-        
+
         List<CalcPointComponent> calcPointComponents = Lists.newArrayList();
         List<Component> components = calculation.getComponents().getComponent();
         for (Component component : components) {
@@ -1046,8 +1027,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             if (componentPointTemplate == null) {
                 throw new IllegalArgumentException("Can't resolve point name '" + lookup + ":");
             }
-            
-            CalcPointComponent calcPointComponent = new CalcPointComponent(componentPointTemplate.getPointIdentifier(), componentType.toString(), component.getOperator());
+
+            CalcPointComponent calcPointComponent =
+                new CalcPointComponent(componentPointTemplate.getPointIdentifier(), componentType.toString(),
+                    component.getOperator());
             calcPointComponents.add(calcPointComponent);
         }
 
@@ -1055,45 +1038,45 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         pointTemplate.setCalcPointInfo(calcPointInfo);
         return pointTemplate;
     }
-    
+
     @Override
     public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap() {
         SetMultimap<String, PaoType> map = HashMultimap.create();
-        
+
         for (Category category : categoryToPaoMap.keySet()) {
             map.putAll(category.getType().value(), categoryToPaoMap.get(category));
         }
-        
+
         return map;
     }
-    
+
     @Override
     public Set<Category> getCategoriesForPaoType(PaoType paoType) {
         Set<Category> templates = paoCategoryMap.get(paoType);
         return Collections.unmodifiableSet(templates);
     }
-    
+
     @Override
     public Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes) {
         Set<Category> categories = new HashSet<>();
-        
+
         for (PaoType paoType : paoTypes) {
             categories.addAll(getCategoriesForPaoType(paoType));
         }
-        
+
         return Collections.unmodifiableSet(categories);
     }
-    
+
     @Override
     public boolean isDnpConfigurationType(PaoType paoType) {
         Set<DeviceCategories.Category> categoriesForPaoType = getCategoriesForPaoType(paoType);
-        
+
         for (DeviceCategories.Category category : categoriesForPaoType) {
             if (CategoryType.DNP.value().equals(category.getType().value())) {
                 return true;
             }
         }
-        
+
         return false;
     }
 }
