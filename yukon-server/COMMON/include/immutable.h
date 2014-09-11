@@ -1,90 +1,123 @@
 #pragma once
 
+#include "atomic.h"
+#include "critical_section.h"
+
 #include "boost/shared_ptr.hpp"
-#include "readers_writer_lock.h"
+#include "boost/scoped_ptr.hpp"
+#include "boost/ptr_container/ptr_deque.hpp"
 
 namespace Cti {
 
 template <class T>
 class Immutable
 {
-    typedef boost::shared_ptr<const T> PointerType;
-    
-    PointerType _ptr;
-    
-    typedef readers_writer_lock_t::reader_lock_guard_t  ReaderGuard;
-    typedef readers_writer_lock_t::writer_lock_guard_t  WriterGuard;
+    typedef boost::shared_ptr<const T> SharedPtr;
 
-    mutable readers_writer_lock_t _mux;
+    // using Atomic makes this class noncopyable
+    Atomic<SharedPtr*> _content;
+
+    mutable Atomic<unsigned>             _readers;
+    mutable Atomic<bool>                 _needsCleanup;
+    mutable boost::ptr_deque<SharedPtr>  _cleanupList;
+    mutable CtiCriticalSection           _mux;
+
+    void tryCleanup() const
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_mux);
+
+        if( !_readers && _needsCleanup.exchange(false) )
+        {
+            _cleanupList.clear();
+        }
+    }
+
+    void reset(SharedPtr* ptr)
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_mux);
+
+        _cleanupList.push_back(_content.exchange(ptr));
+        _needsCleanup = true;
+
+        tryCleanup();
+    }
 
 public:
-    Immutable()
+
+    Immutable() :
+        _content(new SharedPtr())
     {}
 
     Immutable(T* obj) :
-        _ptr(obj)
+        _content(new SharedPtr(obj))
     {}
 
     Immutable(const T& obj) :
-        _ptr(new T(obj))
+        _content(new SharedPtr(new T(obj)))
     {}
 
     Immutable(const Immutable<T>& other) :
-        _ptr(other.get())
+        _content(new SharedPtr(other.get()))
     {}
+
+    ~Immutable()
+    {
+        // Transfer ownership
+        boost::scoped_ptr<SharedPtr> temp(_content.exchange(NULL));
+    }
 
     void reset()
     {
-        WriterGuard guard(_mux);
-        _ptr.reset();
+        reset(new SharedPtr());
     }
 
     void reset(T* obj)
     {
-        WriterGuard guard(_mux);
-        _ptr.reset(obj);
+        reset(new SharedPtr(obj));
     }
 
-    PointerType get() const
+    SharedPtr get() const
     {
-        ReaderGuard guard(_mux);
-        return _ptr;
+        ++_readers;
+
+        SharedPtr copy = *_content;
+
+        if( ! --_readers && _needsCleanup )
+        {
+            tryCleanup();
+        }
+
+        return copy;
     }
 
     Immutable& operator=(const T& rhs)
     {
-        this->reset(new T(rhs));
+        reset(new T(rhs));
         return *this;
     }
 
     Immutable& operator=(const Immutable<T>& other)
     {
-        PointerType &other_ptr = other.get();
-
-        {
-            WriterGuard guard(_mux);
-            _ptr = other_ptr;
-        }
-
-        return *this;
+        reset(new SharedPtr(other.get()));
     }
-    
+
     void swap(Immutable<T>& other)
     {
         // check the pointers addresses to make sure we always
         // acquire locks in the same order and avoid deadlocks
-        if(this < &other)
-        {
-            WriterGuard guard1(_mux);
-            WriterGuard guard2(other._mux);
-            _ptr.swap(other._ptr);
-        }
-        else
-        {
-            WriterGuard guard1(other._mux);
-            WriterGuard guard2(_mux);
-            _ptr.swap(other._ptr);
-        }
+        const bool lockThisFirst = (this < &other);
+
+        CtiLockGuard<CtiCriticalSection> guard1(lockThisFirst ? _mux : other._mux);
+        CtiLockGuard<CtiCriticalSection> guard2(lockThisFirst ? other._mux : _mux);
+
+        // make copies - the raw pointers from _content should not leave since readers
+        // may still be copying while we are swapping
+        SharedPtr copy       = *_content;
+        SharedPtr other_copy = *other._content;
+
+        // swap/reset the content of both - will try to cleanup afterwards
+        reset(new SharedPtr(other_copy));
+        other.reset(new SharedPtr(copy));
     }
 };
 
