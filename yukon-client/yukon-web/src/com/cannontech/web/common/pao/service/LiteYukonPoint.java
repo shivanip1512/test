@@ -21,12 +21,14 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
     public static Comparator<LiteYukonPoint> ATTRIBUTE_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
         public int compare(LiteYukonPoint o1, LiteYukonPoint o2) {
-            if (o1.attribute == null) {
+            if (o1.attribute == o2.attribute) {
+                return 0;
+            } else if (o1.attribute == null) {
                 return 1;
             } else if (o2.attribute == null) {
                 return -1;
             } else {
-                return o1.attribute.getDescription().compareTo(o2.attribute.getDescription());
+                return o1.attribute.getDescription().compareToIgnoreCase(o2.attribute.getDescription());
             }
         }
     };
