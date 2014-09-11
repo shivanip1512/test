@@ -134,8 +134,12 @@ yukon.trends = (function() {
 }());
 
 $(function () {
-    var trends = $('[data-trend]').data('trend');
-    if ('' !== trends) {
-        yukon.trends.init(trends);
+    var trendData = $('[data-trend]'),
+        trends;
+    if (0 < trendData.length) {
+        trends = trendData.data('trend');
+        if ('' !== trends) {
+            yukon.trends.init(trends);
+        }
     }
 });
