@@ -1,39 +1,22 @@
 #pragma once
 
-   #include <stdlib.h>
-   #include <stdio.h>
-   #include <time.h>
-   #include <sys\timeb.h>
+#include "yukon.h"  //  for YukonError_t
 
-   #ifdef _WIN32
-
-     #if !defined (NOMINMAX)
-     #define NOMINMAX
-     #endif
-
-     #include <windows.h>
-     #include "os2_2w32.h"
-   #endif
-
-/*****************************************************************************
- * Accck! Pthht! Some Debug Tools
- ****************************************************************************/
-   #define DEBUGLEVEL = 0x00010001
+#include <windows.h>
+#include "os2_2w32.h"
 
 /* Combine l & h to form a 32 bit quantity. */
-   #ifndef MAKEULONG
-      #define MAKEULONG(l, h)  ((ULONG)(((USHORT)(l)) | ((ULONG)((USHORT)(h))) << 16))
-   #endif
-   #ifndef MAKELONG
-      #define MAKELONG(l, h)   ((LONG)MAKEULONG(l, h))
-   #endif
+#ifndef MAKEULONG
+    #define MAKEULONG(l, h)  ((ULONG)(((USHORT)(l)) | ((ULONG)((USHORT)(h))) << 16))
+#endif
+#ifndef MAKELONG
+    #define MAKELONG(l, h)   ((LONG)MAKEULONG(l, h))
+#endif
 
 /* Combine l & h to form a 16 bit quantity. */
-   #define MAKEUSHORT(l, h) (((USHORT)(l)) | ((USHORT)(h)) << 8)
-   #define MAKESHORT(l, h)  ((SHORT)MAKEUSHORT(l, h))
+#define MAKEUSHORT(l, h) (((USHORT)(l)) | ((USHORT)(h)) << 8)
+#define MAKESHORT(l, h)  ((SHORT)MAKEUSHORT(l, h))
 
-
-enum YukonError_t;
 
 APIRET       IM_EX_CTIBASE CTISleep              (ULONG SleepTime);
 APIRET       IM_EX_CTIBASE CTIScanEnv            (PSZ Name, PSZ *Result);

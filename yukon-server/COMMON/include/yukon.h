@@ -130,249 +130,255 @@ enum CtiAlarm_t
     InvalidAlarm
 };
 
-enum YukonError_t
+struct ClientErrors
 {
-    NoError = 0,
-    Error_Abnormal,
-    Error_UNUSED_002,
-    BADTYPE,
-    DLENGTH,
-    Error_UNUSED_005,
-    Error_UNUSED_006,
-    Error_UNUSED_007,
-    BADID,
-    BADRANGE,
-    MISPARAM,
-    SYNTAX,
-    Error_UNUSED_012,
-    Error_UNUSED_013,
-    BADSTATE,
-    BADPARITY,
-    BADCCU,
-    NACK1,
-    NACK2,
-    NACK3,
-    NACKPAD1,
-    NACKPAD2,
-    NACKPAD3,
-    Error_UNUSED_023,
-    Error_UNUSED_024,
-    Error_UNUSED_025,
-    BADPARAM,
-    BADROUTE,
-    BADBUSS,
-    Error_UNUSED_029,
-    READERR,
-    READTIMEOUT,
-    BADSEQUENCE,
-    FRAMEERR,
-    BADCRC,
-    BADLENGTH,
-    BADUA,
-    ERRUNKNOWN,
-    Error_UNUSED_038,
-    Error_UNUSED_039,
-    Error_UNUSED_040,
-    Error_UNUSED_041,
-    Error_UNUSED_042,
-    Error_UNUSED_043,
-    Error_UNUSED_044,
-    Error_UNUSED_045,
-    REQACK,
-    Error_UNUSED_047,
-    Error_UNUSED_048,
-    RTNF,
-    Error_UNUSED_050,
-    Error_UNUSED_051,
-    Error_UNUSED_052,
-    Error_UNUSED_053,
-    IDNF,
-    Error_UNUSED_055,
-    TYNF,
-    EWORDRCV,
-    Error_UNUSED_058,
-    SYSTEM,
-    BADPORT,
-    QUEUE_READ,
-    QUEUE_WRITE,
-    MEMORY,
-    Error_UNUSED_064,
-    NODCD,
-    Error_UNUSED_066,
-    PORTREAD,
-    PORTWRITE,
-    Error_UNUSED_069,
-    Error_UNUSED_070,
-    QUEUEEXEC,
-    DLCTIMEOUT,
-    NOATTEMPT,
-    ROUTEFAILED,
-    TRANSFAILED,
-    Error_UNUSED_076,
-    Error_UNUSED_077,
-    REMOTEINHIBITED,
-    QUEUEFLUSHED,
-    Error_UNUSED_080,
-    PIPEWASBROKEN,
-    PIPEOPEN,
-    PORTINHIBITED,
-    ACCUMSNOTSUPPORTED,
-    DEVICEINHIBITED,
-    Error_UNUSED_086,
-    DIALUPERROR,
-    WRONGADDRESS,
-    TCPCONNECTERROR,
-    TCPWRITEERROR,
-    TCPREADERROR,
-    ADDRESSERROR,
-    ALPHABUFFERERROR,
-    MISCONFIG,
-    Error_UNUSED_095,
-    Error_UNUSED_096,
-    Error_UNUSED_097,
-    BADSOCK,
-    SOCKWRITE,
-    BADBCH,
+    enum YukonErrors
+    {
+        None = 0,
+        Abnormal,
+        z_002,  //  all z_ codes are unused and may be repurposed
+        BadType,
+        DLength,
+        z_005,
+        z_006,
+        z_007,
+        BadId,
+        BadRange,
+        MissingParameter,
+        Syntax,
+        z_012,
+        z_013,
+        BadState,
+        BadParity,
+        BadCcu,
+        Word1Nack,
+        Word2Nack,
+        Word3Nack,
+        Word1NackPadded,
+        Word2NackPadded,
+        Word3NackPadded,
+        z_023,
+        z_024,
+        z_025,
+        BadParameter,
+        BadRoute,
+        BadBusSpecification,
+        z_029,
+        Read,
+        ReadTimeout,
+        BadSequence,
+        Framing,
+        BadCrc,
+        BadLength,
+        BadHdlcUaFrame,
+        Unknown,
+        z_038,
+        z_039,
+        z_040,
+        z_041,
+        z_042,
+        z_043,
+        z_044,
+        z_045,
+        ReqackFlagSet,
+        z_047,
+        z_048,
+        RouteNotFound,
+        z_050,
+        z_051,
+        z_052,
+        z_053,
+        IdNotFound,
+        z_055,
+        TypeNotFound,
+        EWordReceived,
+        z_058,
+        SystemRelated,
+        BadPort,
+        QueueRead,
+        QueueWrite,
+        MemoryAccess,
+        z_064,
+        NoDcd,
+        z_066,
+        PortRead,
+        PortWrite,
+        z_069,
+        z_070,
+        QueueExec,
+        DlcTimeout,
+        NoAttempt,
+        RouteFailed,
+        TransmitterFailed,
+        z_076,
+        z_077,
+        RemoteInhibited,
+        CcuQueueFlushed,
+        z_080,
+        PipeBroken,
+        PipeNotOpened,
+        PortInhibited,
+        AccumulatorsNotSupported,
+        DeviceInhibited,
+        z_086,
+        DialupFailed,
+        WrongAddress,
+        TcpConnect,
+        TcpWrite,
+        TcpRead,
+        Address,
+        IedBufferBad,
+        MissingConfig,
+        z_095,
+        z_096,
+        z_097,
+        BadSocket,
+        SocketWrite,
+        BadBch,
 
-    MemoryError = 201,
+        Memory = 201,
 
-    // Device Errors
-    NoMethod,
-    Error_UNUSED_203,
-    NoGeneralScanMethod,
-    NoIntegrityScanMethod,
-    NoAccumulatorScanMethod,
-    NoLoadProfileScanMethod,
-    NoProcessResultMethod,
-    NoExecuteRequestMethod,
-    NoResultDecodeMethod,
-    NoErrorDecodeMethod,
-    NoHandShakeMethod,
-    NoGenerateCmdMethod,
-    NoDecodeResponseMethod,
-    NoDataCopyMethod,
-    GeneralScanAborted,
-    Error_UNUSED_217,
+        // Device Errors
+        NoMethod,
+        z_203,
+        NoMethodForGeneralScan,
+        NoMethodForIntegrityScan,
+        NoMethodForAccumulatorScan,
+        NoMethodForLoadProfileScan,
+        NoMethodForProcessResult,
+        NoMethodForExecuteRequest,
+        NoMethodForResultDecode,
+        NoMethodForErrorDecode,
+        NoMethodForHandshake,
+        NoMethodForGenerateCmd,
+        NoMethodForDecodeResponse,
+        NoMethodForDataCopy,
+        GeneralScanAborted,
+        z_217,
 
-    NoConfigData,
-    ConfigNotCurrent,
-    ConfigCurrent,
+        NoConfigData,
+        ConfigNotCurrent,
+        ConfigCurrent,  //  this should not be an error code
 
-    // Control Command Info
-    NoRouteGroupDevice,         // No route defined in a group device
-    NoRoutesInMacro,            // Route Macro contained no sub-routes.
-    RouteOffsetOutOfRange,
-    SubRouteIsMacro,
-    ControlInhibitedOnDevice,
-    ControlInhibitedOnPoint,
-    Error_UNUSED_227,
-    ErrRequestExpired,
-    Error_UNUSED_229,
-    Error_UNUSED_230,
-    Error_UNUSED_231,
-    Error_UNUSED_232,
-    Error_UNUSED_233,
+        // Control Command Info
+        NoRouteGroupDevice,         // No route defined in a group device
+        NoRoutesInMacro,            // Route Macro contained no sub-routes.
+        RouteOffsetOutOfRange,
+        SubRouteIsMacro,
+        ControlInhibitedOnDevice,
+        ControlInhibitedOnPoint,
+        z_227,
+        RequestExpired,
+        z_229,
+        z_230,
+        z_231,
+        z_232,
+        z_233,
 
-    // Non-zero return codes
-    RETRY_SUBMITTED,              // The OutMessage in question has been requeued onto the portqueue.
-    QUEUED_TO_DEVICE,             // The OutMessage in question has been enqueud onto a device queue.
-    CONTINUE_LOOP,                // The propagate a continue to the looping construct above.
+        // These three are internal Porter codes
+        //   and should not be represented here
+        RetrySubmitted,              // The OutMessage in question has been requeued onto the portqueue.
+        QueuedToDevice,             // The OutMessage in question has been enqueud onto a device queue.
+        ContinueLoop,                // The propagate a continue to the looping construct above.
 
-    SCAN_ERROR_DEVICE_INHIBITED,
-    SCAN_ERROR_GLOBAL_ADDRESS,
-    SCAN_ERROR_DEVICE_WINDOW_CLOSED,
+        ScanDeviceInhibited,
+        ScanGlobalAddress,
+        ScanWindowClosed,
 
-    // Port and dialup errors
-    Error_UNUSED_240,
-    ErrPortDialupConnect_Port,        // Error making connection.. Assumed to be the port's fault
-    ErrPortDialupConnect_Device,      // Error making connection.. Assumed to be the device's fault
-    ErrPortSimulated,                 // The port is being simulated - there will be no inbound
-    ErrPortEchoResponse,              // The port returned the exact bytes it was given - probably a hardware failure somewhere
+        // Port and dialup errors
+        z_240,
+        DialupConnectPort,        // Error making connection.. Assumed to be the port's fault
+        DialupConnectDevice,      // Error making connection.. Assumed to be the device's fault
+        PortSimulated,                 // The port is being simulated - there will be no inbound
+        PortEchoedResponse,              // The port returned the exact bytes it was given - probably a hardware failure somewhere
 
-    // Paging errors
-    ErrorPageRS,                  // Invalid transaction, typ. bad pager id or password
-    ErrorPageNAK,                 // TAP Repeat Requested, but retries exhausted
-    ErrorPageNoResponse,
+        // Paging errors
+        PageRS,                  // Invalid transaction, typ. bad pager id or password
+        PageNAK,                 // TAP Repeat Requested, but retries exhausted
+        PageNoResponse,
 
-    ErrorInvalidRequest,
-    UnknownError,
+        InvalidRequest,
+        z_249,
 
-    // WCTP errors
-    ErrorHttpResponse,          // Invalid or unsuccessful HTTP response
-    ErrorXMLParser,             // XML parser initialization failed
-    ErrorWctpResponse,          // Invalid WCTP response format
-    ErrorWctpTimeout,           // Time out when receiving WCTP response
-    ErrorWctp300Series,         // Protocol Error 300 Series.
-    ErrorWctp400Series,
-    ErrorWctp500Series,
-    ErrorWctp600Series,
+        // WCTP errors
+        WctpHttpResponse,      // Invalid or unsuccessful HTTP response
+        WctpXmlParser,         // XML parser initialization failed
+        WctpResponse,          // Invalid WCTP response format
+        WctpTimeout,           // Time out when receiving WCTP response
+        Wctp300Series,         // Protocol Error 300 Series.
+        Wctp400Series,
+        Wctp500Series,
+        Wctp600Series,
 
-    ErrorQueuePurged,           // Queue purged to clean memory.
+        QueuePurged,           // Queue purged to clean memory.
 
-    Error_UNUSED_259,
+        z_259,
 
-    ErrorMACSTimeout,
+        MacsTimeout,
 
-    ErrorInvalidFrozenReadingParity,    //  MCT freeze-related errors
-    ErrorInvalidFrozenPeakTimestamp,
-    ErrorInvalidFreezeCounter,
+        InvalidFrozenReadingParity,    //  MCT freeze-related errors
+        InvalidFrozenPeakTimestamp,
+        InvalidFreezeCounter,
 
-    ErrorInvalidData,           //  If any MCT reading (that will be stored to a point) is invalid, we fail the read
+        InvalidData,           //  If any MCT reading (that will be stored to a point) is invalid, we fail the read
 
-    ErrorFreezeNotRecorded,
-    ErrorRequestCancelled,      // Cancel message received
+        FreezeNotRecorded,
+        RequestCancelled,      // Cancel message received
 
-    ErrorInvalidTimestamp,
-    ErrorInvalidChannel,
+        InvalidTimestamp,
+        InvalidChannel,
 
-    ErrorInvalidSSPEC,          // Hardware has an insufficient SSPEC/firmware revision
-    ErrorVerifySSPEC,           // Need to verify SSPEC/firmware revision
+        InvalidSSPEC,          // Hardware has an insufficient SSPEC/firmware revision
+        VerifySSPEC,           // Need to verify SSPEC/firmware revision
 
-    Error_UNUSED_271,
-    ErrorUnsupportedDevice,
+        z_271,
+        UnsupportedDevice,
 
-    ErrorPortNotInitialized,
+        PortNotInitialized,
 
-    ErrorCommandAlreadyInProgress,
+        CommandAlreadyInProgress,
 
-    ErrorDeviceNotConnected,
+        DeviceNotConnected,
 
-    ErrorNoDisconnect,
+        NoDisconnect,
 
-    ErrorTransmitterOverheating,
+        TransmitterOverheating,
 
-    ErrorNeedsChannelConfig,
+        NeedsChannelConfig,
 
-    ErrorInvalidStartDate,
+        InvalidStartDate,
 
-    ErrorDnsLookupFailed,
+        DnsLookupFailed,
 
-    ErrorPointLookupFailed,
+        PointLookupFailed,
 
-    ErrorNeedsDateRangeReset,
+        NeedsDateRangeReset,
 
-    ErrorDataMissing,
+        DataMissing,
 
-    ErrorInvalidConfigData,
+        InvalidConfigData,
 
-    //  Errors relating to RFN E2EDT
-    //  http://portal.cooperpowereas.net/sites/Ops/MarylandEngineeringGroup/Shared%20Documents/System/10446%20E2E%20Data%20Transfer%20System%20Specification_R1.2.docx
-    //  see sections 1.3.3, E2E-Data.confirm, 1.3.3.4, Result Codes
-    ErrorUnknownAddress,
-    ErrorNetworkUnavailable,
-    ErrorRequestPacketTooLarge,
-    ErrorProtocolUnsupported,
-    ErrorInvalidNetworkServerId,
-    ErrorInvalidApplicationServiceId,
-    ErrorNetworkLoadControl,
-    ErrorRequestTimeout,
-    ErrorNetworkManagerTimeout,
+        //  Errors relating to RFN E2EDT
+        //  http://portal.cooperpowereas.net/sites/Ops/MarylandEngineeringGroup/Shared%20Documents/System/10446%20E2E%20Data%20Transfer%20System%20Specification_R1.2.docx
+        //  see sections 1.3.3, E2E-Data.confirm, 1.3.3.4, Result Codes
+        E2eUnknownAddress,
+        E2eNetworkUnavailable,
+        E2eRequestPacketTooLarge,
+        E2eProtocolUnsupported,
+        E2eInvalidNetworkServerId,
+        E2eInvalidApplicationServiceId,
+        E2eNetworkLoadControl,
+        E2eRequestTimeout,
+        NetworkManagerTimeout,
+        E2eRequestPayloadTooLarge,
 
-    ErrorRequestPayloadTooLarge,
-    Error_UNUSED_295,
+        z_295,
 
-    ErrorNoPointsOnDevice,
+        NoPointsOnDevice,
+    };
 };
+
+typedef ClientErrors::YukonErrors YukonError_t;
 
 
 enum CtiProtocolWrap_t
