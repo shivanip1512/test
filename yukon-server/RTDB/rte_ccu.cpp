@@ -33,11 +33,11 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
                                 list< CtiMessage* >      &retList,
                                 list< OUTMESS* >         &outList)
 {
-    INT      status = NoError;
+    INT      status = ClientErrors::None;
 
     if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
-        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != ClientErrors::DeviceInhibited)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum  = _transmitterDevice->getUniqueIdentifier();
@@ -67,7 +67,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
             }
             else
             {
-                status = NoExecuteRequestMethod;
+                status = ClientErrors::NoMethodForExecuteRequest;
             }
         }
     }
@@ -90,7 +90,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
                                          list< OUTMESS* >         &outList)
 {
     INT            i, j;
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     string      resultString;
     string      byteString;
     BSTRUCT        BSt;
@@ -343,7 +343,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
                                     list< CtiMessage* >  &retList,
                                     list< OUTMESS* >     &outList)
 {
-    INT           status = NoError;
+    INT           status = ClientErrors::None;
 
     if(OutMessage->EventCode & BWORD)
     {
@@ -544,7 +544,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                                          list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     string      resultString;
     string      byteString;
     BSTRUCT        BSt;
@@ -897,7 +897,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
         else
         {
             //really not sure what to do here
-            status = BADRANGE;
+            status = ClientErrors::BadRange;
             resultString = "Message length was too large for expresscom in emetcon message. Length: " + CtiNumStr(size) + " Maximum: " + CtiNumStr(MAX_EXPRESSCOM_IN_EMETCON_LENGTH);
             CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
                                                               string(OutMessage->Request.CommandStr),
@@ -925,7 +925,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
     }
     else
     {
-        status = BADPARAM;
+        status = ClientErrors::BadParameter;
         resultString = "Bad parameter in Expresscom command: \"" + parse.getCommandStr()+ "\" failed. Error " + CtiNumStr(status) + " - " + GetErrorString(status);
 
         CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,

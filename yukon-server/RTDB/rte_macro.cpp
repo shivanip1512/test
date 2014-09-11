@@ -76,7 +76,7 @@ void CtiRouteMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     MacroOffset offset = (OutMessage->Request.RetryMacroOffset) ? OutMessage->Request.RetryMacroOffset : pReq->MacroOffset();
 
     try
@@ -118,7 +118,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                             int status = pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
 
-                            if(status == DEVICEINHIBITED && NewOMess && NewOMess->Request.RetryMacroOffset )
+                            if(status == ClientErrors::DeviceInhibited && NewOMess && NewOMess->Request.RetryMacroOffset )
                             {
                                 std::list< CtiMessage* >::iterator iter;
                                 for(iter = retList.begin(); iter != retList.end(); iter++)
@@ -133,7 +133,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                             if(NewOMess)
                             {
-                                if(status != DEVICEINHIBITED && isDebugLudicrous())
+                                if(status != ClientErrors::DeviceInhibited && isDebugLudicrous())
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -156,7 +156,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "  SKIPPING MACRO ROUTE IN MACRO ROUTE " << endl;
                         }
-                        nRet = SubRouteIsMacro;
+                        nRet = ClientErrors::SubRouteIsMacro;
                     }
                 }
             }
@@ -167,7 +167,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "   NO MORE ROUTES IN THIS MACRO." << endl;
                 }
-                nRet = RouteOffsetOutOfRange;
+                nRet = ClientErrors::RouteOffsetOutOfRange;
             }
         }
         else if(RoutePtrList.length() > 0)
@@ -209,7 +209,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
         }
         else
         {
-            nRet = NoRoutesInMacro;
+            nRet = ClientErrors::NoRoutesInMacro;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " ERROR: Macro Route " << getName() << " has not resolved any sub-routes. " << endl;
         }

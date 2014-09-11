@@ -89,28 +89,28 @@ BOOST_AUTO_TEST_CASE(test_ccu721_decode_eword)
         const char *e_word = "\xee\x00\x00\x20\x00\x02\xb0";
         ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(NACKPAD1, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
+        BOOST_CHECK_EQUAL(ClientErrors::Word1NackPadded, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 
     {
         const char *e_word = "\xee\x00\x00\x20\x00\x02\xc0";
         ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(BADBCH, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
+        BOOST_CHECK_EQUAL(ClientErrors::BadBch, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 
     {
         const char *e_word = "\xfe\x00\x00\x20\x00\x02\x60";
         ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(BADTYPE, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
+        BOOST_CHECK_EQUAL(ClientErrors::BadType, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 
     {
         const char *e_word = "\xed\x11\x23\x45\x00\x03\xc0";
         ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(EWORDRCV, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
+        BOOST_CHECK_EQUAL(ClientErrors::EWordReceived, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 }
 
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_all)
 
     YukonError_t retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
 
-    BOOST_CHECK_EQUAL(retval, QUEUED_TO_DEVICE);
+    BOOST_CHECK_EQUAL(retval, ClientErrors::QueuedToDevice);
     BOOST_CHECK_EQUAL(device_queue_count, 1);
     BOOST_CHECK_EQUAL(om_queued, nullptr);
 
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
 
     YukonError_t retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
 
-    BOOST_CHECK_EQUAL(retval, QUEUED_TO_DEVICE);
+    BOOST_CHECK_EQUAL(retval, ClientErrors::QueuedToDevice);
     BOOST_CHECK_EQUAL(device_queue_count, 1);
     BOOST_CHECK_EQUAL(om_queued, nullptr);
 

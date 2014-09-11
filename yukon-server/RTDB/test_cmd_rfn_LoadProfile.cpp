@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -93,10 +93,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_constructor_exce
         (  5, 300 );      // load profile interval > 255
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (0) underflow (minimum: 1)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Voltage Demand Interval: (64) overflow (maximum: 63)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Load Profile Demand Interval: (0) underflow (minimum: 1)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Load Profile Demand Interval: (300) overflow (maximum: 255)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Demand Interval: (0) underflow (minimum: 1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Voltage Demand Interval: (64) overflow (maximum: 63)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (0) underflow (minimum: 1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Load Profile Demand Interval: (300) overflow (maximum: 255)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -126,10 +126,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_SetConfiguration_decoding_excepti
         ( list_of( 0x69 )( 0x00 )( 0x00 )( 0x01 )( 0x00 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x6f)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x6f)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -217,10 +217,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetConfiguration_decoding_excepti
         ( list_of( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x01 )( 0x04 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (4 != 1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (1)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (4 != 1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -297,8 +297,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_DisableLoadProfileRecording_decod
         ( list_of( 0x69 )( 0x02 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x03)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x03)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -375,8 +375,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnableLoadProfileRecording_decodi
         ( list_of( 0x69 )( 0x03 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x00 ));
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x02)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -472,11 +472,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording_decoding_
         ( list_of( 0x69 )( 0x04 )( 0x00 )( 0x01 )( 0x02 )( 0x00 )( 0x01 )( 0x03 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x02)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type (1 != 2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid State (3)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x02)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type (1 != 2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid State (3)" ) );
 
 
     std::vector< RfnCommand::CommandException > actual;
@@ -518,7 +518,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         }
         catch ( const RfnCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 07/07/2013 00:00:00, end = 07/06/2013 00:00:00)");
         }
     }
@@ -537,7 +537,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         }
         catch ( const RfnCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 08/11/2013 00:00:00, end = 08/10/2013 00:00:00)");
         }
     }
@@ -556,7 +556,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         }
         catch ( const RfnCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 08/09/2013 00:00:00, end = 07/07/2013 00:00:00)");
         }
     }
@@ -575,7 +575,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         }
         catch ( const RfnCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.what(), "End time must be after begin time (begin = 08/15/2013 00:00:00, end = 08/12/2013 00:00:00)");
         }
     }
@@ -594,7 +594,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_invalid_date
         }
         catch ( const RfnCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code, BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.what(), "End time must be before now (end = 08/15/2013 00:00:00, now = 08/10/2013 08:23:00)");
         }
     }

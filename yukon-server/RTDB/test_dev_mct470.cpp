@@ -684,7 +684,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install precannedtable");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -695,7 +695,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE( retMsg );
 
         BOOST_CHECK_EQUAL( retMsg->ResultString(), "ERROR: Invalid config data. Config name:precannedtable" );
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoConfigData );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::NoConfigData );
     }
 
     BOOST_AUTO_TEST_CASE(test_putconfig_install_precanned_table_mct470_with_meterNumber)
@@ -711,7 +711,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install precannedtable");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -768,7 +768,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install precannedtable");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -827,7 +827,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install precannedtable");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -882,7 +882,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install configbyte");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -893,7 +893,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE( retMsg );
 
         BOOST_CHECK_EQUAL( retMsg->ResultString(), "ERROR: Invalid config data. Config name:configbyte" );
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoConfigData );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::NoConfigData );
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_configbyte_mct470_matching_dynamicPaoInfo)
     {
@@ -908,7 +908,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install configbyte");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -919,7 +919,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE( retMsg );
 
         BOOST_CHECK_EQUAL( retMsg->ResultString(), "Config configbyte is current." );
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_configbyte_mct470_no_dynamicPaoInfo)
     {
@@ -932,7 +932,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install configbyte");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -981,7 +981,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install configbyte");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1101,7 +1101,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install tou");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1205,7 +1205,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install configbyte");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -1216,7 +1216,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE( retMsg );
 
         BOOST_CHECK_EQUAL( retMsg->ResultString(), "Config configbyte is current." );
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_configbyte_mct430_no_dynamicPaoInfo)
     {
@@ -1228,7 +1228,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install configbyte");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1276,7 +1276,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install configbyte");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1324,7 +1324,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install timezone");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -1335,7 +1335,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE( retMsg );
 
         BOOST_CHECK_EQUAL( retMsg->ResultString(), "Config timezone is current." );
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_timezone_mct430_no_dynamicPaoInfo)
     {
@@ -1347,7 +1347,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install timezone");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1395,7 +1395,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putconfig install timezone");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1437,7 +1437,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset alpha");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1468,7 +1468,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1496,7 +1496,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1522,7 +1522,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1549,7 +1549,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset s4");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1580,7 +1580,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1608,7 +1608,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1634,7 +1634,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1661,7 +1661,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset a3");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1692,7 +1692,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1720,7 +1720,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1746,7 +1746,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1773,7 +1773,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset kv2c");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1804,7 +1804,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1832,7 +1832,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1859,7 +1859,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset kv2");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1890,7 +1890,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1918,7 +1918,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1945,7 +1945,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset kv");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -1976,7 +1976,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -2004,7 +2004,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -2031,7 +2031,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset sentinel");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -2062,7 +2062,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -2090,7 +2090,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -2116,7 +2116,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -2144,7 +2144,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         //  "kvetch" was chosen as a word that contains "kv"
         CtiCommandParser parse("putvalue ied reset kvetch");
 
-        BOOST_CHECK_EQUAL( MISCONFIG, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::MissingConfig, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE( outList.empty() );
 
@@ -2155,7 +2155,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             BOOST_REQUIRE(retMsg);
 
-            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->Status(),       ClientErrors::MissingConfig );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), "Could not determine the IED type" );
             BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
         }
@@ -2165,7 +2165,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             BOOST_REQUIRE(retMsg);
 
-            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->Status(),       ClientErrors::MissingConfig );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
             BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
         }
@@ -2177,7 +2177,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("putvalue ied reset");
 
-        BOOST_CHECK_EQUAL( MISCONFIG, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::MissingConfig, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE( outList.empty() );
 
@@ -2188,7 +2188,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             BOOST_REQUIRE(retMsg);
 
-            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->Status(),       ClientErrors::MissingConfig );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), "Could not determine the IED type" );
             BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
         }
@@ -2198,7 +2198,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             BOOST_REQUIRE(retMsg);
 
-            BOOST_CHECK_EQUAL( retMsg->Status(),       MISCONFIG );
+            BOOST_CHECK_EQUAL( retMsg->Status(),       ClientErrors::MissingConfig );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), "NoMethod or invalid command." );
             BOOST_CHECK_EQUAL( retMsg->ExpectMore(),   false );
         }
@@ -2211,7 +2211,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         //  make sure it can pick out "kv2" even if there's another parameter after the IED type
         CtiCommandParser parse("putvalue ied reset kv2 noqueue");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -2238,7 +2238,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         CtiCommandParser parse("getconfig ied dnp address");
 
-        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 

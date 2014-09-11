@@ -744,7 +744,7 @@ BOOST_AUTO_TEST_CASE(test_too_many_metrics)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid number of display metrics (27)");
     }
 }

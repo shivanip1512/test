@@ -52,7 +52,7 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
 {
     if( isSimulated() )
     {
-        return NoError;
+        return ClientErrors::None;
     }
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -78,12 +78,12 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
 
     if(isInhibited())
     {
-        return PORTINHIBITED;
+        return ClientErrors::PortInhibited;
     }
 
     if(isViable())
     {
-        return NoError;
+        return ClientErrors::None;
     }
 
     Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(getIPAddress(), getIPPort());
@@ -93,10 +93,10 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Port " << getName() << " could not resolve IP for DNS name \"" << getIPAddress() << "\"" << endl;
         }
-        return ErrorDnsLookupFailed;
+        return ClientErrors::DnsLookupFailed;
     }
 
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     /* get a stream socket. */
     if((_socket = socket(pAddrInfo->ai_family, pAddrInfo->ai_socktype, pAddrInfo->ai_protocol)) == INVALID_SOCKET)
@@ -106,7 +106,7 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
             dout << CtiTime() << " Error getting Socket for Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
         }
         shutdownClose(__FILE__, __LINE__);
-        status = TCPCONNECTERROR;
+        status = ClientErrors::TcpConnect;
     }
     else
     {
@@ -148,7 +148,7 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
                 dout << CtiTime() << " Error Connecting to Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
             }
             shutdownClose(__FILE__, __LINE__);
-            return(TCPCONNECTERROR);
+            return ClientErrors::TcpConnect;
         }
         else
         {
@@ -224,7 +224,7 @@ YukonError_t CtiPortTCPIPDirect::inClear() const
 {
     if( _socket == INVALID_SOCKET )
     {
-        return NoError;
+        return ClientErrors::None;
     }
 
     fd_set read_sockets;
@@ -236,39 +236,39 @@ YukonError_t CtiPortTCPIPDirect::inClear() const
 
     switch( select(0, &read_sockets, 0, 0, &tv) )
     {
-        case 0:             return NoError;
+        case 0:             return ClientErrors::None;
         case 1:             break;
 
         default:
-        case SOCKET_ERROR:  return SYSTEM;
+        case SOCKET_ERROR:  return ClientErrors::SystemRelated;
     }
 
     // How many are available ??
     ULONG ulTemp;
     if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
     {
-        return SYSTEM;
+        return ClientErrors::SystemRelated;
     }
 
     scoped_array<char> buf(new char[ulTemp]);
 
     if( recv(_socket, buf.get(), (int)ulTemp, 0) <= 0 )
     {
-        return TCPREADERROR;
+        return ClientErrors::TcpRead;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiPortTCPIPDirect::outClear() const
 {
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     BYTE     SomeMessage[300];
     ULONG    DCDCount    = 0;
@@ -287,7 +287,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
         //  simulate the inbound delay as best we can
         CTISleep(byteTime(Xfer.getInCountExpected()) * 1000);
 
-        return ErrPortSimulated;
+        return ClientErrors::PortSimulated;
     }
 
     if(Xfer.getNonBlockingReads())         // We need to get all that are out there.
@@ -326,7 +326,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
     /* If getInCountExpected() is 0 just return */
     if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!
     {
-        return NoError;
+        return ClientErrors::None;
     }
 
     /* set the read timeout */
@@ -347,9 +347,9 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
             }
         }
 
-        if(status == NoError && getTablePortSettings().getCDWait() != 0)
+        if(status == ClientErrors::None && getTablePortSettings().getCDWait() != 0)
         {
-            status = NODCD;
+            status = ClientErrors::NoDcd;
             /* Check if we have DCD */
             while(!(dcdTest()) && DCDCount < getTablePortSettings().getCDWait())
             {
@@ -360,12 +360,12 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
 
             if(DCDCount < getTablePortSettings().getCDWait())
             {
-                status = NoError;
+                status = ClientErrors::None;
             }
         }
     }
 
-    if(status == NoError)
+    if(status == ClientErrors::None)
     {
         /* If neccesary wait for IDLC flag character */
         if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
@@ -383,7 +383,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
                 if(SomeRead == sizeof(SomeMessage))
                 {
                     // oh no we stomped memory
-                    status = FRAMEERR;
+                    status = ClientErrors::Framing;
                     break;               // the while loop
                 }
             }  while(Message[0] != 0x7e && Message[0] != 0xfc);
@@ -394,7 +394,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
                 byteCount = SomeRead;
             }
 
-            if(status == NoError)
+            if(status == ClientErrors::None)
             {
                 if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Message[0] == 0xfc)
                 {
@@ -403,13 +403,13 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
 
                 if( status = receiveData(&Message[1], Xfer.getInCountExpected() - 1, Tmot, &byteCount) )
                 {
-                    if(status == BADSOCK)
+                    if(status == ClientErrors::BadSocket)
                     {
                         shutdownClose(__FILE__, __LINE__);
                     }
                 }
 
-                if(status == NoError)
+                if(status == ClientErrors::None)
                 {
                     byteCount += 1;  // Add the 7e byte into the count
                 }
@@ -419,7 +419,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
         {
             if( status = receiveData(Message, Xfer.getInCountExpected(), Tmot, &byteCount) )
             {
-                if(status == BADSOCK)
+                if(status == ClientErrors::BadSocket)
                 {
                     shutdownClose(__FILE__, __LINE__);
                 }
@@ -427,7 +427,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
         }
     }
 
-    if(status == NoError)
+    if(status == ClientErrors::None)
     {
         if(byteCount != Xfer.getInCountExpected())
         {
@@ -435,7 +435,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
 
             if( status = receiveData(Message + byteCount, Xfer.getInCountExpected() - byteCount, Tmot, &byteCount) )
             {
-                if(status == BADSOCK)
+                if(status == ClientErrors::BadSocket)
                 {
                     shutdownClose(__FILE__, __LINE__);
                 }
@@ -444,7 +444,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
             if(byteCount != Xfer.getInCountExpected())
             {
                 byteCount += oldcount;
-                status = READTIMEOUT;
+                status = ClientErrors::ReadTimeout;
             }
         }
 
@@ -458,7 +458,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
 
         if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
         {
-            status = BADCRC;
+            status = ClientErrors::BadCrc;
         }
     }
 
@@ -467,7 +467,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
 
 YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     ULONG    Written;
     ULONG    MSecs;
@@ -484,7 +484,7 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
 
     if(_socket == INVALID_SOCKET && !isSimulated())
     {
-        status = BADSOCK;        // Invalid Handle really
+        status = ClientErrors::BadSocket;        // Invalid Handle really
     }
     else if(Xfer.getOutCount() > 0)
     {
@@ -524,7 +524,7 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
 
             /* Clear the Buffers */
             outClear();
-            if( inClear() != NoError )
+            if( inClear() != ClientErrors::None )
             {
                 shutdownClose(__FILE__, __LINE__);
             }
@@ -545,10 +545,10 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
             if( sendData(Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
             {
                 shutdownClose(__FILE__, __LINE__);
-                status = PORTWRITE;
+                status = ClientErrors::PortWrite;
             }
 
-            if(status == NoError)
+            if(status == ClientErrors::None)
             {
                 /* Time to do the RTS thing */
                 if(getDelay(DATA_OUT_TO_RTS_DOWN_DELAY))
@@ -639,7 +639,7 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
 
     if(_socket == INVALID_SOCKET)
     {
-        return BADSOCK;
+        return ClientErrors::BadSocket;
     }
 
     /* Wait up to timeout for characters to be available */
@@ -675,7 +675,7 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
 
     if( bytes_available == 0 )
     {
-        return READTIMEOUT;
+        return ClientErrors::ReadTimeout;
     }
 
     if(Length > 0)
@@ -688,7 +688,7 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
             }
-            return(TCPREADERROR);
+            return ClientErrors::TcpRead;
         }
 
         if(*ReceiveLength < Length)
@@ -709,7 +709,7 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
             }
             else
             {
-                return READTIMEOUT;
+                return ClientErrors::ReadTimeout;
             }
         }
     }
@@ -723,11 +723,11 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
             }
-            return TCPREADERROR;
+            return ClientErrors::TcpRead;
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -749,13 +749,13 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error Sending Message to Terminal Server:  " << WSAGetLastError() << endl;
         }
-        return TCPWRITEERROR;
+        return ClientErrors::TcpWrite;
     }
 
     *Written = bytesSent;
 
     /* On normal terminal server it does not matter if we sit */
-    return NoError;
+    return ClientErrors::None;
 }
 
 void CtiPortTCPIPDirect::DecodeDatabaseReader(Cti::RowReader &rdr)
@@ -796,7 +796,7 @@ string CtiPortTCPIPDirect::getSQLCoreStatement()
 
 YukonError_t CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
-    YukonError_t status = BADPORT;
+    YukonError_t status = ClientErrors::BadPort;
 
     if(_dialable)
     {
@@ -889,7 +889,7 @@ YukonError_t CtiPortTCPIPDirect::reset(INT trace)
         _dialable->reset(trace);
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t CtiPortTCPIPDirect::setup(INT trace)
@@ -899,18 +899,18 @@ YukonError_t CtiPortTCPIPDirect::setup(INT trace)
         _dialable->setup(trace);
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t CtiPortTCPIPDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     pair< bool, YukonError_t > portpair = checkCommStatus(Device, trace);
 
     status = portpair.second;
 
-    if( portpair.first && status == NoError )
+    if( portpair.first && status == ClientErrors::None )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -931,7 +931,7 @@ YukonError_t CtiPortTCPIPDirect::connectToDevice(CtiDeviceSPtr Device, LONG &Las
 
 INT  CtiPortTCPIPDirect::disconnect(CtiDeviceSPtr Device, INT trace)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     status = Inherited::disconnect(Device,trace);
 

@@ -479,21 +479,21 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         CtiCommandParser parse("getconfig centron parameters");
 
-        BOOST_CHECK_EQUAL( NoMethod, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
     }
 
     BOOST_AUTO_TEST_CASE(test_getconfig_centron_ratio)
     {
         CtiCommandParser parse("getconfig centron ratio");
 
-        BOOST_CHECK_EQUAL( NoMethod, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
     }
 
     BOOST_AUTO_TEST_CASE(test_getconfig_meter_parameters)
     {
         CtiCommandParser parse("getconfig meter parameters");
 
-        BOOST_CHECK_EQUAL( NoError, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -508,7 +508,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         CtiCommandParser parse("getconfig meter ratio");
 
-        BOOST_CHECK_EQUAL( NoError, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct440_213xB().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -577,7 +577,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
                 CtiCommandParser parse(str_cmd);
 
-                BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
+                BOOST_CHECK_EQUAL( ClientErrors::None , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
                 BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 
@@ -621,7 +621,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                 im.Buffer.DSt.Length = 10;
                 im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-                BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyReadRecent(im, timenow, vgList, retList, outList) );
+                BOOST_CHECK_EQUAL( ClientErrors::None , mct440.decodeGetValueDailyReadRecent(im, timenow, vgList, retList, outList) );
 
                 BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -729,7 +729,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue outage 1" );
 
-            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
@@ -759,7 +759,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct440.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {
@@ -809,7 +809,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         CtiRequestMsg    req( -1, "control connect" );
         CtiCommandParser parse( req.CommandString() );
 
-        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().beginExecuteRequest(&req, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , test_Mct440_213xB().beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -835,7 +835,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
 
         strcpy(im.Return.CommandStr, "control connect");
 
-        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , test_Mct440_213xB().ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -864,7 +864,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         CtiRequestMsg    req( -1, "control disconnect" );
         CtiCommandParser parse( req.CommandString() );
 
-        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().beginExecuteRequest(&req, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , test_Mct440_213xB().beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -889,7 +889,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , test_Mct440_213xB().ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -2255,7 +2255,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2289,7 +2289,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2330,7 +2330,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2371,7 +2371,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2412,7 +2412,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 3";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2453,7 +2453,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         string cmd = "getconfig tou schedule 3";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetConfigTOU(InMessage, t, vgList, retList, outList));
 
         string result1, result2, result3, result4;
 
@@ -2502,7 +2502,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
         InMessage.Return.UserID = 0;
         InMessage.Sequence      = EmetconProtocol::GetValue_KWH;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2545,7 +2545,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
         InMessage.Return.UserID = 0;
         InMessage.Sequence      = EmetconProtocol::GetValue_KWH;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2612,7 +2612,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
         test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2659,7 +2659,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
         test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueKWH(InMessage, timeNow, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2731,7 +2731,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
     test_Mct440_213xB test_dev;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2808,7 +2808,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
     test_Mct440_213xB test_dev;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2888,7 +2888,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
     test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -2967,7 +2967,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
     test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetValueTOUkWh(InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3043,7 +3043,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3076,7 +3076,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3109,7 +3109,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3142,7 +3142,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusDisconnect(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3260,7 +3260,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         CtiCommandParser parse("installvalue tou force");
         CtiOutMessage *outMessage = CTIDBG_new OUTMESS;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfigTOU(&request, parse, outMessage, vgList, retList, outList, false));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutConfigTOU(&request, parse, outMessage, vgList, retList, outList, false));
 
         BOOST_CHECK_EQUAL(outList.size(), 4);
 
@@ -3366,7 +3366,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         {
             CtiCommandParser parse("getconfig holiday");
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
             BOOST_CHECK( retList.empty() );
             BOOST_CHECK( vgList.empty() );
@@ -3400,7 +3400,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3417,7 +3417,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                 "Holiday 5: 09/19/2010\n"
                 "Holiday 6: 09/20/2010\n";
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
             BOOST_CHECK_EQUAL( outList.size(), 1 );
@@ -3452,7 +3452,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd1;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3469,7 +3469,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                 "Holiday 11: 09/19/2010\n"
                 "Holiday 12: 09/20/2010\n";
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
             BOOST_REQUIRE_EQUAL( outList.size(), 1 );
@@ -3504,7 +3504,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd2;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3518,7 +3518,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                 "Holiday 14: 09/16/2010\n"
                 "Holiday 15: 09/17/2010\n";
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
             BOOST_CHECK( outList.empty() );
@@ -3534,7 +3534,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         {
             CtiCommandParser parse("getconfig holiday");
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
             BOOST_CHECK( retList.empty() );
             BOOST_CHECK( vgList.empty() );
@@ -3568,7 +3568,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_CHECK( outList.empty() );
 
@@ -3581,7 +3581,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             const std::string expected =
                 "Test MCT-440-213xB / Payload too small (3 received, 12 required)";
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), ErrorDataMissing );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::DataMissing );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
         }
     }
@@ -3595,7 +3595,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         CtiCommandParser parse("putconfig emetcon holiday");
 
-        BOOST_CHECK_EQUAL(NoMethod, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::NoMethod, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3605,7 +3605,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         BOOST_REQUIRE( retMsg );
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoMethod );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::NoMethod );
     }
 
     BOOST_AUTO_TEST_CASE(test_executePutConfigHoliday_1_holiday_no_decode)
@@ -3617,7 +3617,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         CtiCommandParser parse("putconfig emetcon holiday 07/05/2013");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3652,7 +3652,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         CtiCommandParser parse("putconfig emetcon holiday 07/10/2013 07/05/2013");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3690,7 +3690,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                                "11/28/2013 11/29/2013 12/24/2013 12/25/2013 12/31/2013 "
                                "1/1/2014 1/20/2014 2/17/2014 4/20/2014 5/26/2014");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3740,7 +3740,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                                "07/17/2013 "
                                "06/30/2014");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3790,7 +3790,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                                "12/17/2013 "
                                "06/30/2014");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3840,7 +3840,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                                "06/29/2014 "
                                "06/30/2014");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3878,7 +3878,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                                "11/28/2013 11/29/2013 12/24/2013 12/25/2013 12/31/2013 "
                                "1/1/2014 1/20/2014 2/17/2014 4/20/2014 5/26/2013");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -3888,7 +3888,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         BOOST_REQUIRE( retMsg );
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), BADPARAM );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( retMsg->ResultString(), "Test MCT-440-213xB / Invalid holiday (05/26/2013), must be after 07/02/2013 and before 07/02/2014");
     }
 
@@ -3907,7 +3907,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                                    "11/28/2013 11/29/2013 12/24/2013 12/25/2013 12/31/2013 "
                                    "1/1/2014 1/20/2014 2/17/2014 4/20/2014 5/26/2014");
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
             BOOST_CHECK( retList.empty() );
             BOOST_CHECK( vgList.empty() );
@@ -3947,7 +3947,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 0;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_CHECK( vgList.empty() );
             BOOST_CHECK( retList.empty() );
@@ -3984,7 +3984,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4001,7 +4001,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                 "Holiday 5: 09/19/2010\n"
                 "Holiday 6: 09/20/2010\n";
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
             BOOST_CHECK_EQUAL( outList.size(), 1 );
@@ -4036,7 +4036,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd1;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4053,7 +4053,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                 "Holiday 11: 09/19/2010\n"
                 "Holiday 12: 09/20/2010\n";
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
             BOOST_REQUIRE_EQUAL( outList.size(), 1 );
@@ -4088,7 +4088,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd2;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4102,7 +4102,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
                 "Holiday 14: 09/16/2010\n"
                 "Holiday 15: 09/17/2010\n";
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
             BOOST_CHECK( outList.empty() );
@@ -4122,7 +4122,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             BOOST_CHECK_EQUAL(outList.size(), 4);
         }
@@ -4234,7 +4234,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_PhaseLossThreshold);
 
@@ -4262,7 +4262,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.executePutStatus(&request, parse, outmsg, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutStatus(&request, parse, outmsg, vgList, retList, outList));
 
         BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutStatus_SetTOUHolidayRate);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A4  );
@@ -4277,7 +4277,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
         CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.executePutStatus(&request, parse, outmsg, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executePutStatus(&request, parse, outmsg, vgList, retList, outList));
 
         BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutStatus_ClearTOUHolidayRate);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A5  );
@@ -4298,7 +4298,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             pRequest->setConnectionHandle((void*)&connHandle);
 
-            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 0 );
@@ -4368,7 +4368,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             pRequest->setConnectionHandle((void*)&connHandle);
 
-            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 4 );
@@ -4401,7 +4401,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             pRequest->setConnectionHandle((void*)&connHandle);
 
-            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 5 );
@@ -4434,7 +4434,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             pRequest->setConnectionHandle((void*)&connHandle);
 
-            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 6 );
@@ -4467,7 +4467,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             pRequest->setConnectionHandle((void*)&connHandle);
 
-            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 7 );
@@ -4503,7 +4503,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             pRequest->setConnectionHandle((void*)&connHandle);
 
-            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 8 );
@@ -4537,7 +4537,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             pRequest->setConnectionHandle((void*)&connHandle);
 
-            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 9 );
@@ -4574,7 +4574,7 @@ BOOST_AUTO_TEST_CASE(test_executeGetStatusEventLog)
 
     CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.executeGetStatus(&request, parse, outmsg, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.executeGetStatus(&request, parse, outmsg, vgList, retList, outList));
 
     BOOST_CHECK_EQUAL(outList.size(), 10);
 
@@ -4613,7 +4613,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x50; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4627,7 +4627,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         "User ID: 2565\n"
         "Event: No Event\n";
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
         BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
         delete retMsg;
@@ -4644,7 +4644,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x59; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4659,7 +4659,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         "Event: Primary Power Up\n"
         "Reset Cause: Power failure\n";
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
         BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
         delete retMsg;
@@ -4676,7 +4676,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4695,7 +4695,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         "Phase B RMS voltage: <= 235 V RMS\n"
         "Phase C RMS voltage: <= 245 V RMS\n";
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
         BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
         delete retMsg;
@@ -4712,7 +4712,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4730,7 +4730,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         "Highest instantaneous power (fwd+rev) over last 5 seconds: 48..63 kW\n"
         "Highest phase DC voltage compensation: >= 56 V\n";
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
         BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
         delete retMsg;
@@ -4747,7 +4747,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4765,7 +4765,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         "Load side voltage: present\n"
         "Instantaneous power: 472 W\n";
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
         BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
         delete retMsg;
@@ -4782,7 +4782,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
         InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.decodeGetStatusEventLog(InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -4799,7 +4799,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         "Attempt: failed\n"
         "Reason of change: Manual operation\n";
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+        BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
         BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
         delete retMsg;

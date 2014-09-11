@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Enable_OvUv )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Configuration Failure (2)" );
         }
     }
@@ -123,8 +123,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_New_Alarm_Report_Interval_c
         ( 35 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Reporting Interval: (1) underflow (minimum: 2)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Reporting Interval: (35) overflow (maximum: 30)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Reporting Interval: (1) underflow (minimum: 2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Reporting Interval: (35) overflow (maximum: 30)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -169,8 +169,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Alarm_Repeat_Interval_const
         ( 350 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (30) underflow (minimum: 60)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (350) overflow (maximum: 240)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Interval: (30) underflow (minimum: 60)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Interval: (350) overflow (maximum: 240)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -215,8 +215,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OvUvConfiguration_Alarm_Repeat_Count_construc
         ( 5 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (0) underflow (minimum: 1)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (5) overflow (maximum: 3)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Count: (0) underflow (minimum: 1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Count: (5) overflow (maximum: 3)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 

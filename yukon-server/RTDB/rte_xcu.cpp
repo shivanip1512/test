@@ -74,14 +74,14 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                                 list< CtiMessage* >   &retList,
                                 list< OUTMESS* >      &outList)
 {
-    INT      status = NoError;
+    INT      status = ClientErrors::None;
     ULONG    BytesWritten;
 
     try
     {
         if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
         {
-            if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+            if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != ClientErrors::DeviceInhibited)
             {
                 // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
                 OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
@@ -115,7 +115,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                 }
                 else if( parse.getiValue("type") == ProtocolEmetconType )
                 {
-                    status = Error_Abnormal;
+                    status = ClientErrors::Abnormal;
                 }
                 else if(OutMessage->EventCode & VERSACOM)
                 {
@@ -132,7 +132,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                 }
                 else
                 {
-                    status = BADROUTE;
+                    status = ClientErrors::BadRoute;
                 }
             }
         }
@@ -164,7 +164,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                                          list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -342,7 +342,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
                                        list< CtiMessage* >   &retList,
                                        list< OUTMESS* >      &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     ULONG          i, j;
@@ -425,7 +425,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                                              list< CtiMessage* >   &retList,
                                              list< OUTMESS* >      &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     ULONG          i, j;
@@ -565,7 +565,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
 
 INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     bool           isAscii = true;
     string      resultString;
@@ -638,7 +638,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     if( xcom.messageSize() > RDS_MAX_EXPRESSCOM_LENGTH - 10 )   // encryption adds 10 bytes - no header and footer
                     {
                         xmore = false;
-                        status = BADRANGE;
+                        status = ClientErrors::BadRange;
                         resultString = "Message length was too large for an encrypted expresscom message in RDS. Length: " + CtiNumStr(xcom.messageSize() + 10) + " Maximum: " + CtiNumStr(RDS_MAX_EXPRESSCOM_LENGTH);
                         break;
                     }
@@ -648,7 +648,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     if ( xcom.messageSize() > RDS_MAX_EXPRESSCOM_LENGTH - 2 )   // header and footer byte
                     {
                         xmore = false;
-                        status = BADRANGE;
+                        status = ClientErrors::BadRange;
                         resultString = "Message length was too large for an expresscom message in RDS. Length: " + CtiNumStr(xcom.messageSize() + 2) + " Maximum: " + CtiNumStr(RDS_MAX_EXPRESSCOM_LENGTH);
                         break;
                     }
@@ -758,7 +758,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
             }
         }
 
-        if(status == NoError)
+        if(status == ClientErrors::None)
         {
             resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName();
 
@@ -770,7 +770,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     }
     else
     {
-        status = BADPARAM;
+        status = ClientErrors::BadParameter;
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Expresscom commands. Error " + CtiNumStr(status) + " - " + GetErrorString(status);
 
@@ -804,7 +804,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                                       list< CtiMessage* >   &retList,
                                       list< OUTMESS* >      &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -961,7 +961,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                                          list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -1067,7 +1067,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                                          list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;

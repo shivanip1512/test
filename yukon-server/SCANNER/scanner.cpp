@@ -1581,7 +1581,7 @@ void DatabaseHandlerThread(void *Arg)
 INT MakePorterRequests(list< OUTMESS* > &outList)
 {
     INT   i, j = 0;
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
 
     OUTMESS *OutMessage = NULL;
 
@@ -1590,10 +1590,10 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
     /* if pipe shut down return the error */
     if( ! PorterNexus.isValid() )
     {
-        status = PIPEWASBROKEN;
+        status = ClientErrors::PipeBroken;
     }
 
-    for( i = outList.size() ; status == NoError && i > 0; i-- )
+    for( i = outList.size() ; status == ClientErrors::None && i > 0; i-- )
     {
         OutMessage = outList.front(); outList.pop_front();
 
@@ -1623,7 +1623,7 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-                status = PIPEWASBROKEN;
+                status = ClientErrors::PipeBroken;
                 break;              // Did not connect after 15 minutes!
             }
         }
@@ -1695,7 +1695,7 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
 
 INT RecordDynamicData()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     // Make an attempt to keep the ScanData table current
     if(ScannerDeviceManager.entries())
@@ -1711,7 +1711,7 @@ INT RecordDynamicData()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return Error_Abnormal;
+            return ClientErrors::Abnormal;
         }
 
         /*

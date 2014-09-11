@@ -473,7 +473,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         //mct410.setDisconnectAddress(123);  //  unnecessary for "control connect"...  bug?
 
-        BOOST_CHECK_EQUAL( NoError , mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  1, outList.size() );
 
@@ -497,7 +497,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         strcpy(im.Return.CommandStr, "control connect");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -527,7 +527,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         mct410.setDisconnectAddress(123);
 
-        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -552,7 +552,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -625,7 +625,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron display 5x1 test 0s errors disable" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  2 , om->Buffer.BSt.Length );
         BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -636,7 +636,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron ratio 40 display 5x1 test 0s errors disable" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  3 , om->Buffer.BSt.Length );
         BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -648,7 +648,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron display 4x1 test 1s errors enable" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  2 , om->Buffer.BSt.Length );
         BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -659,7 +659,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron ratio 60 display 4x1 test 1s errors enable" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  3 , om->Buffer.BSt.Length );
         BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -671,7 +671,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron display 4x10 test 7s errors enable" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  2 , om->Buffer.BSt.Length );
         BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -682,7 +682,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron ratio 200 display 4x10 test 7s errors enable" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  3 , om->Buffer.BSt.Length );
         BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -696,7 +696,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                                                                //  5x3 is not a valid option
         BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
@@ -704,7 +704,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( errorMsg );
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
     }
 
@@ -714,7 +714,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                                                                         //  5x3 is not a valid option
         BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
@@ -722,7 +722,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( errorMsg );
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
     }
 
@@ -732,7 +732,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                                                                          // 3 is not a valid option
         BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
@@ -740,7 +740,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( errorMsg );
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid test duration \"3\"" , errorMsg->ResultString() );
     }
 
@@ -750,7 +750,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                                                                                   // 3 is not a valid option
         BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
@@ -758,7 +758,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( errorMsg );
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid test duration \"3\"" , errorMsg->ResultString() );
     }
 
@@ -768,7 +768,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                                                               // 400 is not a valid option ( 0 <= ratio <= 255 )
         BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL(  1 , retList.size() );
 
@@ -776,7 +776,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_REQUIRE( errorMsg );
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( "Test MCT-410iL / Invalid transformer ratio (400)" , errorMsg->ResultString() );
     }
 
@@ -784,7 +784,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron display 5x1 test 0s" );
 
-        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
         BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
     }
 
@@ -792,7 +792,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron display 5x1 errors enable" );
 
-        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
         BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
     }
 
@@ -800,7 +800,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron test 0 errors enable" );
 
-        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
         BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
     }
 
@@ -808,7 +808,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon centron ratio 40" );
 
-        BOOST_CHECK_EQUAL( NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
         BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
     }
 
@@ -816,7 +816,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "getconfig address unique" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
@@ -827,7 +827,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "getconfig thresholds" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x1e);
@@ -838,7 +838,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "getconfig meter ratio" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x19);
@@ -849,7 +849,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "getconfig freeze" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f);
@@ -860,7 +860,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putstatus reset alarms" );
 
-        BOOST_CHECK_EQUAL( NoError , mct410.executePutStatus(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executePutStatus(&request, parse, om, vgList, retList, outList) );
 
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Write);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x08);
@@ -879,7 +879,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue outage 1" );
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
@@ -910,7 +910,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {
@@ -959,7 +959,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue outage 1" );
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
@@ -989,7 +989,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {
@@ -1038,7 +1038,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1063,7 +1063,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1148,7 +1148,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1175,7 +1175,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1260,7 +1260,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1287,7 +1287,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1372,7 +1372,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1399,7 +1399,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1483,7 +1483,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1510,7 +1510,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1585,7 +1585,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1612,7 +1612,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1687,7 +1687,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1714,7 +1714,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1771,7 +1771,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1798,7 +1798,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1838,7 +1838,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1865,7 +1865,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( ErrorInvalidTimestamp , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::InvalidTimestamp , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1875,7 +1875,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_REQUIRE(retMsg);
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), ErrorInvalidTimestamp );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::InvalidTimestamp );
             /*
             //  Doesn't work due to const CtiDate Today; in dev_mct410.cpp
             BOOST_CHECK_EQUAL(
@@ -1903,7 +1903,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1930,7 +1930,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct410.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1971,7 +1971,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         {
             CtiCommandParser parse("getconfig disconnect");
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
             BOOST_CHECK( retList.empty() );
             BOOST_CHECK( vgList.empty() );
@@ -2005,7 +2005,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             InMessage.Return.ProtocolInfo.Emetcon.Function = 0xfe;
             InMessage.Return.ProtocolInfo.Emetcon.IO       = 3;
 
-            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.ResultDecode(InMessage, t, vgList, retList, outList));
 
             BOOST_REQUIRE_EQUAL(retList.size(), 1);
             BOOST_CHECK(outList.empty());
@@ -2025,7 +2025,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     "Autoreconnect enabled\n"
                     "Disconnect demand threshold disabled\n";
 
-                BOOST_CHECK_EQUAL( retMsg->Status(), NoError );
+                BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
                 BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
                 const CtiMultiMsg_vec &points = retMsg->getData();
@@ -2107,7 +2107,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("getconfig disconnect");
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -2145,7 +2145,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect");
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -2180,7 +2180,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 4");
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -2216,7 +2216,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         //  load limit of 12345.678 kW is 1028.81 kWh/5 min interval - much higher than the 409.5 kWh allowed
         CtiCommandParser parse("putconfig emetcon disconnect load limit 12345.678 4");
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
@@ -2228,7 +2228,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         const std::string expected = "Test MCT-410iL / Invalid disconnect parameters (1028806.500, 4)";
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
     }
 
@@ -2241,7 +2241,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 11");  //  max is 10 mins
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
@@ -2253,7 +2253,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         const std::string expected = "Test MCT-410iL / Invalid disconnect parameters (102.833, 11)";
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
     }
 
@@ -2266,7 +2266,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 7 17");
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -2301,7 +2301,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 4 17");  //  min is 5
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
@@ -2313,7 +2313,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (4, 17)";
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
     }
 
@@ -2326,7 +2326,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 64 17");  //  max is 60
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
@@ -2338,7 +2338,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (64, 17)";
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
     }
 
@@ -2351,7 +2351,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 7 4");  //  min is 5
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
@@ -2363,7 +2363,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (7, 4)";
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
     }
 
@@ -2376,7 +2376,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect cycle 7 77");  //  max is 60
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
         BOOST_CHECK( vgList.empty() );
@@ -2388,7 +2388,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         const std::string expected = "Test MCT-410iL / Invalid disconnect cycle parameters (7, 77)";
 
-        BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
+        BOOST_CHECK_EQUAL( ClientErrors::BadParameter , errorMsg->Status() );
         BOOST_CHECK_EQUAL( expected , errorMsg->ResultString() );
     }
 
@@ -2401,7 +2401,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig emetcon disconnect load limit 1.234 4 cycle 7 17");
 
-        BOOST_CHECK_EQUAL(NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK( retList.empty() );
         BOOST_CHECK( vgList.empty() );
@@ -2433,7 +2433,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig install all");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( retList.size(), 1 );
@@ -2469,7 +2469,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig install all");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -2576,7 +2576,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig install all");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -2682,7 +2682,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -2745,7 +2745,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) );
 
-            BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(im, CtiTime(), vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, CtiTime(), vgList, retList, outList) );
 
             double threshold = 0.0;
 
@@ -2766,7 +2766,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("getvalue lp resume");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( outList.empty() );
@@ -2794,7 +2794,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         CtiCommandParser parse("getvalue lp resume");
 
-        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( outList.empty() );
@@ -2812,7 +2812,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( ret->DeviceId(),
                                     123456 );
             BOOST_CHECK_EQUAL( ret->Status(),
-                                    MISPARAM );
+                                    ClientErrors::MissingParameter );
             BOOST_CHECK_EQUAL( ret->ResultString(),
                                     "Test MCT-410iL / Missing one of the following:"
                                     "\nKey_MCT_LLPInterest_Channel"

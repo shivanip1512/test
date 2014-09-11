@@ -71,10 +71,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_decoding_exceptions
         ( list_of( 0x56 )( 0x00 )( 0x00 )( 0x00 )( 0x00 )( 0x00) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x57)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (4)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (6)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x57)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (4)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (6)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -131,33 +131,33 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_SetFreezeDay_status_exceptions )
         ( list_of( 0x56 )( 0x00 )( 0x00 )( 0x0f )( 0x00 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Not Ready (0x01)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Busy (0x02)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Protocol Error (0x03)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Meter Error (0x04)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Illegal Request (0x05)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Aborted Command (0x06)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Timeout (0x07)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x08)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE NOT SUPPORTED (ASC: 0x00, ASCQ: 0x01)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, INVALID FIELD IN COMMAND (ASC: 0x00, ASCQ: 0x02)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, INAPPROPRIATE ACTION REQUESTED (ASC: 0x00, ASCQ: 0x03)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, LOAD VOLTAGE HIGHER THAN THRESHOLD (ASC: 0x00, ASCQ: 0x04)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SWITCH IS OPEN (ASC: 0x00, ASCQ: 0x05)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, TEST MODE ENABLED (ASC: 0x00, ASCQ: 0x06)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT BUTTON PRESSED BUT METER NOT ARMED (ASC: 0x00, ASCQ: 0x07)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT NOT ENABLED (ASC: 0x00, ASCQ: 0x08)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT IS CURRENTLY CHARGING (ASC: 0x00, ASCQ: 0x09)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT IN OPERATION (ASC: 0x00, ASCQ: 0x0a)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, INSUFFICIENT SECURITY CLEARANCE (ASC: 0x01, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, DATA LOCKED (ASC: 0x01, ASCQ: 0x01)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, INVALID SERVICE SEQUENCE STATE (ASC: 0x01, ASCQ: 0x02)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, RENEGOTIATE REQUEST (ASC: 0x01, ASCQ: 0x03)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: DATA NOT READY (ASC: 0x02, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: DEVICE BUSY (ASC: 0x03, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Reserved (0x0f)\nAdditional Status: SCHEDULED FOR NEXT RECORD INTERVAL (ASC: 0x04, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Additional Status (ASC: 0x05, ASCQ: 0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Additional Status (ASC: 0x00, ASCQ: 0x0f)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Not Ready (0x01)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Busy (0x02)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Protocol Error (0x03)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Meter Error (0x04)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Illegal Request (0x05)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Aborted Command (0x06)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Timeout (0x07)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x08)\nAdditional Status: NO ADDITIONAL STATUS (ASC: 0x00, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE NOT SUPPORTED (ASC: 0x00, ASCQ: 0x01)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, INVALID FIELD IN COMMAND (ASC: 0x00, ASCQ: 0x02)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, INAPPROPRIATE ACTION REQUESTED (ASC: 0x00, ASCQ: 0x03)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, LOAD VOLTAGE HIGHER THAN THRESHOLD (ASC: 0x00, ASCQ: 0x04)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SWITCH IS OPEN (ASC: 0x00, ASCQ: 0x05)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, TEST MODE ENABLED (ASC: 0x00, ASCQ: 0x06)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT BUTTON PRESSED BUT METER NOT ARMED (ASC: 0x00, ASCQ: 0x07)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT NOT ENABLED (ASC: 0x00, ASCQ: 0x08)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT IS CURRENTLY CHARGING (ASC: 0x00, ASCQ: 0x09)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: REJECTED, SERVICE DISCONNECT IN OPERATION (ASC: 0x00, ASCQ: 0x0a)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, INSUFFICIENT SECURITY CLEARANCE (ASC: 0x01, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, DATA LOCKED (ASC: 0x01, ASCQ: 0x01)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, INVALID SERVICE SEQUENCE STATE (ASC: 0x01, ASCQ: 0x02)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: ACCESS DENIED, RENEGOTIATE REQUEST (ASC: 0x01, ASCQ: 0x03)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: DATA NOT READY (ASC: 0x02, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: DEVICE BUSY (ASC: 0x03, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Reserved (0x0f)\nAdditional Status: SCHEDULED FOR NEXT RECORD INTERVAL (ASC: 0x04, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Additional Status (ASC: 0x05, ASCQ: 0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Additional Status (ASC: 0x00, ASCQ: 0x0f)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -478,15 +478,15 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandFreeze_GetFreezeInfo_decode_exceptions 
                   ( 0x03 )( 0x04 )( 0x00 )( 0x00 )( 0x00 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (3) expected 2" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (3) expected 4" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Missing decode for TLV type (0x12)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Missing decode for TLV type (0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2) expected 3" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (0) expected 4" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (1) expected 4" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (2) expected 4" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV length (3) expected 4" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (3) expected 2" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (3) expected 4" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Missing decode for TLV type (0x12)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Missing decode for TLV type (0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2) expected 3" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (0) expected 4" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (1) expected 4" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (2) expected 4" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV length (3) expected 4" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 

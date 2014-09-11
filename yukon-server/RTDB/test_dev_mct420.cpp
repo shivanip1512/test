@@ -522,21 +522,21 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         CtiCommandParser parse("getconfig centron parameters");
 
-        BOOST_CHECK_EQUAL( NoMethod, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
     }
 
     BOOST_AUTO_TEST_CASE(test_getconfig_centron_ratio)
     {
         CtiCommandParser parse("getconfig centron ratio");
 
-        BOOST_CHECK_EQUAL( NoMethod, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::NoMethod, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
     }
 
     BOOST_AUTO_TEST_CASE(test_getconfig_meter_parameters)
     {
         CtiCommandParser parse("getconfig meter parameters");
 
-        BOOST_CHECK_EQUAL( NoError, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -551,7 +551,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         CtiCommandParser parse("getconfig meter ratio");
 
-        BOOST_CHECK_EQUAL( NoError, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
 
@@ -599,7 +599,7 @@ struct control_helper : beginExecuteRequest_helper
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dev.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -673,7 +673,7 @@ struct control_helper : beginExecuteRequest_helper
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dev.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -876,7 +876,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -901,7 +901,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -986,7 +986,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1013,7 +1013,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1098,7 +1098,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1125,7 +1125,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1209,7 +1209,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1236,7 +1236,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1311,7 +1311,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1338,7 +1338,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1413,7 +1413,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1440,7 +1440,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1497,7 +1497,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1524,7 +1524,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1564,7 +1564,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1591,7 +1591,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( ErrorInvalidTimestamp , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::InvalidTimestamp , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1601,7 +1601,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
             BOOST_REQUIRE(retMsg);
 
-            BOOST_CHECK_EQUAL( retMsg->Status(), ErrorInvalidTimestamp );
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::InvalidTimestamp );
             /*
             //  Doesn't work due to const CtiDate Today; in dev_mct410.cpp
             BOOST_CHECK_EQUAL(
@@ -1629,7 +1629,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1656,7 +1656,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueDailyRead(im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1697,7 +1697,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
         {
             CtiCommandParser parse( "getvalue outage 1" );
 
-            BOOST_CHECK_EQUAL( NoError , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
@@ -1727,7 +1727,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy(im.Return.CommandStr, "getvalue outage 1");
 
-            BOOST_CHECK_EQUAL( NoError , mct420.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ClientErrors::None , mct420.decodeGetValueOutage(im, timeNow, vgList, retList, outList) );
         }
 
         {

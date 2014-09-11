@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Focus_al_putconfig_display )
     {
         CtiCommandParser parse("putconfig install display");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
     }
 
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Focus_al_putconfig_display_out_of_order_slo
     {
         CtiCommandParser parse("putconfig install display");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
     }
 
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );

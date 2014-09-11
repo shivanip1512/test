@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         ( 300 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Interval: (300) overflow (maximum: 255)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Interval: (300) overflow (maximum: 255)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         ( 400 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Repeat Count: (400) overflow (maximum: 255)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Repeat Count: (400) overflow (maximum: 255)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -192,12 +192,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_constructi
         ( 200 );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid High Temperature Threshold: (-50) underflow (minimum: -40)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid High Temperature Threshold: (200) overflow (maximum: 185)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid High Temperature Threshold: (-50) underflow (minimum: -40)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid High Temperature Threshold: (200) overflow (maximum: 185)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration = 
+    RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
         true,       // alarmEnabled
         15,         // alarmRepeatInterval
@@ -234,11 +234,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration_decode_exc
         ( list_of( 0x89 )( 0x00 )( 0x00 )( 0x01 )( 0x00 )( 0x00 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8a)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (6)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (6)" ) );
 
     RfnTemperatureAlarmCommand::AlarmConfiguration  configuration =
     {
@@ -374,11 +374,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration_decode_exc
                     ( 0x01 )( 0x07 )( 0x01 )( 0x00 )( 0x32 )( 0x00 )( 0x28 )( 0x0f ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8a)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (12)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8a)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (12)" ) );
 
     RfnGetTemperatureAlarmConfigurationCommand  command;
 

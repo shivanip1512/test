@@ -359,7 +359,7 @@ BOOST_FIXTURE_TEST_SUITE( test_dev_mct4xx_tou, putConfig_helper )
 
         CtiCommandParser parse( "putconfig tou 11111112 schedule 1 a/0:00 schedule 2 d/0:00 default a" );
 
-        BOOST_CHECK_EQUAL( NoError, mct.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( 2, outList.size() );
 
@@ -417,7 +417,7 @@ BOOST_FIXTURE_TEST_SUITE( test_dev_mct4xx_tou, putConfig_helper )
                                 "schedule 4 d/0:00 a/8:00 b/16:00 "
                                 "default a" );
 
-        BOOST_CHECK_EQUAL( NoError, mct.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( 2, outList.size() );
 

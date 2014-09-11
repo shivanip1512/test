@@ -1013,7 +1013,7 @@ BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
         CtiRequestMsg    req( -1, "control connect" );
         CtiCommandParser parse( req.CommandString() );
 
-        BOOST_CHECK_EQUAL( NoError , mct.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1039,7 +1039,7 @@ BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
 
         strcpy(im.Return.CommandStr, "control connect");
 
-        BOOST_CHECK_EQUAL( NoError , mct.ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -1074,7 +1074,7 @@ BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
 
         strcpy(im.Return.CommandStr, "control connect noqueue");
 
-        BOOST_CHECK_EQUAL( NoError , mct.ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
@@ -1102,7 +1102,7 @@ BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
         CtiRequestMsg    req( -1, "control disconnect" );
         CtiCommandParser parse( req.CommandString() );
 
-        BOOST_CHECK_EQUAL( NoError , mct.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
@@ -1127,7 +1127,7 @@ BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
 
         strcpy(im.Return.CommandStr, "control disconnect");
 
-        BOOST_CHECK_EQUAL( NoError , mct.ResultDecode(im, timeNow, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( ClientErrors::None , mct.ResultDecode(im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
         BOOST_REQUIRE_EQUAL( 2, retList.size() );

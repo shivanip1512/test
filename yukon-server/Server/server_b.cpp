@@ -72,7 +72,7 @@ void CtiServer::clientShutdown(CtiServer::ptr_type CM)
 
 int  CtiServer::clientRegistration(CtiServer::ptr_type CM)
 {
-    int         nRet = NoError;
+    int         nRet = ClientErrors::None;
     CtiTime      NowTime;
     RWBoolean   validEntry(TRUE);
     RWBoolean   removeMgr(FALSE);
@@ -202,7 +202,7 @@ int  CtiServer::clientRegistration(CtiServer::ptr_type CM)
  *----------------------------------------------------------------------------*/
 int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     ptr_type pConn = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
@@ -338,7 +338,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
  *----------------------------------------------------------------------------*/
 int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type CM)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
@@ -381,7 +381,7 @@ int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type CM)
  *----------------------------------------------------------------------------*/
 int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     ptr_type Mgr;
 
     CtiTime      Now;
@@ -423,7 +423,7 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
  *----------------------------------------------------------------------------*/
 int  CtiServer::clientPurgeQuestionables(PULONG pDeadClients)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.

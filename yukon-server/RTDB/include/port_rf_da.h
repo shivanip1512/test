@@ -34,15 +34,15 @@ public:
 
     virtual YukonError_t inMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
     {
-        return NoError;
+        return ClientErrors::None;
     }
     virtual YukonError_t openPort(INT rate, INT bits, INT parity, INT stopbits)
     {
-        return NoError;
+        return ClientErrors::None;
     }
     virtual YukonError_t outMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, std::list<CtiMessage *> &traceList)
     {
-        return NoError;
+        return ClientErrors::None;
     }
     virtual bool isViable()
     {

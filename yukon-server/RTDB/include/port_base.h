@@ -69,9 +69,9 @@ public:
     virtual YukonError_t inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
     virtual YukonError_t outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
     virtual YukonError_t outInMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
-    virtual INT traceIn(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NoError) const;
-    virtual INT traceOut(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NoError) const;
-    virtual INT traceXfer(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = NoError) const;
+    virtual INT traceIn(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = ClientErrors::None) const;
+    virtual INT traceOut(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = ClientErrors::None) const;
+    virtual INT traceXfer(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = ClientErrors::None) const;
 
     static INT traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, std::list< CtiMessage* > &traceList);
     INT logBytes(BYTE *Message, ULONG Length) const;
@@ -320,12 +320,12 @@ inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();
 inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup || getType() == PortTypePoolDialout)); }
 
 inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }
-inline YukonError_t CtiPort::setPortWriteTimeOut(USHORT timeout) { return NoError; }
-inline YukonError_t CtiPort::setLine(INT rate, INT bits, INT parity, INT stopbits ) { return NoError; }
-inline int CtiPort::enableXONXOFF()    { return NoError; }
-inline int CtiPort::disableXONXOFF()   { return NoError; }
-inline int CtiPort::enableRTSCTS()     { return NoError; }
-inline int CtiPort::disableRTSCTS()    { return NoError; }
+inline YukonError_t CtiPort::setPortWriteTimeOut(USHORT timeout) { return ClientErrors::None; }
+inline YukonError_t CtiPort::setLine(INT rate, INT bits, INT parity, INT stopbits ) { return ClientErrors::None; }
+inline int CtiPort::enableXONXOFF()    { return ClientErrors::None; }
+inline int CtiPort::disableXONXOFF()   { return ClientErrors::None; }
+inline int CtiPort::enableRTSCTS()     { return ClientErrors::None; }
+inline int CtiPort::disableRTSCTS()    { return ClientErrors::None; }
 
 inline INT CtiPort::getBaudRate() const { return 0;}
 inline INT CtiPort::getBits() const { return 8; }

@@ -1015,7 +1015,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid channel (0) for hourly read request; must be 1 or 2");
         }
     }
@@ -1033,7 +1033,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid channel (3) for hourly read request; must be 1 or 2");
         }
     }
@@ -1051,7 +1051,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/17/2010) for hourly read request; must be before today (08/17/2010)");
         }
     }
@@ -1069,7 +1069,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/18/2010) for hourly read request; must be before today (08/17/2010)");
         }
     }
@@ -1087,7 +1087,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/09/2010) for hourly read request; must be no more than 7 days ago (08/10/2010)");
         }
     }
@@ -1106,7 +1106,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid end date (08/15/2010) for hourly read request; must be after begin date (08/16/2010)");
         }
     }
@@ -1125,7 +1125,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/17/2010) for hourly read request; must be before today (08/17/2010)");
         }
     }
@@ -1143,7 +1143,7 @@ BOOST_AUTO_TEST_CASE(test_execute_bad_parameters)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid end date (08/15/2010) for hourly read request; must be after begin date (08/16/2010)");
         }
     }
@@ -1579,7 +1579,7 @@ BOOST_AUTO_TEST_CASE(test_decode_bad_weekday)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        ErrorInvalidTimestamp);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::InvalidTimestamp);
             BOOST_CHECK_EQUAL(ex.error_description, "Day of week does not match (2 != 3)\nRetries exhausted");
         }
     }
@@ -1690,7 +1690,7 @@ BOOST_AUTO_TEST_CASE(test_decode_expired)
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
             BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/11/2010) for hourly read request; must be no more than 7 days ago (08/17/2010)");
         }
     }
@@ -1719,7 +1719,7 @@ BOOST_AUTO_TEST_CASE(test_decode_read_timeout)
     {
         string description;
 
-        DlcCommand::request_ptr r = hourlyRead.error(execute_time, READTIMEOUT, description);
+        DlcCommand::request_ptr r = hourlyRead.error(execute_time, ClientErrors::ReadTimeout, description);
 
         BOOST_CHECK_EQUAL(description, "Timeout Reading from Port\nRetrying (1 remaining)");
 
@@ -1786,7 +1786,7 @@ BOOST_AUTO_TEST_CASE(test_request_day_begin)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/17/2010) for hourly read request; must be before today (08/17/2010)");
     }
 
@@ -1800,7 +1800,7 @@ BOOST_AUTO_TEST_CASE(test_request_day_begin)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/09/2010) for hourly read request; must be no more than 7 days ago (08/10/2010)");
     }
 }
@@ -1858,7 +1858,7 @@ BOOST_AUTO_TEST_CASE(test_request_day_end)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/17/2010) for hourly read request; must be before today (08/17/2010)");
     }
 
@@ -1872,7 +1872,7 @@ BOOST_AUTO_TEST_CASE(test_request_day_end)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid date (08/09/2010) for hourly read request; must be no more than 7 days ago (08/10/2010)");
     }
 }

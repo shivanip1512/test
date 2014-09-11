@@ -81,7 +81,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
 {
 #define ABUFSIZE 40
 
-    INT       status = NoError;
+    INT       status = ClientErrors::None;
     bool      xmore = true;
     string resultString;
     BYTE      ABuf[ABUFSIZE];
@@ -92,7 +92,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
      */
     if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
-        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != ClientErrors::DeviceInhibited)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
@@ -252,7 +252,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                                               list< CtiMessage* >      &retList,
                                               list< OUTMESS* >         &outList)
 {
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
     bool           xmore = true;
     ULONG          i, j;
     USHORT         Length;
@@ -266,7 +266,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
     {
         // Someone else did all the parsing and is just needs building
         // Prime the Protocol device with the vstruct, and call the update routine
-        if((status = vcom.primeAndAppend(OutMessage->Buffer.VSt)) == NoError)
+        if((status = vcom.primeAndAppend(OutMessage->Buffer.VSt)) == ClientErrors::None)
         {
             status = vcom.updateVersacomMessage();
         }
@@ -283,7 +283,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
     /* This is a mastercomm device */
     /* Load up all the goodies */
 
-    if(status == NoError)
+    if(status == ClientErrors::None)
     {
         OutMessage->TimeOut   = 2;
         OutMessage->InLength  = -1;
@@ -321,7 +321,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
             }
             else
             {
-                status = MEMORY;
+                status = ClientErrors::MemoryAccess;
             }
         }
     }

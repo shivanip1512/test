@@ -364,12 +364,12 @@ INT CtiPortManager::writeQueue(OUTMESS *OutMessage)
 
     if( ! pPort )
     {
-        return BADPORT;
+        return ClientErrors::BadPort;
     }
 
     if( pPort->isInhibited() )
     {
-        return PORTINHIBITED;
+        return ClientErrors::PortInhibited;
     }
 
     return pPort->writeQueue(OutMessage);
@@ -382,12 +382,12 @@ INT CtiPortManager::writeQueueWithPriority(OUTMESS *OutMessage, int priority)
 
     if( ! pPort )
     {
-        return BADPORT;
+        return ClientErrors::BadPort;
     }
 
     if( pPort->isInhibited() )
     {
-        return PORTINHIBITED;
+        return ClientErrors::PortInhibited;
     }
 
     return pPort->writeQueueWithPriority(OutMessage, priority);

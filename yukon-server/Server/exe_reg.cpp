@@ -27,7 +27,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 INT CtiRegistrationExecutor::ServerExecute(CtiServer *Svr)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
 
     CtiRegistrationMsg   *Msg = (CtiRegistrationMsg*)getMessage();
 

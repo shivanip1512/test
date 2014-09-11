@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_immediate_demand_freeze )
 
     CtiCommandParser    parse("putstatus freeze");
 
-    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -343,7 +343,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                         category.first,
                         category.second));
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 

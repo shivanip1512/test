@@ -429,7 +429,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        ErrorInvalidData);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::InvalidData);
             BOOST_CHECK_EQUAL(ex.error_description, "Returned value is outside the range of acceptable values (4)");
         }
     }

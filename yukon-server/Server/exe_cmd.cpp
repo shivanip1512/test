@@ -32,7 +32,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 INT CtiCommandExecutor::ServerExecute(CtiServer *Svr)
 {
-    INT nRet = NoError;      // Everything was ok, please clean up my message memory
+    INT nRet = ClientErrors::None;      // Everything was ok, please clean up my message memory
 
     CtiCommandMsg* Cmd = (CtiCommandMsg*)getMessage();
 

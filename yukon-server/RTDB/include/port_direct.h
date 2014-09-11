@@ -29,7 +29,7 @@ private:
     int initPrivateStores();
     int getPortInQueueCount();
     int getPortOutQueueCount();
-    int getPortCommError();
+    void clearPortCommError();
 
 public:
 

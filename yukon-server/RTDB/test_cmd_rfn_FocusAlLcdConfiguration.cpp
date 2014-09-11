@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(test_write_fail)
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ERRUNKNOWN );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::Unknown );
             BOOST_CHECK_EQUAL( ex.error_description, "Failure Status (1)" );
         }
     }

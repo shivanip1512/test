@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid disconnect address (8388608), must be 0-4194303");
     }
 
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid disconnect demand threshold (-1), must be 0.0-400.0");
     }
 
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid disconnect demand threshold (401), must be 0.0-400.0");
     }
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid connect delay (11), must be 0-10");
     }
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid number of disconnect minutes (4), must be 5-60");
     }
 
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid number of disconnect minutes (61), must be 5-60");
     }
 
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid number of connect minutes (4), must be 5-60");
     }
 
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid number of connect minutes (61), must be 5-60");
     }
 
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid demand interval (-1), must be a positive integer");
     }
 
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(test_command_errors)
     }
     catch( DlcCommand::CommandException &ex )
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        BADPARAM);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::BadParameter);
         BOOST_CHECK_EQUAL(ex.error_description, "Invalid demand interval (0), must be a positive integer");
     }
 }

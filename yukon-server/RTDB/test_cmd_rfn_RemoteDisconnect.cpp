@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -185,10 +185,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfiguration_constructor_exceptions )
 {
     const std::vector< RfnCommand::CommandException > expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Demand Threshold: (0.0) underflow (minimum 0.5)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Demand Threshold: (13.0) overflow (maximum 12.0)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Connect Delay: (31) overflow (maximum 30)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Max Disconnects: (21) overflow (maximum 20)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Demand Threshold: (0.0) underflow (minimum 0.5)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Demand Threshold: (13.0) overflow (maximum 12.0)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Delay: (31) overflow (maximum 30)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Max Disconnects: (21) overflow (maximum 20)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -261,10 +261,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration_con
         ( 1441,   60 );  // Disconnect minutes > 1440
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Connect Minutes: (4) underflow (minimum 5)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Connect Minutes: (1441) overflow (maximum 1440)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Disconnect Minutes: (4) underflow (minimum 5)" ) )
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Disconnect Minutes: (1441) overflow (maximum 1440)" ) );
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Minutes: (4) underflow (minimum 5)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Minutes: (1441) overflow (maximum 1440)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Disconnect Minutes: (4) underflow (minimum 5)" ) )
+        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Disconnect Minutes: (1441) overflow (maximum 1440)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -294,11 +294,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OnDemand_SetConfiguration_decoding_exceptions
         ( list_of( 0x83 )( 0x00 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x00 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8f)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (0)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (0)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -332,11 +332,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandThreshold_SetConfiguration_decoding_exc
         ( list_of( 0x83 )( 0x00 )( 0x00 )( 0x02 )( 0x01 )( 0x00 )( 0x00 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8f)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (0)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (0)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -374,11 +374,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_Cycling_SetConfiguration_decoding_exceptions 
         ( list_of( 0x83 )( 0x00 )( 0x00 )( 0x03 )( 0x01 )( 0x00 )( 0x00 ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x8f)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (0)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (0)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_OnDemand )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -536,7 +536,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -606,7 +606,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ErrorInvalidData );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::InvalidData );
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
@@ -643,20 +643,20 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_decoding_ex
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
         //  0
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0xcc)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (23)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Failure (1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0xcc)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (23)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Failure (1)" ) )
         //  5
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response too small (3 < 5)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2 != 1)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (23)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response reconnect param invalid (23) expecting 0 or 1" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response TLV too small (4 != 5)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response too small (3 < 5)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2 != 1)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (23)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response reconnect param invalid (23) expecting 0 or 1" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response TLV too small (4 != 5)" ) )
         //  10
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response TLV too small (4 != 5)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Response reconnect param invalid (2) expecting 0 or 1" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response TLV too small (4 != 5)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response reconnect param invalid (2) expecting 0 or 1" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 

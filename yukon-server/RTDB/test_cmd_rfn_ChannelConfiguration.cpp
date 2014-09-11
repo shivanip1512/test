@@ -969,8 +969,8 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                         ( 151 )); // 81 metrics
 
         const std::vector< RfnCommand::CommandException > exp = list_of
-                ( RfnCommand::CommandException( BADPARAM, "Invalid metric id (13)" ))
-                ( RfnCommand::CommandException( BADPARAM, "Number of metrics 81, expected <= 80" ));
+                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid metric id (13)" ))
+                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Number of metrics 81, expected <= 80" ));
 
         std::vector< RfnCommand::CommandException > rcv;
 
@@ -1010,20 +1010,20 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
                 ( list_of(0x79)(0x00)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x7a)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Length (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x7a)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (2)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV of type (7), expected (2)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv full description
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
                 // tlv full description - metric qualifier
-                ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Metric qualifier expected extension bit to be zero" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
 
 
         const RfnChannelConfigurationCommand::MetricIds metrics;
@@ -1071,17 +1071,17 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand_exceptions )
                 ( list_of(0x79)(0x01)(0X00)(0x01)  (0x01)(0x00)(0x01)(0x03) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x7a)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Length (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x7a)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (0), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV of type (7), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV count (2), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV count (0), expected (1)" ) )
                 // tlv channel selection configuration
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) );
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for list of metric IDs received 0, expected >= 1" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for list of metric IDs received 1, expected 7" ) );
 
         RfnGetChannelSelectionCommand cmd;
 
@@ -1129,20 +1129,20 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionFullDescriptionCommand_exceptio
                 ( list_of(0x79)(0x02)(0X00)(0x01)  (0x02)(0x00)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x7a)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Length (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x7a)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (2)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV of type (7), expected (2)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv full description
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
                 // tlv full description - metric qualifier
-                ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Metric qualifier expected extension bit to be zero" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
 
         std::vector<RfnCommand::CommandException> actual;
 
@@ -1338,8 +1338,8 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 (list_of(  1 )(  2 )(  3 )(  4 )(  5 )(  6 )(  7 )(  8 )(  9 )( 10 )( 11 )( 12 )( 21 )( 22 )( 23 )( 24 ));
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( BADPARAM, "Invalid metric id (38)" ) )
-                ( RfnCommand::CommandException( BADPARAM, "Number of metrics 16, expected <= 15" ) );
+                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid metric id (38)" ) )
+                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Number of metrics 16, expected <= 15" ) );
 
         std::vector< RfnCommand::CommandException > actual;
 
@@ -1378,20 +1378,20 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
                 ( list_of(0x7b)(0x00)(0X00)(0x01)  (0x02)(0x05)(0x01)(0x00)(0x01)(0x18)(0x00) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x79)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x01)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Length (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x79)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (2)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV of type (7), expected (2)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv full description
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for channel descriptors received 0, expected >= 1" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for channel descriptors received 1, expected 13" ) )
                 // tlv full description - metric qualifier
-                ( RfnCommand::CommandException( ErrorInvalidData, "Metric qualifier expected extension bit to be zero" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Metric qualifier expected extension bit to be zero" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid metric qualifier value for \"Fund/Harmonic\" (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid metric qualifier value for \"Primary/Secondary\" (3)" ) );
 
 
         const RfnChannelConfigurationCommand::MetricIds metrics;
@@ -1437,16 +1437,16 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
                 ( list_of(0x7b)(0x01)(0X00)(0x01)  (0x01)(0x09)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x00)(0x01) );
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Length (3)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0x79)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Length (3)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x79)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (3)" ) )
                 // tlv types
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV of type (7), expected (1)" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Unexpected TLV count (2), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV of type (7), expected (1)" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected TLV count (2), expected (1)" ) )
                 // tlv channel selection configuration
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for interval recording received 0, expected >= 9" ) )
-                ( RfnCommand::CommandException( ErrorInvalidData, "Number of bytes for list of metric IDs received 1, expected 3" ) );
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for interval recording received 0, expected >= 9" ) )
+                ( RfnCommand::CommandException( ClientErrors::InvalidData, "Number of bytes for list of metric IDs received 1, expected 3" ) );
 
         std::vector< RfnCommand::CommandException > actual;
 

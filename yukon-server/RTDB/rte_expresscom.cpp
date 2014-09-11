@@ -81,7 +81,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
 #define ABUFSIZE 40
 #define A_WORD_LEN 7
 
-    INT       status = NoError;
+    INT       status = ClientErrors::None;
     bool      xmore = true;
     CtiString resultString;
     BYTE      ABuf[ABUFSIZE];
@@ -92,7 +92,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
      */
     if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
-        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != ClientErrors::DeviceInhibited)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
@@ -186,7 +186,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
                         }
                         else
                         {
-                            status = MEMORY;
+                            status = ClientErrors::MemoryAccess;
                         }
 
                         resultString = "AWord control sent via versacom on route: " + getName();

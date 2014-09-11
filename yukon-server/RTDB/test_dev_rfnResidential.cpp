@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule )
                            "schedule 4 b/00:00 c/00:01 d/08:59 a/12:12 b/23:01 c/23:55 "
                            "default b");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
@@ -128,14 +128,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid switch time for Schedule 2 - (01:02, expected > 01:03)";
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       BADPARAM );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
     }
 
@@ -151,14 +151,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid midnight time for Schedule 3 - (00:01, expected 00:00)";
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       BADPARAM );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
     }
 
@@ -174,14 +174,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid switch time for Schedule 4 - (03:60)";
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       BADPARAM );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
     }
 
@@ -197,14 +197,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid rate for Schedule 1 - (e)";
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       BADPARAM );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
     }
 
@@ -220,14 +220,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid number of switch time for Schedule 2 - (7, expected 6)";
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       BADPARAM );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
     }
 
@@ -244,14 +244,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid schedule - (Schedule 5)";
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
         const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       BADPARAM );
+        BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
     }
 }
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_enable )
 
     CtiCommandParser parse("putconfig tou enable");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_CHECK_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_disable )
 
     CtiCommandParser parse("putconfig tou disable");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_schedule )
 
     CtiCommandParser parse("getconfig tou");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -498,13 +498,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
         }
 
@@ -512,7 +512,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
@@ -603,13 +603,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
         }
 
@@ -617,13 +617,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
         }
 
@@ -631,7 +631,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou force");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
@@ -703,13 +703,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::ConfigNotCurrent );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
         }
 
@@ -717,7 +717,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("getconfig install tou");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -788,13 +788,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
         }
     }
@@ -808,7 +808,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday )
 
     CtiCommandParser parse("putconfig emetcon holiday 02/01/2025 06/14/2036 12/30/2050");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -843,7 +843,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_active )
 
     CtiCommandParser parse("putconfig emetcon holiday active");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -873,7 +873,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_holiday_cancel )
 
     CtiCommandParser parse("putconfig emetcon holiday cancel");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -903,7 +903,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_holiday )
 
     CtiCommandParser parse("getconfig emetcon holiday");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -940,7 +940,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_on_demand )
     {
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1018,7 +1018,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_thresh
     {
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1095,7 +1095,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
     {
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1163,14 +1163,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
 
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::NoConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Invalid config data. Config name:disconnect" );
         }
 
@@ -1188,14 +1188,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
 
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ErrorInvalidConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:disconnect" );
         }
     }
@@ -1207,7 +1207,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
 
     CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 17 lpinterval 34");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1249,7 +1249,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_enable )
 
     CtiCommandParser parse("putconfig emetcon voltage profile enable");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1279,7 +1279,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile_disable 
 
     CtiCommandParser parse("putconfig emetcon voltage profile disable");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1309,7 +1309,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_voltage_profile )
 
     CtiCommandParser parse("getconfig voltage profile");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1367,7 +1367,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getvalue_voltage_profile_state )
 
     CtiCommandParser parse("getconfig voltage profile state");
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1397,7 +1397,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_immediate_demand_freeze )
 
     CtiCommandParser    parse("putstatus freeze");
 
-    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1430,7 +1430,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_cancel )
 
     CtiCommandParser    parse("putstatus tou critical peak cancel");
 
-    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1463,7 +1463,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_today )
 
     CtiCommandParser    parse("putstatus tou critical peak rate b until 23:00");
 
-    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1496,7 +1496,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_tou_critical_peak_tomorrow )
 
     CtiCommandParser    parse("putstatus tou critical peak rate b until 8:00");
 
-    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1569,7 +1569,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_install_ovuv_meterids )
     {
         dev._type = type;
 
-        BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
         for each( Cti::Devices::Commands::RfnCommandSPtr cmd in rfnRequests )
@@ -1604,7 +1604,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
     {
         CtiCommandParser parse("putconfig install ovuv");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 6, rfnRequests.size() );
 
@@ -1777,7 +1777,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_meter_ids )
         {
             dut._type = type;
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1811,14 +1811,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_invalid_con
 
         CtiCommandParser parse("putconfig install ovuv");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::NoConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Invalid config data. Config name:ovuv" );
         }
 
@@ -1840,14 +1840,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_invalid_con
 
         CtiCommandParser parse("putconfig install ovuv");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
         {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       ErrorInvalidConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:ovuv" );
         }
     }
@@ -1869,7 +1869,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
     {
         CtiCommandParser parse("putconfig install freezeday");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1944,7 +1944,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_channel_configur
     {
         CtiCommandParser parse("putconfig install channelconfig");
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
@@ -2218,7 +2218,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -2242,7 +2242,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
                         category.first,
                         category.second));
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -2490,7 +2490,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
     request->setUserMessageId(11235);
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
     BOOST_CHECK_EQUAL( 2, rfnRequests.size() );
 
@@ -2717,7 +2717,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -2741,7 +2741,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                         category.first,
                         category.second));
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 

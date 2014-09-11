@@ -64,9 +64,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rf_da_dnpAddress_decoding_exceptions )
         ( list_of( 0xcc )( 0xbb )( 0xaa ) );
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (2)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (4)" ) )
-        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid response code (204)" ) );
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (2)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (4)" ) )
+        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid response code (204)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 

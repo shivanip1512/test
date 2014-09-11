@@ -584,7 +584,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        ErrorInvalidData);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::InvalidData);
             BOOST_CHECK_EQUAL(ex.error_description, "LCR returned a conflicted account of its currently controlled state (5)");
         }
     }
@@ -656,7 +656,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        ErrorInvalidData);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::InvalidData);
             BOOST_CHECK_EQUAL(ex.error_description, "LCR returned a conflicted account of its currently controlled state (8)");
         }
     }
@@ -728,7 +728,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
         }
         catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        ErrorInvalidData);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::InvalidData);
             BOOST_CHECK_EQUAL(ex.error_description, "LCR returned a conflicted account of its currently controlled state (12)");
         }
     }

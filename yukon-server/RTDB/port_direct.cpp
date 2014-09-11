@@ -28,7 +28,7 @@ using std::list;
 
 YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     ULONG    Result;
 
     if( !isSimulated() )
@@ -40,7 +40,7 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
 
         if(isInhibited())
         {
-            status = PORTINHIBITED;
+            status = ClientErrors::PortInhibited;
         }
         else
         {
@@ -64,7 +64,7 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
 
                     Sleep(5000);
 
-                    return(BADPORT);
+                    return ClientErrors::BadPort;
                 }
                 else
                 {
@@ -162,7 +162,7 @@ CtiPortDirect& CtiPortDirect::setHandle(const HANDLE& hdl)
 
 YukonError_t CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits)
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
 
     if( !rate )
     {
@@ -179,7 +179,7 @@ YukonError_t CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits
         _dcb.Parity    = parity;
         _dcb.StopBits  = stopbits;
 
-        if(_portHandle) retval = SetCommState(_portHandle, &_dcb) ? NoError : SYSTEM;
+        if(_portHandle) retval = SetCommState(_portHandle, &_dcb) ? ClientErrors::None : ClientErrors::SystemRelated;
     }
 
     return retval;
@@ -219,40 +219,40 @@ INT CtiPortDirect::dsrTest() const
 INT CtiPortDirect::lowerRTS()
 {
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
-    return(EscapeCommFunction(_portHandle, CLRRTS) ? NoError : SYSTEM);
+    return(EscapeCommFunction(_portHandle, CLRRTS) ? ClientErrors::None : ClientErrors::SystemRelated);
 }
 
 INT CtiPortDirect::raiseRTS()
 {
     _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
-    return(EscapeCommFunction(_portHandle, SETRTS) ? NoError : SYSTEM);
+    return(EscapeCommFunction(_portHandle, SETRTS) ? ClientErrors::None : ClientErrors::SystemRelated);
 }
 
 INT CtiPortDirect::lowerDTR()
 {
     _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
-    return(EscapeCommFunction(_portHandle, CLRDTR) ? NoError : SYSTEM);
+    return(EscapeCommFunction(_portHandle, CLRDTR) ? ClientErrors::None : ClientErrors::SystemRelated);
 }
 
 INT CtiPortDirect::raiseDTR()
 {
     _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
-    return(EscapeCommFunction(_portHandle, SETDTR) ? NoError : SYSTEM);
+    return(EscapeCommFunction(_portHandle, SETDTR) ? ClientErrors::None : ClientErrors::SystemRelated);
 }
 
 YukonError_t CtiPortDirect::inClear()
 {
-    return(PurgeComm(_portHandle, PURGE_RXCLEAR) ? NoError : SYSTEM );
+    return(PurgeComm(_portHandle, PURGE_RXCLEAR) ? ClientErrors::None : ClientErrors::SystemRelated );
 }
 
 INT CtiPortDirect::outClear()
 {
-    return(PurgeComm(_portHandle, PURGE_TXCLEAR) ? NoError : SYSTEM );
+    return(PurgeComm(_portHandle, PURGE_TXCLEAR) ? ClientErrors::None : ClientErrors::SystemRelated );
 }
 
 YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     // 091201 CGP CCH  // BYTE     SomeMessage[300];
     ULONG    DCDCount    = 0;
@@ -269,7 +269,7 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
         //  simulate the inbound delay as best we can
         CTISleep(byteTime(Xfer.getInCountExpected()) * 1000);
 
-        status = ErrPortSimulated;
+        status = ClientErrors::PortSimulated;
     }
     else
     {
@@ -315,7 +315,7 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
         if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!
         {
             /* If getInCountExpected() is 0 just return */
-            return NoError;
+            return ClientErrors::None;
         }
 
         if(Xfer.isMessageStart())           // Are we the initial request?
@@ -339,7 +339,7 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
 
             if(getTablePortSettings().getCDWait() != 0)
             {
-                status = NODCD;
+                status = ClientErrors::NoDcd;
 
                 /* Check if we have DCD */
                 while(!dcdTest() && DCDCount < getTablePortSettings().getCDWait())
@@ -351,15 +351,15 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
 
                 if(DCDCount < getTablePortSettings().getCDWait())
                 {
-                    status = NoError;
+                    status = ClientErrors::None;
                 }
             }
         }
 
         /* Make sure that any errors on the port are cleared */
-        getPortCommError();
+        clearPortCommError();
 
-        if(status == NoError)
+        if(status == ClientErrors::None)
         {
             USHORT Told, Tnew, Tmot;
 
@@ -385,12 +385,12 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
                         close(false);
                     }
 
-                    status = PORTREAD;
+                    status = ClientErrors::PortRead;
                 }
             }
         }
 
-        if(status == NoError)
+        if(status == ClientErrors::None)
         {
             if(byteCount != Xfer.getInCountExpected())
             {
@@ -403,13 +403,13 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
                         close(false);
                     }
 
-                    status = PORTREAD;
+                    status = ClientErrors::PortRead;
                 }
 
                 if(byteCount != Xfer.getInCountExpected())
                 {
                     byteCount += oldcount;
-                    status = READTIMEOUT;
+                    status = ClientErrors::ReadTimeout;
                 }
             }
         }
@@ -424,7 +424,7 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
 
         if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
         {
-            status = BADCRC;
+            status = ClientErrors::BadCrc;
         }
     }
 
@@ -435,7 +435,7 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
 
 YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool suppressEcho)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     bool  matching;
 
@@ -452,7 +452,7 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
     //  wait for the framing byte (0x7e) (or its wacky counterpart, 0xfc - eventually remove support for 0xfc...?)
     do
     {
-        if((status = CTIRead(getHandle(), in_buf, 1, &bytes_read)) == NoError)
+        if((status = CTIRead(getHandle(), in_buf, 1, &bytes_read)) == ClientErrors::None)
         {
             if( bytes_read == 1 )
             {
@@ -462,17 +462,17 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
                 }
 
                 //  Make sure that any errors on the port are cleared
-                getPortCommError();
+                clearPortCommError();
             }
             else
             {
-                status = READTIMEOUT;
+                status = ClientErrors::ReadTimeout;
             }
         }
-    } while(in_buf[0] != 0x7e && status == NoError);
+    } while(in_buf[0] != 0x7e && status == ClientErrors::None);
 
     //  if we successfully got the framing byte
-    if(status == NoError)
+    if(status == ClientErrors::None)
     {
         matching  = suppressEcho;
         matching &= (in_buf[pos] == out_buf[pos]);
@@ -480,9 +480,9 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
         pos++;
 
         //  check byte-by-byte against output to make sure it's not an echo
-        while( matching && pos < out_count && status == NoError )
+        while( matching && pos < out_count && status == ClientErrors::None )
         {
-            if((status = CTIRead(getHandle(), in_buf + pos, 1, &bytes_read)) == NoError)
+            if((status = CTIRead(getHandle(), in_buf + pos, 1, &bytes_read)) == ClientErrors::None)
             {
                 if( bytes_read == 1 )
                 {
@@ -492,7 +492,7 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
                 }
                 else
                 {
-                    status = READTIMEOUT;
+                    status = ClientErrors::ReadTimeout;
                 }
             }
         }
@@ -508,9 +508,9 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
             //  start all over, but don't check for an echo - it's already been caught
             status = readIDLCHeader(Xfer, byteCount, false);
         }
-        else if( status == NoError )
+        else if( status == ClientErrors::None )
         {
-            if((status = CTIRead(getHandle(), in_buf + pos, in_expected - pos, &bytes_read)) == NoError)
+            if((status = CTIRead(getHandle(), in_buf + pos, in_expected - pos, &bytes_read)) == ClientErrors::None)
             {
                 pos += bytes_read;
             }
@@ -525,11 +525,11 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
         if( status == ERROR_INVALID_HANDLE )
         {
             close(false);
-            status = PORTREAD;
+            status = ClientErrors::PortRead;
         }
-        else if( status != READTIMEOUT )
+        else if( status != ClientErrors::ReadTimeout )
         {
-            status = READERR;
+            status = ClientErrors::Read;
         }
     }
 
@@ -540,7 +540,7 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
 
 YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     INT      i = 0;
 
     ULONG    Written;
@@ -556,7 +556,7 @@ YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiM
     //  if the handle is null and we're not simulating ports
     if( (getHandle() == NULL) && !isSimulated() )
     {
-        status = BADPORT;        // Invalid Handle really
+        status = ClientErrors::BadPort;        // Invalid Handle really
     }
     else if(Xfer.getOutCount() > 0)
     {
@@ -576,19 +576,6 @@ YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiM
             CRC.sh = CCITT16CRC(Dev->getType(), Xfer.getOutBuffer(), Xfer.getOutCount(), TRUE); // CRC func appends the CRC data
             Xfer.setOutCount( Xfer.getOutCount() + 2 );
         }
-
-#if 0  // 20020708 CGP.  This code seems custom.
-        /* Wait for DCD to dissapear */
-        if(getTablePortSettings().getCDWait() != 0)
-        {
-            i = 0;
-            while(dcdTest() && (i < getTablePortSettings().getCDWait()) )
-            {
-                CTISleep (50L);
-                i+= 50;
-            }
-        }
-#endif
 
         if( isSimulated() )
         {
@@ -642,10 +629,10 @@ YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiM
             if(CTIWrite (getHandle(), Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
             {
                 close(false);
-                status = PORTWRITE;
+                status = ClientErrors::PortWrite;
             }
 
-            if(status == NoError)
+            if(status == ClientErrors::None)
             {
                 /* if software queue is not empty wait for it to be */
                 for(int cnt=0; cnt < 5; cnt++)
@@ -702,7 +689,7 @@ string CtiPortDirect::getPhysicalPort() const
 
 INT CtiPortDirect::close(INT trace)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(getHandle() != NULL)
     {
@@ -787,7 +774,7 @@ YukonError_t CtiPortDirect::setPortReadTimeOut(USHORT millitimeout)
     _cto.ReadTotalTimeoutMultiplier = 0;
     _cto.ReadTotalTimeoutConstant = (millitimeout);
 
-    return(SetCommTimeouts(_portHandle, &_cto) ? NoError : SYSTEM);
+    return(SetCommTimeouts(_portHandle, &_cto) ? ClientErrors::None : ClientErrors::SystemRelated);
 }
 
 YukonError_t CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
@@ -795,14 +782,14 @@ YukonError_t CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
     _cto.WriteTotalTimeoutMultiplier = 0;
     _cto.WriteTotalTimeoutConstant = (millitimeout);
 
-    return(SetCommTimeouts(_portHandle, &_cto) ? NoError : SYSTEM);
+    return(SetCommTimeouts(_portHandle, &_cto) ? ClientErrors::None : ClientErrors::SystemRelated);
 }
 
 
 
 YukonError_t CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
-    YukonError_t status = BADPORT;
+    YukonError_t status = ClientErrors::BadPort;
 
     if(_dialable)
     {
@@ -836,7 +823,7 @@ bool CtiPortDirect::isViable()
 
 YukonError_t CtiPortDirect::reset(INT trace)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     if(_dialable)
     {
@@ -853,12 +840,12 @@ YukonError_t CtiPortDirect::setup(INT trace)
         _dialable->setup(trace);
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t CtiPortDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     if(_dialable)
     {
@@ -874,7 +861,7 @@ YukonError_t CtiPortDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDevi
 
 INT  CtiPortDirect::disconnect(CtiDeviceSPtr Device, INT trace)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     status = Inherited::disconnect(Device,trace);
     if(!status && (_dialable || gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS", "true")) )
@@ -946,7 +933,7 @@ int CtiPortDirect::initPrivateStores()
     GetCommTimeouts( _portHandle, &_cto );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 int CtiPortDirect::enableXONXOFF()
@@ -954,8 +941,8 @@ int CtiPortDirect::enableXONXOFF()
     _dcb.fOutX  = TRUE;
     _dcb.fInX   = TRUE;
 
-    INT scsret = NoError;
-    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NoError : SYSTEM;
+    INT scsret = ClientErrors::None;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? ClientErrors::None : ClientErrors::SystemRelated;
     return scsret;
 }
 int CtiPortDirect::disableXONXOFF()
@@ -963,8 +950,8 @@ int CtiPortDirect::disableXONXOFF()
     _dcb.fOutX  = FALSE;
     _dcb.fInX   = FALSE;
 
-    INT scsret = NoError;
-    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NoError : SYSTEM;
+    INT scsret = ClientErrors::None;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? ClientErrors::None : ClientErrors::SystemRelated;
     return scsret;
 }
 
@@ -973,8 +960,8 @@ int CtiPortDirect::enableRTSCTS()
     _dcb.fOutxCtsFlow = 1;
     _dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
 
-    INT scsret = NoError;
-    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NoError : SYSTEM;
+    INT scsret = ClientErrors::None;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? ClientErrors::None : ClientErrors::SystemRelated;
     return scsret;
 }
 int CtiPortDirect::disableRTSCTS()
@@ -982,8 +969,8 @@ int CtiPortDirect::disableRTSCTS()
     _dcb.fOutxCtsFlow = 0;
     _dcb.fRtsControl = RTS_CONTROL_DISABLE;
 
-    INT scsret = NoError;
-    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NoError : SYSTEM;
+    INT scsret = ClientErrors::None;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? ClientErrors::None : ClientErrors::SystemRelated;
     return scsret;
 }
 
@@ -1013,9 +1000,9 @@ int CtiPortDirect::getPortOutQueueCount()
     return 0;
 }
 
-int CtiPortDirect::getPortCommError()
+void CtiPortDirect::clearPortCommError()
 {
-    DWORD   Errors;
-    return( ClearCommError(_portHandle, &Errors, NULL) ? Errors : SYSTEM );
+    DWORD   error;
+    ClearCommError(_portHandle, &error, NULL);
 }
 

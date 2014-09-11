@@ -533,7 +533,7 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMes
                     retList.push_back( CTIDBG_new CtiReturnMsg( Req.DeviceId(),
                                                       Req.CommandString(),
                                                       resStr,
-                                                      BADPARAM,
+                                                      ClientErrors::BadParameter,
                                                       Req.RouteId(),
                                                       Req.MacroOffset(),
                                                       Req.AttemptNum(),
