@@ -68,11 +68,11 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " SendError generally requires an OutMessage." << endl;
         }
-        return NoError;
+        return ClientErrors::None;
     }
 
     /* create and send return message if calling process expects it */
-    if(ErrorCode == PORTINHIBITED || OutMessage->EventCode & RESULT)
+    if(ErrorCode == ClientErrors::PortInhibited || OutMessage->EventCode & RESULT)
     {
         INMESS DefaultInMessage;
 
@@ -166,7 +166,7 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
     delete (OutMessage);
     OutMessage = 0;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

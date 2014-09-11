@@ -89,12 +89,12 @@ bool TcpPortHandler::manageConnections( void )
 
     for each( const long device_id in connected )
     {
-        updateDeviceCommStatus(device_id, NoError);
+        updateDeviceCommStatus(device_id, ClientErrors::None);
     }
 
     for each( const long device_id in failed )
     {
-        updateDeviceCommStatus(device_id, ErrorDeviceNotConnected);
+        updateDeviceCommStatus(device_id, ClientErrors::DeviceNotConnected);
     }
 
     return !connected.empty() && !failed.empty();
@@ -299,16 +299,16 @@ YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
     }
     catch( TcpConnectionManager::not_connected &ex )
     {
-        return ErrorDeviceNotConnected;
+        return ClientErrors::DeviceNotConnected;
     }
     catch( TcpConnectionManager::write_error &ex )
     {
-        updateDeviceCommStatus(dr.device->getID(), TCPWRITEERROR);
+        updateDeviceCommStatus(dr.device->getID(), ClientErrors::TcpWrite);
 
-        return TCPWRITEERROR;
+        return ClientErrors::TcpWrite;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -373,7 +373,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
 
     for each( long device_id in error_devices )
     {
-        updateDeviceCommStatus(device_id, TCPREADERROR);
+        updateDeviceCommStatus(device_id, ClientErrors::TcpRead);
     }
 
     return !ready_devices.empty() || !error_devices.empty();

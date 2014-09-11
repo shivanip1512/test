@@ -673,7 +673,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
 {
     try
     {
-        if( _dispatchConnection.get() == NULL || _dispatchConnection->verifyConnection() != NoError )
+        if( _dispatchConnection.get() == NULL || _dispatchConnection->verifyConnection() != ClientErrors::None )
         {
             //Connect to Dispatch
             _dispatchConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
@@ -705,7 +705,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
 {
     try
     {
-        if( _pilConnection.get() == NULL || _pilConnection->verifyConnection() != NoError )
+        if( _pilConnection.get() == NULL || _pilConnection->verifyConnection() != ClientErrors::None )
         {
             //Connect to Pil
             _pilConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
@@ -737,7 +737,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
 {
     try
     {
-        if( _notificationConnection.get() == NULL || _notificationConnection->verifyConnection() != NoError )
+        if( _notificationConnection.get() == NULL || _notificationConnection->verifyConnection() != ClientErrors::None )
         {
             //Connect to Pil
             _notificationConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification ));
@@ -972,9 +972,9 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
                 dout << CtiTime() << " - Porter return received." << endl;
             }
             if( pcReturn->Status() &&
-                pcReturn->Status() != DEVICEINHIBITED &&
-                pcReturn->Status() != REMOTEINHIBITED &&
-                pcReturn->Status() != PORTINHIBITED )
+                pcReturn->Status() != ClientErrors::DeviceInhibited &&
+                pcReturn->Status() != ClientErrors::RemoteInhibited &&
+                pcReturn->Status() != ClientErrors::PortInhibited )
             {
                 pcReturn->dump();
             }

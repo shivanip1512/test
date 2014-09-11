@@ -488,7 +488,7 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
         if( !_outQueue.putQueue( msg.get(), timeoutMillis ) )
         {
             logStatus( __FUNCTION__, "message was NOT able to be queued within " + CtiNumStr(timeoutMillis) + " millis" );
-            return QUEUE_WRITE;
+            return ClientErrors::QueueWrite;
         }
 
         msg.release(); // message was queued, release it
@@ -498,7 +498,7 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
         _outQueue.putQueue( msg.release() ); // wait forever
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /**
@@ -551,12 +551,12 @@ int CtiConnection::verifyConnection()
 
             if( ! isViable() || ! _connectCalled )
             {
-                return Error_Abnormal;
+                return ClientErrors::Abnormal;
             }
 
             if( _outthread.isRunning() )
             {
-                return NoError;
+                return ClientErrors::None;
             }
         }
 
@@ -565,7 +565,7 @@ int CtiConnection::verifyConnection()
 
             if( ! isViable() )
             {
-                return Error_Abnormal;
+                return ClientErrors::Abnormal;
             }
 
             if( ! _outthread.isRunning() )
@@ -583,12 +583,12 @@ int CtiConnection::verifyConnection()
 
                         forceTermination();
 
-                        return Error_Abnormal;
+                        return ClientErrors::Abnormal;
                     }
                 }
             }
 
-            return NoError; // the thread has been restarted
+            return ClientErrors::None; // the thread has been restarted
         }
     }
     catch(...)
@@ -597,7 +597,7 @@ int CtiConnection::verifyConnection()
 
         Sleep(5000);
 
-        return Error_Abnormal;
+        return ClientErrors::Abnormal;
     }
 }
 

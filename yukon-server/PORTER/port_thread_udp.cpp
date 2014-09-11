@@ -514,7 +514,7 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Cti::Porter::UdpPortHandler::sendOutbound() - **** SENDTO: Checkpoint (error : " << pAddrInfo.getError() << " )**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        return PORTWRITE;
+        return ClientErrors::PortWrite;
     }
 
     /* This is not tested until I get a Lantronix device. */
@@ -530,12 +530,12 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
             dout << CtiTime() << " Cti::Porter::UdpPortHandler::sendOutbound() - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        return PORTWRITE;
+        return ClientErrors::PortWrite;
     }
 
     dr.last_outbound = CtiTime::now();
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

@@ -1420,7 +1420,7 @@ bool isPortDbChange(const CtiDBChangeMsg *pChg)
 
 INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 {
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
 
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();

@@ -125,7 +125,7 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
 
     dr.last_outbound = CtiTime::now();
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

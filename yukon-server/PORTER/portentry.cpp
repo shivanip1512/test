@@ -232,7 +232,7 @@ void ConnectionThread(StreamConnection *MyNexus)
                 dout << CtiTime() << " **** INVALID OUTMESS ****  Neither deviceid nor portid are defined in the OM request. Returning error to the requestor." << endl;
             }
 
-            SendError (OutMessage, MISPARAM);      // Message has been consumed!
+            SendError (OutMessage, ClientErrors::MissingParameter);      // Message has been consumed!
             continue;            // The for loop
         }
         else
@@ -272,7 +272,7 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
 {
     //Expiration default is 1 day.
     static UINT defaultExpirationSeconds = gConfigParms.getValueAsULong("DEFAULT_EXPIRATION_SECONDS", 86400);
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if( status = ValidateOutMessage(OutMessage) )
     {
@@ -330,7 +330,7 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
                 delete(OutMessage);
                 OutMessage = NULL;
 
-                return ErrorInvalidRequest;
+                return ClientErrors::InvalidRequest;
             }
         }
 
@@ -345,15 +345,15 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
             delete(OutMessage);
             OutMessage = NULL;
 
-            return ErrorInvalidRequest;
+            return ClientErrors::InvalidRequest;
         }
     }
     else
     {
-        return MemoryError;
+        return ClientErrors::Memory;
     }
 
-    return NoError; // This is A-OK.
+    return ClientErrors::None; // This is A-OK.
 }
 
 /*----------------------------------------------------------------------------*
@@ -372,11 +372,11 @@ INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev)
             dout << "  Device ID " << OutMessage->DeviceID << " not found " << endl;
         }
 
-        SendError (OutMessage, IDNF);
-        return IDNF;
+        SendError (OutMessage, ClientErrors::IdNotFound);
+        return ClientErrors::IdNotFound;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /*----------------------------------------------------------------------------*
@@ -388,7 +388,7 @@ INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev)
 
 INT ValidatePort(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     static CtiCriticalSection crit;
     static CtiPortSPtr last_port;
@@ -423,20 +423,20 @@ INT ValidatePort(OUTMESS *&OutMessage)
 
         if(Port->isInhibited())
         {
-            SendError (OutMessage, PORTINHIBITED);
-            status = PORTINHIBITED;
+            SendError (OutMessage, ClientErrors::PortInhibited);
+            status = ClientErrors::PortInhibited;
         }
         else if(Port->getPortQueueHandle() == NULL)
         {
-            SendError (OutMessage, BADPORT);
-            status = BADPORT;
+            SendError (OutMessage, ClientErrors::BadPort);
+            status = ClientErrors::BadPort;
         }
         else if( ! Port->isViable())
         {
             if( CtiConnection *conn = static_cast<CtiConnection *>(OutMessage->Request.Connection) )
             {
                 //  Provide an interim error so they know the comms channel is stalled.
-                const int error = ErrorPortNotInitialized;
+                const int error = ClientErrors::PortNotInitialized;
 
                 string error_string = "Error " + CtiNumStr(error) + ": " + GetErrorString(error);
 
@@ -453,8 +453,8 @@ INT ValidatePort(OUTMESS *&OutMessage)
     }
     else
     {
-        SendError (OutMessage, BADPORT);
-        status = BADPORT;
+        SendError (OutMessage, ClientErrors::BadPort);
+        status = ClientErrors::BadPort;
     }
 
     return status;
@@ -469,7 +469,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
  *----------------------------------------------------------------------------*/
 INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage->EventCode & BWORD)
     {
@@ -489,7 +489,7 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
 INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
@@ -503,8 +503,8 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         if(p711Info->QueueHandle == (HCTIQUEUE) NULL)
         {
             /* Check if calling process expects a response */
-            SendError (OutMessage, BADCCU);
-            return BADCCU;
+            SendError (OutMessage, ClientErrors::BadCcu);
+            return ClientErrors::BadCcu;
         }
 
         if(OutMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_LoadProfile)
@@ -523,8 +523,8 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         if(WriteQueue(p711Info->QueueHandle, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf("Error Writing to Queue for Port: %2hd Remote: %3hd\n", OutMessage->Port, OutMessage->Remote);
-            SendError (OutMessage, QUEUE_WRITE);
-            return QUEUE_WRITE;
+            SendError (OutMessage, ClientErrors::QueueWrite);
+            return ClientErrors::QueueWrite;
         }
         else
         {
@@ -565,16 +565,16 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         if(p711Info->ActinQueueHandle == (HCTIQUEUE) NULL)
         {
             /* Check if calling process expects a response */
-            SendError (OutMessage, BADCCU);
-            return BADCCU;
+            SendError (OutMessage, ClientErrors::BadCcu);
+            return ClientErrors::BadCcu;
         }
 
         /* Go ahead and send block to the appropriate ACTIN queue */
         if(WriteQueue (p711Info->ActinQueueHandle, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf("Error Writing to Queue for Port: %2hd  Remote: %3hd\n", OutMessage->Port, OutMessage->Remote);
-            SendError (OutMessage, QUEUE_WRITE);
-            return QUEUE_WRITE;
+            SendError (OutMessage, ClientErrors::QueueWrite);
+            return ClientErrors::QueueWrite;
         }
         else
         {
@@ -588,7 +588,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 
 INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     /* check to see if this can be used as RCONT */
     switch(devicetype)
@@ -610,7 +610,7 @@ INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype)
 
 INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiDeviceSPtr pDev = DeviceManager.getDeviceByID(SendOutMessage->DeviceID);
 
@@ -639,7 +639,7 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 
 INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
 {
-    INT            status            = NoError;
+    INT            status            = ClientErrors::None;
 
     //  if this is a nonqueued port, we will come out of this marked DTRAN
     ValidateEmetconMessage(OutMessage);
@@ -669,14 +669,14 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
             if(PortManager.writeQueue (OutMessage))
             {
                 printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
-                SendError(OutMessage, QUEUE_WRITE);
+                SendError(OutMessage, ClientErrors::QueueWrite);
             }
         }
         else  // QueueHandle(OutMessage->Port) is NOT available
         {
             /* if the calling process expects a response we must provide one */
-            SendError (OutMessage, BADPORT);
-            return BADPORT;
+            SendError (OutMessage, ClientErrors::BadPort);
+            return ClientErrors::BadPort;
         }
     }
 
@@ -685,14 +685,14 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
 
 INT RemoteComm(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     /* Now check if we know about the remote */
     if(OutMessage->Remote != 0xffff)
     {
         CtiDeviceSPtr Device = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
-        if((status = ValidateRemote(OutMessage, Device)) == NoError)
+        if((status = ValidateRemote(OutMessage, Device)) == ClientErrors::None)
         {
             status = ExecuteGoodRemote(OutMessage, Device);   // Does a WriteQueue eventually if all is OK.
         }
@@ -702,8 +702,8 @@ INT RemoteComm(OUTMESS *&OutMessage)
         if(PortManager.writeQueue(OutMessage))
         {
             printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
-            SendError (OutMessage, QUEUE_WRITE);
-            status = QUEUE_WRITE;
+            SendError (OutMessage, ClientErrors::QueueWrite);
+            status = ClientErrors::QueueWrite;
         }
     }
 
@@ -715,7 +715,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
 {
     extern CtiClientConnection VanGoghConnection;
 
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiRequestMsg pReq(OutMessage.DeviceID, OutMessage.Request.CommandStr);
     list< CtiMessage* >  vgList;
@@ -749,7 +749,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
         }
         catch(...)
         {
-            status = ErrorInvalidRequest;
+            status = ClientErrors::InvalidRequest;
 
             {
                 CtiTime NowTime;
@@ -818,7 +818,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
             dout << CtiTime() << " Device: " << pReq.DeviceId() << endl;
         }
 
-        status = IDNF;
+        status = ClientErrors::IdNotFound;
     }
 
     return status;

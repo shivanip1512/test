@@ -312,7 +312,7 @@ INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
     ULONG          QueueCount;
     CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev.get();
 
-    INT            status = NoError;
+    INT            status = ClientErrors::None;
 
 
     if(OutMessage->EventCode & RIPPLE)  /* Check if this is another control message, scans get through */
@@ -336,7 +336,7 @@ INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             }
 
             /* Force main routine to continue */
-            status = Error_Abnormal;
+            status = ClientErrors::Abnormal;
         }
     }
 
@@ -363,7 +363,7 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
         GlobalLCUDev = DeviceManager.RemoteGetPortRemoteEqual(lcu->getPortID(), MASTERGLOBAL);
     }
 
-    if(Result == ErrPortSimulated)
+    if(Result == ClientErrors::PortSimulated)
     {
         Sleep(500);    // Keep it from being insane!
     }
@@ -426,7 +426,7 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
         {
             if(CtiDeviceLCU::excludeALL()) CTISleep( CtiDeviceLCU::getSlowScanDelay() );
             QueueForScan( Dev, Result ? true : mayqueuescans );     // Make porter do a fast scan!
-            status = RETRY_SUBMITTED;                               // Keep the decode from happening on this stupid thing.
+            status = ClientErrors::RetrySubmitted;                               // Keep the decode from happening on this stupid thing.
         }
         else if( lcu->getNumberStarted() == 0 )
         {
@@ -453,7 +453,7 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
 
     if( !lcu->isGlobalLCU() )  /* Check if this decode is the result of a scan */
     {
-        if( Result == NoError || Result == ErrPortSimulated)            // Successful communication, or simulate
+        if( Result == ClientErrors::None || Result == ClientErrors::PortSimulated)            // Successful communication, or simulate
         {
             list< CtiMessage* >       vgList;
             CtiDeviceLCU::CtiLCUResult_t    resultCode = CtiDeviceLCU::eLCUInvalid;
@@ -482,9 +482,9 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
             else
             {
                 // We need to requeue this guy if possible.
-                if( RequeueLCUCommand(Dev) == RETRY_SUBMITTED )
+                if( RequeueLCUCommand(Dev) == ClientErrors::RetrySubmitted )
                 {
-                    status = RETRY_SUBMITTED;
+                    status = ClientErrors::RetrySubmitted;
 
                     Send4PartToDispatch ("Rmc", (char *)lcu->getName().data(), "Command Resubmited", "Missed Comm");
                     MPCPointSet ( MISSED, lcu, true );
@@ -807,7 +807,7 @@ INT MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /*
@@ -896,7 +896,7 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu)
 
 INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMESS *OutMessage, INT resultCode)
 {
-    INT  status = NoError;
+    INT  status = ClientErrors::None;
     bool wasTransmitting;
 
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)splcu.get();
@@ -961,7 +961,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
     case CtiDeviceLCU::eLCURequeueDeviceControl:
         {
             MPCPointSet ( MISSED, lcu, true );
-            if( RequeueLCUCommand( splcu ) == RETRY_SUBMITTED )
+            if( RequeueLCUCommand( splcu ) == ClientErrors::RetrySubmitted )
             {
                 /* This means we did not complete the message so log it */
                 Send4PartToDispatch ("Rre", (char*)lcu->getName().data(), "Command Resubmitted", "Injector Error");
@@ -981,7 +981,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
             {
                 DeviceManager.apply(applySetMissed, (void*)GlobalLCUDev.get()); // Does MPCPointSet ( MISSED, GlobalLCUDev, true ) on all LCUs
 
-                if( RequeueLCUCommand(GlobalLCUDev) == RETRY_SUBMITTED )
+                if( RequeueLCUCommand(GlobalLCUDev) == ClientErrors::RetrySubmitted )
                 {
                     Send4PartToDispatch ("Rlc", (char*)GlobalLCUDev->getName().data(), "Command Resubmitted", "Injector Error");
                 }
@@ -1131,7 +1131,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
         {
             if(GlobalLCUDev && ((CtiDeviceLCU*)(GlobalLCUDev.get()))->getLastControlMessage() && ((CtiDeviceLCU*)(GlobalLCUDev.get()))->getLastControlMessage()->Sequence)
             {
-                if( (status = RequeueLCUCommand(GlobalLCUDev)) == RETRY_SUBMITTED )
+                if( (status = RequeueLCUCommand(GlobalLCUDev)) == ClientErrors::RetrySubmitted )
                 {
                     Send4PartToDispatch ("Rmc", (char *)((CtiDeviceLCU*)(GlobalLCUDev.get()))->getName().data(), "Command Resubmitted", "Missed Comm 2");
                     MPCPointSet ( MISSED, lcu, true );
@@ -1139,7 +1139,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
             }
             else if(lcu != NULL && lcu->getLastControlMessage() != NULL && lcu->getLastControlMessage()->Sequence)
             {
-                if( (status = RequeueLCUCommand(splcu)) == RETRY_SUBMITTED )
+                if( (status = RequeueLCUCommand(splcu)) == ClientErrors::RetrySubmitted )
                 {
                     Send4PartToDispatch ("Rmc", (char *)lcu->getName().data(), "Command Resubmitted", "Missed Comm 3");
                     MPCPointSet ( MISSED, lcu, true );
@@ -1276,7 +1276,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
 /* try to requeue the command */
 INT RequeueLCUCommand( CtiDeviceSPtr splcu )
 {
-    int successflag = NoError;
+    int successflag = ClientErrors::None;
 
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)splcu.get();
 
@@ -1293,7 +1293,7 @@ INT RequeueLCUCommand( CtiDeviceSPtr splcu )
         {
             // we need to retry this message - put is back on queue
             OutMessage->Sequence--;
-            successflag = RETRY_SUBMITTED;
+            successflag = ClientErrors::RetrySubmitted;
 
             lcu->setNextCommandTime( CtiTime(0UL) );
             lcu->setExecutionProhibited(lcu->getID(), CtiTime(0UL));
@@ -1399,7 +1399,7 @@ INT ReportCompletionStateToLMGroup(CtiDeviceSPtr splcu)     // f.k.a. ReturnTrxI
 
 INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)splcu.get();
 
     if(!lcu->isGlobalLCU() && mayqueuescans)
@@ -1423,7 +1423,7 @@ INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
                         dout << CtiTime() << " Unable to queue for fast scan." << endl;
                     }
                     delete ScanOutMessage;
-                    status = QUEUE_WRITE;
+                    status = ClientErrors::QueueWrite;
                 }
             }
         }
@@ -1475,7 +1475,7 @@ INT QueueAllForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
         DeviceManager.apply(applyQueueForScanFalse, (void*)splcu.get());
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 void SubmitDataToDispatch  ( list< CtiMessage* >  &vgList )
@@ -1574,7 +1574,7 @@ INT SendTextToDispatch(PCHAR Source, PCHAR Message, string majorName, string min
 
     SubmitDataToDispatch( lst );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 void ProcessRippleGroupTrxID( LONG LMGIDControl, UINT TrxID)

@@ -59,8 +59,8 @@ protected:
     {
         device_record(const CtiDeviceSPtr &device_) :
             device(boost::static_pointer_cast<CtiDeviceSingle>(device_)),
-            device_status(NoError),
-            comm_status(NoError)
+            device_status(ClientErrors::None),
+            comm_status(ClientErrors::None)
         {}
 
         const CtiDeviceSingleSPtr device;

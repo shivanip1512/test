@@ -45,7 +45,7 @@ void CtiMCServer::dispatchThreadFunc()
 {
     auto_ptr<CtiMessage> msg;
 
-    while( _dispatchConnection.verifyConnection() == NoError )
+    while( _dispatchConnection.verifyConnection() == ClientErrors::None )
     {
         msg.reset(_dispatchConnection.ReadConnQue(1000*30));
 
@@ -190,7 +190,7 @@ void CtiMCServer::run()
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " Shutting down MACServer connection to dispatch" << endl;
     }
-    
+
     _dispatchConnection.close();
     _dispatchThread.join();
 

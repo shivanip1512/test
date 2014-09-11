@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_device_name_not_found)
 
     BOOST_REQUIRE(retMsg);
 
-    BOOST_CHECK_EQUAL(retMsg->Status(), IDNF);
+    BOOST_CHECK_EQUAL(retMsg->Status(), ClientErrors::IdNotFound);
     BOOST_CHECK_EQUAL(retMsg->ResultString(), "No device with name 'zaphod' exists in the database.");
 }
 
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_group_fail)
 
     BOOST_REQUIRE(retMsg);
 
-    BOOST_CHECK_EQUAL(retMsg->Status(), IDNF);
+    BOOST_CHECK_EQUAL(retMsg->Status(), ClientErrors::IdNotFound);
     BOOST_CHECK_EQUAL(retMsg->ResultString(), "Group '/fiddlesticks' found no target devices.");
 
     BOOST_CHECK_EQUAL(execList.size(), 0);

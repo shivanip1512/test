@@ -38,7 +38,7 @@ void PortPoolDialoutThread(void *pid)
     extern CtiClientConnection  VanGoghConnection;
     extern CtiPortManager PortManager;
 
-    INT            i, status = NoError;
+    INT            i, status = ClientErrors::None;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiPortSPtr    ParentPort( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
 
@@ -177,7 +177,7 @@ void PortPoolDialoutThread(void *pid)
                     dout << CtiTime() << " did not assign new deviceID" << endl;
                 }
 
-                SendError(OutMessage, IDNF);
+                SendError(OutMessage, ClientErrors::IdNotFound);
                 continue;
             }
         }
@@ -196,7 +196,7 @@ void PortPoolDialoutThread(void *pid)
 
                 try
                 {
-                    SendError(OutMessage, IDNF);
+                    SendError(OutMessage, ClientErrors::IdNotFound);
                 }
                 catch(...)
                 {
@@ -309,7 +309,7 @@ void PortPoolDialoutThread(void *pid)
 
 INT AllocateOutMessagesToChildPorts(CtiPortSPtr &ParentPort)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     try
     {

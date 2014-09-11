@@ -39,10 +39,14 @@ INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
 
     /* First check if the port or remote is inhibited */
     if(PortRecord->isInhibited())
-        return(PORTINHIBITED);
+    {
+        return ClientErrors::PortInhibited;
+    }
 
     if(RemoteRecord->isInhibited())
-        return(REMOTEINHIBITED);
+    {
+        return ClientErrors::RemoteInhibited;
+    }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -77,7 +81,7 @@ INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
 
     DisplayTraceList( PortRecord, traceList, true );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -87,14 +91,14 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
               USHORT Dest,      /* id of destination process */
               USHORT Function)  /* function to execute */
 {
-    INT status = (NoError);
+    INT status = (ClientErrors::None);
 
     OUTMESS *OutMessage;
 
     if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
-        return(MEMORY);
+        return ClientErrors::MemoryAccess;
     }
 
 
@@ -127,7 +131,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
         }
 
         delete (OutMessage);
-        status = QUEUE_WRITE;
+        status = ClientErrors::QueueWrite;
     }
     else
     {
@@ -151,18 +155,18 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
 /* routine to build an idlc RCONT function */
 INT IDLCRCont (CtiDeviceSPtr &Dev)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     OUTMESS *OutMessage;
     ULONG i;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     if(p711Info->PortQueueConts)
-        return NoError;
+        return ClientErrors::None;
 
     if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
-        return(MEMORY);
+        return ClientErrors::MemoryAccess;
     }
 
     OutMessage->DeviceID = Dev->getID();
@@ -203,7 +207,7 @@ INT IDLCRCont (CtiDeviceSPtr &Dev)
         printf ("Error Writing to Port Queue\n");
 
         delete (OutMessage);
-        status = QUEUE_WRITE;
+        status = ClientErrors::QueueWrite;
     }
     else
     {
@@ -218,7 +222,7 @@ INT IDLCRCont (CtiDeviceSPtr &Dev)
 /* routine to build an idlc RCOLQ function */
 INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     OUTMESS *OutMessage;
     ULONG i;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
@@ -228,7 +232,7 @@ INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         if((OutMessage = CTIDBG_new OUTMESS) == NULL)
         {
             printf ("Error Allocating Memory\n");
-            return(MEMORY);
+            return ClientErrors::MemoryAccess;
         }
 
         OutMessage->DeviceID = Dev->getID();
@@ -308,7 +312,7 @@ INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         {
             printf ("Error Writing to Port Queue\n");
             delete (OutMessage);
-            return(QUEUE_WRITE);
+            return ClientErrors::QueueWrite;
         }
         else
         {
@@ -325,7 +329,7 @@ INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
 /* Routine to Set CCU time sync values */
 INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT Period)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     USHORT Index;
     OUTMESS *OutMessage;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
@@ -334,7 +338,7 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
     if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
-        return(MEMORY);
+        return ClientErrors::MemoryAccess;
     }
 
     /* Load up the queue structure */
@@ -393,7 +397,7 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
 
         delete (OutMessage);
-        return(QUEUE_WRITE);
+        return ClientErrors::QueueWrite;
     }
     else
     {
@@ -401,7 +405,7 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
         p711Info->PortQueueConts++;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -416,7 +420,7 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
     if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
-        return(MEMORY);
+        return ClientErrors::MemoryAccess;
     }
 
     /* Load up the queue structure */
@@ -465,7 +469,7 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
 
         delete (OutMessage);
-        return(QUEUE_WRITE);
+        return ClientErrors::QueueWrite;
     }
     else
     {
@@ -473,7 +477,7 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
         p711Info->PortQueueConts++;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /* Excerpt from a technote on spread spectrum radios.
@@ -625,7 +629,7 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         if((OutMessage = CTIDBG_new OUTMESS) == NULL)
         {
             printf ("Error Allocating Memory\n");
-            return(MEMORY);
+            return ClientErrors::MemoryAccess;
         }
 
         /* Load up the queue structure */
@@ -736,7 +740,7 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         {
             printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
             delete (OutMessage);
-            return(QUEUE_WRITE);
+            return ClientErrors::QueueWrite;
         }
         else
         {
@@ -745,5 +749,5 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }

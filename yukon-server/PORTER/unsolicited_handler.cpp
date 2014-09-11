@@ -265,7 +265,7 @@ void UnsolicitedHandler::deleteDeviceRecord(const long device_id)
 
         if( itr != _active_devices.end() )
         {
-            purgeDeviceWork(*itr, IDNF);
+            purgeDeviceWork(*itr, ClientErrors::IdNotFound);
 
             _active_devices.erase(itr);
         }
@@ -310,7 +310,7 @@ void UnsolicitedHandler::updateDeviceRecord(const long device_id)
             if( itr != _active_devices.end() )
             {
                 //  erases it from _active_devices
-                purgeDeviceWork(*itr, DEVICEINHIBITED);
+                purgeDeviceWork(*itr, ClientErrors::DeviceInhibited);
 
                 _active_devices.erase(itr);
             }
@@ -342,7 +342,7 @@ void UnsolicitedHandler::handlePortChange(long port_id, int change_type)
 
 void UnsolicitedHandler::deletePort(void)
 {
-    purgePortWork(BADPORT);
+    purgePortWork(ClientErrors::BadPort);
 }
 
 
@@ -350,7 +350,7 @@ void UnsolicitedHandler::updatePort(void)
 {
     if( _port->isInhibited() )
     {
-        purgePortWork(PORTINHIBITED);
+        purgePortWork(ClientErrors::PortInhibited);
     }
 
     updatePortProperties();
@@ -441,7 +441,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
 {
     if( _port->isInhibited() )
     {
-        return handleDeviceError(om, PORTINHIBITED);
+        return handleDeviceError(om, ClientErrors::PortInhibited);
     }
 
     device_record *dr = getDeviceRecordById(om->DeviceID);
@@ -454,22 +454,22 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
             dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        return handleDeviceError(om, IDNF);
+        return handleDeviceError(om, ClientErrors::IdNotFound);
     }
 
     if( dr->device->isInhibited() )
     {
-        return handleDeviceError(om, DEVICEINHIBITED);
+        return handleDeviceError(om, ClientErrors::DeviceInhibited);
     }
 
     if( om->ExpirationTime && om->ExpirationTime < CtiTime::now() )
     {
-        return handleDeviceError(om, ErrRequestExpired);
+        return handleDeviceError(om, ClientErrors::RequestExpired);
     }
 
     if( isDeviceDisconnected(dr->device->getID()) )
     {
-        return handleDeviceError(om, ErrorDeviceNotConnected);
+        return handleDeviceError(om, ClientErrors::DeviceNotConnected);
     }
 
     if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
@@ -700,7 +700,7 @@ void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
     }
     else
     {
-        dr->comm_status = NoError;
+        dr->comm_status = ClientErrors::None;
     }
 
     //  if we have data, are expecting no data, or we have an error, decode right away
@@ -812,7 +812,7 @@ void UnsolicitedHandler::traceInbound( string address, int status, const unsigne
 
     if( status )
     {
-        if( status == ErrPortSimulated )
+        if( status == ClientErrors::PortSimulated )
         {
             mTrace.setBrightWhite();
             msg = " IN: (simulated, no bytes returned)";
@@ -840,7 +840,7 @@ void UnsolicitedHandler::traceInbound( string address, int status, const unsigne
         CtiPort::traceBytes(message, mCount, mTrace, _traceList);
     }
 
-    if( status && status != ErrPortSimulated )
+    if( status && status != ClientErrors::PortSimulated )
     {
         mTrace.setBrightRed();
         mTrace.setTrace( GetErrorString(status) );
@@ -867,7 +867,7 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
 
     unsigned long max_entries = port->queueCount();
 
-    while( max_entries-- && port->readQueue( &size, (PPVOID)&om, DCWW_NOWAIT, &priority, &entries) == NoError )
+    while( max_entries-- && port->readQueue( &size, (PPVOID)&om, DCWW_NOWAIT, &priority, &entries) == ClientErrors::None )
     {
         port->incQueueSubmittal();
 
@@ -1021,7 +1021,7 @@ void UnsolicitedHandler::processDeviceSingleInbound(device_record &dr)
         {
             if( dr.xfer.getInCountActual() < dr.xfer.getInCountExpected() )
             {
-                dr.comm_status = READTIMEOUT;
+                dr.comm_status = ClientErrors::ReadTimeout;
             }
         }
     }

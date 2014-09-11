@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 1);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 1);
-    BOOST_CHECK_EQUAL(status, NoError);
+    BOOST_CHECK_EQUAL(status, ClientErrors::None);
 
     status = callGenReply(reply, sizeof(reply), pInfo);
 
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 1);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 1);
-    BOOST_CHECK_EQUAL(status, FRAMEERR);
+    BOOST_CHECK_EQUAL(status, ClientErrors::Framing);
 
     /* Pretend a timeout occurred. Increment the sequencing values manually
        and flip the SequencingBroken value to true.                     */
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, true);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 1);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 3);
-    BOOST_CHECK_EQUAL(status, FRAMEERR);
+    BOOST_CHECK_EQUAL(status, ClientErrors::Framing);
 
     reply[2] = 0x56; // set the reply number to equal 3 so our sequences match!
     reply[18] = 0x5a;
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, true);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 2);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 3);
-    BOOST_CHECK_EQUAL(status, FRAMEERR);
+    BOOST_CHECK_EQUAL(status, ClientErrors::Framing);
 
     // We don't want sequencing to match here, so let's switch our reply
     // number to 4 to make that happen. We also need to enable NSADJ here.
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, true);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 2);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 4);
-    BOOST_CHECK_EQUAL(status, FRAMEERR);
+    BOOST_CHECK_EQUAL(status, ClientErrors::Framing);
 
     // We want sequencing to match again, so decrement our reply number.
     pInfo.RemoteSequence.Reply--;
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 2);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 4);
-    BOOST_CHECK_EQUAL(status, NoError);
+    BOOST_CHECK_EQUAL(status, ClientErrors::None);
 
     // Change the sequencing in the reply for the next test and
     // update the CRC.
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 6);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 0);
-    BOOST_CHECK_EQUAL(status, NoError);
+    BOOST_CHECK_EQUAL(status, ClientErrors::None);
 
     // Change our reply to something else.
     pInfo.RemoteSequence.Reply = 3;
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_gen_reply_sequencing_cases)
     BOOST_CHECK_EQUAL(pInfo.SequencingBroken, false);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Request, 6);
     BOOST_CHECK_EQUAL(pInfo.RemoteSequence.Reply, 0);
-    BOOST_CHECK_EQUAL(status, NoError);
+    BOOST_CHECK_EQUAL(status, ClientErrors::None);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

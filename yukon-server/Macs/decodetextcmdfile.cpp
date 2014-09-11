@@ -67,7 +67,7 @@ int decodeTextCommandFile(const string& fileName,
     string serialNum;
     string programming;
     int lineCnt=0, cmdCnt=0;
-    int retVal=NoError;
+    int retVal=ClientErrors::None;
 
     if( commandList == NULL )
     {
@@ -1646,7 +1646,7 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<std::string *>* co
     string serialNum;
     string programming;
     int lineCnt=0, cmdCnt=0;
-    int retVal=NoError;
+    int retVal=ClientErrors::None;
 
     if( commandList == NULL )
     {
@@ -1720,7 +1720,7 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<std::string *>* co
             }
         }
     }
-    if (retVal == NoError)
+    if (retVal == ClientErrors::None)
     {
         DeleteFile (fileName.c_str());
     }

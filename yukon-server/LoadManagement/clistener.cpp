@@ -277,7 +277,7 @@ void CtiLMClientListener::_check()
                     CtiLMConnectionVec::iterator itr = _connections.begin();
                     while( itr != _connections.end() )
                     {
-                        if( (*itr)->verifyConnection() != NoError )
+                        if( (*itr)->verifyConnection() != ClientErrors::None )
                         {
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {

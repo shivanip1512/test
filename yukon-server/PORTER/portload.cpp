@@ -95,7 +95,7 @@ INT LoadPortRoutes (USHORT Port)
 
     for_each(devices.begin(), devices.end(), loadRemoteRoutes());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /* Routine to load routes into specified CCU */
@@ -118,7 +118,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
             if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
             {
-                return(MEMORY);
+                return ClientErrors::MemoryAccess;
             }
 
             if( !ccu->buildCommand(OutMessage, Ccu721Device::Command_LoadRoutes) )
@@ -143,7 +143,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 {
                     printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                     delete (OutMessage);
-                    return(QUEUE_WRITE);
+                    return ClientErrors::QueueWrite;
                 }
             }
         }
@@ -178,7 +178,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                         /* Allocate some memory */
                         if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
                         {
-                            return(MEMORY);
+                            return ClientErrors::MemoryAccess;
                         }
 
                         /* Load up the queue structure */
@@ -313,7 +313,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 /* Allocate some memory for additional functions */
                 if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
                 {
-                    return(MEMORY);
+                    return ClientErrors::MemoryAccess;
                 }
 
                 /* Load up the queue structure */
@@ -478,7 +478,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 {
                     printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                     delete (OutMessage);
-                    return(QUEUE_WRITE);
+                    return ClientErrors::QueueWrite;
                 }
                 else
                 {
@@ -488,5 +488,5 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
             }
         }
     }
-    return NoError;
+    return ClientErrors::None;
 }

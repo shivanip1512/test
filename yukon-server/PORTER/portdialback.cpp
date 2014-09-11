@@ -31,7 +31,7 @@ void PortDialbackThread(void *pid)
     extern CtiPortManager       PortManager;
     extern CtiDeviceManager     DeviceManager;
 
-    INT            i, status = NoError;
+    INT            i, status = ClientErrors::None;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiPortSPtr    Port( PortManager.getPortById( portid ) );      // Bump the reference count on the shared object!
     DWORD oldmask = 0, inmask = 0;

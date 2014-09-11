@@ -766,7 +766,7 @@ INT VSend (VSTRUCT *VSt,
       break;
    }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -803,10 +803,10 @@ INT VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << "**** ADD CODE HERE Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
-      return NoError; //   return(VersacomSend (&OutMessage));
+      return ClientErrors::None; //   return(VersacomSend (&OutMessage));
    }
 
-   return Error_Abnormal;
+   return ClientErrors::Abnormal;
 }
 
 
@@ -822,7 +822,7 @@ INT GetString (FILE *File, PCHAR Buffer, ULONG Length)
       if(Buffer[i] == (BYTE) EOF)
       {
          Buffer[i] = '\0';
-         return NoError;
+         return ClientErrors::None;
       }
 
       if(Buffer[i] == '\r' || Buffer[i] == '\n')
@@ -837,14 +837,14 @@ INT GetString (FILE *File, PCHAR Buffer, ULONG Length)
             if(Buffer[i] == (BYTE) EOF)
             {
                Buffer[i] = '\0';
-               return NoError;
+               return ClientErrors::None;
             }
 
             continue;
          }
 
          Buffer[i] = '\0';
-         return NoError;
+         return ClientErrors::None;
       }
    }
 
@@ -856,7 +856,7 @@ INT GetString (FILE *File, PCHAR Buffer, ULONG Length)
       Save = fgetc (File);
    } while(Save != '\r' && Save != '\n' && Save != (BYTE) EOF);
 
-   return(!(NoError));
+   return(!(ClientErrors::None));
 }
 
 

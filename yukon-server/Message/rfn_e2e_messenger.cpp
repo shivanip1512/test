@@ -151,13 +151,13 @@ namespace {
     typedef E2eDataConfirmMsg::ReplyType RT;
 
     const std::map<E2eDataConfirmMsg::ReplyType::type, YukonError_t> ConfirmErrors = boost::assign::map_list_of
-        (RT::DESTINATION_DEVICE_ADDRESS_UNKNOWN     , ErrorUnknownAddress             )
-        (RT::DESTINATION_NETWORK_UNAVAILABLE        , ErrorNetworkUnavailable         )
-        (RT::PMTU_LENGTH_EXCEEDED                   , ErrorRequestPacketTooLarge      )
-        (RT::E2E_PROTOCOL_TYPE_NOT_SUPPORTED        , ErrorProtocolUnsupported        )
-        (RT::NETWORK_SERVER_IDENTIFIER_INVALID      , ErrorInvalidNetworkServerId     )
-        (RT::APPLICATION_SERVICE_IDENTIFIER_INVALID , ErrorInvalidApplicationServiceId)
-        (RT::NETWORK_LOAD_CONTROL                   , ErrorNetworkLoadControl         )
+        (RT::DESTINATION_DEVICE_ADDRESS_UNKNOWN     , ClientErrors::E2eUnknownAddress             )
+        (RT::DESTINATION_NETWORK_UNAVAILABLE        , ClientErrors::E2eNetworkUnavailable         )
+        (RT::PMTU_LENGTH_EXCEEDED                   , ClientErrors::E2eRequestPacketTooLarge      )
+        (RT::E2E_PROTOCOL_TYPE_NOT_SUPPORTED        , ClientErrors::E2eProtocolUnsupported        )
+        (RT::NETWORK_SERVER_IDENTIFIER_INVALID      , ClientErrors::E2eInvalidNetworkServerId     )
+        (RT::APPLICATION_SERVICE_IDENTIFIER_INVALID , ClientErrors::E2eInvalidApplicationServiceId)
+        (RT::NETWORK_LOAD_CONTROL                   , ClientErrors::E2eNetworkLoadControl         )
         ;
 
 }
@@ -189,7 +189,7 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg, Conf
         {
             const boost::optional<YukonError_t> error = mapFind(ConfirmErrors, confirmMsg->replyType);
 
-            c.error = (error ? *error : UnknownError);
+            c.error = (error ? *error : ClientErrors::Unknown);
         }
 
         callback(c);

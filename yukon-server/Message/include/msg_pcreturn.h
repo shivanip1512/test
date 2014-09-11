@@ -45,7 +45,7 @@ public:
     CtiReturnMsg(long device_id,
                  const PIL_ECHO &pil_echo,
                  const std::string &result_string = std::string(),
-                 int status = NoError);
+                 int status = ClientErrors::None);
 
     CtiReturnMsg(const CtiReturnMsg &aRef);
     virtual ~CtiReturnMsg();

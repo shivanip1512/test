@@ -256,8 +256,8 @@ void PilServer::mainThread()
                                 new CtiReturnMsg(
                                         req->DeviceId(),
                                         req->CommandString(),
-                                        GetErrorString(ErrRequestExpired),
-                                        ErrRequestExpired,
+                                        GetErrorString(ClientErrors::RequestExpired),
+                                        ClientErrors::RequestExpired,
                                         req->RouteId(),
                                         req->MacroOffset(),
                                         req->AttemptNum(),
@@ -683,7 +683,7 @@ struct InMessageResultProcessor : Devices::DeviceHandler
         dout << CtiTime() << " InMessageResultProcessor called on RFN device:" << endl;
         dout << dev.getName() << " / " << dev.getID() << endl;
 
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 };
 
@@ -719,7 +719,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
                     InMessage.DeviceID,
                     InMessage.Return.CommandStr,
                     "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage.DeviceID),
-                    IDNF,
+                    ClientErrors::IdNotFound,
                     InMessage.Return.RouteID,
                     InMessage.Return.RetryMacroOffset,
                     InMessage.Return.Attempt,
@@ -813,7 +813,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
         dout << CtiTime() << " RfnDeviceResultProcessor called on non-RFN device:" << endl;
         dout << dev.getName() << " / " << dev.getID() << endl;
 
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     int execute(Devices::RfnDevice &dev)
@@ -913,7 +913,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
                         result.request.deviceId,
                         result.request.commandString,
                         "Device lookup failed. ID = " + CtiNumStr(result.request.deviceId),
-                        IDNF));
+                        ClientErrors::IdNotFound));
 
         idnf_msg->setGroupMessageId(result.request.groupMessageId);
         idnf_msg->setUserMessageId (result.request.userMessageId);
@@ -1236,10 +1236,10 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
 
         PorterSystemMessageQueue.putQueue(tempReqMsg.release());
 
-        return NoError;
+        return ClientErrors::None;
     }
 
-    int status = NoError;
+    int status = ClientErrors::None;
 
     list< CtiMessage* >  vgList;
     list< CtiMessage* >  retList;
@@ -1336,7 +1336,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 vgList.splice(vgList.end(), executer.vgList);
 
-                if(status && status != DEVICEINHIBITED)
+                if(status && status != ClientErrors::DeviceInhibited)
                 {
                     CtiTime NowTime;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1346,7 +1346,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
                     dout << NowTime << "   Status = " << status << ": " << GetErrorString(status) << endl;
                 }
 
-                status = NoError;
+                status = ClientErrors::None;
             }
             else
             {
@@ -1363,7 +1363,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
                     CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
                                                                   pExecReq->CommandString(),
                                                                   "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(pExecReq->DeviceId()),
-                                                                  IDNF,
+                                                                  ClientErrors::IdNotFound,
                                                                   pExecReq->RouteId(),
                                                                   pExecReq->MacroOffset(),
                                                                   pExecReq->AttemptNum(),
@@ -1461,7 +1461,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
 
 int PilServer::executeMulti(const CtiMultiMsg *pMulti)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     CtiMessage *pMyMsg = NULL;
 
@@ -1754,7 +1754,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
                         pReq->DeviceId(),
                         pReq->CommandString(),
                         "No device with name '" + deviceName + "' exists in the database.",
-                        IDNF,
+                        ClientErrors::IdNotFound,
                         pReq->RouteId(),
                         pReq->MacroOffset(),
                         pReq->AttemptNum(),
@@ -1864,7 +1864,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
                            pReq->DeviceId(),
                             pReq->CommandString(),
                             "Group '" + group_name + "' found no target devices.",
-                            IDNF,
+                            ClientErrors::IdNotFound,
                             pReq->RouteId(),
                             pReq->MacroOffset(),
                             pReq->AttemptNum(),
@@ -2026,7 +2026,7 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
 
 INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     int i;
     CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
     // CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
@@ -2122,7 +2122,7 @@ INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, li
         execList.push_back( (CtiRequestMsg*)Req.replicateMessage() );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 void PilServer::putQueue(CtiMessage *Msg)
@@ -2231,7 +2231,7 @@ static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdev
  */
 int PilServer::reportClientRequests(const CtiDeviceBase &Dev, const CtiCommandParser &parse, const string &requestingUser, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     long pid = SYS_PID_PORTER;
     static unsigned soe = 0;
@@ -2266,7 +2266,7 @@ int PilServer::reportClientRequests(const CtiDeviceBase &Dev, const CtiCommandPa
                 const CtiReturnMsg *&pcRet = (const CtiReturnMsg*&)*itr;
 
                 addl = Dev.getName() + " / (" + CtiNumStr(Dev.getID()) + "): " + pcRet->CommandString();
-                if(pcRet->Status() == NoError)
+                if(pcRet->Status() == ClientErrors::None)
                     text = string("Success: ");
                 else
                     text = string("Failed (Err ") + CtiNumStr(pcRet->Status()) + "): ";

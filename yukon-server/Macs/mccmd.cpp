@@ -879,7 +879,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 {
     int commandLimit=0;
     int commandsPerTime=0;
-    int interval=1,decodeResult=NoError;
+    int interval=1,decodeResult=ClientErrors::None;
     CHAR newFileName[100];
     int retVal = TCL_OK;
     bool dsm2ImportFlag = false;
@@ -1092,7 +1092,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
                 // we wait this to keep running even if it fails
                 VanGoghConnection->WriteConnQue(msg);
-                decodeResult = NoError;
+                decodeResult = ClientErrors::None;
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL)
             {
@@ -1528,12 +1528,12 @@ static bool isBreakStatus( int status )
 {
     switch( status )
     {
-        case DEVICEINHIBITED:
-        case NoMethod:
-        case ErrorInvalidSSPEC:
-        case ErrorVerifySSPEC:
-        case IDNF: // IDNF means not in the database
-        case ErrorCommandAlreadyInProgress:
+        case ClientErrors::DeviceInhibited:
+        case ClientErrors::NoMethod:
+        case ClientErrors::InvalidSSPEC:
+        case ClientErrors::VerifySSPEC:
+        case ClientErrors::IdNotFound: // IDNF means not in the database
+        case ClientErrors::CommandAlreadyInProgress:
             return false;
 
         default:
@@ -1790,7 +1790,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
             WriteOutput(current.c_str());
         }
 
-        if( bad_result.second.status == IDNF )
+        if( bad_result.second.status == ClientErrors::IdNotFound )
         {
             dev_name = bad_result.second.deviceName;
         }
@@ -1832,7 +1832,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
             WriteOutput(current.c_str());
         }
 
-        resultQueue.push_back(CtiTableMeterReadLog(0, orphan_result.first, 0, ErrorMACSTimeout, orphan_result.second.time));
+        resultQueue.push_back(CtiTableMeterReadLog(0, orphan_result.first, 0, ClientErrors::MacsTimeout, orphan_result.second.time));
 
         GetDeviceName(orphan_result.first,dev_name);
         next_line = dev_name;
@@ -1898,7 +1898,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
 
     long dev_id = msg->DeviceId();
 
-    if( msg->Status() == IDNF )
+    if( msg->Status() == ClientErrors::IdNotFound )
     {
         // Either the Device ID or the Device Name was wacky and we couldn't find it in the database.
         // Determine which and act accordingly...
@@ -1938,7 +1938,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
         data.time = msg->getMessageTime();
         data.status = msg->Status();
 
-        if( msg->Status() == DEVICEINHIBITED )
+        if( msg->Status() == ClientErrors::DeviceInhibited )
         {
             //Ignore it!
         }
@@ -2351,7 +2351,7 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return Error_Abnormal;
+            return ClientErrors::Abnormal;
         }
 
         try
@@ -2392,5 +2392,5 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
 
     resultQueue.clear();
 
-    return NoError;
+    return ClientErrors::None;
 }

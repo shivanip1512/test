@@ -191,7 +191,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
 /* Routine to generate filler messages */
 static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     ULONG i, j;
     OUTMESS OutMessage;
 
@@ -270,13 +270,13 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                     // Someone else did all the parsing and is just needs building
                                     // Prime the Protocol device with the vstruct, and call the update routine
-                                    if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == NoError)
+                                    if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == ClientErrors::None)
                                     {
                                         status = Versacom.updateVersacomMessage();
                                     }
 
 
-                                    if(status == NoError)
+                                    if(status == ClientErrors::None)
                                     {
                                         OutMessage.TimeOut   = 2;
                                         OutMessage.InLength  = -1;
@@ -320,7 +320,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                             }
                                             else
                                             {
-                                                status = MEMORY;
+                                                status = ClientErrors::MemoryAccess;
                                             }
                                         }
                                     }
@@ -428,13 +428,13 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                     // Someone else did all the parsing and is just needs building
                                     // Prime the Protocol device with the vstruct, and call the update routine
-                                    if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == NoError)
+                                    if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == ClientErrors::None)
                                     {
                                         status = Versacom.updateVersacomMessage();
                                     }
 
 
-                                    if(status == NoError)
+                                    if(status == ClientErrors::None)
                                     {
                                         OutMessage.TimeOut   = 2;
                                         OutMessage.InLength  = -1;
@@ -478,7 +478,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                             }
                                             else
                                             {
-                                                status = MEMORY;
+                                                status = ClientErrors::MemoryAccess;
                                             }
                                         }
                                     }

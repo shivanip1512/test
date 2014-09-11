@@ -240,7 +240,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                         new RfnDeviceResult(
                                     activeRequest.request,
                                     activeRequest.request.command->decodeCommand(CtiTime::now(), activeRequest.response),
-                                    NoError));
+                                    ClientErrors::None));
             }
             catch( Devices::Commands::DeviceCommand::CommandException &ce )
             {
@@ -414,7 +414,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                 }
             }
 
-            YukonError_t error = UnknownError;
+            YukonError_t error = ClientErrors::Unknown;
 
             switch( activeRequest.status )
             {
@@ -425,10 +425,10 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                     }
                     break;
                 case ActiveRfnRequest::PendingConfirm:
-                    error = ErrorNetworkManagerTimeout;
+                    error = ClientErrors::NetworkManagerTimeout;
                     break;
                 case ActiveRfnRequest::PendingReply:
-                    error = ErrorRequestTimeout;
+                    error = ClientErrors::E2eRequestTimeout;
                     break;
             }
 
@@ -527,7 +527,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
             {
                 throw Devices::Commands::DeviceCommand::CommandException(
-                        ErrorRequestPayloadTooLarge,
+                        ClientErrors::E2eRequestPayloadTooLarge,
                         "Request payload too large (" + CtiNumStr(rfnRequest.size()) + ")");
             }
 

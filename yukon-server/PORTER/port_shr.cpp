@@ -93,29 +93,29 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
 
    switch(EventCode)
    {
-   case READTIMEOUT :
-   case NODCD :
+   case ClientErrors::ReadTimeout :
+   case ClientErrors::NoDcd :
       retValue = CtiPortShare::PSHR_ERROR_NOREPLY;
       break;
-   case BADSEQUENCE :
+   case ClientErrors::BadSequence :
       retValue = CtiPortShare::PSHR_ERROR_SEQUENCE;
       break;
-   case FRAMEERR :
+   case ClientErrors::Framing :
       retValue = CtiPortShare::PSHR_ERROR_FRAME;
       break;
-   case BADCRC:
+   case ClientErrors::BadCrc:
       retValue = CtiPortShare::PSHR_ERROR_BADCRC;
       break;
-   case BADLENGTH:
+   case ClientErrors::BadLength:
       retValue = CtiPortShare::PSHR_ERROR_BADLENGTH;
       break;
-   case ERRUNKNOWN:
+   case ClientErrors::Unknown:
       retValue = CtiPortShare::PSHR_ERROR_UNKNOWN;
       break;
-   case REMOTEINHIBITED:
+   case ClientErrors::RemoteInhibited:
       retValue = CtiPortShare::PSHR_ERROR_RTU_DISABLED;
       break;
-   case PORTINHIBITED:
+   case ClientErrors::PortInhibited:
       retValue = CtiPortShare::PSHR_ERROR_PORT_DISABLED;
       break;
    default:

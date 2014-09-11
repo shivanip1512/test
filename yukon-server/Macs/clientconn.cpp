@@ -49,7 +49,7 @@ void CtiMCConnection::start()
 ---------------------------------------------------------------------------*/
 bool CtiMCConnection::isValid()
 {
-    if( _connection.verifyConnection() != NoError )
+    if( _connection.verifyConnection() != ClientErrors::None )
     {
         _valid = FALSE;
     }

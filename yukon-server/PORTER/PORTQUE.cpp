@@ -279,7 +279,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
     CtiDeviceCCU *ccu = (CtiDeviceCCU *)Dev.get();
 
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     ULONG i;
     INMESS ResultMessage;
     USHORT QueTabEnt;
@@ -301,7 +301,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
     {
         if(ErrorReturnCode                          &&
            InMessage.Sequence & 0x8000 &&
-           (ErrorReturnCode != REQACK || OutMessage->Retry == 0))
+           (ErrorReturnCode != ClientErrors::ReqackFlagSet || OutMessage->Retry == 0))
         {
             return DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
         }
@@ -333,7 +333,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         }
     }
 
-    if(ErrorReturnCode && ErrorReturnCode != REQACK)     // Handle non-Sequence & 0x8000 (queued entries)
+    if(ErrorReturnCode && ErrorReturnCode != ClientErrors::ReqackFlagSet)     // Handle non-Sequence & 0x8000 (queued entries)
     {
         return(ErrorReturnCode);
     }
@@ -792,11 +792,11 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 dout << CtiTime() << " REQACK'd LGRPQ message has been requeued for retry on " << Dev->getName() << endl;
             }
 
-            return RETRY_SUBMITTED;
+            return ClientErrors::RetrySubmitted;
         }
         else
         {
-            return REQACK;
+            return ClientErrors::ReqackFlagSet;
         }
 
     }
@@ -876,7 +876,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 /* see if we have any interest in decoding the results */
                 if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
                 {
-                    ResultMessage.ErrorCode           = NoError;
+                    ResultMessage.ErrorCode           = ClientErrors::None;
 
                     ResultMessage.DeviceID        = InMessage.DeviceID;
                     ResultMessage.MessageFlags    = InMessage.MessageFlags;
@@ -904,7 +904,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     if((InMessage.Buffer.InMessage[Offset++] >> 4) != 15)
                     {
                         /* Nope */
-                        ResultMessage.ErrorCode = QUEUEEXEC;
+                        ResultMessage.ErrorCode = ClientErrors::QueueExec;
                         Offset = Offset + setL - 5;
                     }
                     else
@@ -940,16 +940,16 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                             switch(InMessage.Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
-                                ResultMessage.ErrorCode = NOATTEMPT;
+                                ResultMessage.ErrorCode = ClientErrors::NoAttempt;
                                 break;
                             case 1:
-                                ResultMessage.ErrorCode = NoError;
+                                ResultMessage.ErrorCode = ClientErrors::None;
                                 break;
                             case 2:
-                                ResultMessage.ErrorCode = ROUTEFAILED;
+                                ResultMessage.ErrorCode = ClientErrors::RouteFailed;
                                 break;
                             case 3:
-                                ResultMessage.ErrorCode = TRANSFAILED;
+                                ResultMessage.ErrorCode = ClientErrors::TransmitterFailed;
                                 break;
                             }
                             /* Skip next byte */
@@ -962,15 +962,15 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                             switch(InMessage.Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
-                                ResultMessage.ErrorCode = NOATTEMPT;
+                                ResultMessage.ErrorCode = ClientErrors::NoAttempt;
                                 break;
                             case 1:
                                 break;
                             case 2:
-                                ResultMessage.ErrorCode = ROUTEFAILED;
+                                ResultMessage.ErrorCode = ClientErrors::RouteFailed;
                                 break;
                             case 3:
-                                ResultMessage.ErrorCode = TRANSFAILED;
+                                ResultMessage.ErrorCode = ClientErrors::TransmitterFailed;
                                 break;
                             }
                             /* Skip next byte */
@@ -983,15 +983,15 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                             switch(InMessage.Buffer.InMessage[Offset++] >> 6)
                             {
                             case 0:
-                                ResultMessage.ErrorCode = NOATTEMPT;
+                                ResultMessage.ErrorCode = ClientErrors::NoAttempt;
                                 break;
                             case 1:
                                 break;
                             case 2:
-                                ResultMessage.ErrorCode = ROUTEFAILED;
+                                ResultMessage.ErrorCode = ClientErrors::RouteFailed;
                                 break;
                             case 3:
-                                ResultMessage.ErrorCode = TRANSFAILED;
+                                ResultMessage.ErrorCode = ClientErrors::TransmitterFailed;
                                 break;
                             }
                             /* Skip next byte */
@@ -1024,14 +1024,14 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
                             if(InMessage.Buffer.InMessage[Offset] & 0x0040)
                             {
-                                ResultMessage.ErrorCode = EWORDRCV;
+                                ResultMessage.ErrorCode = ClientErrors::EWordReceived;
                                 //  The CCU doesn't pass along the E word, so make sure the optional repeater info fields are cleared out
                                 ResultMessage.Buffer.RepeaterError.ESt = 0;
                                 ResultMessage.Buffer.RepeaterError.Details = 0;
                             }
 
                             if(InMessage.Buffer.InMessage[Offset++] & 0x0080)
-                                ResultMessage.ErrorCode = DLCTIMEOUT;
+                                ResultMessage.ErrorCode = ClientErrors::DlcTimeout;
 
                             Offset++;
 
@@ -1073,7 +1073,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                                  << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
                             dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                         }
-                        status = SOCKWRITE;
+                        status = ClientErrors::SocketWrite;
                     }
 
                     //We had a comm error and need to report it.
@@ -1359,7 +1359,7 @@ INT QueueFlush (CtiDeviceSPtr Dev)
         InterlockedExchange(&(pInfo->FreeSlots), MAXQUEENTRIES);
         pInfo->clearStatus(INLGRPQ);            // 20050506 CGP on a wh.
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1383,7 +1383,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << tempstr << endl;
         }
-        return Error_Abnormal;
+        return ClientErrors::Abnormal;
     }
 
     if(Count)
@@ -1401,7 +1401,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " " << tempstr << endl;
                     }
-                    return(QUEUE_READ);
+                    return ClientErrors::QueueRead;
                 }
                 delete (MyOutMessage);
                 _snprintf(tempstr, 99,"Broadcast Entry Received on Queue Queue for Port:  %hd\n", Dev->getPortID());
@@ -1410,7 +1410,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                     dout << CtiTime() << " " << tempstr << endl;
                 }
             }
-            return NoError;
+            return ClientErrors::None;
         }
 
         /* Check how many entries we can handle on this CCU */
@@ -1448,7 +1448,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Error Reading Device Queue of " << Dev->getName() << endl;
                 }
-                return(QUEUE_READ);
+                return ClientErrors::QueueRead;
             }
 
             /* if this is first in the group get memory for it */
@@ -1460,7 +1460,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Error Allocating Memory" << endl;
                     }
-                    return(MEMORY);
+                    return ClientErrors::MemoryAccess;
                 }
 
                 OutMessage->Priority       = Priority;
@@ -1678,7 +1678,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT BuildActinShed (CtiDeviceSPtr Dev)
@@ -1700,7 +1700,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << tempstr << endl;
         }
-        return(QUEUE_READ);
+        return ClientErrors::QueueRead;
     }
 
     while(Count)
@@ -1713,7 +1713,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
             }
-            return(QUEUE_READ);
+            return ClientErrors::QueueRead;
         }
 
         if((OutMessage = CTIDBG_new OUTMESS(*MyOutMessage)) == NULL)
@@ -1723,7 +1723,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
             }
-            return(MEMORY);
+            return ClientErrors::MemoryAccess;
         }
 
         /* Seed the priority entry */
@@ -1782,7 +1782,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
                 dout << CtiTime() << " " << tempstr << endl;
             }
 
-            return(QUEUE_WRITE);
+            return ClientErrors::QueueWrite;
         }
         else
         {
@@ -1798,11 +1798,11 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
             }
-            return(QUEUE_READ);
+            return ClientErrors::QueueRead;
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1810,7 +1810,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 /* Dequeues only those entries marked as having QueueEntrySequence equal to the inbound message sequence*/
 YukonError_t DeQueue (INMESS &InMessage)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     struct timeb TimeB;
     ULONG i;
     INMESS ResultMessage;
@@ -1827,7 +1827,7 @@ YukonError_t DeQueue (INMESS &InMessage)
     /* Make sure this is one of em */
     if(!(InMessage.Sequence & 0x8000))
     {
-        return Error_Abnormal;
+        return ClientErrors::Abnormal;
     }
 
     CtiDeviceSPtr TransmitterDev = DeviceManager.getDeviceByID(InMessage.DeviceID);
@@ -1887,7 +1887,7 @@ YukonError_t DeQueue (INMESS &InMessage)
                                      << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
                                 dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
                             }
-                            status = SOCKWRITE;
+                            status = ClientErrors::SocketWrite;
                         }
                     }
                     /* Now free up the table entry */
@@ -1933,7 +1933,7 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
     }
 
     OutMessage->Request.RetryMacroOffset = MacroOffset::none; //Do not resend this on macro route!
-    SendError( OutMessage, ErrorQueuePurged );
+    SendError( OutMessage, ClientErrors::QueuePurged );
     // delete OutMessage;
 
     return;
@@ -1954,11 +1954,11 @@ void cancelOutMessages(void *doSendError, void* om)
     if( doSendError != 0 )
     {
         OutMessage->Request.Connection = NULL;
-        SendError( OutMessage, ErrorRequestCancelled );
+        SendError( OutMessage, ClientErrors::RequestCancelled );
     }
     else
     {
-        PorterStatisticsManager.newCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ErrorRequestCancelled, OutMessage->MessageFlags);
+        PorterStatisticsManager.newCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ClientErrors::RequestCancelled, OutMessage->MessageFlags);
         delete OutMessage;
         OutMessage = 0;
     }
@@ -1985,7 +1985,7 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
             InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
             InMessage.Time          = LongTime();
             InMessage.MilliTime     = 0;
-            InMessage.ErrorCode         = QUEUEFLUSHED;                 // Indicates the result of the request.. The CCU queue was blown away!
+            InMessage.ErrorCode         = ClientErrors::CcuQueueFlushed;                 // Indicates the result of the request.. The CCU queue was blown away!
         }
         catch(...)
         {
@@ -2047,5 +2047,5 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }

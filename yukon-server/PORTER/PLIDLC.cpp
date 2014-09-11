@@ -61,7 +61,7 @@ INT PreIDLC (PBYTE   Message,        /* resulting command string */
    /* command */
    Message[5] = (UCHAR)Command;
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -147,7 +147,7 @@ INT PreUnSequenced (PBYTE  Message,        /* resulting command string */
       break;
    }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -164,7 +164,7 @@ INT PostIDLC (PBYTE    Message,       /* message and result */
    Message[Length] = HIBYTE(i);
    Message[Length+1] = LOBYTE(i);
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -185,13 +185,13 @@ YukonError_t GenReply (PBYTE Reply,            /* reply message */
 
    if(Save != NCrcCalc_C ((Reply+1), Length-3))
    {
-      return(BADCRC);
+      return ClientErrors::BadCrc;
    }
 
    if(RemoteAddress != (Reply[1] >> 1))
    {
       cerr <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
-      return(BADCCU);
+      return ClientErrors::BadCcu;
    }
 
    *ReqNum = (Reply[2] >> 5) & 0x07;
@@ -211,7 +211,7 @@ YukonError_t GenReply (PBYTE Reply,            /* reply message */
        }
        else
        {
-           return(FRAMEERR);
+           return ClientErrors::Framing;
        }
    }
    else if(slaveSequenceAdjusted)
@@ -220,7 +220,7 @@ YukonError_t GenReply (PBYTE Reply,            /* reply message */
    }
    else if(!sequencesMatch)
    {
-       return(FRAMEERR);
+       return ClientErrors::Framing;
    }
 
    if(++(*RepNum) >= 8)
@@ -231,7 +231,7 @@ YukonError_t GenReply (PBYTE Reply,            /* reply message */
    /* check for a reqack */
    if(Reply[6] & STAT_REQACK)
    {
-      return(REQACK);
+      return ClientErrors::ReqackFlagSet;
    }
 
    /* Make sure the command was echoed back properly */
@@ -239,10 +239,10 @@ YukonError_t GenReply (PBYTE Reply,            /* reply message */
    {
       /* We didn't get back the message we were expecting,
          probably due to an earlier timeout - try again */
-      return(READTIMEOUT);
+      return ClientErrors::ReadTimeout;
    }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -259,9 +259,11 @@ YukonError_t RTUReply (PBYTE Reply, USHORT Length)
 
    /* check the crc */
    if(Save != NCrcCalc_C ((Reply+1), Length-3))
-      return(BADCRC);
+   {
+      return ClientErrors::BadCrc;
+   }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -273,7 +275,7 @@ YukonError_t RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, 
    if(RemoteAddress != (Message[1] >> 1))
    {
       cerr <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
-      return(BADCCU);
+      return ClientErrors::BadCcu;
    }
 
    Length1 = Message[3];
@@ -293,12 +295,14 @@ YukonError_t RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, 
    else
    {
       if(Length1 != (Length2 + 3))
-         return(FRAMEERR);
+      {
+         return ClientErrors::Framing;
+      }
 
       *ReadLength = Length2 + 2;
    }
 
-   return NoError;
+   return ClientErrors::None;
 
 }
 
@@ -312,13 +316,13 @@ YukonError_t IDLCRej (PBYTE Reply, PUSHORT ReqNum)
 
    /* check the crc */
    if(Save != NCrcCalc_C((Reply+1),2))
-      return NoError;
+      return ClientErrors::None;
 
    /* check for a reject frame */
 //   if ((Reply[2] & 0x1f) != REJ)
    /* Softened reject detect code */
    if((Reply[2] & 0x0f) != REJ)
-      return NoError;
+      return ClientErrors::None;
 
 /* if we have one get us back into sequence */
    if(ReqNum != NULL)
@@ -326,7 +330,7 @@ YukonError_t IDLCRej (PBYTE Reply, PUSHORT ReqNum)
       *ReqNum = Reply[2] >> 5 & 0x07;
    }
 
-   return(BADSEQUENCE);
+   return ClientErrors::BadSequence;
 }
 
 
@@ -345,7 +349,7 @@ INT IDLCSArm (PBYTE Message, USHORT Remote)
    /* crc */
    PostIDLC (Message, 3);
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -359,24 +363,26 @@ INT IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
 
    /* check crc */
    if(Store != NCrcCalc_C((Response + 1), 2))
-      return(BADUA);
+   {
+      return ClientErrors::BadHdlcUaFrame;
+   }
 
    /* check for reset acknowledge */
    if(Response[2] == RESET_ACK)
    {
       *ReqNum = 0;
       *RepNum = 0;
-      return NoError;
+      return ClientErrors::None;
    }
 
-   return(BADUA);
+   return ClientErrors::BadHdlcUaFrame;
 }
 
 
 /* Routine to decode the Algorithm status part of the message */
 INT IDLCAlgStat (PBYTE Message, PUSHORT Status)
 {
-    int retval = NoError;
+    int retval = ClientErrors::None;
 
     USHORT i;
 
@@ -392,7 +398,7 @@ INT IDLCAlgStat (PBYTE Message, PUSHORT Status)
     if( !Message[0] && !Message[1] )
     {
         //  we have no statuses - something's wrong
-        retval = Error_Abnormal;
+        retval = ClientErrors::Abnormal;
     }
     else if( Status[0] || Status[3] || Status[6] || Status[7] )
     {
@@ -410,7 +416,7 @@ INT IDLCAlgStat (PBYTE Message, PUSHORT Status)
         OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
         */
 
-        retval = Error_Abnormal;
+        retval = ClientErrors::Abnormal;
     }
 
     return retval;
