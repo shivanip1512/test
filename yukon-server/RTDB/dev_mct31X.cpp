@@ -221,7 +221,7 @@ ULONG Mct31xDevice::calcNextLPScanTime( void )
 
 INT Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
 
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
@@ -419,7 +419,7 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                return MISCONFIG;
+                return ClientErrors::MissingConfig;
             }
 
             const IedResetCommand &command = itr->second;
@@ -434,7 +434,7 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
             OutMessage->Request.RouteID   = getRouteID();
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-            return NoError;
+            return ClientErrors::None;
         }
     }
 
@@ -444,7 +444,7 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
 INT Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -545,7 +545,7 @@ INT Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     USHORT SaveCount;
     string resultString;
 
@@ -572,7 +572,7 @@ INT Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime TimeNow, C
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
         }
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -624,7 +624,7 @@ INT Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     INT pid, rateOffset;
     string resultString, name, ratename;
 
@@ -653,7 +653,7 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime Time
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -671,7 +671,7 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime Time
     {
         //  we never broke out of the loop - all bytes are equal, the buffer is busted
         ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
-        status = ALPHABUFFERERROR;
+        status = ClientErrors::IedBufferBad;
     }
     else
     {
@@ -898,7 +898,7 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime Time
 
 INT Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     string resultString;
 
     std::auto_ptr<DSTRUCT> DSt(
@@ -919,7 +919,7 @@ INT Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime Time
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -941,7 +941,7 @@ INT Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime Time
             {
                 //  we never broke out of the loop - all bytes are equal, the buffer is busted
                 ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
-                status = ALPHABUFFERERROR;
+                status = ClientErrors::IedBufferBad;
             }
             else
             {
@@ -1156,7 +1156,7 @@ INT Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime Time
 
 INT Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     INT pid, rateOffset;
     string pointDescriptor, resultString, name, ratename;
 
@@ -1186,7 +1186,7 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeN
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -1204,7 +1204,7 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeN
     {
         //  we never broke out of the loop - all bytes are equal, the buffer is busted
         resultString += "Device: " + getName() + "\nData buffer is bad, retry command";
-        status = ALPHABUFFERERROR;
+        status = ClientErrors::IedBufferBad;
     }
     else
     {
@@ -1994,7 +1994,7 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     INT pid;
     string resultString;
 
@@ -2023,7 +2023,7 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2079,7 +2079,7 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     INT pnt_offset, byte_offset;
     ULONG i,x;
     INT pid;
@@ -2114,7 +2114,7 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
         }
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     demand_rate = getDemandInterval();
@@ -2202,7 +2202,7 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = NoError;
+    int       status = ClientErrors::None;
     double    Value;
     string resultString;
 
@@ -2226,7 +2226,7 @@ INT Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2283,7 +2283,7 @@ INT Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
 
 INT Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -2313,7 +2313,7 @@ INT Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     return_msg->setUserMessageId(InMessage.Return.UserID);

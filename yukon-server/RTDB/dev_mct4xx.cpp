@@ -400,7 +400,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                   CtiMessageList &retList,
                                   OutMessageList &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     bool found = false;
 
@@ -445,12 +445,12 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
             ReturnMsg->setResultString(lp_status_string.c_str());
 
-            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
+            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList );
 
             delete OutMessage;
             OutMessage = 0;
             found = false;
-            nRet  = NoError;
+            nRet  = ClientErrors::None;
         }
         else if( cmd == "cancel" )
         {
@@ -475,12 +475,12 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                 ReturnMsg->setResultString(getName() + " / No active load profile requests to cancel\n");
             }
 
-            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
+            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList );
 
             delete OutMessage;
             OutMessage = 0;
             found = false;
-            nRet  = NoError;
+            nRet  = ClientErrors::None;
         }
         else if( cmd == "resume" )
         {
@@ -492,7 +492,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
             if( ! hasRequiredInfo )
             {
-                returnErrorMessage(MISPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
                                    "Missing one of the following:"
                                    "\nKey_MCT_LLPInterest_Channel"
                                    "\nKey_MCT_LLPInterest_RequestBegin"
@@ -538,7 +538,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                 {
                     CtiString temp = "Bad channel specification - Acceptable values:  1-4";
                     errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back(errRet);
                     errRet = NULL;
                 }
@@ -556,12 +556,12 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                     ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
                     ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
 
-                    retMsgHandler(OutMessage->Request.CommandStr, ErrorNeedsChannelConfig, ReturnMsg, vgList, retList);
+                    retMsgHandler(OutMessage->Request.CommandStr, ClientErrors::NeedsChannelConfig, ReturnMsg, vgList, retList);
 
                     delete OutMessage;
                     OutMessage = 0;
                     found = false;
-                    nRet  = NoError;
+                    nRet  = ClientErrors::None;
                 }
             }
             else
@@ -579,7 +579,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         "Channel " + CtiNumStr(request_channel + 1) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
                         "Retrieve the correct LP Interval and attempt the request again.\n");
 
-                    retMsgHandler( OutMessage->Request.CommandStr, MISCONFIG, ReturnMsg, vgList, retList );
+                    retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::MissingConfig, ReturnMsg, vgList, retList );
 
                     delete OutMessage;
                     OutMessage = 0;
@@ -605,7 +605,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         {
                             CtiString temp = "Bad start date \"" + parse.getsValue("lp_date_start") + "\"";
                             errRet->setResultString( temp );
-                            errRet->setStatus(NoMethod);
+                            errRet->setStatus(ClientErrors::NoMethod);
                             retList.push_back( errRet );
                             errRet = NULL;
                         }
@@ -631,7 +631,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                 temp += "Current interval: " + printTimestamp(_llpRequest.begin) + "\n";
                                 temp += "Ending interval:  " + printTimestamp(_llpRequest.end) + "\n";
                                 errRet->setResultString(temp);
-                                errRet->setStatus(Error_Abnormal);
+                                errRet->setStatus(ClientErrors::Abnormal);
                                 retList.push_back(errRet);
                                 errRet = NULL;
                             }
@@ -648,7 +648,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                 {
                                     CtiString temp = "Long load profile request was cancelled";
                                     errRet->setResultString(temp);
-                                    errRet->setStatus(Error_Abnormal);
+                                    errRet->setStatus(ClientErrors::Abnormal);
                                     retList.push_back(errRet);
                                     errRet = NULL;
                                 }
@@ -755,7 +755,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
                                 ReturnMsg->setResultString(time_error_string);
 
-                                retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList );
+                                retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::BadParameter, ReturnMsg, vgList, retList );
 
                                 delete OutMessage;
                                 OutMessage = 0;
@@ -795,7 +795,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
                                     pReq->setConnectionHandle(0);
 
-                                    retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
+                                    retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList );
 
                                     OutMessage->Priority = 8;
                                     //  make sure the OM doesn't report back to Commander
@@ -834,7 +834,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                     OutMessage = 0;
 
                                     found = false;  //  don't try to touch the OutMessage
-                                    nRet = NoError;
+                                    nRet = ClientErrors::None;
 
                                     //  trying to read, but we're not aligned - something must've gone wrong
                                     CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), pReq->CommandString());
@@ -843,7 +843,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                     ReturnMsg->setConnectionHandle(pReq->getConnectionHandle());
                                     ReturnMsg->setResultString(getName() + " / Sending load profile period of interest");
 
-                                    retMsgHandler(pReq->CommandString(), NoError, ReturnMsg, vgList, retList, true);
+                                    retMsgHandler(pReq->CommandString(), ClientErrors::None, ReturnMsg, vgList, retList, true);
                                 }
                                 else
                                 {
@@ -854,7 +854,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                     ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
                                     ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
 
-                                    retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidTimestamp, ReturnMsg, vgList, retList );
+                                    retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::InvalidTimestamp, ReturnMsg, vgList, retList );
 
                                     _llpInterest.time    = 0;
                                     _llpInterest.channel = 0;
@@ -898,7 +898,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         if( request_date > today )  //  must begin on or before today
                         {
                             errRet->setResultString(getName() + " / Invalid date for peak request: cannot be after today (" + request_date.asStringUSFormat() + ")" );
-                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, errRet, vgList, retList );
+                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::BadParameter, errRet, vgList, retList );
 
                             delete OutMessage;
                             OutMessage = 0;
@@ -909,7 +909,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                  request_range >= 1000 )
                         {
                             errRet->setResultString(getName() + " / Invalid range for peak request: must be 1-999 (" + CtiNumStr(request_range) + ")" );
-                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, errRet, vgList, retList );
+                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::BadParameter, errRet, vgList, retList );
 
                             delete OutMessage;
                             OutMessage = 0;
@@ -924,7 +924,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
                             errRet->setResultString(getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
 
-                            retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, errRet, vgList, retList );
+                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::VerifySSPEC, errRet, vgList, retList );
 
                             delete OutMessage;
                             OutMessage = 0;
@@ -935,7 +935,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         {
                             errRet->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
 
-                            retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, errRet, vgList, retList );
+                            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::InvalidSSPEC, errRet, vgList, retList );
 
                             delete OutMessage;
                             OutMessage = 0;
@@ -947,7 +947,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                             delete OutMessage;
                             OutMessage = 0;
 
-                            return NoMethod;
+                            return ClientErrors::NoMethod;
                         }
 
                         OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
@@ -965,7 +965,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                             if( ! locked )
                             {
                                 errRet->setResultString(getName() + " / Load profile peak request already in progress\n");
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorCommandAlreadyInProgress, errRet, vgList, retList );
+                                retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::CommandAlreadyInProgress, errRet, vgList, retList );
 
                                 delete OutMessage;
                                 OutMessage = 0;
@@ -1009,7 +1009,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
                             OutMessage->Request.OptionsField = requestId;
 
-                            nRet = NoError;
+                            nRet = ClientErrors::None;
                         }
                     }
                 }
@@ -1028,7 +1028,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().data(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -1041,54 +1041,46 @@ INT Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq,
                                    CtiMessageList &retList,
                                    OutMessageList &outList )
 {
-    INT nRet = NoMethod;
-
-
-    bool found = false;
-
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.RetryMacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.GrpMsgID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
-
     if(parse.isKeyValid("install"))
     {
-        nRet = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
+        return executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
     }
-    else if( parse.isKeyValid("tou") )
-    {
-        found = true;
 
+    if( parse.isKeyValid("tou") )
+    {
         if( parse.isKeyValid("tou_schedule") )
         {
-            int schedulenum = parse.getiValue("tou_schedule");
+            const int schedulenum = parse.getiValue("tou_schedule");
 
-            if( schedulenum == 1 || schedulenum == 2 )
+            switch( schedulenum )
             {
-                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
-                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-            }
-            else if( schedulenum == 3 || schedulenum == 4 )
-            {
-                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-            }
-            else
-            {
-                errRet->setResultString("invalid schedule number " + CtiNumStr(schedulenum));
-                retList.push_back(errRet);
-                errRet = 0;
+                case 1:
+                case 2:
+                {
+                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                    break;
+                }
+                case 3:
+                case 4:
+                {
+                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                    break;
+                }
+                default:
+                {
+                    retList.push_back(
+                            new CtiReturnMsg(
+                                    getID( ),
+                                    OutMessage->Request,
+                                    "invalid schedule number " + CtiNumStr(schedulenum),
+                                    ClientErrors::NoMethod));
 
-                found = false;
+                    return ClientErrors::NoMethod;
+                }
             }
         }
         else
@@ -1099,30 +1091,16 @@ INT Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq,
         }
 
         OutMessage->Sequence = EmetconProtocol::GetConfig_TOU;
-    }
-    else
-    {
-        nRet = Parent::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
-    }
 
-
-    if( found )
-    {
         populateDlcOutMessage(*OutMessage);
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        return ClientErrors::None;
     }
 
-    if( errRet )
-    {
-        delete errRet;
-        errRet = 0;
-    }
-
-    return nRet;
+    return Parent::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
 }
 
 
@@ -1133,51 +1111,24 @@ INT Mct4xxDevice::executeGetStatus(CtiRequestMsg *pReq,
                                    CtiMessageList &retList,
                                    OutMessageList &outList )
 {
-    INT nRet = NoMethod;
-
-
-    bool found = false;
-
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.RetryMacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.GrpMsgID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
-
-    if(parse.isKeyValid("freeze"))
+    if( parse.isKeyValid("freeze") )
     {
-        found = getOperation(EmetconProtocol::GetStatus_Freeze, OutMessage->Buffer.BSt);
+        if( ! getOperation(EmetconProtocol::GetStatus_Freeze, OutMessage->Buffer.BSt) )
+        {
+            return ClientErrors::NoMethod;
+        }
 
         OutMessage->Sequence = EmetconProtocol::GetStatus_Freeze;
-    }
-    else
-    {
-        nRet = Parent::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
-    }
 
-    if( found )
-    {
         populateDlcOutMessage(*OutMessage);
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        return ClientErrors::None;
     }
 
-    if( errRet )
-    {
-        delete errRet;
-        errRet = 0;
-    }
-
-    return nRet;
+    return Parent::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
 }
 
 
@@ -1233,7 +1184,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                                    bool readsOnly)
 {
     bool  found = false;
-    INT   nRet = NoError, sRet, function;
+    INT   nRet = ClientErrors::None, sRet, function;
 
     std::auto_ptr<CtiReturnMsg> errRet(
         new CtiReturnMsg(
@@ -1326,7 +1277,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                     found = false;
 
                     errRet->setResultString("Specified dates are invalid");
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back(errRet.release());
                 }
             }
@@ -1335,7 +1286,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                 found = false;
 
                 errRet->setResultString("Invalid holiday offset specified");
-                errRet->setStatus(NoMethod);
+                errRet->setStatus(ClientErrors::NoMethod);
                 retList.push_back(errRet.release());
             }
         }
@@ -1679,7 +1630,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
         }
         else
         {
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
         }
     }
     else if( parse.isKeyValid("llp interest channel") )
@@ -1716,7 +1667,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                 "Channel " + CtiNumStr(request_channel) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
                 "Retrieve the correct LP Interval and attempt the request again.";
 
-            returnErrorMessage(ErrorNeedsChannelConfig, OutMessage, retList, temp);
+            returnErrorMessage(ClientErrors::NeedsChannelConfig, OutMessage, retList, temp);
 
             nRet = ExecutionComplete;
         }
@@ -1726,7 +1677,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
 
             string temp = "Bad start time \"" + parse.getsValue("llp interest date") + " " + parse.getsValue("llp interest time") + "\"";
 
-            returnErrorMessage(ErrorInvalidStartDate, OutMessage, retList, temp);
+            returnErrorMessage(ClientErrors::InvalidStartDate, OutMessage, retList, temp);
 
             nRet = ExecutionComplete;
         }
@@ -1734,7 +1685,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
         {
             InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
 
-            returnErrorMessage(BADPARAM, OutMessage, retList, "Bad channel \"" + CtiNumStr(request_channel) + "\"");
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList, "Bad channel \"" + CtiNumStr(request_channel) + "\"");
 
             nRet = ExecutionComplete;
         }
@@ -1785,7 +1736,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
         if( ! _llpPeakInterest.tryContinueRequest(requestId) )
         {
             //  This is internal-only, so NoMethod is true for anyone requesting this outside of a getvalue lp peak command
-            return NoMethod;
+            return ClientErrors::NoMethod;
         }
         else if( request_date < DawnOfTime_Date )
         {
@@ -1794,7 +1745,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
             error << getName() << " / Load profile peak report status: \n";
             error << "Bad date specified: " << parse.getsValue("llp peak interest date");
 
-            returnErrorMessage(ErrorNeedsChannelConfig, OutMessage, retList, error.str());
+            returnErrorMessage(ClientErrors::NeedsChannelConfig, OutMessage, retList, error.str());
 
             _llpPeakInterest.tryEndRequest(requestId);
 
@@ -1861,7 +1812,7 @@ INT Mct4xxDevice::executePutValue(CtiRequestMsg *pReq,
                                   OutMessageList &outList)
 {
     bool  found = false;
-    INT   nRet = NoError, sRet;
+    INT   nRet = ClientErrors::None, sRet;
 
     if( parse.isKeyValid("reset") && parse.isKeyValid("tou") )
     {
@@ -1876,7 +1827,7 @@ INT Mct4xxDevice::executePutValue(CtiRequestMsg *pReq,
 
         if( !found )
         {
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
         }
     }
     else
@@ -1897,13 +1848,13 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                                            OutMessageList &outList,
                                            bool readsOnly)
 {
-    int ret = NoMethod;
+    int ret = ClientErrors::NoMethod;
 
     if (getDeviceConfig())
     {
         if(!partsList.empty())
         {
-            ret = NoError;
+            ret = ClientErrors::None;
             CtiRequestMsg tempReq(*pReq);
 
             populateDlcOutMessage(*OutMessage);
@@ -1944,7 +1895,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
         CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
                                 string(OutMessage->Request.CommandStr),
                                 "ERROR: Device not assigned to a config.",
-                                NoConfigData,
+                                ClientErrors::NoConfigData,
                                 OutMessage->Request.RouteID,
                                 OutMessage->Request.RetryMacroOffset,
                                 OutMessage->Request.Attempt,
@@ -1974,7 +1925,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
 
     string installValue = parse.getsValue("installvalue");
 
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     if (installValue == PutConfigPart_tou )
     {
         nRet = executePutConfigTOU(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
@@ -2043,25 +1994,25 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
         //nRet = Parent::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
 
     if( nRet )
     {
-        CtiString resultString;
+        std::string resultString;
 
-        if( nRet == NoConfigData )
+        if( nRet == ClientErrors::NoConfigData )
         {
             resultString = "ERROR: Invalid config data. Config name:" + installValue;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device " << getName() << " had no configuration for config: " << installValue << endl;
         }
-        else if( nRet == ConfigCurrent )
+        else if( nRet == ClientErrors::ConfigCurrent )
         {
             resultString = "Config " + installValue + " is current.";
-            nRet = NoError; //This is an OK return! Note that nRet is no longer propogated!
+            nRet = ClientErrors::None; //This is an OK return! Note that nRet is no longer propogated!
         }
-        else if( nRet == ConfigNotCurrent )
+        else if( nRet == ClientErrors::ConfigNotCurrent )
         {
             resultString = "Config " + installValue + " is NOT current.";
         }
@@ -2093,7 +2044,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
 
 INT Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
     string resultString;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -2133,7 +2084,7 @@ INT Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow
             {
                 //  Someone else got here first, just disappear.
                 //    Multiple putconfig decodes are expected when broadcast on a macro with multiple subroutes.
-                return NoError;
+                return ClientErrors::None;
             }
 
             const int interval_len = getLoadProfileInterval(_llpPeakInterest.channel);
@@ -2143,7 +2094,7 @@ INT Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow
 
             if( interval_len <= 0 )
             {
-                status = MISCONFIG;
+                status = ClientErrors::MissingConfig;
 
                 resultString =
                     getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1)
@@ -2268,7 +2219,7 @@ INT Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow
                             ReturnMsg->setConnectionHandle(InMessage.Return.Connection);
                             ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(fixed_delay) + " seconds for IED LP scan (until " + (CtiTime::now() + fixed_delay).asString() + ")");
 
-                            retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
+                            retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList, true);
                         }
 
                         retList.push_back(newReq);
@@ -2284,7 +2235,7 @@ INT Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow
 
                         ReturnMsg->setResultString(error_string);
 
-                        retMsgHandler(InMessage.Return.CommandStr, BADPARAM, ReturnMsg.release(), vgList, retList);
+                        retMsgHandler(InMessage.Return.CommandStr, ClientErrors::BadParameter, ReturnMsg.release(), vgList, retList);
                     }
                 }
             }
@@ -2292,7 +2243,7 @@ INT Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow
             {
                 ReturnMsg->setResultString(getName() + " / period of interest sent");
 
-                retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList);
+                retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList);
             }
 
             break;
@@ -2325,52 +2276,52 @@ void Mct4xxDevice::insertConfigReadOutMessage(const char *commandString, const O
 
 int Mct4xxDevice::executePutConfigRelays (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigDemandLP (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigDisplay (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigInstallPhaseLoss (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigInstallAddressing (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigInstallDST (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigMeterParameters(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
@@ -2379,7 +2330,7 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
 
     if( ! deviceConfig )
     {
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 
     if( ! readsOnly )
@@ -2392,7 +2343,7 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-            return NoMethod;
+            return ClientErrors::NoMethod;
         }
 
         if( ! timezoneOffset )
@@ -2400,7 +2351,7 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         const unsigned char timezoneByte = *timezoneOffset * 4; //The timezone offset in the mct is in 15 minute increments.
@@ -2408,12 +2359,12 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
         if( ! parse.isKeyValid("force")
             && CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) == timezoneByte)
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
 
         if( parse.isKeyValid("verify") )
         {
-            return ConfigNotCurrent;
+            return ClientErrors::ConfigNotCurrent;
         }
 
         //  the bstruct IO is set above by getOperation()
@@ -2428,12 +2379,12 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
         insertConfigReadOutMessage("getconfig install timezone", *OutMessage, outList);
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if(deviceConfig)
@@ -2447,13 +2398,13 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
+                nRet = ClientErrors::NoConfigData;
             }
             else if( ! spid )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
+                nRet = ClientErrors::NoConfigData;
             }
             else
             {
@@ -2467,21 +2418,21 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
                         OutMessage->Buffer.BSt.Message[0] = *spid;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        nRet = NoError;
+                        nRet = ClientErrors::None;
                     }
                     else
                     {
-                        nRet = ConfigNotCurrent;
+                        nRet = ClientErrors::ConfigNotCurrent;
                     }
                 }
                 else
                 {
-                    nRet = ConfigCurrent;
+                    nRet = ClientErrors::ConfigCurrent;
                 }
             }
         }
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NoError)
+        if (nRet == ClientErrors::None)
         {
             if(getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
             {
@@ -2493,7 +2444,7 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
     }
     else
     {
-        nRet = NoConfigData;
+        nRet = ClientErrors::NoConfigData;
     }
 
     return nRet;
@@ -2505,7 +2456,7 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
 
     if( ! deviceConfig )
     {
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 
     if( ! readsOnly )
@@ -2537,20 +2488,20 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         if( dynamicPaoConfigByte == configuration )
         {
             if( ! parse.isKeyValid("force") )
             {
-                return ConfigCurrent;
+                return ClientErrors::ConfigCurrent;
             }
         }
 
         if( parse.isKeyValid("verify") )
         {
-            return ConfigNotCurrent;
+            return ClientErrors::ConfigNotCurrent;
         }
 
         OutMessage->Buffer.BSt.Message[0] = *configuration;
@@ -2566,12 +2517,12 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
 
     insertConfigReadOutMessage("getconfig install configbyte", *OutMessage, outList);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -2585,13 +2536,13 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
+                nRet = ClientErrors::NoConfigData;
             }
             else if ( ! timeAdjustTolerance )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
+                nRet = ClientErrors::NoConfigData;
             }
             else
             {
@@ -2604,21 +2555,21 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
                         OutMessage->Buffer.BSt.Message[0] = *timeAdjustTolerance;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        nRet = NoError;
+                        nRet = ClientErrors::None;
                     }
                     else
                     {
-                        nRet = ConfigNotCurrent;
+                        nRet = ClientErrors::ConfigNotCurrent;
                     }
                 }
                 else
                 {
-                    nRet = ConfigCurrent;
+                    nRet = ClientErrors::ConfigCurrent;
                 }
             }
         }
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NoError)
+        if (nRet == ClientErrors::None)
         {
             if(getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
             {
@@ -2630,7 +2581,7 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
     }
     else
     {
-        nRet = NoConfigData;
+        nRet = ClientErrors::NoConfigData;
     }
 
     return nRet;
@@ -2641,7 +2592,7 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
 */
 int Mct4xxDevice::executePutConfigPrecannedTable    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 /*
@@ -2649,7 +2600,7 @@ int Mct4xxDevice::executePutConfigPrecannedTable    (CtiRequestMsg *pReq, CtiCom
 */
 int Mct4xxDevice::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList &vgList,CtiMessageList &retList,OutMessageList &outList, bool readsOnly)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 /*
@@ -2662,12 +2613,12 @@ int Mct4xxDevice::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &pars
 
 INT Mct4xxDevice::decodeGetConfigTime(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiString resultString;
+    std::string resultString;
     unsigned long timestamp;
     char timezone_offset;
 
@@ -2713,7 +2664,7 @@ INT Mct4xxDevice::decodeGetConfigTime(const INMESS &InMessage, const CtiTime Tim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2727,7 +2678,7 @@ INT Mct4xxDevice::decodeGetConfigTime(const INMESS &InMessage, const CtiTime Tim
 
 INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -2743,7 +2694,7 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, const CtiTi
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2771,7 +2722,7 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, const CtiTi
             "Channel " + CtiNumStr(_llpRequest.channel + 1) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
             "Retrieve the correct LP Interval and attempt the request again.";
 
-        status = MISCONFIG;
+        status = ClientErrors::MissingConfig;
 
         //  reset, we're not executing any more
         InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage.Return.OptionsField);
@@ -2897,7 +2848,7 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, const CtiTi
 
 INT Mct4xxDevice::decodeGetConfigTOU(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -3060,7 +3011,7 @@ INT Mct4xxDevice::decodeGetConfigTOU(const INMESS &InMessage, const CtiTime Time
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -3083,7 +3034,7 @@ bool Mct4xxDevice::isProfileTablePointerCurrent(const unsigned char table_pointe
 
 INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3108,7 +3059,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ret_msg->setUserMessageId(InMessage.Return.UserID);
@@ -3142,7 +3093,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
                 purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval);
             }
 */
-            status = MISCONFIG;
+            status = ClientErrors::MissingConfig;
         }
         //  make sure we're getting the same block we're expecting
         else if( ! isProfileTablePointerCurrent(DSt->Message[0], TimeNow, interval_len) )
@@ -3157,7 +3108,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
                 dout << "commandstr = " << InMessage.Return.CommandStr << endl;
             }
 
-            status = ErrorInvalidTimestamp;
+            status = ClientErrors::InvalidTimestamp;
         }
         else if( timestamp != _lp_info[channel].collection_point )
         {
@@ -3169,7 +3120,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
                 dout << "commandstr = " << InMessage.Return.CommandStr << endl;
             }
 
-            status = ErrorInvalidTimestamp;
+            status = ClientErrors::InvalidTimestamp;
         }
         else
         {
@@ -3217,7 +3168,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 
 INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int        status = NoError,
+    int        status = ClientErrors::None,
                channel,
                pointoffset;
     point_info pi_kw,
@@ -3295,7 +3246,7 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -3365,8 +3316,8 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, const CtiTim
 
             switch( status )
             {
-                case ErrorFreezeNotRecorded:    pi_kwh.description = "Last freeze not stored";  break;
-                case ErrorInvalidFreezeCounter: pi_kwh.description = "Invalid freeze counter";  break;
+                case ClientErrors::FreezeNotRecorded:    pi_kwh.description = "Last freeze not stored";  break;
+                case ClientErrors::InvalidFreezeCounter: pi_kwh.description = "Invalid freeze counter";  break;
             }
         }
         else if( pi_kwh.freeze_bit != getExpectedFreezeParity() )
@@ -3379,7 +3330,7 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, const CtiTim
             }
 
             result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString() + "\n";
-            status = ErrorInvalidFrozenReadingParity;
+            status = ClientErrors::InvalidFrozenReadingParity;
 
             pi_kwh.description = "Invalid freeze parity";
             pi_kwh.quality = InvalidQuality;
@@ -3407,7 +3358,7 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, const CtiTim
             //  defer to the kWh errors
             if( !status )
             {
-                status = ErrorInvalidFrozenPeakTimestamp;
+                status = ClientErrors::InvalidFrozenPeakTimestamp;
             }
 
             result_string += "New peak is before old peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")\n";
@@ -3426,7 +3377,7 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, const CtiTim
             //  defer to the kWh errors
             if( !status )
             {
-                status = ErrorInvalidFrozenPeakTimestamp;
+                status = ClientErrors::InvalidFrozenPeakTimestamp;
             }
 
             result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + getLastFreezeTimestamp(TimeNow).asString() + ")\n";
@@ -3602,7 +3553,7 @@ INT Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
                 }
             }
 
-            return NoError;
+            return ClientErrors::None;
         }
     }
 
@@ -3620,7 +3571,7 @@ INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         {
             _llpPeakInterest.tryEndRequest(InMessage.Return.OptionsField);
 
-            return NoError;
+            return ClientErrors::None;
         }
     }
 

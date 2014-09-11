@@ -126,7 +126,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg     *pReq,
                                    CtiMessageList    &retList,
                                    OutMessageList    &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     bool found = false;
@@ -142,7 +142,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg     *pReq,
 
         default:
         {
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
             break;
         }
     }

@@ -59,7 +59,7 @@ bool Repeater800Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 
 INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
 
     switch(InMessage.Sequence)
@@ -89,7 +89,7 @@ INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 
 INT Repeater800Device::decodeGetValuePFCount(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -104,7 +104,7 @@ INT Repeater800Device::decodeGetValuePFCount(const INMESS &InMessage, const CtiT
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);

@@ -35,7 +35,7 @@ using std::vector;
 int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT interval)
 {
     int i;
-    int status = NoError;
+    int status = ClientErrors::None;
     CtiSxlFieldHistory hist;
     CtiSxlRecord newRec;
 
@@ -510,7 +510,7 @@ int CtiDeviceSixnet::assembleGetHeaderInfo()
 YukonError_t CtiDeviceSixnet::processGetHeaderInfo()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
 
     if (getSixnetProtocol().getByteBuffer().size() >= SXL_HDR_SIZE)     // Did we get that which we asked for??
@@ -532,7 +532,7 @@ YukonError_t CtiDeviceSixnet::processGetHeaderInfo()
         {
             if (getSixnetProtocol().getfd8(SXL_ERROR) != 0)
             {
-                status = Error_Abnormal;
+                status = ClientErrors::Abnormal;
                 bOk = false;      // configuration has errors, give up
             }
         }
@@ -618,7 +618,7 @@ int CtiDeviceSixnet::processGetHeadTail()
 
 int CtiDeviceSixnet::fetchRecords(bool resetFetch)
 {
-    return NoError;
+    return ClientErrors::None;
 }
 
 //////////////////////////////////////////////////////////
@@ -736,7 +736,7 @@ UCHAR* CtiDeviceSixnet::getRxBuffer()
 
 INT CtiDeviceSixnet::allocateDataBins (OUTMESS *OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
     // They are self allocating... But we want to clear these out.
@@ -798,7 +798,7 @@ void CtiDeviceSixnet::destroyBuffers()
 
 INT CtiDeviceSixnet::freeDataBins()
 {
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, CtiMessageList &traceList)
@@ -806,7 +806,7 @@ YukonError_t CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, CtiMe
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
     setCurrentState( CtiDeviceIED::StateHandshakeInitialize );
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -871,7 +871,7 @@ YukonError_t CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, CtiMe
 YukonError_t CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -935,7 +935,7 @@ YukonError_t CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, YukonEr
 
 YukonError_t CtiDeviceSixnet::generateCommandDisconnect(CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     setCurrentState(CtiDeviceIED::StateComplete);
 
@@ -952,7 +952,7 @@ YukonError_t CtiDeviceSixnet::generateCommandDisconnect(CtiXfer  &Transfer, CtiM
 }
 YukonError_t CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -965,7 +965,7 @@ YukonError_t CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, YukonE
 
 YukonError_t CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -1113,7 +1113,7 @@ YukonError_t CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, CtiMessageList
 
 YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
@@ -1131,7 +1131,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
 
                     if ( processGetFields() == 0 )
                     {
-                        status = Error_Abnormal;
+                        status = ClientErrors::Abnormal;
                     }
                 }
                 else
@@ -1153,7 +1153,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
 
                     if ( processGetHeadTail() == 0 )     // No records on the device.
                     {
-                        status = Error_Abnormal;
+                        status = ClientErrors::Abnormal;
                     }
                 }
                 else
@@ -1430,14 +1430,14 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
 
 INT CtiDeviceSixnet::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aBytesReceived)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     return status;
 }
 
 INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesReceived)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     INT remainder = _registerCnt + _demAccumCnt;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -1658,7 +1658,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
 
 INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
 
     if (!isScanFlagSet(ScanRateGeneral))
@@ -1699,7 +1699,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         }
         else
         {
-            status = MEMORY;
+            status = ClientErrors::MemoryAccess;
         }
     }
 
@@ -1708,7 +1708,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT  CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     /****************************
     *
@@ -1771,7 +1771,7 @@ INT CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
                                             GetErrorString(InMessage.ErrorCode),
@@ -1832,7 +1832,7 @@ void CtiDeviceSixnet::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
 
     int recCnt = *((const int*)&InMessage.Buffer.DUPSt.DUPRep.Message);
@@ -1970,7 +1970,7 @@ INT CtiDeviceSixnet::decodeResultScan(const INMESS &InMessage, const CtiTime Tim
     resetScanFlag(ScanForced);
     resetScanFlag(ScanRateGeneral);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

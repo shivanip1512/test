@@ -71,7 +71,7 @@ bool Mct210Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  */
 INT Mct210Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {

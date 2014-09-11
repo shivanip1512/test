@@ -68,7 +68,7 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
         (GetStatusRequest, &RfnDevice::executeGetStatus)
         (PutStatusRequest, &RfnDevice::executePutStatus);
 
-    YukonError_t errorCode = NoMethod;
+    YukonError_t errorCode = ClientErrors::NoMethod;
     std::string errorDescription = "Invalid command.";
 
     if( const boost::optional<RfnExecuteMethod> executeMethod = mapFind(executeMethods, parse.getCommand()) )
@@ -116,7 +116,7 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
                         getID( ),
                         pReq->CommandString(),
                         CtiNumStr(numRequests) + (numRequests == 1?" command":" commands") + " queued for device",
-                        NoError,
+                        ClientErrors::None,
                         0,
                         MacroOffset::none,
                         0,
@@ -146,32 +146,32 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
 
 YukonError_t RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    return NoMethod;
+    return ClientErrors::NoMethod;
 }
 
 

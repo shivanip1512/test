@@ -698,7 +698,7 @@ void Mct410Device::sendIntervals( OUTMESS *&OutMessage, OutMessageList &outList 
 
 INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     CtiTime Now;
 
     if( !_intervalsSent )
@@ -922,7 +922,7 @@ INT Mct410Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     switch( InMessage.Sequence )
     {
@@ -931,7 +931,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
             //  submit a retry if we're multi-day and we have any retries left
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                if( _daily_read_info.request.multi_day_retries-- > 0  && InMessage.ErrorCode != ErrorRequestCancelled)
+                if( _daily_read_info.request.multi_day_retries-- > 0  && InMessage.ErrorCode != ClientErrors::RequestCancelled)
                 {
                     string request_str = "getvalue daily read ";
 
@@ -957,7 +957,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
                     CtiReturnMsg *ret = CTIDBG_new CtiReturnMsg(getID(),
                                                                 InMessage.Return.CommandStr,
                                                                 "Submitting retry, " + CtiNumStr(_daily_read_info.request.multi_day_retries) + " remaining",
-                                                                NoError,
+                                                                ClientErrors::None,
                                                                 InMessage.Return.RouteID,
                                                                 InMessage.Return.RetryMacroOffset,
                                                                 InMessage.Return.Attempt,
@@ -977,7 +977,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
                     retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                                               InMessage.Return.CommandStr,
                                                               "Multi-day daily read request failed",
-                                                              Error_Abnormal,
+                                                              ClientErrors::Abnormal,
                                                               InMessage.Return.RouteID,
                                                               InMessage.Return.RetryMacroOffset,
                                                               InMessage.Return.Attempt,
@@ -1028,7 +1028,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                                        CtiMessageList &retList,
                                        OutMessageList &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function = -1;
@@ -1052,7 +1052,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid address \"" + CtiNumStr(uadd) + "\", not sending");
         }
         else
@@ -1091,7 +1091,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid display configuration \"" + display + "\"");
         }
 
@@ -1107,7 +1107,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 found = false;
                 nRet  = ExecutionComplete;
 
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid test duration \"" + CtiNumStr(test) + "\"");
             }
 
@@ -1133,7 +1133,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                         found = false;
                         nRet  = ExecutionComplete;
 
-                        returnErrorMessage(BADPARAM, OutMessage, retList,
+                        returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                            "Invalid transformer ratio (" + CtiNumStr(transformer_ratio) + ")");
                     }
                 }
@@ -1213,7 +1213,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid disconnect parameters (" + CtiNumStr(demand_threshold) + ", " + CtiNumStr(connect_delay) + ")");
         }
         else
@@ -1242,7 +1242,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 found = false;
                 nRet  = ExecutionComplete;
 
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid disconnect cycle parameters (" + CtiNumStr(disconnect_minutes) + ", " + CtiNumStr(connect_minutes) + ")");
             }
             else
@@ -1265,7 +1265,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid outage threshold (" + CtiNumStr(threshold) + "), not sending");
         }
         else
@@ -1289,7 +1289,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid day of scheduled freeze (" + CtiNumStr(freeze_day) + "), not sending");
         }
         else
@@ -1335,7 +1335,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(MISPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
                                "Invalid request: Config Byte needs to be specified");
         }
 
@@ -1364,7 +1364,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             }
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(MISCONFIG, OutMessage, retList,
+            returnErrorMessage(ClientErrors::MissingConfig, OutMessage, retList,
                                "Invalid request: Config Byte has been requested.  Reissue autoreconnect command.");
         }
         else
@@ -1417,7 +1417,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                     found = false;
                     nRet  = ExecutionComplete;
 
-                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid interval length (" + CtiNumStr(duration) + " minutes), not sending");
                 }
             }
@@ -1455,7 +1455,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "Missing channel in load profile allocation, not sending");
         }
     }
@@ -1487,7 +1487,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 }
                 nRet  = ExecutionComplete;
 
-                returnErrorMessage(MISCONFIG, OutMessage, retList,
+                returnErrorMessage(ClientErrors::MissingConfig, OutMessage, retList,
                                    "Invalid request: Options Byte not retrieved yet, attempting to read automatically.  Reissue channel 2 configuration command.");
             }
             else
@@ -1538,7 +1538,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
 
     if( found )
     {
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -1548,14 +1548,14 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
 {
     if (!isSupported(Feature_Disconnect))
     {
-        returnErrorMessage(ErrorUnsupportedDevice, OutMessage, retList, "This device type does not support the putconfig disconnect command");
+        returnErrorMessage(ClientErrors::UnsupportedDevice, OutMessage, retList, "This device type does not support the putconfig disconnect command");
         return ExecutionComplete;
     }
 
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
     if( !deviceConfig )
     {
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 
     DlcCommandAutoPtr disconnectCommand;
@@ -1643,14 +1643,14 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
             {
                 if( ! parse.isKeyValid("force") )
                 {
-                    return ConfigCurrent;
+                    return ClientErrors::ConfigCurrent;
                 }
             }
             else
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ConfigNotCurrent;
+                    return ClientErrors::ConfigNotCurrent;
                 }
             }
 
@@ -1674,7 +1674,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
 
             if( ! tryExecuteCommand(*om, disconnectCommand) )
             {
-                return NoMethod;
+                return ClientErrors::NoMethod;
             }
 
             outList.push_back(om.release());
@@ -1687,7 +1687,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
                 dout << CtiTime() << " Device \"" << getName() << "\" - " << ex.message << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            return ErrorInvalidConfigData;
+            return ClientErrors::InvalidConfigData;
         }
         catch( MissingConfigDataException &ex )
         {
@@ -1697,7 +1697,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
                 dout << CtiTime() << " Device \"" << getName() << "\" - " << ex.message << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
     }
 
@@ -1709,12 +1709,12 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
 
     if( ! tryExecuteCommand(*om, disconnectCommand) )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     outList.push_back(om.release());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
@@ -1723,7 +1723,7 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
 
     if ( ! deviceConfig )
     {
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 
     if ( ! readsOnly )
@@ -1741,7 +1741,7 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
                 dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
                      << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                return NoConfigData;
+                return ClientErrors::NoConfigData;
             }
 
             if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned char>::max() )
@@ -1750,7 +1750,7 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
                 dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *configValue << ") found for config key \""
                      << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                return BADPARAM;
+                return ClientErrors::BadParameter;
             }
 
             configFreezeDay = static_cast<unsigned>( *configValue );
@@ -1769,14 +1769,14 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
         {
             if( ! parse.isKeyValid("force") )
             {
-                return ConfigCurrent;
+                return ClientErrors::ConfigCurrent;
             }
         }
         else
         {
             if( parse.isKeyValid("verify") )
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
 
@@ -1785,7 +1785,7 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
         OutMessage->Sequence = EmetconProtocol::PutConfig_FreezeDay;
         if ( ! getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
-            return NoMethod;
+            return ClientErrors::NoMethod;
         }
         OutMessage->Buffer.BSt.Message[0] = *configFreezeDay;
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1794,12 +1794,12 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
     OutMessage->Sequence = EmetconProtocol::GetConfig_Freeze;
     if ( ! getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     insertConfigReadOutMessage("getconfig freeze", *OutMessage, outList);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT Mct410Device::executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
@@ -1819,10 +1819,10 @@ INT Mct410Device::executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse
             OutMessage->Request.RouteID   = getRouteID();
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-            return NoError;
+            return ClientErrors::None;
         }
 
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     return Parent::executePutStatus(pReq, parse, OutMessage, vgList, retList, outList);
@@ -1983,7 +1983,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                                       CtiMessageList &retList,
                                       OutMessageList &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function;
@@ -2030,8 +2030,8 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         // Disable load profile peak report for channel 4. (see YUK-4569)
         if ( parse.getsValue("lp_command") == "peak" && parse.getiValue("lp_channel") == 4 )
         {
-            nRet = BADPARAM;
-            returnErrorMessage(BADPARAM, OutMessage, retList, "Channel 4 Load Profile Peak Report is Unavailable.");
+            nRet = ClientErrors::BadParameter;
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList, "Channel 4 Load Profile Peak Report is Unavailable.");
         }
         else
         {
@@ -2072,7 +2072,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) &&
             !isSupported(Feature_HourlyKwh) )
         {
-            returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
+            returnErrorMessage(ClientErrors::InvalidSSPEC, OutMessage, retList,
                                "Hourly read requires SSPEC rev 4.0 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
 
             return ExecutionComplete;
@@ -2115,12 +2115,12 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 ReturnMsg->setResultString(getName() + " / No active daily read requests to cancel\n");
             }
 
-            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList );
 
             delete OutMessage;
             OutMessage = 0;
 
-            return NoError;
+            return ClientErrors::None;
         }
         //  if a request is already in progress and we're not submitting a continuation/retry
         else if( InterlockedCompareExchange( &_daily_read_info.request.in_progress, true, false)
@@ -2141,7 +2141,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             }
 
             nRet  = ExecutionComplete;
-            returnErrorMessage(ErrorCommandAlreadyInProgress, OutMessage, retList, temp);
+            returnErrorMessage(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, temp);
         }
         else
         {
@@ -2160,19 +2160,19 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
+                returnErrorMessage(ClientErrors::InvalidSSPEC, OutMessage, retList,
                                    "Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( channel < 1 || channel > 3 )
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
             }
             else if( date_begin > Yesterday )  //  must begin on or before yesterday
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else if( parse.isKeyValid("daily_read_detail") )
@@ -2186,7 +2186,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 if( date_begin < Today - 92 )  //  must be no more than 92 days ago
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                        "Date out of range for daily read detail request; must be less than 3 months ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( channel == 1 )
@@ -2232,19 +2232,19 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 if( date_begin < Today - 92 )
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid begin date for multi-day daily read request, must be less than 92 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( date_end < date_begin )
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid end date for multi-day daily read request; must be after begin date (" + parse.getsValue("daily_read_date_begin") + ", " + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else if( date_end > Today )    //  must end on or before today
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid end date for multi-day daily read request; must be on or before today (" + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else
@@ -2274,13 +2274,13 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             else if( channel != 1 )
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
             }
             else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else
@@ -2413,7 +2413,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             {
                 string temp = "Bad outage specification - Acceptable values:  1-6";
                 errRet->setResultString( temp );
-                errRet->setStatus(NoMethod);
+                errRet->setStatus(ClientErrors::NoMethod);
                 retList.push_back( errRet );
                 errRet = NULL;
             }
@@ -2440,7 +2440,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -2460,7 +2460,7 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
                                        CtiMessageList &retList,
                                        OutMessageList &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
 
     bool found = false;
@@ -2576,7 +2576,7 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     if( errRet )
@@ -2591,7 +2591,7 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
 
 INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiTime pointTime;
     bool valid_data = true;
 
@@ -2618,7 +2618,7 @@ INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2682,7 +2682,7 @@ INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
                         pi.value = 0;
 
                         ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
-                        status = ErrorInvalidFrozenReadingParity;
+                        status = ClientErrors::InvalidFrozenReadingParity;
                     }
                     else
                     {
@@ -2704,7 +2704,7 @@ INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
                 if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
                 {
                     ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1) + "\n" + ReturnMsg->ResultString());
-                    status = ErrorInvalidData;
+                    status = ClientErrors::InvalidData;
                 }
             }
         }
@@ -2718,7 +2718,7 @@ INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiTime pointTime;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
@@ -2733,7 +2733,7 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime Ti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2784,7 +2784,7 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime Ti
                     pi.value = 0;
 
                     ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
-                    status = ErrorInvalidFrozenReadingParity;
+                    status = ClientErrors::InvalidFrozenReadingParity;
                 }
                 else
                 {
@@ -2802,7 +2802,7 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime Ti
             if( pi.quality == InvalidQuality && !status && getDevicePointOffsetTypeEqual(1 + PointOffset_TOUBase + i * PointOffset_RateOffset, PulseAccumulatorPointType) )
             {
                 ReturnMsg->setResultString("Invalid data returned\n" + ReturnMsg->ResultString());
-                status = ErrorInvalidData;
+                status = ClientErrors::InvalidData;
             }
         }
     }
@@ -2815,7 +2815,7 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     point_info pi;
 
@@ -2839,7 +2839,7 @@ INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2883,7 +2883,7 @@ INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -2898,7 +2898,7 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2937,7 +2937,7 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime 
 
 INT Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
@@ -3123,7 +3123,7 @@ INT Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime T
 
 INT Mct410Device::decodeGetValueFreezeCounter( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const unsigned char   *msgbuf = InMessage.Buffer.DSt.Message;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -3150,7 +3150,7 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage
         dout << CtiTime() << " **** Checkpoint - orphaned GetConfig_LoadProfileExistingPeak in Mct410Device::decodeGetConfigLoadProfileExistingPeak() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         //  We're not executing any more, just disappear.
-        return NoError;
+        return ClientErrors::None;
     }
 
     unsigned long peak_time = ntohl(*reinterpret_cast<const unsigned long *>(InMessage.Buffer.DSt.Message + 3));
@@ -3179,7 +3179,7 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage
 
         ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Resetting automatically, please retry command.");
 
-        retMsgHandler( InMessage.Return.CommandStr, ErrorNeedsDateRangeReset, ReturnMsg.release(), vgList, retList );
+        retMsgHandler( InMessage.Return.CommandStr, ClientErrors::NeedsDateRangeReset, ReturnMsg.release(), vgList, retList );
     }
 
     stringstream request;
@@ -3212,7 +3212,7 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage
 
     beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
-    return NoError;  //  Return NoError even in case of overlap so macro subroutes don't consider this successful decode a failure
+    return ClientErrors::None;  //  Return NoError even in case of overlap so macro subroutes don't consider this successful decode a failure
 }
 
 
@@ -3226,10 +3226,10 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, c
         dout << CtiTime() << " **** Checkpoint - orphaned GetValue_LoadProfilePeakReport in Mct410Device::decodeGetConfigLoadProfileExistingPeak() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         //  We're not executing any more, just disappear.
-        return NoError;
+        return ClientErrors::None;
     }
 
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3245,7 +3245,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, c
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     pulses = DSt->Message[0] << 16 |
@@ -3294,7 +3294,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, c
         max_demand_timestamp < CtiTime(_llpPeakInterest.end_date + 1 - _llpPeakInterest.range).seconds() )
     {
         result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
-        status = ErrorInvalidTimestamp;
+        status = ClientErrors::InvalidTimestamp;
     }
     else if( avg_daily_difference > 0.1 )
     {
@@ -3304,7 +3304,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, c
         result_string += "Expected average daily usage: " + CtiNumStr(expected_avg_daily, 1) + string(" kWH\n");
         result_string += "Effective days: " + CtiNumStr(effective_range) + string("\n");
 
-        status = ErrorInvalidTimestamp;
+        status = ClientErrors::InvalidTimestamp;
     }
     else
     {
@@ -3393,9 +3393,9 @@ INT Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, cons
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -3422,7 +3422,7 @@ void Mct410Device::tryVerifyDailyReadInterestDate(const unsigned interest_day, c
 
 INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     string resultString;
     bool expectMore = false;
@@ -3436,12 +3436,12 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime
     if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
     {
         resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher, command could not automatically retrieve SSPEC; retry command or execute \"getconfig model\" to verify SSPEC";
-        status = ErrorVerifySSPEC;
+        status = ClientErrors::VerifySSPEC;
     }
     else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
     {
         resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
-        status = ErrorInvalidSSPEC;
+        status = ClientErrors::InvalidSSPEC;
     }
     else
     {
@@ -3529,7 +3529,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime
                     resultString  = getName() + " / Invalid channel returned by daily read ";
                     resultString += "(" + CtiNumStr(channel) + ", expecting " + CtiNumStr(_daily_read_info.request.channel) + ")";
 
-                    status = ErrorInvalidChannel;
+                    status = ClientErrors::InvalidChannel;
                 }
                 else
                 {
@@ -3561,7 +3561,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime
 
                     if( all_out_of_range )
                     {
-                        status = ErrorInvalidTimestamp;
+                        status = ClientErrors::InvalidTimestamp;
                     }
 
                     if( _daily_read_info.request.begin < _daily_read_info.request.end )
@@ -3633,7 +3633,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime
                 resultString  = getName() + " / Invalid channel returned by daily read ";
                 resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
 
-                status = ErrorInvalidChannel;
+                status = ClientErrors::InvalidChannel;
             }
             else if( day   != expected_day ||
                      month != expected_month )
@@ -3653,7 +3653,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime
 
                 _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
 
-                status = ErrorInvalidTimestamp;
+                status = ClientErrors::InvalidTimestamp;
             }
             else if( _daily_read_info.request.channel == 1
                      && _daily_read_info.request.type == daily_read_info_t::Request_SingleDay
@@ -3663,7 +3663,7 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime
 
                 //  when they try the read again, it'll re-read the period of interest from the meter
 
-                status = ErrorInvalidTimestamp;
+                status = ClientErrors::InvalidTimestamp;
             }
             else
             {
@@ -3804,7 +3804,7 @@ string Mct410Device::describeStatusAndEvents(const unsigned char *buf)
 
 INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -3817,7 +3817,7 @@ INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -3889,7 +3889,7 @@ INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 
 INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3905,7 +3905,7 @@ INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -3952,7 +3952,7 @@ INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 
 INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-     INT status = NoError;
+     INT status = ClientErrors::None;
 
      const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3968,7 +3968,7 @@ INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime 
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-         return MEMORY;
+         return ClientErrors::MemoryAccess;
      }
 
      ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -4030,7 +4030,7 @@ INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime 
 
 INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4057,7 +4057,7 @@ INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -4070,7 +4070,7 @@ INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTim
 
 INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4100,7 +4100,7 @@ INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTi
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -4113,7 +4113,7 @@ INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTi
 
 INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4139,7 +4139,7 @@ INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime T
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -4152,7 +4152,7 @@ INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime T
 
 INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4207,7 +4207,7 @@ INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -4222,7 +4222,7 @@ INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const 
 
 INT Mct410Device::decodeGetConfigDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError, state = 0;
+    INT status = ClientErrors::None, state = 0;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4414,7 +4414,7 @@ string Mct410Device::decodeDisconnectCyclingConfig(const boost::optional<int> co
 
 INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4440,7 +4440,7 @@ INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
     }
 
     return status;
@@ -4449,7 +4449,7 @@ INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime 
 
 INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4468,7 +4468,7 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiT
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -4534,7 +4534,7 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiT
 
 INT Mct410Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -4620,7 +4620,7 @@ INT Mct410Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -4698,7 +4698,7 @@ bool Mct410Device::sspecValid(const unsigned sspec, const unsigned rev) const
 
 INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4752,7 +4752,7 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage
 
 INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

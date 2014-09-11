@@ -88,7 +88,7 @@ YukonError_t Rfn420FocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, C
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnFocusAlLcdConfigurationReadCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
@@ -99,7 +99,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
 
         if( ! deviceConfig )
         {
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         const unsigned config_display_digits        = getConfigData<unsigned>     ( deviceConfig, Config::RfnStrings::DisplayDigits );
@@ -110,7 +110,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for config key \"" << Config::RfnStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return ErrorInvalidConfigData;
+            return ClientErrors::InvalidConfigData;
         }
 
         const unsigned char config_display_duration = getConfigData<unsigned char>( deviceConfig, Config::RfnStrings::LcdCycleTime );
@@ -133,7 +133,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << configDisplayItem << ") seen after SLOT_DISABLED for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-                return ErrorInvalidConfigData;
+                return ClientErrors::InvalidConfigData;
             }
             else
             {
@@ -152,7 +152,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << configDisplayItem << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-                    return ErrorInvalidConfigData;
+                    return ClientErrors::InvalidConfigData;
                 }
 
                 config_display_items.push_back(*metricItem);
@@ -164,27 +164,27 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
         // check if the dynamic info has the current configuration
         if( ! parse.isKeyValid("force") && isDisplayConfigCurrent( config_display_strings, config_display_digits, config_display_duration ))
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
 
         // if this is verify only
         if( parse.isKeyValid("verify"))
         {
-            return ConfigNotCurrent;
+            return ClientErrors::ConfigNotCurrent;
         }
 
         // Create display items config
 
         rfnRequests.push_back( boost::make_shared<Commands::RfnFocusAlLcdConfigurationWriteCommand>( config_display_items, config_display_duration ));
 
-        return NoError;
+        return ClientErrors::None;
     }
     catch( const MissingConfigDataException &e )
     {
         logInfo( e.what(),
                  __FUNCTION__, __FILE__, __LINE__ );
 
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 }
 

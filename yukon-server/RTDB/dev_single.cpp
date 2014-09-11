@@ -169,12 +169,12 @@ INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPr
         if(isInhibited())
         {
             adjustNextScanTime(ScanRateAccum);
-            nRet = DEVICEINHIBITED;
+            nRet = ClientErrors::DeviceInhibited;
         }
         else if(!isWindowOpen())
         {
             adjustNextScanTime(ScanRateAccum);
-            nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
+            nRet=ClientErrors::ScanWindowClosed;
         }
         else if( clearedForScan(ScanRateAccum) )
         {
@@ -185,7 +185,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPr
                 // CAN NOT scan a global address.
                 setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
                 getNextScan(ScanRateAccum) = CtiTime(YUKONEOT);
-                return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
+                return ClientErrors::ScanGlobalAddress; // Cannot scan a global address.
             }
 
             strncpy(OutMessage->Request.CommandStr, "scan accumulator", sizeof(OutMessage->Request.CommandStr));
@@ -195,7 +195,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPr
             nRet = AccumulatorScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
             OutMessage = NULL;      // Memory may be forgotten
 
-            if(nRet && nRet != ACCUMSNOTSUPPORTED)
+            if(nRet && nRet != ClientErrors::AccumulatorsNotSupported)
             {
                 setScanFlag(ScanFreezeFailed);
             }
@@ -221,7 +221,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPr
     }
     else
     {
-        nRet = MEMORY;
+        nRet = ClientErrors::MemoryAccess;
     }
 
     /*
@@ -231,7 +231,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPr
      *  of the device, we us the two scan times to do our work.
      */
 
-    if(nRet != ACCUMSNOTSUPPORTED)
+    if(nRet != ClientErrors::AccumulatorsNotSupported)
     {
         if(!isScanFlagSet(ScanForced))
         {
@@ -301,7 +301,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPrio
                 dout << CtiTime() << " Integrity Scan aborted due to inhibited device: " << getName() << endl;
             }
 
-            nRet =  SCAN_ERROR_DEVICE_INHIBITED;
+            nRet =  ClientErrors::ScanDeviceInhibited;
 
         }
         else if(!isWindowOpen())
@@ -310,7 +310,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPrio
             //             CtiLockGuard<CtiLogger> doubt_guard(dout);
             //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << endl;
             //          }
-            nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
+            nRet=ClientErrors::ScanWindowClosed;
         }
         else // if(isInhibited()) ... so it isn't inhibited
         {
@@ -324,7 +324,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPrio
                     setScanRate(ScanRateIntegrity, YUKONEOT);    // set him to the end of time!
                     setNextScan(ScanRateIntegrity, CtiTime(YUKONEOT));
 
-                    return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
+                    return ClientErrors::ScanGlobalAddress; // Cannot scan a global address.
                 }
 
 #if 0
@@ -370,7 +370,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPrio
     }
     else
     {
-        nRet = MEMORY;
+        nRet = ClientErrors::MemoryAccess;
     }
 
     adjustNextScanTime(ScanRateIntegrity);
@@ -437,12 +437,12 @@ INT CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT ScanPriori
                  */
 
                 adjustNextScanTime(ScanRateGeneral);
-                nRet = SCAN_ERROR_DEVICE_INHIBITED;
+                nRet = ClientErrors::ScanDeviceInhibited;
             }
             else if(!isWindowOpen())
             {
                 adjustNextScanTime(ScanRateGeneral);
-                nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
+                nRet=ClientErrors::ScanWindowClosed;
             }
             else // if(isInhibited()) ... so it isn't inhibited
             {
@@ -456,7 +456,7 @@ INT CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT ScanPriori
                         setScanRate(ScanRateGeneral, YUKONEOT);    // set him to the end of time!
                         setNextScan(ScanRateGeneral, CtiTime(YUKONEOT));
 
-                        return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
+                        return ClientErrors::ScanGlobalAddress; // Cannot scan a global address.
                     }
 
                     // Do the devices general scan!
@@ -510,7 +510,7 @@ INT CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT ScanPriori
     }
     else
     {
-        nRet = MEMORY;
+        nRet = ClientErrors::MemoryAccess;
     }
 
     /*
@@ -575,7 +575,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, INT ScanPr
                 dout << CtiTime() << " Load Profile Scan aborted due to inhibited device: " << getName() << endl;
             }
 
-            nRet =  SCAN_ERROR_DEVICE_INHIBITED;
+            nRet =  ClientErrors::ScanDeviceInhibited;
 
         }
         else if(!isWindowOpen())
@@ -584,7 +584,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, INT ScanPr
             //             CtiLockGuard<CtiLogger> doubt_guard(dout);
             //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << endl;
             //          }
-            nRet = SCAN_ERROR_DEVICE_WINDOW_CLOSED;
+            nRet = ClientErrors::ScanWindowClosed;
         }
         else // if(isInhibited()) ... so it isn't inhibited
         {
@@ -598,7 +598,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, INT ScanPr
                     setScanRate(ScanRateLoadProfile, YUKONEOT);    // set him to the end of time!
                     setNextScan(ScanRateLoadProfile, CtiTime(YUKONEOT));
 
-                    return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
+                    return ClientErrors::ScanGlobalAddress; // Cannot scan a global address.
                 }
 
 #if 0
@@ -629,7 +629,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, INT ScanPr
     }
     else
     {
-        nRet = MEMORY;
+        nRet = ClientErrors::MemoryAccess;
     }
 
     adjustNextScanTime(ScanRateLoadProfile);
@@ -657,7 +657,7 @@ inline Protocol::Interface *CtiDeviceSingle::getProtocol()
 
 YukonError_t CtiDeviceSingle::generate(CtiXfer &xfer)
 {
-    YukonError_t retval = Error_Abnormal;
+    YukonError_t retval = ClientErrors::Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->generate(xfer);
@@ -667,7 +667,7 @@ YukonError_t CtiDeviceSingle::generate(CtiXfer &xfer)
 
 YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
 {
-    YukonError_t retval = Error_Abnormal;
+    YukonError_t retval = ClientErrors::Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     try
@@ -681,7 +681,7 @@ YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
             dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName()
                  << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        retval = MISCONFIG;
+        retval = ClientErrors::MissingConfig;
     }
 
     return retval;
@@ -689,7 +689,7 @@ YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
 
 YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 {
-    YukonError_t retval = Error_Abnormal;
+    YukonError_t retval = ClientErrors::Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->recvCommRequest(OutMessage);
@@ -699,7 +699,7 @@ YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 
 YukonError_t CtiDeviceSingle::sendCommResult(INMESS &InMessage)
 {
-    YukonError_t retval = Error_Abnormal;
+    YukonError_t retval = ClientErrors::Abnormal;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->sendCommResult(InMessage);
@@ -794,13 +794,10 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
 
     if( nRet )
     {
-        string CmdStr("Unknown");
-
-        if(InMessage.Return.CommandStr[0] != '\0')
-        {
-            CmdStr = string(InMessage.Return.CommandStr);
-            std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
-        }
+        const std::string CmdStr =
+                InMessage.Return.CommandStr[0]
+                    ? boost::algorithm::to_lower_copy(std::string(InMessage.Return.CommandStr))
+                    : "Unknown";
 
         if( processAdditionalRoutes(InMessage, nRet) )
         {
@@ -808,50 +805,44 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
 
             InEchoToOut( InMessage, *OutTemplate );
 
-            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage.TargetID,
-                                                           string(InMessage.Return.CommandStr),
-                                                           InMessage.Return.UserID,
-                                                           InMessage.Return.GrpMsgID,
-                                                           InMessage.Return.RouteID,
-                                                           InMessage.Return.RetryMacroOffset,
-                                                           InMessage.Return.Attempt,
-                                                           InMessage.Return.OptionsField,
-                                                           InMessage.Priority);
+            CtiRequestMsg pReq(InMessage.TargetID,
+                               string(InMessage.Return.CommandStr),
+                               InMessage.Return.UserID,
+                               InMessage.Return.GrpMsgID,
+                               InMessage.Return.RouteID,
+                               InMessage.Return.RetryMacroOffset,
+                               InMessage.Return.Attempt,
+                               InMessage.Return.OptionsField,
+                               InMessage.Priority);
 
-            pReq->setConnectionHandle( InMessage.Return.Connection );
+            pReq.setConnectionHandle( InMessage.Return.Connection );
 
             {
-                string msg;
-                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(getID(),
-                                                            CmdStr,
-                                                            string("Macro offset ") + CtiNumStr(*InMessage.Return.RetryMacroOffset - 1) + string(" failed. Attempting next offset."),
-                                                            nRet,
-                                                            InMessage.Return.RouteID,
-                                                            InMessage.Return.RetryMacroOffset,
-                                                            InMessage.Return.Attempt,
-                                                            InMessage.Return.GrpMsgID,
-                                                            InMessage.Return.UserID,
-                                                            InMessage.Return.SOE,
-                                                            CtiMultiMsg_vec());
+                std::ostringstream msg;
 
-                msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + GetErrorString(nRet);
+                msg << "Macro offset " << *InMessage.Return.RetryMacroOffset - 1 << " failed. Attempting next offset."
+                    << "\nError " << nRet << ": " << GetErrorString(nRet);
 
-                if( nRet == EWORDRCV && InMessage.Buffer.RepeaterError.ESt )
+                if( nRet == ClientErrors::EWordReceived && InMessage.Buffer.RepeaterError.ESt )
                 {
-                    msg += "\n";
-                    msg += eWordReport(*(InMessage.Buffer.RepeaterError.ESt), InMessage.Buffer.RepeaterError.Details);
+                    msg << "\n" << eWordReport(*(InMessage.Buffer.RepeaterError.ESt), InMessage.Buffer.RepeaterError.Details);
                 }
 
-                Ret->setResultString( msg );
-                Ret->setExpectMore(true);           // Help MACS know this is intermediate.
-                Ret->setStatus( nRet );
+                std::auto_ptr<CtiReturnMsg> Ret(
+                        new CtiReturnMsg(
+                                getID(),
+                                InMessage.Return,
+                                msg.str(),
+                                nRet));
 
-                retList.push_back( Ret );
+                Ret->setExpectMore(true);           // Help MACS know this is intermediate.
+
+                retList.push_back( Ret.release() );
             }
 
             size_t cnt = outList.size();
 
-            if( 0 != (status = beginExecuteRequestFromTemplate(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate)) )
+            if( status = beginExecuteRequestFromTemplate(&pReq, CtiCommandParser(pReq.CommandString()), vgList, retList, outList, OutTemplate) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -869,8 +860,6 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
                 // if blastfail is not set, we need to decrement the message we are retrying here.
                 decrementGroupMessageCount(InMessage.Return.UserID, (long)InMessage.Return.Connection);
             }
-
-            delete pReq;
 
             if(OutTemplate != NULL)
             {
@@ -893,7 +882,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
         if(bLastFail)
         {
             /* something went wrong so start by printing error */
-            if( InMessage.ErrorCode != ErrPortSimulated)
+            if( InMessage.ErrorCode != ClientErrors::PortSimulated)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << TimeNow << " Error (" << InMessage.ErrorCode << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
@@ -911,7 +900,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
                                                         InMessage.Return.SOE,
                                                         CtiMultiMsg_vec());
 
-            if( nRet == EWORDRCV && InMessage.Buffer.RepeaterError.ESt )
+            if( nRet == ClientErrors::EWordReceived && InMessage.Buffer.RepeaterError.ESt )
             {
                 string msg = Ret->ResultString();
 
@@ -947,6 +936,7 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
             }
             else
             {
+                //  No retry generated, send an error result instead
                 ErrorDecode(InMessage, TimeNow, retList);
             }
         }
@@ -963,7 +953,7 @@ INT CtiDeviceSingle::SubmitRetry(const INMESS   &InMessage,
                                  OutMessageList &outList)
 {
     //  default to no retries
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceSingle::doDeviceInit(void)
@@ -1705,7 +1695,7 @@ bool CtiDeviceSingle::isScanDataValid() const
 
 INT CtiDeviceSingle::validateScanData()
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
 

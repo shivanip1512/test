@@ -223,19 +223,19 @@ public:
      *  A paired set which implements a state machine (before/do port work/after) in conjunction with
      *  the port's function out/inMess pair.
      */
-    virtual YukonError_t generateCommandHandshake(CtiXfer &Transfer, CtiMessageList &traceList)                                { return NoHandShakeMethod;}
-    virtual YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)  { return NoHandShakeMethod;}
+    virtual YukonError_t generateCommandHandshake(CtiXfer &Transfer, CtiMessageList &traceList)                                { return ClientErrors::NoMethodForHandshake;}
+    virtual YukonError_t decodeResponseHandshake (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)  { return ClientErrors::NoMethodForHandshake;}
 
-    virtual YukonError_t generateCommandDisconnect(CtiXfer &Transfer, CtiMessageList &traceList)                                { return NoHandShakeMethod;}
-    virtual YukonError_t decodeResponseDisconnect (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)  { return NoHandShakeMethod;}
+    virtual YukonError_t generateCommandDisconnect(CtiXfer &Transfer, CtiMessageList &traceList)                                { return ClientErrors::NoMethodForHandshake;}
+    virtual YukonError_t decodeResponseDisconnect (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)  { return ClientErrors::NoMethodForHandshake;}
 
-    virtual YukonError_t generateCommand    (CtiXfer  &Transfer, CtiMessageList &traceList)                              { return NoGenerateCmdMethod;}
-    virtual YukonError_t decodeResponse (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)               { return NoDecodeResponseMethod;}
+    virtual YukonError_t generateCommand    (CtiXfer  &Transfer, CtiMessageList &traceList)                              { return ClientErrors::NoMethodForGenerateCmd;}
+    virtual YukonError_t decodeResponse (CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)               { return ClientErrors::NoMethodForDecodeResponse;}
 
-    virtual INT allocateDataBins (OUTMESS *)                                         { return MemoryError;}
-    virtual INT freeDataBins ()                                                      { return MemoryError;}
-    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived)      { return NoDataCopyMethod;}
-    virtual INT copyLoadProfileData (BYTE *aInMessBuffer, ULONG &aBytesReceived)     { return NoDataCopyMethod;}
+    virtual INT allocateDataBins (OUTMESS *)                                         { return ClientErrors::Memory;}
+    virtual INT freeDataBins ()                                                      { return ClientErrors::Memory;}
+    virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived)      { return ClientErrors::NoMethodForDataCopy;}
+    virtual INT copyLoadProfileData (BYTE *aInMessBuffer, ULONG &aBytesReceived)     { return ClientErrors::NoMethodForDataCopy;}
 
 
     CtiMeterMachineStates_t  getCurrentState () const

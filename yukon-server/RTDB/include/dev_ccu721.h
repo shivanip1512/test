@@ -38,7 +38,7 @@ private:
         InMessage_StringOffset = 96  //  hopefully enough to stay out of the way of the DSTRUCT
     };
 
-    static YukonError_t translateKlondikeError(Protocols::KlondikeProtocol::Errors error);
+    static YukonError_t translateKlondikeError(Protocols::KlondikeProtocol::KlondikeErrors error);
 
 protected:
 

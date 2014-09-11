@@ -56,7 +56,7 @@ INT MctBroadcastDevice::executePutConfig(CtiRequestMsg        *pReq,
 {
     bool  found = false;
     INT   function = 0;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     int   intervallength;
     string temp;
     CtiTime NowTime;
@@ -107,7 +107,7 @@ INT MctBroadcastDevice::executePutConfig(CtiRequestMsg        *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -129,7 +129,7 @@ INT MctBroadcastDevice::executePutStatus(CtiRequestMsg        *pReq,
                                             OutMessageList    &outList)
 {
     bool  found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     int   intervallength;
     string temp;
     CtiTime NowTime;
@@ -216,7 +216,7 @@ INT MctBroadcastDevice::executePutStatus(CtiRequestMsg        *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -234,7 +234,7 @@ INT MctBroadcastDevice::executePutValue(CtiRequestMsg        *pReq,
                                            CtiMessageList    &retList,
                                            OutMessageList    &outList)
 {
-    INT    nRet = NoError,
+    INT    nRet = ClientErrors::None,
            i;
     long   rawPulses;
     double dial;
@@ -263,7 +263,7 @@ INT MctBroadcastDevice::executePutValue(CtiRequestMsg        *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
 
     return nRet;
@@ -310,7 +310,7 @@ bool MctBroadcastDevice::getOperation( const UINT &cmd, USHORT &function, USHORT
 
 INT MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
 
     {

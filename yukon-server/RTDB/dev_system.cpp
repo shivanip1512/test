@@ -42,7 +42,7 @@ using std::list;
 
 INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     INT iTemp;
 
     CtiRouteSPtr Route;
@@ -70,7 +70,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         {
             if (parse.isKeyValid("phasedetect") && parse.isKeyValid("broadcast"))
             {
-                int nRet = NoError;
+                int nRet = ClientErrors::None;
                 string broadcastType = parse.getsValue("broadcast");
 
                 CtiReturnMsg * errRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
@@ -136,7 +136,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             }
                             // This will need to be refactored out when more device types are added.
                             // We expect a response back so tell the clients to this is not the last message.
-                            if (nRet == NoError)
+                            if (nRet == ClientErrors::None)
                             {
                                 //If we are here there is no error message to send. Delete it.
                                 delete errRet;
@@ -152,7 +152,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         {
                             string resultString = getName() + ": ERROR Route not found: " + CtiNumStr(OutMessage->Request.RouteID);
                             errRet->setResultString(resultString);
-                            errRet->setStatus(BADROUTE);
+                            errRet->setStatus(ClientErrors::BadRoute);
                             retList.push_back(errRet);
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -165,7 +165,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 {
                     string resultString = getName() + ": ERROR Unsupported device type: " + broadcastType;
                     errRet->setResultString(resultString);
-                    errRet->setStatus(ErrorUnsupportedDevice);
+                    errRet->setStatus(ClientErrors::UnsupportedDevice);
                     retList.push_back(errRet);
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -199,7 +199,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         {
                             string problem = "Invalid Request: Serial number or SPID not specified";
 
-                            status = ErrorInvalidRequest;
+                            status = ClientErrors::InvalidRequest;
 
                             vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                             retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -268,7 +268,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             problem = string("Invalid Request: (Relay 1,2,3) | (OPEN|CLOSE) not specified");
                         }
 
-                        status = ErrorInvalidRequest;
+                        status = ClientErrors::InvalidRequest;
 
                         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                         retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -397,7 +397,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                 problem = "Invalid Request: (Load 1,2,3...) not specified";
                             }
 
-                            status = ErrorInvalidRequest;
+                            status = ClientErrors::InvalidRequest;
 
                             vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
 
@@ -431,7 +431,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                                          OutMessage->Request.CommandStr,
                                                                          resultString,
-                                                                         BADPARAM,
+                                                                         ClientErrors::BadParameter,
                                                                          OutMessage->Request.RouteID,
                                                                          OutMessage->Request.RetryMacroOffset,
                                                                          OutMessage->Request.Attempt,
@@ -483,7 +483,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
             case ProtocolVersacomType:
                 {
                     BOOL        error = TRUE;
-                    string   problem(parse.getCommandStr() + ": " + GetErrorString(ErrorInvalidRequest));
+                    string   problem(parse.getCommandStr() + ": " + GetErrorString(ClientErrors::InvalidRequest));
 
                     memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
 
@@ -503,7 +503,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                     if(error)
                     {
-                        status = ErrorInvalidRequest;
+                        status = ClientErrors::InvalidRequest;
                         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
 
                         retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -542,7 +542,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             problem = string("Invalid Request: Serial number not specified");
                         }
 
-                        status = ErrorInvalidRequest;
+                        status = ClientErrors::InvalidRequest;
 
                         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
 
@@ -585,7 +585,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
     case GetConfigRequest:
     default:
         {
-            status = NoExecuteRequestMethod;
+            status = ClientErrors::NoMethodForExecuteRequest;
 
             retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                        string(OutMessage->Request.CommandStr),
@@ -634,7 +634,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 }
                 else
                 {
-                    status = MEMORY;
+                    status = ClientErrors::MemoryAccess;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -644,7 +644,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
             }
             else
             {
-                status = BADROUTE;
+                status = ClientErrors::BadRoute;
                 retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                  string(OutMessage->Request.CommandStr),
                                                  string("Bad route specified for execution on the \"system\" device"),
@@ -726,7 +726,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                     }
                                     else
                                     {
-                                        status = MEMORY;
+                                        status = ClientErrors::MemoryAccess;
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -852,6 +852,6 @@ INT CtiDeviceSystem::ProcessResult(const INMESS& InMessage, const CtiTime TimeNo
 
     retList.push_back(retMsg);
 
-    return NoError;
+    return ClientErrors::None;
 }
 

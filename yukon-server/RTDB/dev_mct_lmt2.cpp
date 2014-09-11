@@ -116,7 +116,7 @@ ULONG Lmt2Device::calcNextLPScanTime( void )
 
 INT Lmt2Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
 
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
@@ -258,7 +258,7 @@ bool Lmt2Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *
 
 INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -306,7 +306,7 @@ INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
 INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -336,7 +336,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime Tim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     return_msg->setUserMessageId(InMessage.Return.UserID);
@@ -494,7 +494,7 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime Tim
 
 INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
@@ -509,7 +509,7 @@ INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -552,7 +552,7 @@ INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime 
 
 INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
@@ -564,7 +564,7 @@ INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTi
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -584,7 +584,7 @@ INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTi
 
 INT Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-   INT status = NoError;
+   INT status = ClientErrors::None;
 
    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -626,7 +626,7 @@ INT Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Time
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
      }
 
-     return MEMORY;
+     return ClientErrors::MemoryAccess;
   }
 
   ReturnMsg->setUserMessageId(InMessage.Return.UserID);

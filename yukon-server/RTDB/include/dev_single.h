@@ -86,7 +86,7 @@ protected:
     {
         // Return value to allow non error returns
         // where error was handled in code.
-        ExecutionComplete = NoError
+        ExecutionComplete = ClientErrors::None
     };
 
     CtiTableDeviceScanRate       *_scanRateTbl[ScanRateInvalid];    // Multiple Scan Rates

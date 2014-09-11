@@ -138,14 +138,14 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                            xfer.getInBuffer()[xfer.getInCountActual()] == *_EOT)
                         {
                             //SUCCESS!!!!
-                            status = NoError;
+                            status = ClientErrors::None;
                             setCurrentState(getPreviousState());
                             break;
                         }
                         else
                         {
 
-                            status = UnknownError;
+                            status = ClientErrors::Unknown;
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - invalid data recived during hanshake when using " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -157,7 +157,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                     }
                     else
                     {
-                        status = ErrorPageNoResponse;
+                        status = ClientErrors::PageNoResponse;
                         _command = Fail;
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - no response received " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -169,7 +169,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                     if(getPreviousState() == StateDoNothing)
                     {
                         //this is a loop? Bad.
-                        status = Error_Abnormal;
+                        status = ClientErrors::Abnormal;
                         _command = Fail;
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -193,7 +193,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             {
                                 _serialNumber = 1;
                                 setCurrentState(StateGeneratePacket);
-                                status = NoError;
+                                status = ClientErrors::None;
                             }
                             else if(getPreviousState() == StateGeneratePacket)
                             {
@@ -216,7 +216,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                                 {
                                     _command = Success;
                                 }
-                                status = NoError;
+                                status = ClientErrors::None;
                             }
 
                         }
@@ -230,7 +230,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             if(_retryCount>2)
                             {
                                 _retryCount = 0;
-                                status = ErrorPageRS;
+                                status = ClientErrors::PageRS;
                                 _command = Fail; //Transaction Complete
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -250,7 +250,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             }
                             _retryCount = 0;
                             _command = Fail;
-                            status = UnknownError;
+                            status = ClientErrors::Unknown;
                         }
                         else if(xfer.getInBuffer()[0] == *_RS)//buffer full
                         {
@@ -260,11 +260,11 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             }
                             _retryCount = 0;
                             _command = Fail;
-                            status = UnknownError;
+                            status = ClientErrors::Unknown;
                         }
                         else
                         {
-                            status = UnknownError;
+                            status = ClientErrors::Unknown;
                             _command = Fail; //Transaction Complete
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - TNPP Device had a fatal unknown error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -277,7 +277,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - No response from TNPP device: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-                        status = ErrorPageNoResponse;
+                        status = ClientErrors::PageNoResponse;
                         _command = Fail; //Transaction Complete
                     }
                     break;
@@ -299,7 +299,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
 YukonError_t CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     try
     {
         switch( getCurrentState() )
@@ -412,7 +412,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
 
 YukonError_t CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
     if( OutMessage )
     {
         _outMessage = *OutMessage;
@@ -445,7 +445,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
             dout << CtiTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceTnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -458,7 +458,7 @@ bool CtiDeviceTnppPagingTerminal::isTransactionComplete()
 
 INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -484,7 +484,7 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
         case PutConfigRequest:
         default:
             {
-                nRet = NoExecuteRequestMethod;
+                nRet = ClientErrors::NoMethodForExecuteRequest;
                 /* Set the error value in the base class. */
                 // FIX FIX FIX 092999
                 retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -790,7 +790,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::sendCommResult(INMESS &InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.
-    return NoError;
+    return ClientErrors::None;
 }
 
 

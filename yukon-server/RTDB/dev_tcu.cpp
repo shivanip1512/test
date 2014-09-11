@@ -85,7 +85,7 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg     *pReq,
                               OutMessageList    &outList,
                               INT ScanPriority)
 {
-   INT status = NoError;
+   INT status = ClientErrors::None;
 
    if(OutMessage != NULL)
    {
@@ -100,7 +100,7 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg     *pReq,
    }
    else
    {
-      status = MEMORY;
+      status = ClientErrors::MemoryAccess;
    }
 
    return status;
@@ -149,7 +149,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
    OutMessage->OutLength       = 4;
    OutMessage->InLength        = -1;
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 /* Routine to decode returned TCU message and update database */
@@ -255,7 +255,7 @@ INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, Ct
       break;
    }   /* End of switch */
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -267,7 +267,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
                                  CtiMessageList    &retList,
                                  OutMessageList    &outList)
 {
-   INT nRet = NoError;
+   INT nRet = ClientErrors::None;
    /*
     *  This method should only be called by the dev_base method
     *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -410,7 +410,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
    case PutConfigRequest:
    default:
       {
-         nRet = NoExecuteRequestMethod;
+         nRet = ClientErrors::NoMethodForExecuteRequest;
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
          retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -448,7 +448,7 @@ INT CtiDeviceTCU::TCUControl(OUTMESS* OutMessage, VSTRUCT *VSt)
 
    OutMessage->Buffer.VSt = *VSt;
 
-   return(ErrorInvalidRequest);
+   return ClientErrors::InvalidRequest;
 }
 
 /* Routine to execute a loop message */
@@ -472,7 +472,7 @@ INT CtiDeviceTCU::TCULoop(OUTMESS* OutMessage)
    OutMessage->SaveNexus               = NULL;
 
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 

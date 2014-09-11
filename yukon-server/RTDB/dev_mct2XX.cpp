@@ -75,7 +75,7 @@ bool Mct2xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  */
 INT Mct2xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
 
     switch(InMessage.Sequence)
@@ -113,7 +113,7 @@ INT Mct2xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct2xxDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -142,7 +142,7 @@ INT Mct2xxDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -186,7 +186,7 @@ INT Mct2xxDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct2xxDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -215,7 +215,7 @@ INT Mct2xxDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -276,7 +276,7 @@ INT Mct2xxDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct2xxDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
@@ -291,7 +291,7 @@ INT Mct2xxDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -357,7 +357,7 @@ INT Mct2xxDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 
 INT Mct2xxDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -426,7 +426,7 @@ INT Mct2xxDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
         }
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -441,7 +441,7 @@ INT Mct2xxDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct2xxDevice::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const unsigned char *optBuf = InMessage.Buffer.DSt.Message;
 
@@ -456,7 +456,7 @@ INT Mct2xxDevice::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime 
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
         }
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     options = "Device \"" + getName() + "\" configuration:\n";

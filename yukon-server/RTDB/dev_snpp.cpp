@@ -80,7 +80,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
                         if(getPreviousState() == StateEnd)
                         {
-                            status = NoError;
+                            status = ClientErrors::None;
                             _command = Complete; //Transaction Complete
                         }
 
@@ -94,7 +94,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                 {
                     //OUCH. Nothing read in, probably a timeout.
                     _command = Complete; //Transaction Complete
-                    status = Error_Abnormal; // Abort when a carriage return isnt received from unit
+                    status = ClientErrors::Abnormal; // Abort when a carriage return isnt received from unit
 
                 }
 
@@ -126,7 +126,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                     }
                     else
                     {
-                        status = ErrorPageRS;
+                        status = ClientErrors::PageRS;
                         _command = Complete; //Transaction Complete
 
                         if(getPreviousState() == StateEnd)
@@ -136,7 +136,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                                 dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                             }
-                            status = NoError;//quit command failed, all others passed, return normal
+                            status = ClientErrors::None;//quit command failed, all others passed, return normal
                         }
 
                     }
@@ -144,7 +144,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                 }
                 else
                 {
-                    status = ErrorPageNoResponse;
+                    status = ClientErrors::PageNoResponse;
                     _command = Complete; //Transaction Complete
 
                     if(getPreviousState() == StateEnd)
@@ -154,7 +154,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                             dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                         }
-                        status = NoError;//quit command failed, all others passed, return normal
+                        status = ClientErrors::None;//quit command failed, all others passed, return normal
                     }
                 }
                 break;
@@ -178,7 +178,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
 YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
     try
     {
         switch( getCurrentState() )
@@ -457,7 +457,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
 
 YukonError_t CtiDeviceSnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( OutMessage )
     {
@@ -484,7 +484,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
             dout << CtiTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceSnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -497,7 +497,7 @@ bool CtiDeviceSnppPagingTerminal::isTransactionComplete()
 
 INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -557,7 +557,7 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
     case PutConfigRequest:
     default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             resultString = "SNPP Devices do not support this command (yet?)";
@@ -677,7 +677,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::sendCommResult(INMESS &InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.
-    return NoError;
+    return ClientErrors::None;
 }
 
 void CtiDeviceSnppPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)

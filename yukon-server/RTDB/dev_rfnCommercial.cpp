@@ -26,7 +26,7 @@ YukonError_t RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg   
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnImmediateDemandFreezeCommand>() );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -37,7 +37,7 @@ YukonError_t RfnCommercialDevice::executeReadDemandFreezeInfo( CtiRequestMsg    
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>() );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

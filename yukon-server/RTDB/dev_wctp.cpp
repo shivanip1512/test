@@ -160,7 +160,7 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg     *pReq,
                                           CtiMessageList    &retList,
                                           OutMessageList    &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -221,7 +221,7 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg     *pReq,
     case PutConfigRequest:
     default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             resultString = "WCTP Devices do not support this command (yet?)";
@@ -268,7 +268,7 @@ INT CtiDeviceWctpTerminal::allocateDataBins(OUTMESS *oMess)
 
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceWctpTerminal::freeDataBins()
@@ -283,7 +283,7 @@ INT CtiDeviceWctpTerminal::freeDataBins()
         _outMessage = NULL;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 CHAR  CtiDeviceWctpTerminal::getPagePrefix() const
@@ -559,7 +559,7 @@ INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, CtiMessageList 
     trace.setTrace( string("\"") + outStr + string("\"\n\n") );
     traceList.push_back( trace.replicateMessage() );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList &traceList, BOOL CompletedMessage)
@@ -600,7 +600,7 @@ INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, CtiMessageList 
         _inStr = string();     // Reset it for the next message
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 CHAR* CtiDeviceWctpTerminal::replaceChars(const CHAR *src, CHAR *dst)
@@ -807,7 +807,7 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
 YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, CtiMessageList &traceList)
 {
     INT   i;
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     xfer.setInCountExpected(4000);
 
@@ -971,7 +971,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
 
     try
     {
-        if( status == NoError )     // Communications must have been successful
+        if( status == ClientErrors::None )     // Communications must have been successful
         {
             switch( getCurrentState() )
             {
@@ -1017,7 +1017,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                             if(_strnicmp(buf, "HTTP", 4) != 0)
                             {
                                 setCurrentState( StateScanAbort );
-                                return ErrorHttpResponse;
+                                return ClientErrors::WctpHttpResponse;
                             }
 
                             INT statusCode = 0;
@@ -1026,7 +1026,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                             if(statusCode != 200)
                             {
                                 setCurrentState( StateScanAbort );
-                                return ErrorHttpResponse;
+                                return ClientErrors::WctpHttpResponse;
                             }
 
                             /* Successful HTTP response */
@@ -1075,7 +1075,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                             catch(const XMLException& toCatch)
                             {
                                 setCurrentState( StateScanAbort );
-                                return ErrorXMLParser;
+                                return ClientErrors::WctpXmlParser;
                             }
                         }
 
@@ -1130,7 +1130,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                             if(handler->hasError())
                             {
                                 setCurrentState( StateScanAbort );
-                                return ErrorWctpResponse;
+                                return ClientErrors::WctpResponse;
                             }
                             else
                             {
@@ -1142,7 +1142,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                         {
                             // Unexpected exception during parsing WCTP response message
                             setCurrentState( StateScanAbort );
-                            return ErrorWctpResponse;
+                            return ClientErrors::WctpResponse;
                         }
 
                         /* The WCTP response message has been received completely, and parsed successfully */
@@ -1163,19 +1163,19 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
 
                             if(299 < handler->getResponseCode() && handler->getResponseCode() < 400)
                             {
-                                status = ErrorWctp300Series;
+                                status = ClientErrors::Wctp300Series;
                             }
                             else if(399 < handler->getResponseCode() && handler->getResponseCode() < 500)
                             {
-                                status = ErrorWctp400Series;
+                                status = ClientErrors::Wctp400Series;
                             }
                             else if(499 < handler->getResponseCode() && handler->getResponseCode() < 600)
                             {
-                                status = ErrorWctp500Series;
+                                status = ClientErrors::Wctp500Series;
                             }
                             else if(599 < handler->getResponseCode() && handler->getResponseCode() < 700)
                             {
-                                status = ErrorWctp600Series;
+                                status = ClientErrors::Wctp600Series;
                             }
                         }
 
@@ -1203,15 +1203,15 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                         // WCTP response message timeout
                         if(!statusParsed)
                         {
-                            status = ErrorPageNoResponse;
+                            status = ClientErrors::PageNoResponse;
                         }
                         else if(!headerParsed)
                         {
-                            status = ErrorHttpResponse;
+                            status = ClientErrors::WctpHttpResponse;
                         }
                         else
                         {
-                            status = ErrorWctpTimeout;
+                            status = ClientErrors::WctpTimeout;
                         }
 
                         setCurrentState( StateScanAbort );

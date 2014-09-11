@@ -284,7 +284,7 @@ int Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
         {
             if( parse.isKeyValid("lcd display digits") )
             {
-                returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
+                returnErrorMessage(ClientErrors::InvalidSSPEC, OutMessage, retList,
                                    "LCD display digits not supported for this device's SSPEC");
 
                 return ExecutionComplete;
@@ -297,8 +297,8 @@ int Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
                     transformerRatio));
 
             return tryExecuteCommand(*OutMessage, meterParameterConfiguration)
-                       ? NoError
-                       : NoMethod;
+                       ? ClientErrors::None
+                       : ClientErrors::NoMethod;
         }
         else
         {
@@ -321,8 +321,8 @@ int Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
                     paoInfoValue));
 
             return tryExecuteCommand(*OutMessage, meterParameterConfiguration)
-                       ? NoError
-                       : NoMethod;
+                       ? ClientErrors::None
+                       : ClientErrors::NoMethod;
         }
     }
     else if( parse.isKeyValid("channel_2_configuration") )
@@ -340,10 +340,10 @@ int Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
 
         if( !found )
         {
-            return NoMethod;
+            return ClientErrors::NoMethod;
         }
 
-        return NoError;
+        return ClientErrors::None;
     }
     else
     {
@@ -358,7 +358,7 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
     if( ! deviceConfig )
     {
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 
     vector<unsigned char> display_metrics;
@@ -415,7 +415,7 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
                     dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << deviceConfig->getValueFromKey(config_key) << ") for config key \"" << config_key << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                return NoConfigData;
+                return ClientErrors::NoConfigData;
             }
 
             display_metrics.push_back(*config_value);
@@ -432,14 +432,14 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
         {
             if( ! parse.isKeyValid("force") )
             {
-                return ConfigCurrent;
+                return ClientErrors::ConfigCurrent;
             }
         }
         else
         {
             if( parse.isKeyValid("verify") )
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
     }
@@ -450,12 +450,12 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
     if( ! tryExecuteCommand(*om, lcdConfiguration) )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     outList.push_back(om.release());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
@@ -469,7 +469,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
     if( !deviceConfig )
     {
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 
     DlcCommandAutoPtr meterParameterCommand;
@@ -496,7 +496,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
                      << MCTStrings::LcdCycleTime << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         if( displayDigitsSupported )
@@ -514,7 +514,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
                          << MCTStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                return NoConfigData;
+                return ClientErrors::NoConfigData;
             }
 
             /*
@@ -542,7 +542,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
                      << MCTStrings::DisconnectDisplayDisabled << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         // Grab the transformer ratio value if possible.
@@ -566,24 +566,24 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
                 {
                     if( ! parse.isKeyValid("force") )
                     {
-                        return ConfigCurrent;
+                        return ClientErrors::ConfigCurrent;
                     }
                 }
                 else if( parse.isKeyValid("verify") )
                 {
-                    return ConfigNotCurrent;
+                    return ClientErrors::ConfigNotCurrent;
                 }
             }
             else if( ! parse.isKeyValid("force") )
             {
-                return ConfigCurrent;
+                return ClientErrors::ConfigCurrent;
             }
         }
         else
         {
             if( parse.isKeyValid("verify") )
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
 
@@ -606,12 +606,12 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
 
     if( ! tryExecuteCommand(*om, meterParameterCommand) )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     outList.push_back(om.release());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 int Mct420Device::executeGetConfig( CtiRequestMsg     *pReq,
@@ -621,13 +621,13 @@ int Mct420Device::executeGetConfig( CtiRequestMsg     *pReq,
                                     CtiMessageList    &retList,
                                     OutMessageList    &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
     bool found = false;
 
     //  Explicitly disallow this command for the MCT-420
     if( parse.isKeyValid("centron_parameters") )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
     else if( parse.isKeyValid("configuration") )
     {
@@ -646,7 +646,7 @@ int Mct420Device::executeGetConfig( CtiRequestMsg     *pReq,
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -697,7 +697,7 @@ INT Mct420Device::ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, C
 
 int Mct420Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    int status = NoError;
+    int status = ClientErrors::None;
     string resultString;
 
     switch ( InMessage.Sequence )
@@ -760,7 +760,7 @@ int Mct420Device::decodePutConfigChannel2NetMetering( const INMESS &InMessage, c
         beginExecuteRequest(pReq.release(), parse, vgList, retList, outList);
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -819,9 +819,9 @@ int Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -858,9 +858,9 @@ int Mct420Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 int Mct420Device::decodeGetConfigOptions( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
@@ -932,9 +932,9 @@ int Mct420Device::decodeGetConfigOptions( const INMESS &InMessage, const CtiTime
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -961,9 +961,9 @@ int Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, cons
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

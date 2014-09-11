@@ -152,7 +152,7 @@ ULONG Mct24xDevice::calcNextLPScanTime( void )
 
 INT Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
 
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
@@ -298,7 +298,7 @@ bool Mct24xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  */
 INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
 
     switch(InMessage.Sequence)
@@ -355,7 +355,7 @@ INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -385,7 +385,7 @@ INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     return_msg->setUserMessageId(InMessage.Return.UserID);
@@ -543,7 +543,7 @@ INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 
 INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -567,7 +567,7 @@ INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNo
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -697,7 +697,7 @@ INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNo
 
 INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
@@ -709,7 +709,7 @@ INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -732,7 +732,7 @@ INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
  */
 INT Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -800,7 +800,7 @@ INT Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
         }
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);

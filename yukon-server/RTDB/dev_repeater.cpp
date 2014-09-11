@@ -61,7 +61,7 @@ bool Repeater900Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 
 INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -94,7 +94,7 @@ INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
             dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
 
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
         }
     }
 
@@ -110,7 +110,7 @@ INT Repeater900Device::executeLoopback(CtiRequestMsg        *pReq,
                                           OutMessageList    &outList)
 {
     bool found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -120,7 +120,7 @@ INT Repeater900Device::executeLoopback(CtiRequestMsg        *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -144,7 +144,7 @@ INT Repeater900Device::executeGetConfig(CtiRequestMsg        *pReq,
                                            OutMessageList    &outList)
 {
     bool found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -190,7 +190,7 @@ INT Repeater900Device::executeGetConfig(CtiRequestMsg        *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -215,7 +215,7 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
 {
     int   i;
     bool  found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     CHAR  Temp[80];
     string temp2;
 
@@ -253,7 +253,7 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
        }
        else
        {
-           nRet = BADPARAM;
+           nRet = ClientErrors::BadParameter;
        }
     }
     else if(parse.isKeyValid("multi_rolenum"))
@@ -400,7 +400,7 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
 
     if(!found)
     {
-       nRet = NoMethod;
+       nRet = ClientErrors::NoMethod;
     }
     else if(OutMessage)
     {
@@ -425,7 +425,7 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
                                           OutMessageList    &outList)
 {
     bool found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -439,7 +439,7 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -458,7 +458,7 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
 
 INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
 
     switch(InMessage.Sequence)
@@ -504,7 +504,7 @@ INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
             }
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
             break;
         }
     }
@@ -515,7 +515,7 @@ INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 
 INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -531,7 +531,7 @@ INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime Tim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -546,7 +546,7 @@ INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime Tim
 
 INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -560,7 +560,7 @@ INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTi
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -589,7 +589,7 @@ INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTi
 
 INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -607,7 +607,7 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -638,7 +638,7 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTim
 
 INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -654,7 +654,7 @@ INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -705,7 +705,7 @@ INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTim
 
 INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = Error_Abnormal;
+    INT status = ClientErrors::Abnormal;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -717,7 +717,7 @@ INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     string results;
@@ -760,7 +760,7 @@ INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTim
 
 INT Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = Error_Abnormal;
+    INT status = ClientErrors::Abnormal;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -770,7 +770,7 @@ INT Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     string results;

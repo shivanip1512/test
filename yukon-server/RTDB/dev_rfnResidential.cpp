@@ -164,7 +164,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg
 
         rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetRecordingCommand>( option ));
 
-        return NoError;
+        return ClientErrors::None;
     }
 
     //
@@ -178,7 +178,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg
         logInfo("Missing \"demandinterval\" parameter.",
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return MISPARAM;
+        return ClientErrors::MissingParameter;
     }
 
     //
@@ -192,13 +192,13 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg
         logInfo("Missing \"lpinterval\" parameter.",
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return MISPARAM;
+        return ClientErrors::MissingParameter;
     }
 
     rfnRequests.push_back( boost::make_shared<RfnVoltageProfileSetConfigurationCommand>( demand_interval_minutes,
                                                                                          load_profile_interval_minutes ));
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
@@ -216,12 +216,12 @@ YukonError_t RfnResidentialDevice::executeGetConfigVoltageProfile( CtiRequestMsg
     {
         rfnRequests.push_back( boost::make_shared<RfnLoadProfileGetRecordingCommand>());
 
-        return NoError;
+        return ClientErrors::None;
     }
 
     rfnRequests.push_back( boost::make_shared<RfnVoltageProfileGetConfigurationCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -249,7 +249,7 @@ YukonError_t RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg 
         logInfo("Missing voltage profile start date.",
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return MISPARAM;
+        return ClientErrors::MissingParameter;
     }
 
     CtiTime begin = date_begin;
@@ -284,7 +284,7 @@ YukonError_t RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg 
                                                                                 begin,
                                                                                 end ));
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -293,7 +293,7 @@ YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, 
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnTouResetCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
@@ -301,7 +301,7 @@ YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pR
     rfnRequests.push_back(
             boost::make_shared<Commands::RfnTouResetZeroCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -314,7 +314,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
 
     if( ! deviceConfig )
     {
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 
     struct IntervalSettings
@@ -339,7 +339,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         configSettings.demandInterval = *configValue;
@@ -354,7 +354,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
@@ -362,7 +362,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return ErrorInvalidConfigData;
+            return ClientErrors::InvalidConfigData;
         }
 
         configSettings.loadProfileInterval = static_cast<unsigned>( *configValue );
@@ -390,21 +390,21 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
     {
         if( ! parse.isKeyValid("force") )
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
     }
     else
     {
         if( parse.isKeyValid("verify") )
         {
-            return ConfigNotCurrent;
+            return ClientErrors::ConfigNotCurrent;
         }
     }
 
     rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>( *configSettings.demandInterval,
                                                                                                    *configSettings.loadProfileInterval ) );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -415,7 +415,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigVoltageAveragingInterval( Cti
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -453,7 +453,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
 
         if( ! deviceConfig )
         {
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         const unsigned char configFreezeDay               = getConfigData   <unsigned char> ( deviceConfig, Config::RfnStrings::demandFreezeDay );
@@ -462,32 +462,32 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
         // check if the dynamic info has the current configuration
         if( configFreezeDay == paoFreezeDay && ! parse.isKeyValid("force") )
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
 
         // if this is verify only
         if( parse.isKeyValid("verify") )
         {
-            return ConfigNotCurrent;
+            return ClientErrors::ConfigNotCurrent;
         }
 
         rfnRequests.push_back( boost::make_shared<Commands::RfnDemandFreezeConfigurationCommand>( configFreezeDay ) );
 
-        return NoError;
+        return ClientErrors::None;
     }
     catch( const MissingConfigDataException &e )
     {
         logInfo( e.what(),
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
     catch( const InvalidConfigDataException &e )
     {
         logInfo( e.what(),
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return ErrorInvalidConfigData;
+        return ClientErrors::InvalidConfigData;
     }
 }
 
@@ -499,7 +499,7 @@ YukonError_t RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg  
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnImmediateDemandFreezeCommand>() );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -510,7 +510,7 @@ YukonError_t RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg   
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>() );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -521,7 +521,7 @@ YukonError_t RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouStateConfigurationCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -545,14 +545,14 @@ YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * p
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Missing hour value. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return BADPARAM;
+            return ClientErrors::BadParameter;
         }
         if ( parsedMinute == -1 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device \"" << getName() << "\" - Missing minute value. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-            return BADPARAM;
+            return ClientErrors::BadParameter;
         }
 
         const unsigned hour     = parsedHour;
@@ -562,7 +562,7 @@ YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * p
         rfnRequests.push_back( boost::make_shared<Commands::RfnTouCriticalPeakCommand>( rate, hour, minute ) );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -585,14 +585,14 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
     {
         rfnRequests.push_back( boost::make_shared<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouEnable ));
 
-        return NoError;
+        return ClientErrors::None;
     }
 
     if( parse.isKeyValid("tou_disable") )
     {
         rfnRequests.push_back( boost::make_shared<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouDisable ));
 
-        return NoError;
+        return ClientErrors::None;
     }
 
     //
@@ -603,7 +603,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
         logInfo("Missing day table.",
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return BADPARAM;
+        return ClientErrors::BadParameter;
     }
 
     const std::string dayTableStr = parse.getsValue("tou_days");
@@ -621,7 +621,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
         logInfo("Missing TOU default rate.",
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return BADPARAM;
+        return ClientErrors::BadParameter;
     }
 
     schedule._defaultRate = parse.getsValue("tou_default");
@@ -651,7 +651,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
                 logInfo("Schedule " + CtiNumStr(schedule_nbr) + " has an invalid rate change.",
                         __FUNCTION__, __FILE__, __LINE__ );
 
-                return BADPARAM;
+                return ClientErrors::BadParameter;
             }
 
             const std::string change_str = parse.getsValue( change_name );
@@ -675,7 +675,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
 
     rfnRequests.push_back( boost::make_shared<RfnTouScheduleSetConfigurationCommand>( schedule ));
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /**
@@ -688,7 +688,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /**
@@ -707,14 +707,14 @@ YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * 
     {
         rfnRequests.push_back( boost::make_shared<RfnTouSetHolidayActiveCommand>());
 
-        return NoError;
+        return ClientErrors::None;
     }
 
     if( parse.isKeyValid("holiday_cancel_active") )
     {
         rfnRequests.push_back( boost::make_shared<RfnTouCancelHolidayActiveCommand>());
 
-        return NoError;
+        return ClientErrors::None;
     }
 
     Commands::RfnTouHolidayConfigurationCommand::Holidays holidays;
@@ -730,7 +730,7 @@ YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * 
             logInfo("Holiday " + holiday_str + " specified.",
                     __FUNCTION__, __FILE__, __LINE__ );
 
-            return BADPARAM;
+            return ClientErrors::BadParameter;
         }
 
         int day, month, year;
@@ -746,7 +746,7 @@ YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * 
 
     rfnRequests.push_back( boost::make_shared<RfnTouHolidayConfigurationCommand>( holidays ));
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /**
@@ -767,7 +767,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
 
         if( ! deviceConfig )
         {
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         const bool sendForced = parse.isKeyValid("force");
@@ -782,13 +782,13 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
         // check if the dynamic info has the current configuration
         if( touScheduleMatches && touEnableMatches && ! sendForced )
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
 
         // if this is verify only
         if( parse.isKeyValid("verify") )
         {
-            return ConfigNotCurrent;
+            return ClientErrors::ConfigNotCurrent;
         }
 
         if( ! touEnableMatches || sendForced )
@@ -910,14 +910,14 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
                             schedule_to_send ));
         }
 
-        return NoError;
+        return ClientErrors::None;
     }
     catch( const MissingConfigDataException &e )
     {
         logInfo( e.what(),
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
 }
 
@@ -1021,7 +1021,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg    
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1035,7 +1035,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * 
 {
     rfnRequests.push_back( boost::make_shared<Commands::RfnTouHolidayConfigurationCommand>());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
@@ -1057,7 +1057,7 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
 
         if( ! deviceConfig )
         {
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         {
@@ -1068,7 +1068,7 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ConfigNotCurrent;
+                    return ClientErrors::ConfigNotCurrent;
                 }
 
                 RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = configOvUvEnabled
@@ -1087,7 +1087,7 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ConfigNotCurrent;
+                    return ClientErrors::ConfigNotCurrent;
                 }
 
                 rfnRequests.push_back( boost::make_shared<RfnSetOvUvNewAlarmReportIntervalCommand>( configOvUvReportingInterval ) );
@@ -1102,7 +1102,7 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
              {
                  if( parse.isKeyValid("verify") )
                  {
-                     return ConfigNotCurrent;
+                     return ClientErrors::ConfigNotCurrent;
                  }
 
                  rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatIntervalCommand>( configOvUvRepeatInterval ) );
@@ -1117,7 +1117,7 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ConfigNotCurrent;
+                    return ClientErrors::ConfigNotCurrent;
                 }
 
                 rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatCountCommand>( configOvUvRepeatCount ) );
@@ -1135,7 +1135,7 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ConfigNotCurrent;
+                    return ClientErrors::ConfigNotCurrent;
                 }
 
                 rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, configOvThreshold ) );
@@ -1150,7 +1150,7 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
             {
                 if( parse.isKeyValid("verify") )
                 {
-                    return ConfigNotCurrent;
+                    return ClientErrors::ConfigNotCurrent;
                 }
 
                 rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, configUvThreshold ) );
@@ -1159,24 +1159,24 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
 
         if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
 
-        return NoError;
+        return ClientErrors::None;
     }
     catch( const MissingConfigDataException &e )
     {
         logInfo( e.what(),
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
     catch( const InvalidConfigDataException &e )
     {
         logInfo( e.what(),
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return ErrorInvalidConfigData;
+        return ClientErrors::InvalidConfigData;
     }
 }
 
@@ -1192,7 +1192,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
     rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    * pReq,
@@ -1202,12 +1202,12 @@ YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    
 {
     if( ! disconnectConfigSupported() )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectGetConfigurationCommand>() );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
@@ -1219,14 +1219,14 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
     {
         if( ! disconnectConfigSupported() )
         {
-            return NoMethod;
+            return ClientErrors::NoMethod;
         }
 
         Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
         if( ! deviceConfig )
         {
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         const std::string configDisconnectMode               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::DisconnectMode );
@@ -1251,7 +1251,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
                 {
                     if( parse.isKeyValid("verify") )
                     {
-                        return ConfigNotCurrent;
+                        return ClientErrors::ConfigNotCurrent;
                     }
 
                     rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( reconnectParam ));
@@ -1286,7 +1286,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
                 {
                     if( parse.isKeyValid("verify") )
                     {
-                        return ConfigNotCurrent;
+                        return ClientErrors::ConfigNotCurrent;
                     }
 
                     rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>(
@@ -1314,7 +1314,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
                 {
                     if( parse.isKeyValid("verify") )
                     {
-                        return ConfigNotCurrent;
+                        return ClientErrors::ConfigNotCurrent;
                     }
 
                     rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>(
@@ -1328,24 +1328,24 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
 
         if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
 
-        return NoError;
+        return ClientErrors::None;
     }
     catch( const MissingConfigDataException &e )
     {
         logInfo( e.what(),
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
     catch( const InvalidConfigDataException &e )
     {
         logInfo( e.what(),
                 __FUNCTION__, __FILE__, __LINE__ );
 
-        return ErrorInvalidConfigData;
+        return ClientErrors::InvalidConfigData;
     }
 }
 

@@ -512,7 +512,7 @@ INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
                            OutMessageList &outList,
                            INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -548,7 +548,7 @@ INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Command lookup failed **** " << getName() << ".  Device Type " << desolveDeviceType(getType()) << endl;
 
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
         }
     }
 
@@ -568,7 +568,7 @@ INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
                              OutMessageList &outList,
                              INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -599,7 +599,7 @@ INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
             delete OutMessage;
             OutMessage = NULL;
 
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -622,7 +622,7 @@ INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
                                OutMessageList &outList,
                                INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -658,7 +658,7 @@ INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
             dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
 
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
         }
     }
 
@@ -678,7 +678,7 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
                                OutMessageList &outList,
                                INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -718,7 +718,7 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
             dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
 
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
         }
     }
 
@@ -733,12 +733,12 @@ INT MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
     INT status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-    if( status == NoResultDecodeMethod )
+    if( status == ClientErrors::NoMethodForResultDecode )
     {
         status = Parent::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
     }
 
-    if( status == NoResultDecodeMethod )
+    if( status == ClientErrors::NoMethodForResultDecode )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -791,7 +791,7 @@ INT MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
 INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch( InMessage.Sequence )
     {
@@ -922,7 +922,7 @@ INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
 
         default:
         {
-            status = NoResultDecodeMethod;
+            status = ClientErrors::NoMethodForResultDecode;
             break;
         }
     }
@@ -932,7 +932,7 @@ INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
 
 INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
@@ -1136,7 +1136,7 @@ INT MctDevice::executeLoopback(CtiRequestMsg *pReq,
                                OutMessageList &outList)
 {
     bool found = false;
-    INT  nRet  = NoError;
+    INT  nRet  = ClientErrors::None;
     INT  function;
     int  i;
 
@@ -1147,7 +1147,7 @@ INT MctDevice::executeLoopback(CtiRequestMsg *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1185,7 +1185,7 @@ INT MctDevice::executeScan(CtiRequestMsg *pReq,
                            OutMessageList &outList)
 {
     bool found = false;
-    INT  nRet  = NoError;
+    INT  nRet  = ClientErrors::None;
     string tester;
 
     INT            function;
@@ -1247,7 +1247,7 @@ INT MctDevice::executeScan(CtiRequestMsg *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1270,7 +1270,7 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
                                OutMessageList &outList )
 {
     bool found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -1434,7 +1434,7 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1456,7 +1456,7 @@ INT MctDevice::executePutValue(CtiRequestMsg *pReq,
                                CtiMessageList &retList,
                                OutMessageList &outList)
 {
-    INT    nRet = NoError;
+    INT    nRet = ClientErrors::None;
     long   rawPulses;
     double reading;
 
@@ -1519,7 +1519,7 @@ INT MctDevice::executePutValue(CtiRequestMsg *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1542,7 +1542,7 @@ INT MctDevice::executeGetStatus(CtiRequestMsg *pReq,
                                 OutMessageList &outList)
 {
     bool found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -1605,7 +1605,7 @@ INT MctDevice::executeGetStatus(CtiRequestMsg *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1628,7 +1628,7 @@ INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
                                 OutMessageList &outList)
 {
     bool  found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     BSTRUCT &BSt = OutMessage->Buffer.BSt;
 
     INT function = -1;
@@ -1702,7 +1702,7 @@ INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
 
     if(!found)
     {
-       nRet = NoMethod;
+       nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1746,7 +1746,7 @@ INT MctDevice::executeGetConfig(CtiRequestMsg *pReq,
                                 OutMessageList &outList)
 {
     bool found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string temp;
 
     INT function;
@@ -1870,7 +1870,7 @@ INT MctDevice::executeGetConfig(CtiRequestMsg *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1893,7 +1893,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
 {
     bool  found = false;
     INT   function;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     int   intervallength;
     string temp;
     CtiTime NowTime;
@@ -1973,7 +1973,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                 {
                     temp = "Invalid address \"" + CtiNumStr(uadd) + string("\" for device \"") + getName() + "\", not sending";
                     errRet->setResultString(temp);
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back(errRet);
                     errRet = NULL;
                 }
@@ -1986,7 +1986,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                 {
                     temp = "Device must be set to one of the test addresses, not sending";
                     errRet->setResultString(temp);
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back(errRet);
                     errRet = NULL;
                 }
@@ -2028,7 +2028,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                 {
                     temp = "Bad address specification - Acceptable values:  Gold: [0-3], Silver [0-59]";
                     errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back( errRet );
                     errRet = NULL;
                 }
@@ -2058,7 +2058,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                 {
                     temp = "Bad address specification - Acceptable values:  Bronze: [0-255]";
                     errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back( errRet );
                     errRet = NULL;
                 }
@@ -2094,7 +2094,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                 {
                     temp = "Bad address specification - Acceptable values:  Bronze: [0-255]";
                     errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back( errRet );
                     errRet = NULL;
                 }
@@ -2269,7 +2269,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                     {
                         temp = "Invalid Load Profile interval length - must be 5, 15, 30, or 60 min";
                         errRet->setResultString( temp );
-                        errRet->setStatus(NoMethod);
+                        errRet->setStatus(ClientErrors::NoMethod);
                         retList.push_back( errRet );
                         errRet = NULL;
                     }
@@ -2332,7 +2332,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                 {
                     temp = "Invalid Demand interval length - must be between 1 and 60 min";
                     errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
+                    errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back( errRet );
                     errRet = NULL;
                 }
@@ -2369,7 +2369,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
             {
                 temp = "Multiplier too large - must be less than 10";
                 errRet->setResultString(temp);
-                errRet->setStatus(NoMethod);
+                errRet->setStatus(ClientErrors::NoMethod);
                 retList.push_back(errRet);
                 errRet = NULL;
             }
@@ -2431,7 +2431,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
 
     if(!found)
     {
-       nRet = NoMethod;
+       nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -2455,7 +2455,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 {
     bool found = false;
 
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
 
     INT function;
 
@@ -2525,12 +2525,12 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 
                 // Error is handled here, put it on the ret list and get out of here!
                 // Note this bypasses the later setting to error, ect...
-                retMsgHandler( OutMessage->Request.CommandStr, ErrorNoDisconnect, ReturnMsg.release(), vgList, retList, false );
+                retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::NoDisconnect, ReturnMsg.release(), vgList, retList, false );
 
                 delete OutMessage;
                 OutMessage = NULL;
 
-                return NoError;
+                return ClientErrors::None;
             }
         }
     }
@@ -2549,7 +2549,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -2570,7 +2570,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 
 INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NoError,
+    INT   status = ClientErrors::None,
           j;
     ULONG pfCount = 0;
     string resultString;
@@ -2582,7 +2582,7 @@ INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, Ct
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2598,7 +2598,7 @@ INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -2614,7 +2614,7 @@ INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, Ct
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2663,7 +2663,7 @@ INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
     CtiCommandParser parse(InMessage.Return.CommandStr);
@@ -2681,7 +2681,7 @@ INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, C
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2909,7 +2909,7 @@ INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 
@@ -2925,7 +2925,7 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const CtiTime 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -3046,9 +3046,9 @@ INT MctDevice::decodeControl(const INMESS &InMessage, const CtiTime TimeNow, Cti
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( getName( ) + " / control sent" );
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -3093,9 +3093,9 @@ INT MctDevice::decodeControlDisconnect(const INMESS &InMessage, const CtiTime Ti
 
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList, true );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -3121,15 +3121,15 @@ INT MctDevice::decodePutValue(const INMESS &InMessage, const CtiTime TimeNow, Ct
     ReturnMsg->setResultString(
        getName( ) + " / command complete");
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NoError,
+    INT   status = ClientErrors::None,
           j;
     ULONG pfCount = 0;
     string resultString;
@@ -3141,7 +3141,7 @@ INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, C
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -3157,7 +3157,7 @@ INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NoError;
+    INT   status = ClientErrors::None;
     ULONG pfCount = 0;
     string resultString;
     OUTMESS *OutTemplate;
@@ -3173,7 +3173,7 @@ INT MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, C
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     switch( InMessage.Sequence )
@@ -3612,7 +3612,7 @@ bool MctDevice::getOperationFromStore( const CommandSet &store, const UINT &cmd,
 
 INT MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3917,7 +3917,7 @@ void MctDevice::setExpectedFreeze( int next_freeze )
 
 int MctDevice::checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, string &error_string )
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected) )
     {
@@ -3945,7 +3945,7 @@ int MctDevice::checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, st
             error_string  = "No freeze has been recorded for this device";
             error_string += " - current freeze counter (" + CtiNumStr(_freeze_counter) + "), device expecting a \"freeze ";
             error_string += ((_freeze_counter % 2)?("two"):("one")) + string("\"");
-            status = ErrorFreezeNotRecorded;
+            status = ClientErrors::FreezeNotRecorded;
         }
         else if( _freeze_counter != _freeze_expected )
         {
@@ -3963,7 +3963,7 @@ int MctDevice::checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, st
             error_string += "), send device a \"freeze ";
             error_string += (_freeze_counter % 2)?("two"):("one");
             error_string += "\" to resynchronize";
-            status = ErrorInvalidFreezeCounter;
+            status = ClientErrors::InvalidFreezeCounter;
 
             _freeze_expected = tmp_expected * -1;
 

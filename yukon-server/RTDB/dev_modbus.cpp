@@ -43,7 +43,7 @@ ModbusDevice::ModbusDevice(void)
 
 INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -69,7 +69,7 @@ INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -95,7 +95,7 @@ INT ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
 INT ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     ModbusProtocol::Command command = ModbusProtocol::Command_Error;
     ModbusProtocol::output_point controlout;
@@ -170,7 +170,7 @@ INT ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
         sendCommRequest(OutMessage, outList);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
     else
     {
@@ -209,7 +209,7 @@ YukonError_t ModbusDevice::decode(CtiXfer &xfer, YukonError_t status)
 
 int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     //  write the outmess_header
     outmess_header *om_buf = reinterpret_cast<outmess_header *>(OutMessage->Buffer.OutMessage);
@@ -239,7 +239,7 @@ int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList
             dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -248,7 +248,7 @@ int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList
 
 YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( OutMessage )
     {
@@ -279,7 +279,7 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 
                     if( points.empty() )
                     {
-                        return ErrorNoPointsOnDevice;
+                        return ClientErrors::NoPointsOnDevice;
                     }
 
                     std::vector<CtiPointManager::ptr_type>::iterator itr;
@@ -328,7 +328,7 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
                     }
 
                     _modbus.clearPoints();
-                    retVal = UnknownError;
+                    retVal = ClientErrors::Unknown;
 
                     break;
                 }
@@ -349,7 +349,7 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
             dout << CtiTime() << " **** Checkpoint - invalid OutMessage in Modbus::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -423,7 +423,7 @@ YukonError_t ModbusDevice::sendCommResult(INMESS &InMessage)
     //  and mark the end with a null, again, just to be sure
     InMessage.Buffer.InMessage[sizeof(InMessage.Buffer.InMessage) - 1] = 0;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -636,7 +636,7 @@ INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
             pMsg->insert(
                     InMessage.ErrorCode
                         ? InMessage.ErrorCode
-                        : GeneralScanAborted);
+                        : ClientErrors::GeneralScanAborted);
 
             retList.push_back( pMsg );
         }
@@ -647,7 +647,7 @@ INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

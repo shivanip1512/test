@@ -33,7 +33,7 @@ _remainingSleepDelay(0)
 
 YukonError_t RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( OutMessage )
     {
@@ -77,7 +77,7 @@ YukonError_t RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
             dout << CtiTime() << " **** Checkpoint - invalid OutMessage in RDSTransmitter::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -149,17 +149,17 @@ YukonError_t RDSTransmitter::generate(CtiXfer &xfer)
 
     copyMessageToXfer(xfer, newMessage);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t RDSTransmitter::decode(CtiXfer &xfer, YukonError_t status)
 {
-    status = NoError;
+    status = ClientErrors::None;
 
     if(isTwoWay() && xfer.getInCountActual() < UECPResponseLen)
     {
         _command = Complete; //Transaction Complete
-        status = Error_Abnormal;
+        status = ClientErrors::Abnormal;
         _isBiDirectionSet = false;
     }
     else
@@ -168,7 +168,7 @@ YukonError_t RDSTransmitter::decode(CtiXfer &xfer, YukonError_t status)
         if(!isTwoWay() || xfer.getInBuffer()[6] == 0)
         {
             //OK!
-            status = NoError;
+            status = ClientErrors::None;
             if(_previousState == StateSendBiDirectionalRequest)
             {
                 _isBiDirectionSet = true;
@@ -220,7 +220,7 @@ YukonError_t RDSTransmitter::decode(CtiXfer &xfer, YukonError_t status)
             // print error
             printAcknowledgmentError(xfer.getInBuffer()[6]);
             _command = Complete; //Transaction Complete
-            status = Error_Abnormal;
+            status = ClientErrors::Abnormal;
         }
     }
 
@@ -458,7 +458,7 @@ void RDSTransmitter::copyMessageToXfer(CtiXfer &xfer, MessageStore &message)
 
 INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -559,7 +559,7 @@ INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
     case PutConfigRequest:
     default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             resultString = "RDS Devices do not support this command (yet?)";
@@ -587,7 +587,7 @@ YukonError_t RDSTransmitter::sendCommResult(INMESS &InMessage)
 {
     // We are not interested in changing this return value here!
     // Must override base as we have no protocol.
-    return NoError;
+    return ClientErrors::None;
 }
 
 bool RDSTransmitter::isTransactionComplete()

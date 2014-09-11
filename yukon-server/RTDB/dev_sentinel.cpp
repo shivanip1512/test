@@ -63,7 +63,7 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NoError,
+                                          ClientErrors::None,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -82,9 +82,9 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
-   return NoError;
+   return ClientErrors::None;
 }
 
 INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
@@ -167,14 +167,14 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
 
    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << "outList.size() = " <<outList.size()<< endl;
    }
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -186,7 +186,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
                                        CtiMessageList    &retList,
                                        OutMessageList    &outList )
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     OutMessageList tmpOutList;
 
     //_parseFlags = parse.getFlags();
@@ -253,7 +253,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
                 dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
             }
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
 
             break;
         }
@@ -598,7 +598,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     //getANSIProtocol().buildWantedTableList (aMsg);
 
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /*************************************************************************************
@@ -677,7 +677,7 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
             &flags, sizeof(UINT));
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

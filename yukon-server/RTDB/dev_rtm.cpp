@@ -34,7 +34,7 @@ CtiDeviceRTM::CtiDeviceRTM() :
 
 INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -59,7 +59,7 @@ INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     string      resultString;
 
     switch(parse.getCommand())
@@ -97,7 +97,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     }
                     else
                     {
-                        nRet = Error_Abnormal;
+                        nRet = ClientErrors::Abnormal;
                     }
 
                     break;
@@ -109,7 +109,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                         dout << CtiTime() << " Invalid scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    nRet = NoExecuteRequestMethod;
+                    nRet = ClientErrors::NoMethodForExecuteRequest;
                     retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                             string(OutMessage->Request.CommandStr),
                                                             string("RTM Devices do not support this command."),
@@ -135,7 +135,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         }
     default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                     string(OutMessage->Request.CommandStr),
                                                     string("RTM Devices do not support this command (yet?)"),
@@ -245,7 +245,7 @@ INT CtiDeviceRTM::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT CtiDeviceRTM::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiPointDataMsg  *commFailed;
@@ -270,7 +270,7 @@ INT CtiDeviceRTM::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         pMsg->insert(
                 InMessage.ErrorCode
                     ? InMessage.ErrorCode
-                    : GeneralScanAborted);
+                    : ClientErrors::GeneralScanAborted);
 
         retList.push_back( pMsg );
     }
@@ -295,14 +295,14 @@ YukonError_t CtiDeviceRTM::recvCommRequest(OUTMESS *OutMessage)
     _error_count    = 0;
     _codes_received = 0;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 YukonError_t CtiDeviceRTM::sendCommResult(INMESS &InMessage)
 {
     InMessage.Buffer.InMessage[0] = _codes_received;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -358,7 +358,7 @@ YukonError_t CtiDeviceRTM::generate(CtiXfer &xfer)
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 

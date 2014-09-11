@@ -60,7 +60,7 @@ CtiDeviceRTC::~CtiDeviceRTC()
 
 INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -85,7 +85,7 @@ INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -110,7 +110,7 @@ INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
 INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -152,7 +152,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     case PutConfigRequest:
     default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                     string(OutMessage->Request.CommandStr),
                                                     string("RTC Devices do not support this command (yet?)"),
@@ -252,7 +252,7 @@ INT CtiDeviceRTC::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT CtiDeviceRTC::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
@@ -286,7 +286,7 @@ INT CtiDeviceRTC::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
             pMsg->insert(
                     InMessage.ErrorCode
                         ? InMessage.ErrorCode
-                        : GeneralScanAborted);
+                        : ClientErrors::GeneralScanAborted);
 
             retList.push_back( pMsg );
         }
@@ -346,7 +346,7 @@ LONG CtiDeviceRTC::getAddress() const
 
 INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage->Buffer.SASt._groupType == SA205 || OutMessage->Buffer.SASt._groupType == SA305 || OutMessage->Buffer.SASt._groupType == SA105)
     {
@@ -368,7 +368,7 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage)
 
         OutMessage= 0;
 
-        status = QUEUED_TO_DEVICE;
+        status = ClientErrors::QueuedToDevice;
     }
 
     return status;
@@ -376,7 +376,7 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage)
 
 YukonError_t CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    YukonError_t status = NoError;
+    YukonError_t status = ClientErrors::None;
 
     if( !(MessageFlag_QueuedToDevice & OutMessage->MessageFlags) && hasExclusions())
     {
@@ -392,7 +392,7 @@ YukonError_t CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *d
             *dqcnt = (UINT)_workQueue.entries();
         }
 
-        status = QUEUED_TO_DEVICE;
+        status = ClientErrors::QueuedToDevice;
     }
 
     return status;
@@ -503,7 +503,7 @@ LONG CtiDeviceRTC::deviceMaxCommunicationTime() const
 INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 {
     CtiTime now;
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     CtiOutMessage *rtcOutMessage = 0;       // This pointer is used to process the queued outmessages on this device.
 

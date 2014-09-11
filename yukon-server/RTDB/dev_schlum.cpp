@@ -249,20 +249,20 @@ INT CtiDeviceSchlumberger::fillUploadTransferObject (CtiXfer  &aTransfer, ULONG 
     aTransfer.getOutBuffer()[5] = temp.ch[1];
     aTransfer.getOutBuffer()[6] = temp.ch[0];
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
                                                    YukonError_t commReturnValue)
 {
-    YukonError_t retCode    = NoError;
+    YukonError_t retCode    = ClientErrors::None;
 
     if (commReturnValue || Transfer.getInBuffer()[0] == NAK)
     {
         // DEBUG DLS may be able to move this outside this function to make
         // simplier
-        if (commReturnValue == BADCRC)
+        if (commReturnValue == ClientErrors::BadCrc)
         {
             // DEBUG DLS guy may have to live outside this function to work
             setCRCErrors (getCRCErrors()+1);
@@ -271,10 +271,10 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
                 setCRCErrors (0);
                 setCurrentState (StateScanAbort);
                 setAttemptsRemaining (0);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
             }
 
-            if (Transfer.doTrace(BADCRC))
+            if (Transfer.doTrace(ClientErrors::BadCrc))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << "Data failed CRC verification" << endl;
@@ -298,14 +298,14 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
         if (getAttemptsRemaining() <= 0)
         {
             setCurrentState (StateScanAbort);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
         }
         else
         {
             // do this all again
             setPreviousState (getCurrentState());
             setCurrentState (StateScanResendRequest);
-            retCode = RETRY_SUBMITTED;
+            retCode = ClientErrors::RetrySubmitted;
         }
     }
     else // Good Data read
@@ -317,10 +317,10 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
         {
             setCurrentState (StateScanAbort);
             setAttemptsRemaining (0);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
         }
         else
-            retCode = NoError;
+            retCode = ClientErrors::None;
     }
     return retCode;
 }
@@ -334,7 +334,7 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg     *pReq,
                                        OutMessageList    &outList,
                                        INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     ULONG BytesWritten;
 
@@ -376,7 +376,7 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg     *pReq,
     }
     else
     {
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
     }
 
     return status;
@@ -523,7 +523,7 @@ INT CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
             }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
@@ -535,7 +535,7 @@ INT CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
@@ -615,7 +615,7 @@ INT CtiDeviceSchlumberger::freeDataBins  ()
     // re-init everything for next time through
     setTotalByteCount (0);
     setCurrentState (StateHandshakeInitialize);
-    return NoError;
+    return ClientErrors::None;
 }
 
 // default constructor that takes 2 optional parameters

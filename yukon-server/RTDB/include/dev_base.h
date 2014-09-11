@@ -395,7 +395,7 @@ inline INT     CtiDeviceBase::getBits() const                 { return 8; }
 inline INT     CtiDeviceBase::getStopBits() const             { return ONESTOPBIT; }
 inline INT     CtiDeviceBase::getParity() const               { return NOPARITY; }
 inline INT     CtiDeviceBase::getProtocolWrap() const         { return ProtocolWrapNone; }
-inline YukonError_t CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NoError; }
+inline YukonError_t CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return ClientErrors::None; }
 inline bool    CtiDeviceBase::hasQueuedWork() const           { return false; }
 inline unsigned CtiDeviceBase::queuedWorkCount() const         { return 0; }
 inline bool    CtiDeviceBase::hasPreloadWork() const          { return false; }

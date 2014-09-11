@@ -478,7 +478,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                                         CtiMessageList    &retList,
                                         OutMessageList    &outList)
 {
-    INT  nRet     = NoMethod;
+    INT  nRet     = ClientErrors::NoMethod;
     bool found    = false;
     int  function = -1;
 
@@ -486,7 +486,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
         (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
     {
-        returnErrorMessage(BADPARAM, OutMessage, retList,
+        returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                            "Bad kwh command specification: rate parameter not supported");
 
         nRet = ExecutionComplete;
@@ -546,7 +546,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Model not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                return NoMethod;
+                return ClientErrors::NoMethod;
             }
 
             sspec_om->Sequence      = EmetconProtocol::GetConfig_Model;
@@ -562,7 +562,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
         if( outagenum < OUTAGE_NBR_MIN || outagenum > OUTAGE_NBR_MAX )
         {
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "Bad outage specification - Acceptable values: " + CtiNumStr(OUTAGE_NBR_MIN) + " - " + CtiNumStr(OUTAGE_NBR_MAX));
 
             nRet = ExecutionComplete;
@@ -606,7 +606,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                 temp += printDate(_daily_read_info.request.begin);
             }
 
-            returnErrorMessage(ErrorCommandAlreadyInProgress, OutMessage, retList, temp);
+            returnErrorMessage(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, temp);
 
             nRet = ExecutionComplete;
         }
@@ -629,21 +629,21 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
             if( channel < 1 || channel > 3 )
             {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
 
                 nRet = ExecutionComplete;
             }
             else if( date_begin > Yesterday )  //  must begin on or before yesterday
             {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
 
                 nRet = ExecutionComplete;
             }
             else if( parse.isKeyValid("daily_read_detail") )
             {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Bad daily read detail not supported - Acceptable format: getvalue daily read mm/dd/yyyy");
 
                 nRet = ExecutionComplete;
@@ -651,21 +651,21 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
             else if( parse.isKeyValid("daily_read_date_end") ||
                      parse.isKeyValid("daily_reads") )
             {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Bad multi-day read not supported - Acceptable format: getvalue daily read mm/dd/yyyy");
 
                 nRet = ExecutionComplete;
             }
             else if( channel != 1 )
             {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
 
                 nRet = ExecutionComplete;
             }
             else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
             {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
 
                 nRet = ExecutionComplete;
@@ -710,7 +710,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -739,7 +739,7 @@ INT Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
                                         CtiMessageList    &retList,
                                         OutMessageList    &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     // ------------------- EVENT LOG --------------------- //
 
@@ -771,7 +771,7 @@ INT Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
         delete OutMessage;  //  we didn't use it, we made our own
         OutMessage = 0;
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     // -------------- INHERITED FROM MCT-420 -------------- //
@@ -826,7 +826,7 @@ INT Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
                                     CtiMessageList  &retList,
                                     OutMessageList  &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -922,7 +922,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &InMessage
                                                       CtiMessageList  &retList,
                                                       OutMessageList  &outList)
 {
-    INT status   = NoError;
+    INT status   = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -992,7 +992,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &InMessage
             PowerFactor.quality     = (PowerFactorVal > 100) ? ExceedsHighQuality : ExceedsLowQuality;
             PowerFactor.freeze_bit  = false;
 
-            status = ErrorInvalidData;
+            status = ClientErrors::InvalidData;
         }
         else
         {
@@ -1043,7 +1043,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage,
                                              CtiMessageList  &retList,
                                              OutMessageList  &outList)
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -1100,7 +1100,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage,
                     pi.value = 0;
 
                     ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
-                    status = ErrorInvalidFrozenReadingParity;
+                    status = ClientErrors::InvalidFrozenReadingParity;
                 }
                 else
                 {
@@ -1145,7 +1145,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage,
             if( pi.quality == InvalidQuality && !status && getDevicePointOffsetTypeEqual(point_offset, PulseAccumulatorPointType) )
             {
                 ReturnMsg->setResultString("Invalid data returned\n" + ReturnMsg->ResultString());
-                status = ErrorInvalidData;
+                status = ClientErrors::InvalidData;
             }
         }
     }
@@ -1176,7 +1176,7 @@ INT Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMessage,
                                                 CtiMessageList  &retList,
                                                 OutMessageList  &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const int offset = InMessage.Return.ProtocolInfo.Emetcon.Function - Memory_EventLogBasePos;
 
@@ -1185,7 +1185,7 @@ INT Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMessage,
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return TYNF;
+        return ClientErrors::TypeNotFound;
     }
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
@@ -1262,7 +1262,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                                             OutMessageList    &outList,
                                             bool               readsOnly)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     long value, tempTime;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -1270,7 +1270,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - deviceConfig is null **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        nRet = NoConfigData;
+        nRet = ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -1380,7 +1380,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    nRet = NoConfigData;
+                    nRet = ClientErrors::NoConfigData;
                 }
             }
         }
@@ -1394,12 +1394,12 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    nRet = NoConfigData;
+                    nRet = ClientErrors::NoConfigData;
                 }
             }
         }
 
-        if( nRet != NoConfigData )
+        if( nRet != ClientErrors::NoConfigData )
         {
             //Do conversions from strings to longs here.
             for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
@@ -1411,7 +1411,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        nRet = NoConfigData;
+                        nRet = ClientErrors::NoConfigData;
                     }
                 }
             }
@@ -1436,7 +1436,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        nRet = NoConfigData;
+                        nRet = ClientErrors::NoConfigData;
                     }
                 }
 
@@ -1454,7 +1454,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        nRet = NoConfigData;
+                        nRet = ClientErrors::NoConfigData;
                     }
                 }
             }
@@ -1465,7 +1465,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                    saturdaySchedule = resolveScheduleName(deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule)),
                    holidaySchedule  = resolveScheduleName(deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule ));
 
-        if( nRet == NoConfigData
+        if( nRet == ClientErrors::NoConfigData
             || sundaySchedule   < 0 || sundaySchedule   > 3
             || weekdaysSchedule < 0 || weekdaysSchedule > 3
             || saturdaySchedule < 0 || saturdaySchedule > 3
@@ -1473,7 +1473,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
+            nRet = ClientErrors::NoConfigData;
         }
         else
         {
@@ -1518,12 +1518,12 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 }
                 else
                 {
-                    nRet = ConfigNotCurrent;
+                    nRet = ClientErrors::ConfigNotCurrent;
                 }
             }
             else
             {
-                nRet = ConfigCurrent;
+                nRet = ClientErrors::ConfigCurrent;
             }
         }
     }
@@ -1590,7 +1590,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                          CtiMessageList    &retList,
                                          OutMessageList    &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     populateDlcOutMessage(*OutMessage);
     OutMessage->Request.RouteID = getRouteID();
@@ -1628,7 +1628,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
 
-                nRet = NoError;
+                nRet = ClientErrors::None;
             }
             else if( schedulenum == 3 || schedulenum == 4 )
             {
@@ -1645,11 +1645,11 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
 
-                nRet = NoError;
+                nRet = ClientErrors::None;
             }
             else
             {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
+                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                    "invalid schedule number " + CtiNumStr(schedulenum));
 
                 nRet = ExecutionComplete;
@@ -1660,7 +1660,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
             OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
             OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
 
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
     }
 
@@ -1671,7 +1671,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
         if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
     }
 
@@ -1682,7 +1682,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
         if( tryExecuteCommand(*OutMessage, holidayRead) )
         {
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
     }
 
@@ -1693,7 +1693,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
         if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
     }
 
@@ -1704,7 +1704,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
         if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
     }
 
@@ -1845,7 +1845,7 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &InMessage
                                                       CtiMessageList  &retList,
                                                       OutMessageList  &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     string resultString;
     bool expectMore = false;
@@ -1869,7 +1869,7 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &InMessage
         resultString  = getName() + " / Invalid channel returned by daily read ";
         resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
 
-        status = ErrorInvalidChannel;
+        status = ClientErrors::InvalidChannel;
     }
     else if(  day    !=  _daily_read_info.request.begin.dayOfMonth() ||
               month  != (_daily_read_info.request.begin.month() - 1) )
@@ -1889,7 +1889,7 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &InMessage
 
         _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
 
-        status = ErrorInvalidTimestamp;
+        status = ClientErrors::InvalidTimestamp;
     }
     else
     {
@@ -1982,7 +1982,7 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
                                          CtiMessageList    &retList,
                                          OutMessageList    &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     populateDlcOutMessage(*OutMessage);
 
@@ -2074,10 +2074,10 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
     //    a DlcCommand object that it can execute out there
     if( ! tryExecuteCommand(*OutMessage, holidayWrite) )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -2104,7 +2104,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                                                 OutMessageList    &outList)
 {
     bool  found = false;
-    INT   nRet  = NoMethod;
+    INT   nRet  = ClientErrors::NoMethod;
 
     if( parse.isKeyValid("tou_enable") )
     {
@@ -2125,7 +2125,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
         if( parse.isKeyValid("tou_default") )
         {
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "TOU default rate \"" + parse.getsValue("tou_default") + "\" specified is invalid for device \"" + getName() + "\"");
 
              return ExecutionComplete;
@@ -2133,7 +2133,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
         if( daytable.length() != 4 || daytable.find_first_not_of("1234") != string::npos )
         {
-            returnErrorMessage(BADPARAM, OutMessage, retList,
+            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                "day table \"" + daytable + "\" specified is invalid for device \"" + getName() + "\"");
 
             return ExecutionComplete;
@@ -2269,7 +2269,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
             {
                 if( offset == 0 )
                 {
-                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid rate change time for device \"" + getName() + "\"; first rate change time for schedule (" + CtiNumStr(rc.schedule) + ") is not midnight");
 
                     return ExecutionComplete;
@@ -2305,7 +2305,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
     if( found )
     {
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -2373,7 +2373,7 @@ string Mct440_213xBDevice::describeStatusAndEvents(const unsigned char *buf)
 */
 INT Mct440_213xBDevice::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
     string resultString;
@@ -2459,7 +2459,7 @@ INT Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS   &InMess
                                                           CtiMessageList &retList,
                                                           OutMessageList &outList)
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -2506,7 +2506,7 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
     OutMessage->Sequence = EmetconProtocol::PutConfig_PhaseLossThreshold;
     if( !getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
     int phaseloss_percent = parse.getiValue("phaseloss_percent_threshold", -1);
@@ -2534,11 +2534,11 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
         OutMessage->Buffer.BSt.Message[1] = (phaseloss_seconds >> 8);
         OutMessage->Buffer.BSt.Message[2] = phaseloss_seconds & 0xff;
 
-        return NoError;
+        return ClientErrors::None;
     }
     else
     {
-        returnErrorMessage(BADPARAM, OutMessage, retList,
+        returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
                            "Invalid phase loss thresholds for device \"" + getName() + "\" - Acceptable values: phase loss percent range: 0 - 100 ; phase loss max duration: 18:12:15 - ");
 
         return ExecutionComplete;
@@ -2572,7 +2572,7 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
 
     if( !getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
     {
-        return NoMethod;
+        return ClientErrors::NoMethod;
     }
 
                                                                 /* ----------------- EVENT FLAGS MASK ----------------- */
@@ -2594,7 +2594,7 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     }
     else
     {
-        returnErrorMessage(MISPARAM, OutMessage, retList,
+        returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
                            "parameter \"alarm_mask_meter\" is not specified for device \"" + getName() + "\"");
 
         return ExecutionComplete;
@@ -2616,7 +2616,7 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     }
     else
     {
-        returnErrorMessage(MISPARAM, OutMessage, retList,
+        returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
                            "parameter \"config_byte\" is not specified for device \"" + getName() + "\"");
 
         return ExecutionComplete;
@@ -2625,7 +2625,7 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     OutMessage->Buffer.BSt.Message[5] = ((configuration>> 8) & 0xFF);
     OutMessage->Buffer.BSt.Message[6] = (configuration & 0xFF);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -2650,7 +2650,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
                                            CtiMessageList  &retList,
                                            OutMessageList  &outList)
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
@@ -2684,7 +2684,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return TYNF;
+            return ClientErrors::TypeNotFound;
         }
 
         const bool first_part = ( InMessage.Return.ProtocolInfo.Emetcon.Function == function_part1 );
@@ -2946,9 +2946,9 @@ int Mct440_213xBDevice::decodeGetConfigModel(const INMESS   &InMessage,
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 
-    retMsgHandler( InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
+    retMsgHandler( InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList, InMessage.MessageFlags & MessageFlag_ExpectMore );
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -2973,7 +2973,7 @@ INT Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    &InMessage,
                                               CtiMessageList  &retList,
                                               OutMessageList  &outList)
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3032,7 +3032,7 @@ INT Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    &InMessage,
                                                  CtiMessageList  &retList,
                                                  OutMessageList  &outList)
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3073,7 +3073,7 @@ INT Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
                                          CtiMessageList    &retList,
                                          OutMessageList    &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     populateDlcOutMessage(*OutMessage);
 
@@ -3082,7 +3082,7 @@ INT Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
         OutMessage->Sequence = EmetconProtocol::PutStatus_SetTOUHolidayRate;
         if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
 
     }
@@ -3091,7 +3091,7 @@ INT Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
         OutMessage->Sequence = EmetconProtocol::PutStatus_ClearTOUHolidayRate;
         if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
     }
     else
@@ -3124,7 +3124,7 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    &InMessage,
                                                  CtiMessageList  &retList,
                                                  OutMessageList  &outList)
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3331,7 +3331,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
                                           CtiMessageList &retList,
                                           OutMessageList &outList)
 {
-    INT status    = NoError;
+    INT status    = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3409,7 +3409,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
                         pi.value = 0;
 
                         ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
-                        status = ErrorInvalidFrozenReadingParity;
+                        status = ClientErrors::InvalidFrozenReadingParity;
                     }
                     else
                     {
@@ -3452,7 +3452,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
                 if( pi.quality == InvalidQuality && !status && (!chan_nbr || getDevicePointOffsetTypeEqual(chan_nbr + 1, PulseAccumulatorPointType)) )
                 {
                     ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(chan_nbr + 1) + "\n" + ReturnMsg->ResultString());
-                    status = ErrorInvalidData;
+                    status = ClientErrors::InvalidData;
                 }
             }
         }
@@ -3485,7 +3485,7 @@ INT Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   &InMessage,
                                                   CtiMessageList &retList,
                                                   OutMessageList &outList)
 {
-    INT status    = NoError, state = 0;
+    INT status    = ClientErrors::None, state = 0;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string stateName;
@@ -3547,7 +3547,7 @@ INT Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   &InMessage,
                                                   CtiMessageList &retList,
                                                   OutMessageList &outList)
 {
-    INT status    = NoError, state = 0;
+    INT status    = ClientErrors::None, state = 0;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     string resultStr, stateName;
@@ -3653,7 +3653,7 @@ int Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  &InMessage,
                                                  CtiMessageList &retList,
                                                  OutMessageList &outList)
 {
-    INT status   = NoError;
+    INT status   = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3700,7 +3700,7 @@ int Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS   &InMes
                                                            CtiMessageList &retList,
                                                            OutMessageList &outList)
 {
-    INT status   = NoError;
+    INT status   = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3737,7 +3737,7 @@ int Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessage,
                                                CtiMessageList &retList,
                                                OutMessageList &outList)
 {
-    INT status   = NoError;
+    INT status   = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3813,7 +3813,7 @@ int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -3828,7 +3828,7 @@ int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         if( parse.isKeyValid("force")
@@ -3841,7 +3841,7 @@ int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - Operation PutConfig_PhaseLossThreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    return NoConfigData;
+                    return ClientErrors::NoConfigData;
                 }
 
                 OutMessage->Buffer.BSt.Message[0] = phaseloss_percent;
@@ -3852,12 +3852,12 @@ int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq
             }
             else
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
         else
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
     }
     else
@@ -3866,7 +3866,7 @@ int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation PutConfig_PhaseLossThreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         OutMessage->Sequence = EmetconProtocol::GetConfig_PhaseLossThreshold;
@@ -3874,7 +3874,7 @@ int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -3907,7 +3907,7 @@ int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pRe
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -3926,7 +3926,7 @@ int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pRe
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         if( parse.isKeyValid("force")
@@ -3941,7 +3941,7 @@ int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pRe
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    return NoConfigData;
+                    return ClientErrors::NoConfigData;
                 }
 
                 OutMessage->Buffer.BSt.Message[0] = bronze;
@@ -3955,12 +3955,12 @@ int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pRe
             }
             else
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
         else
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
     }
     else // getconfig install
@@ -3969,7 +3969,7 @@ int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pRe
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         OutMessage->Sequence = EmetconProtocol::GetConfig_Addressing;
@@ -3977,7 +3977,7 @@ int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pRe
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -4010,7 +4010,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -4021,7 +4021,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
 
         if( ! enable_dst )
         {
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         const long dyn_configuration = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
@@ -4042,7 +4042,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - Operation EmetconProtocol::PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        return NoConfigData;
+                        return ClientErrors::NoConfigData;
                     }
 
                     long configuration = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
@@ -4074,7 +4074,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - Operation GetStatus_Internal not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        return NoConfigData;
+                        return ClientErrors::NoConfigData;
                     }
 
                     OutMessage->Sequence = EmetconProtocol::GetConfig_Options;
@@ -4088,12 +4088,12 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
             }
             else
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
         else
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
     }
     else // getconfig install
@@ -4102,7 +4102,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation GetStatus_Internal not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         OutMessage->Sequence = EmetconProtocol::GetConfig_Options;
@@ -4110,7 +4110,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -4143,7 +4143,7 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -4158,7 +4158,7 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         timezoneOffset *= 4; // The timezone offset in the mct is in 15 minute increments.
@@ -4172,7 +4172,7 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    return NoConfigData;
+                    return ClientErrors::NoConfigData;
                 }
 
                 //  the bstruct IO is set above by getOperation()
@@ -4181,12 +4181,12 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
             }
             else
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
         else
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
     }
     else // getconfig install
@@ -4195,7 +4195,7 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Time not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         OutMessage->Sequence = EmetconProtocol::GetConfig_Time;
@@ -4203,7 +4203,7 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -4236,7 +4236,7 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return NoConfigData;
+        return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -4251,7 +4251,7 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         if( parse.isKeyValid("force") ||
@@ -4263,7 +4263,7 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    return NoConfigData;
+                    return ClientErrors::NoConfigData;
                 }
 
                 //the bstruct IO is set above by getOperation()
@@ -4272,12 +4272,12 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
             }
             else
             {
-                return ConfigNotCurrent;
+                return ClientErrors::ConfigNotCurrent;
             }
         }
         else
         {
-            return ConfigCurrent;
+            return ClientErrors::ConfigCurrent;
         }
     }
     else // getconfig install
@@ -4286,7 +4286,7 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation GetConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return NoConfigData;
+            return ClientErrors::NoConfigData;
         }
 
         OutMessage->Sequence = EmetconProtocol::GetConfig_TimeAdjustTolerance;
@@ -4294,7 +4294,7 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -4319,7 +4319,7 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
                                         CtiMessageList &retList,
                                         OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
                                                                 /* ---------------- PUTCONFIG INSTALL ----------------- */
     if( InMessage.Sequence == EmetconProtocol::PutConfig_Install )
@@ -4339,7 +4339,7 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - unsupported config part \"" << config_part << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return ErrorInvalidRequest;
+            return ClientErrors::InvalidRequest;
         }
 
         // make sure we dont receive a read value
@@ -4348,7 +4348,7 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Invalid InMessage IO  received for config part \"" << config_part << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return ErrorInvalidRequest;
+            return ClientErrors::InvalidRequest;
         }
 
         // note that at the moment only putconfig install will ever have a group message count.

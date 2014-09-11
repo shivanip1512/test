@@ -15,7 +15,7 @@ YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser 
     {
         rfnRequests.push_back(boost::make_shared<Commands::RfDaReadDnpSlaveAddressCommand>());
 
-        return NoError;
+        return ClientErrors::None;
     }
 
     return Inherited::executeGetConfig(pReq, parse, returnMsgs, rfnRequests);

@@ -224,7 +224,7 @@ public:
 
 
     // all the following functions need to be defined in the lower classes
-    virtual UCHAR touBlockMapping( UCHAR config, USHORT type ) { return NoMethod; }
+    virtual UCHAR touBlockMapping( UCHAR config, USHORT type ) { return ClientErrors::NoMethod; }
 };
 
 

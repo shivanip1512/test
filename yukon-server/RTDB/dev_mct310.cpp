@@ -206,7 +206,7 @@ ULONG Mct310Device::calcNextLPScanTime( void )
 
 INT Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
 
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
@@ -522,7 +522,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
     }
 
     //  We shouldn't even ever get here...
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -533,7 +533,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
  */
 INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -629,7 +629,7 @@ INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     ULONG i,x;
     string resultString;
 
@@ -643,7 +643,7 @@ INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -669,7 +669,7 @@ INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime
 
 INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     ULONG i,x;
     INT pid;
     string resultString;
@@ -701,7 +701,7 @@ INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -764,7 +764,7 @@ INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 
 INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = NoError, demand_interval;
+    int       status = ClientErrors::None, demand_interval;
     double    Value;
     string resultString;
     unsigned long pulses;
@@ -793,7 +793,7 @@ INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -852,7 +852,7 @@ INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = NoError;
+    int       status = ClientErrors::None;
     double    Value;
     string resultString;
 
@@ -876,7 +876,7 @@ INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -933,7 +933,7 @@ INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
 
 INT Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -963,7 +963,7 @@ INT Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     return_msg->setUserMessageId(InMessage.Return.UserID);
@@ -1146,7 +1146,7 @@ void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, const BYTE 
 
 INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
 
@@ -1163,7 +1163,7 @@ INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -1219,7 +1219,7 @@ INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 
 INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -1234,7 +1234,7 @@ INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -1259,7 +1259,7 @@ INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 
 INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -1354,7 +1354,7 @@ INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -1368,7 +1368,7 @@ INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
 
 INT Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const unsigned char *optBuf  = InMessage.Buffer.DSt.Message;
 
@@ -1383,7 +1383,7 @@ INT Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     //  310s don't use this bit
