@@ -73,7 +73,7 @@ void CtiDeviceGroupPoint::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     RWCString resultString;
 
     CtiRouteSPtr Route;
@@ -111,7 +111,7 @@ INT CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
 INT CtiDeviceGroupPoint::generateRequest(CtiRequestMsg *pReq, CtiCommandParser &parse)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     RWCString resultString;
 
     CtiRouteSPtr Route;

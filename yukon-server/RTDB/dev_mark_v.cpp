@@ -93,7 +93,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg      *pReq,
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
 
    return( 1 );
@@ -110,14 +110,14 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg     *pReq,
                                  OutMessageList    &outList,
                                  INT ScanPriority)
 {
-   INT status = NoError;
+   INT status = ClientErrors::None;
    CtiCommandParser newParse( "scan general" );
 
    pReq->setCommandString( "scan general" );
 
    status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 //=====================================================================================================================
@@ -131,14 +131,14 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg     *pReq,
                                      OutMessageList    &outList,
                                      INT ScanPriority)
 {
-   INT status = NoError;
+   INT status = ClientErrors::None;
    CtiCommandParser newParse( "scan loadprofile" );
 
    pReq->setCommandString( "scan loadprofile" );
 
    status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 //=====================================================================================================================
@@ -151,7 +151,7 @@ INT CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
                                   OutMessageList &outList)
 {
    vector<CtiTransdataData *> transVector;
-   INT                        retCode = Error_Abnormal;
+   INT                        retCode = ClientErrors::Abnormal;
 
    try
    {
@@ -177,7 +177,7 @@ INT CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
          //LOADPROFILE
       }
 
-      retCode = NoError;
+      retCode = ClientErrors::None;
    }
    catch(...)
    {
@@ -200,7 +200,7 @@ INT CtiDeviceMarkV::ErrorDecode( const INMESS   &InMessage,
                                  const CtiTime   TimeNow,
                                  CtiMessageList &retList)
 {
-   INT retCode = NoError;
+   INT retCode = ClientErrors::None;
 
    CtiCommandParser parse( InMessage.Return.CommandStr );
 
@@ -222,7 +222,7 @@ INT CtiDeviceMarkV::ErrorDecode( const INMESS   &InMessage,
       pMsg->insert(
               InMessage.ErrorCode
                 ? InMessage.ErrorCode
-                : GeneralScanAborted );
+                : ClientErrors::GeneralScanAborted );
 
       retList.push_back( pMsg );
       pMsg = NULL;
@@ -919,7 +919,7 @@ YukonError_t CtiDeviceMarkV::sendCommResult( INMESS &InMessage )
       lLP = NULL;
    }
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 //=====================================================================================================================

@@ -103,7 +103,7 @@ void CtiDeviceGroupExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, CtiMessageList &vgList, CtiMessageList &retList, string &resultString)
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
 
     checkForEmptyParseAddressing( parse, OutMessage, retList );
 
@@ -162,7 +162,7 @@ int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiC
         else
         {
             // This is bad!  We would control every single load based upon geo addressing...
-            nRet = BADPARAM;
+            nRet = ClientErrors::BadParameter;
 
             resultString = "\nERROR: " + getName() + " Group addressing control commands to all loads is prohibited\n" + \
                            " The group must specify program, splinter or load level addressing";
@@ -244,7 +244,7 @@ void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse,
 
 INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -301,7 +301,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
     }
     else
     {
-        nRet = NoRouteGroupDevice;
+        nRet = ClientErrors::NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
 
@@ -476,7 +476,7 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                      string(OutMessage->Request.CommandStr),
                                                      issue,
-                                                     NoError,
+                                                     ClientErrors::None,
                                                      OutMessage->Request.RouteID,
                                                      OutMessage->Request.RetryMacroOffset,
                                                      OutMessage->Request.Attempt,

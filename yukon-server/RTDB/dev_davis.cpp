@@ -47,7 +47,7 @@ CtiDeviceDavis::CtiDeviceDavis()
 
 INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -60,7 +60,7 @@ INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
 INT CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
 
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -74,7 +74,7 @@ INT CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, 
         pMsg->insert(
                 InMessage.ErrorCode
                     ? InMessage.ErrorCode
-                    : GeneralScanAborted);
+                    : ClientErrors::GeneralScanAborted);
 
         retList.push_back( pMsg );
     }
@@ -84,7 +84,7 @@ INT CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 
 INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -109,7 +109,7 @@ INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
     case PutConfigRequest:
     default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),
                                              string("Davis Devices do not support this command (yet?)"),
@@ -163,7 +163,7 @@ INT CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         OutMessage = NULL;
     }
 
-    return (NoError);
+    return ClientErrors::None;
 }
 
 
@@ -192,7 +192,7 @@ INT CtiDeviceDavis::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -416,7 +416,7 @@ INT CtiDeviceDavis::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
         }
     }
 
-    return (NoError);
+    return ClientErrors::None;
 }
 
 

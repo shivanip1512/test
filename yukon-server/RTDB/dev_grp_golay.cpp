@@ -71,7 +71,7 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -83,7 +83,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     if(!control)
     {
-        nRet = BADPARAM;
+        nRet = ClientErrors::BadParameter;
 
         resultString = " Cannot control Golay groups except with command \"control shed\"  :" + getName();
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
@@ -159,7 +159,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         }
         else
         {
-            nRet = NoRouteGroupDevice;
+            nRet = ClientErrors::NoRouteGroupDevice;
 
             resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
             CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),

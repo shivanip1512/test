@@ -115,7 +115,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
                                    CtiMessageList    &retList,
                                    OutMessageList    &outList )
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     bool broadcast = false;
     OutMessageList tmpOutList;
 
@@ -138,7 +138,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
             dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Unsupported command type on EMETCON route. Command = " << parse.getCommand( ) << endl;
 
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
         }
     }
     catch( DlcCommand::CommandException &e )
@@ -407,7 +407,7 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
             ReturnMsg->setResultString(getName() + " / " + description);
         }
 
-        retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
+        retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg, vgList, retList);
 
         if( ptr.get() )
         {
@@ -534,7 +534,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
                                          OutMessageList   &outList,
                                          bool              broadcastWritesOnMacroSubroutes )
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
 
     string resultString;
     long      routeID;
@@ -692,7 +692,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
                             getID(),
                             pOut->Request,
                             getName() + ": ERROR: Route or Route Transmitter not available for device ",
-                            BADROUTE));
+                            ClientErrors::BadRoute));
         }
 
         if( pOut )
@@ -726,8 +726,8 @@ bool DlcBaseDevice::processAdditionalRoutes( const INMESS &InMessage, int nRet )
         return false;
     }
 
-    if( nRet == ErrorInvalidSSPEC ||
-        nRet == ErrorInvalidTimestamp )
+    if( nRet == ClientErrors::InvalidSSPEC ||
+        nRet == ClientErrors::InvalidTimestamp )
     {
         //  we cannot recover from these errors, even if we attempt on additional subroutes
         return false;

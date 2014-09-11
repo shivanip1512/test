@@ -100,7 +100,7 @@ bool CtiDeviceBase::executeBackgroundRequest(const std::string &commandString, c
 
     CtiCommandParser parse(req.CommandString());
 
-    return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, &OutMessageTemplate) == NoError;
+    return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, &OutMessageTemplate) == ClientErrors::None;
 }
 
 INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
@@ -110,7 +110,7 @@ INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
                                                    OutMessageList &outList,
                                                    const OUTMESS *OutTemplate)
 {
-    INT      status = NoError;
+    INT      status = ClientErrors::None;
     LONG     Id;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -130,7 +130,7 @@ INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
     {
         propagateRequest(OutMessage, pReq);
 
-        if((status = checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if((status = checkForInhibitedDevice(retList, OutMessage)) != ClientErrors::DeviceInhibited)
         {
             /*
              *  Now that the OutMessageTemplate is primed, we should send it out to the specific device..
@@ -141,7 +141,7 @@ INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
 
             if(parse.getCommand() == ControlRequest && getControlInhibit() )
             {
-                status = ControlInhibitedOnDevice;
+                status = ClientErrors::ControlInhibitedOnDevice;
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                              string(OutMessage->Request.CommandStr),
@@ -170,7 +170,7 @@ INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
     }
     else
     {
-        status = MemoryError;
+        status = ClientErrors::Memory;
     }
 
     return( status );
@@ -289,7 +289,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq,
     CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                  string(tempOut->Request.CommandStr),
                                                  resultString,
-                                                 NoExecuteRequestMethod,
+                                                 ClientErrors::NoMethodForExecuteRequest,
                                                  tempOut->Request.RouteID,
                                                  tempOut->Request.RetryMacroOffset,
                                                  tempOut->Request.Attempt,
@@ -309,7 +309,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq,
         }
     }
 
-    return NoExecuteRequestMethod;
+    return ClientErrors::NoMethodForExecuteRequest;
 }
 
 
@@ -353,7 +353,7 @@ INT CtiDeviceBase::executeScan(CtiRequestMsg *pReq,
                                CtiMessageList &retList,
                                OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
 
     INT function;
 
@@ -491,35 +491,35 @@ INT CtiDeviceBase::ReportError(INT mess)
 /* Properly defined by the device types themselves... */
 INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    return NoGeneralScanMethod;
+    return ClientErrors::NoMethodForGeneralScan;
 }
 INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    return NoIntegrityScanMethod;
+    return ClientErrors::NoMethodForIntegrityScan;
 }
 INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    return NoAccumulatorScanMethod;
+    return ClientErrors::NoMethodForAccumulatorScan;
 }
 INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    return NoLoadProfileScanMethod;
+    return ClientErrors::NoMethodForLoadProfileScan;
 }
 
 INT CtiDeviceBase::ResultDecode(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    return NoResultDecodeMethod;
+    return ClientErrors::NoMethodForResultDecode;
 }
 
 INT CtiDeviceBase::ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    return NoProcessResultMethod;
+    return ClientErrors::NoMethodForProcessResult;
 }
 
 
 INT CtiDeviceBase::ErrorDecode(const INMESS & InMessage, const CtiTime TimeNow,  CtiMessageList &retList)
 {
-    return NoErrorDecodeMethod;
+    return ClientErrors::NoMethodForErrorDecode;
 }
 
 
@@ -668,7 +668,7 @@ inline INT CtiDeviceBase::initTrxID( int trx, CtiCommandParser &parse, CtiMessag
 {
     setResponsesOnTrxID(0);
     setTrxID(trx);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -703,11 +703,11 @@ void CtiDeviceBase::setOutMessageTargetID( LONG &omtid )
 
 INT CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage)
 {
-    int status = NoError;
+    int status = ClientErrors::None;
 
     if(isInhibited())
     {
-        status = DEVICEINHIBITED;
+        status = ClientErrors::DeviceInhibited;
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,          // 20050922 CGP.  TargetId should be used in case the target is an MCT, not the CCU. // getID(),
                                                      string(OutMessage->Request.CommandStr),

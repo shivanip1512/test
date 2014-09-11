@@ -84,7 +84,7 @@ INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg     *pReq,
                                  CtiMessageList    &retList,
                                  OutMessageList    &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     //  make sure we keep trying
     OutMessage->Retry = getCBCRetries();
@@ -119,7 +119,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
                                          CtiMessageList    &retList,
                                          OutMessageList    &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
     int   address;
 
@@ -231,7 +231,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
     }
     else
     {
-        nRet = BADROUTE;
+        nRet = ClientErrors::BadRoute;
 
         resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
@@ -272,7 +272,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg     *pReq,
                                      CtiMessageList    &retList,
                                      OutMessageList    &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -363,7 +363,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg     *pReq,
     }
     else
     {
-        nRet = BADROUTE;
+        nRet = ClientErrors::BadRoute;
 
         resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
@@ -448,7 +448,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg     *pReq,
                                        CtiMessageList    &retList,
                                        OutMessageList    &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -535,7 +535,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg     *pReq,
     }
     else
     {
-        nRet = BADROUTE;
+        nRet = ClientErrors::BadRoute;
 
         resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 

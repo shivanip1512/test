@@ -78,7 +78,7 @@ string CtiDeviceION::getDescription(const CtiCommandParser &parse) const
 
 INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     bool found = false;
@@ -182,9 +182,9 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 if ( ! point )
                 {
                     std::string errorMessage = "The specified point is not on device " + getName();
-                    returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+                    returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
-                    return ErrorPointLookupFailed;
+                    return ClientErrors::PointLookupFailed;
                 }
 
                 if( point->isStatus() )
@@ -319,7 +319,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
     }
     else
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -378,7 +378,7 @@ void CtiDeviceION::initEventLogPosition( void )
 
 INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -404,7 +404,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
 INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -429,7 +429,7 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan accumulator");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -690,7 +690,7 @@ int CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, 
 
         if( !ErrReturn )
         {
-            ErrReturn = Error_Abnormal;
+            ErrReturn = ClientErrors::Abnormal;
         }
 
         const string error_str = GetErrorString(ErrReturn);
@@ -821,7 +821,7 @@ void CtiDeviceION::processInboundData( const INMESS &InMessage, const CtiTime Ti
 
 INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NoError, ErrReturn = InMessage.ErrorCode;
+    INT retCode = ClientErrors::None, ErrReturn = InMessage.ErrorCode;
 
     //CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg;

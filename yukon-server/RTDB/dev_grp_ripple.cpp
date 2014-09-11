@@ -82,7 +82,7 @@ void CtiDeviceGroupRipple::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     CtiRouteSPtr Route;
 
     if( (Route = getRoute( getRouteID() )) )            // This is "this's" route
@@ -156,7 +156,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
     }
     else
     {
-        nRet = NoRouteGroupDevice;
+        nRet = ClientErrors::NoRouteGroupDevice;
 
         string Reply = " ERROR: Route or Route Transmitter not available for group device " + getName();
 
@@ -302,7 +302,7 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, CtiMessag
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)

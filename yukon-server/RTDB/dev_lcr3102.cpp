@@ -26,7 +26,7 @@ Lcr3102Device::Lcr3102Device( )
 
 INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList )
 {
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
 
     if( InMessage.Sequence == EmetconProtocol::Scan_Integrity )
     {
@@ -39,7 +39,7 @@ INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, 
 
 INT Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -125,7 +125,7 @@ INT Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow,
         }
     }
 
-    if ( status == NoError )
+    if ( status == ClientErrors::None )
     {
         updateLastCommsTime( InMessage.Sequence, TimeNow );
     }
@@ -135,7 +135,7 @@ INT Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow,
 
 INT Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -145,7 +145,7 @@ INT Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -166,7 +166,7 @@ INT Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, const Cti
 
 INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -176,7 +176,7 @@ INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage, const C
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -196,7 +196,7 @@ INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage, const C
 
 INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -206,7 +206,7 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -243,7 +243,7 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTim
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Value " << currentTransformer << " is not a valid current transformer number" << endl;
 
-        return BADPARAM;
+        return ClientErrors::BadParameter;
     }
 
     return status;
@@ -251,7 +251,7 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTim
 
 INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -261,7 +261,7 @@ INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage, const Ct
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -335,7 +335,7 @@ INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage, const Ct
 //Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
 INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -345,7 +345,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -371,7 +371,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const 
     }
     else
     {
-        return Error_Abnormal;
+        return ClientErrors::Abnormal;
     }
 
     readNum   = function / 4 + 1;
@@ -389,7 +389,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const 
 
     if( relay == 0 )
     {
-        return ErrorInvalidData;
+        return ClientErrors::InvalidData;
     }
 
     //Flags = "? ? ? H R4 R3 R2 R1" in binary, H is all we really need.
@@ -469,7 +469,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const 
 
 INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     BSTRUCT       BSt;
@@ -480,7 +480,7 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage,
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -540,7 +540,7 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage,
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << "Value" << currentTransformer << " is not a valid CT identifier" << endl;
 
-        return BADPARAM;
+        return ClientErrors::BadParameter;
     }
 
     return status;
@@ -548,7 +548,7 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage,
 
 INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -558,7 +558,7 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -569,7 +569,7 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Device " << getName() << " is missing SSPEC revision number. Unable to decode control time data." << endl;
 
-        return ErrorVerifySSPEC;
+        return ClientErrors::VerifySSPEC;
     }
     else
     {
@@ -618,7 +618,7 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Relay number " << relay << " is invalid. Point has not been inserted." << endl;
 
-        return BADRANGE;
+        return ClientErrors::BadRange;
     }
 
     return status;
@@ -626,7 +626,7 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const Cti
 
 INT Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -636,7 +636,7 @@ INT Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, const CtiTi
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -659,7 +659,7 @@ INT Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, const CtiTi
 
 INT Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -669,7 +669,7 @@ INT Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeN
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     string results;
@@ -697,7 +697,7 @@ INT Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeN
 
 INT Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -709,7 +709,7 @@ INT Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime Ti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     string results;
@@ -774,7 +774,7 @@ INT Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime Ti
 
 INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -786,7 +786,7 @@ INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, const CtiTi
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
         }
 
     string results;
@@ -817,7 +817,7 @@ INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, const CtiTi
 
 INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -829,7 +829,7 @@ INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const Cti
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     string results;
@@ -881,7 +881,7 @@ INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const Cti
     else
     {
         // Somehow we didn't get back either of the two designated functions. Bad!
-        return Error_Abnormal;
+        return ClientErrors::Abnormal;
     }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -894,7 +894,7 @@ INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const Cti
 
 INT Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -906,7 +906,7 @@ INT Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const CtiTime T
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     string results;
@@ -1030,7 +1030,7 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
                                 OutMessageList &outList,
                                 INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -1055,7 +1055,7 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
             delete OutMessage;
             OutMessage = NULL;
 
-            status = NoMethod;
+            status = ClientErrors::NoMethod;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1069,7 +1069,7 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
 
 INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     int  function = -1;
     bool found    = false;
@@ -1099,7 +1099,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
             ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
             ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
 
-            retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, ReturnMsg, vgList, retList );
+            retMsgHandler( OutMessage->Request.CommandStr, ClientErrors::VerifySSPEC, ReturnMsg, vgList, retList );
 
             delete OutMessage;
             OutMessage = 0;
@@ -1115,7 +1115,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 
             if( load == -1 )
             {
-                nRet = BADPARAM;
+                nRet = ClientErrors::BadParameter;
             }
             else
             {
@@ -1141,7 +1141,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 
         if( load == -1 )
         {
-            nRet = BADPARAM;
+            nRet = ClientErrors::BadParameter;
         }
         else
         {
@@ -1157,7 +1157,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 
         if(load == -1)
         {
-            nRet = BADPARAM;
+            nRet = ClientErrors::BadParameter;
         }
         else
         {
@@ -1222,7 +1222,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -1236,7 +1236,7 @@ INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
                               OutMessageList         &outList)
 {
     bool found = false;
-    INT  nRet  = NoError;
+    INT  nRet  = ClientErrors::None;
     string tester;
 
     INT            function;
@@ -1255,7 +1255,7 @@ INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1271,7 +1271,7 @@ INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
 
 INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     int  function = -1;
     bool found    = false;
@@ -1329,7 +1329,7 @@ INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1343,7 +1343,7 @@ INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
             incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
         }
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -1351,7 +1351,7 @@ INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
 
 INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     int  function = -1;
     bool found    = false;
@@ -1376,7 +1376,7 @@ INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
 
     if(!found)
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else
     {
@@ -1386,7 +1386,7 @@ INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -1394,7 +1394,7 @@ INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
 
 int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    int nRet = NoMethod;
+    int nRet = ClientErrors::NoMethod;
     int function = -1;
 
     if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
@@ -1413,7 +1413,7 @@ int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandPar
 
     if( load == -1 || previous == -1)
     {
-        nRet = BADPARAM;
+        nRet = ClientErrors::BadParameter;
     }
     else
     {
@@ -1530,7 +1530,7 @@ int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandPar
 
             OutMessage = NULL;
 
-            nRet = NoError;
+            nRet = ClientErrors::None;
         }
     }
 

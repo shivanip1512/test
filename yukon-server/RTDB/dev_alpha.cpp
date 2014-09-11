@@ -215,9 +215,9 @@ INT CtiDeviceAlpha::GeneralScan(CtiRequestMsg     *pReq,
     }
     else
     {
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -388,7 +388,7 @@ USHORT  CtiDeviceAlpha::addCRC(UCHAR* buffer, LONG length, BOOL bAdd)
 INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
 {
    BYTEUSHORT  CRC;
-   INT         retval = NoError;
+   INT         retval = ClientErrors::None;
 
     if(InCount > 3)
     {
@@ -397,11 +397,11 @@ INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
         if( CRC.ch[0] == InBuffer[InCount - 1] &&
             CRC.ch[1] == InBuffer[InCount - 2] )
         {
-            retval = NoError;
+            retval = ClientErrors::None;
         }
         else
         {
-            retval=Error_Abnormal;
+            retval=ClientErrors::Abnormal;
         }
     }
 
@@ -410,7 +410,7 @@ INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
 
 YukonError_t CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode=NoError;
+    YukonError_t retCode=ClientErrors::None;
 
     switch (getCurrentCommand())
     {
@@ -442,7 +442,7 @@ YukonError_t CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, YukonError_t co
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
                 }
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
                 break;
             }
     }
@@ -481,7 +481,7 @@ INT CtiDeviceAlpha::freeDataBins  ()
     setTotalByteCount (0);
     setClassReadComplete (FALSE);
     setCurrentState (StateHandshakeInitialize);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -535,7 +535,7 @@ INT CtiDeviceAlpha::ResultDecode(const INMESS   &InMessage,
             }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceAlpha::ErrorDecode (const INMESS   &InMessage,
@@ -547,7 +547,7 @@ INT CtiDeviceAlpha::ErrorDecode (const INMESS   &InMessage,
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             InMessage.Return.CommandStr,
@@ -588,7 +588,7 @@ INT CtiDeviceAlpha::ErrorDecode (const INMESS   &InMessage,
 
 YukonError_t CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
     int i;
 
     switch (getCurrentCommand())
@@ -618,7 +618,7 @@ YukonError_t CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, CtiMessageList
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
             }
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
             break;
     }
     return retCode;
@@ -629,7 +629,7 @@ YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, CtiMe
     BYTEULONG         passWord;
     BYTEULONG         passwordValue;
     BYTEULONG         keyValue;
-    YukonError_t      retCode = NoError;
+    YukonError_t      retCode = ClientErrors::None;
 
     switch (getCurrentState())
     {
@@ -767,7 +767,7 @@ YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, CtiMe
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
                 break;
             }
     }
@@ -776,7 +776,7 @@ YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, CtiMe
 
 YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     switch (getCurrentState())
     {
@@ -826,7 +826,7 @@ YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonE
                             dout << CtiTime() << " CRC error for " << getName() << " while handshaking" << endl;
                         }
                     }
-                    Transfer.doTrace(ERRUNKNOWN);
+                    Transfer.doTrace(ClientErrors::Unknown);
                     setAttemptsRemaining (getAttemptsRemaining()-1);
                     if (getAttemptsRemaining() > 0)
                     {
@@ -893,7 +893,7 @@ YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonE
                     dout << CtiTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
                 break;
             }
 
@@ -914,7 +914,7 @@ INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, CtiMessageList
 
     // set our states
     setCurrentState (StateScanDecodeTerminate);
-    return NoError;
+    return ClientErrors::None;
 }
 
 

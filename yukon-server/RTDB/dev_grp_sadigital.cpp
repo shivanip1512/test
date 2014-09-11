@@ -89,7 +89,7 @@ void CtiDeviceGroupSADigital::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -103,7 +103,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
 
     if(!control)
     {
-        nRet = BADPARAM;
+        nRet = ClientErrors::BadParameter;
 
         resultString = " Cannot control SA Digital groups except with command \"control shed\"  :" + getName();
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
@@ -182,7 +182,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
         }
         else
         {
-            nRet = NoRouteGroupDevice;
+            nRet = ClientErrors::NoRouteGroupDevice;
 
             resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
             CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),

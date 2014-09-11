@@ -125,7 +125,7 @@ INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)
     setCurrentCommand ((CtiDeviceIED::CtiMeterCmdStates_t)outMess->Buffer.DUPReq.Command[0]);
     setCurrentState (StateHandshakeInitialize);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -137,7 +137,7 @@ INT CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg     *pReq,
                                      OutMessageList    &outList,
                                      INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -151,7 +151,7 @@ INT CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg     *pReq,
     }
     else
     {
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 }
 
@@ -189,7 +189,7 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
 {
     AlphaPPlusLoadProfile_t *localLP      = ((AlphaPPlusLoadProfile_t*)_loadProfileBuffer);
     AlphaPPlusScanData_t    *localData    = ((AlphaPPlusScanData_t *)_dataBuffer);
-    YukonError_t      retCode = NoError;
+    YukonError_t      retCode = ClientErrors::None;
     BYTEUSHORT        reqLength;
     BYTEUSHORT        reqOffset;
     BYTE              classToRead;
@@ -515,7 +515,7 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
     return retCode;
 }
@@ -523,7 +523,7 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
 YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, CtiMessageList &traceList )
 {
     AlphaPPlusLoadProfile_t * ptr = (AlphaPPlusLoadProfile_t *)_loadProfileBuffer;
-    YukonError_t      retCode = NoError;
+    YukonError_t      retCode = ClientErrors::None;
     BYTEUSHORT        reqLength;
     BYTEUSHORT        reqOffset;
     BYTE              classToRead;
@@ -893,7 +893,7 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
     return retCode;
 }
@@ -907,7 +907,7 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer &Transfer, YukonEr
     // ClassLength is the byte length count of the requested class from the APlusClasses array
     INT         classLength;
 
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     // get appropriate data
     switch (getCurrentState())
@@ -1250,9 +1250,9 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer &Transfer, YukonEr
                 setCurrentState(getPreviousState());
 
                 if (getCurrentState() == StateScanComplete)
-                    retCode =NoError;
+                    retCode =ClientErrors::None;
                 else
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 break;
             }
 
@@ -1273,7 +1273,7 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer &Transfer, YukonEr
 
 YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode= NoError;
+    YukonError_t retCode= ClientErrors::None;
     INT         iClass = 0;
     // Class Offset is the position of the requested class in the APlusClasses array
     INT         classOffset = 0;
@@ -1713,9 +1713,9 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer,
                 setCurrentState(getPreviousState());
 
                 if (getCurrentState() == StateScanComplete)
-                    retCode = NoError;
+                    retCode = ClientErrors::None;
                 else
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 break;
             }
 
@@ -1794,7 +1794,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS   &InMessage,
                 pMsg->insert(
                         InMessage.ErrorCode
                             ? InMessage.ErrorCode
-                            : GeneralScanAborted);
+                            : ClientErrors::GeneralScanAborted);
             }
 
             insertPointIntoReturnMsg (pMsg, pPIL);
@@ -1900,7 +1900,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS   &InMessage,
 
     if( DebugLevel & 0x0001 )
         ResultDisplay(InMessage);
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (const INMESS   &InMessage,
@@ -2051,7 +2051,7 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (const INMESS   &InMessage,
     }
     pPIL = NULL;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -2252,7 +2252,7 @@ INT CtiDeviceAlphaPPlus::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBy
     memcpy (aInMessBuffer, _dataBuffer, sizeof (AlphaPPlusScanData_t));
     aTotalBytes = ptr->totalByteCount;
     ptr->bDataIsReal = TRUE;
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -2260,7 +2260,7 @@ INT CtiDeviceAlphaPPlus::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalB
 {
     memcpy(aInMessBuffer, _loadProfileBuffer, sizeof (AlphaPPlusLoadProfile_t));
     aTotalBytes = sizeof (AlphaPPlusLoadProfile_t);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -2453,7 +2453,7 @@ INT CtiDeviceAlphaPPlus::ResultDisplay(const INMESS &InMessage)
         dout << buffer << endl;
 
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -2700,7 +2700,7 @@ USHORT CtiDeviceAlphaPPlus::secondaryFunction (UCHAR function)
 
 LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, AlphaPPlusClass2Real_t class2)
 {
-    LONG retCode = NoError;
+    LONG retCode = ClientErrors::None;
     CtiPointNumericSPtr pNumericPoint;
 
     // always set the metric
@@ -2721,7 +2721,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2738,7 +2738,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2755,7 +2755,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2772,7 +2772,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2789,7 +2789,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2806,7 +2806,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2823,7 +2823,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2848,7 +2848,7 @@ LONG CtiDeviceAlphaPPlus::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMa
             {
                 point.pointId = 0;
                 point.multiplier = 1.0;
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
             }
     }
     return retCode;

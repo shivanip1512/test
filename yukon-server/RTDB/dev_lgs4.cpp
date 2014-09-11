@@ -221,7 +221,7 @@ CtiDeviceLandisGyrS4& CtiDeviceLandisGyrS4::setCurrentLPDate (ULONG aDate)
 
 YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
 
     switch (getCurrentState())
@@ -248,7 +248,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer,
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
             }
     }
     return retCode;
@@ -256,7 +256,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer,
 
 YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     switch (getCurrentCommand())
     {
@@ -287,7 +287,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, CtiMessa
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
                 break;
             }
 
@@ -298,7 +298,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, CtiMessa
 
 YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
     BYTEUSHORT checkSum;
 
     /*
@@ -446,7 +446,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, CtiM
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
 
     return retCode;
@@ -455,7 +455,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, CtiM
 
 YukonError_t CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
     LGS4LProfileConfig_t * localLPConfig = (LGS4LProfileConfig_t*)iLoadProfileConfig;
 
     /*
@@ -615,7 +615,7 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfe
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
 
     return retCode;
@@ -645,14 +645,14 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, 
                 break;
             }
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 
 YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     switch (getCurrentCommand())
     {
@@ -686,7 +686,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonErro
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
                 break;
             }
     }
@@ -696,7 +696,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonErro
 
 YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t  retCode    = NoError;
+    YukonError_t  retCode    = ClientErrors::None;
     LGS4LoadProfile_t    *localLP         = ((LGS4LoadProfile_t *)iLoadProfileBuffer);
     CHAR  dataBuffer[100];
 
@@ -711,7 +711,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                 }
                 else
                 {
-                    if (Transfer.doTrace(ERRUNKNOWN))
+                    if (Transfer.doTrace(ClientErrors::Unknown))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
@@ -722,7 +722,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -741,7 +741,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                 }
                 else
                 {
-                    if (Transfer.doTrace(ERRUNKNOWN))
+                    if (Transfer.doTrace(ClientErrors::Unknown))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
@@ -752,7 +752,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -775,7 +775,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = Error_Abnormal;
+                            retCode = ClientErrors::Abnormal;
                         }
                         else
                         {
@@ -789,7 +789,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                         setAttemptsRemaining(0);
 
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -799,7 +799,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = Error_Abnormal;
+                            retCode = ClientErrors::Abnormal;
                         }
                         else
                         {
@@ -828,7 +828,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
         case StateScanDecode4:
             {
                 // message comes in byte zero being a check code
-                if (commReturnValue == BADCRC)
+                if (commReturnValue == ClientErrors::BadCrc)
                 {
                     // comm return failed, send command again if attempts remaining
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -836,7 +836,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -852,7 +852,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -888,7 +888,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                 dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
 
     return retCode;
@@ -896,7 +896,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
 
 YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode    = NoError;
+    YukonError_t retCode    = ClientErrors::None;
     LGS4LProfileConfig_t *localLPConfig   = ((LGS4LProfileConfig_t*)iLoadProfileConfig);
     LGS4LoadProfile_t    *localLP         = ((LGS4LoadProfile_t *)iLoadProfileBuffer);
 
@@ -912,7 +912,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                 }
                 else
                 {
-                    if (Transfer.doTrace(ERRUNKNOWN))
+                    if (Transfer.doTrace(ClientErrors::Unknown))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
@@ -923,7 +923,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -943,7 +943,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                 }
                 else
                 {
-                    if (Transfer.doTrace(ERRUNKNOWN))
+                    if (Transfer.doTrace(ClientErrors::Unknown))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
@@ -954,7 +954,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -978,7 +978,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = Error_Abnormal;
+                            retCode = ClientErrors::Abnormal;
                         }
                         else
                         {
@@ -991,7 +991,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                         // failed on the checksum, resend the packet
                         setAttemptsRemaining(0);
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -1001,7 +1001,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                         if (getAttemptsRemaining() <= 0)
                         {
                             setCurrentState (StateScanAbort);
-                            retCode = Error_Abnormal;
+                            retCode = ClientErrors::Abnormal;
                         }
                         else
                         {
@@ -1029,7 +1029,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
         case StateScanDecode4:
             {
                 // check for bad checksum
-                if (commReturnValue == BADCRC)
+                if (commReturnValue == ClientErrors::BadCrc)
                 {
                     // comm return failed, send command again if attempts remaining
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -1037,7 +1037,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -1053,7 +1053,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                     if (getAttemptsRemaining() <= 0)
                     {
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                     }
                     else
                     {
@@ -1285,7 +1285,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                 dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
     return retCode;
 }
@@ -1298,7 +1298,7 @@ INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg     *pReq,
                                       OutMessageList    &outList,
                                       INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1364,7 +1364,7 @@ INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg     *pReq,
     }
     else
     {
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
     }
 
     return status;
@@ -1397,7 +1397,7 @@ INT CtiDeviceLandisGyrS4::allocateDataBins  (OUTMESS *outMess)
     setTotalByteCount (0);
     setCurrentCommand ((CtiDeviceIED::CtiMeterCmdStates_t)outMess->Buffer.DUPReq.Command[0]);
     setCurrentState (StateHandshakeInitialize);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1421,7 +1421,7 @@ INT CtiDeviceLandisGyrS4::freeDataBins  ()
     setCurrentLPChannel (0);
     setCurrentLPInterval(0);
     setCurrentState (StateHandshakeInitialize);
-    return NoError;
+    return ClientErrors::None;
 }
 
 void reverseCharacters (UCHAR *source, PCHAR dest)
@@ -1800,7 +1800,7 @@ INT CtiDeviceLandisGyrS4::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalB
     ptr->bDataIsReal = TRUE;
     memcpy (aInMessBuffer, iDataBuffer, sizeof (LGS4ScanData_t));
     aTotalBytes = getTotalByteCount();
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1808,7 +1808,7 @@ INT CtiDeviceLandisGyrS4::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotal
 {
     memcpy(aInMessBuffer, iLoadProfileBuffer, sizeof (LGS4LoadProfile_t));
     aTotalBytes = sizeof (LGS4LoadProfile_t);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1878,7 +1878,7 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(const INMESS   &InMessage,
             }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS   &InMessage,
@@ -1890,7 +1890,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS   &InMessage,
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
@@ -1993,7 +1993,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS   &InMessage,
                 pMsg->insert(
                         InMessage.ErrorCode
                             ? InMessage.ErrorCode
-                            : GeneralScanAborted);
+                            : ClientErrors::GeneralScanAborted);
             }
 
             insertPointIntoReturnMsg (pMsg, pPIL);
@@ -2041,7 +2041,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (const INMESS   &InMessage,
 
     if( DebugLevel & 0x0001 )
       ResultDisplay(InMessage);
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS   &InMessage,
@@ -2598,7 +2598,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS   &InMessage,
     }
     pPIL = NULL;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 // Routine to display or print the message
@@ -2733,13 +2733,13 @@ INT CtiDeviceLandisGyrS4::ResultDisplay (const INMESS &InMessage)
     }
 
 
-    return NoError;
+    return ClientErrors::None;
 
 }
 
 LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMetric)
 {
-    LONG retCode = NoError;
+    LONG retCode = ClientErrors::None;
     CtiPointNumericSPtr   pNumericPoint;
 
     // always set the metric
@@ -2760,7 +2760,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2777,7 +2777,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2794,7 +2794,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2812,7 +2812,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2830,7 +2830,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2848,7 +2848,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2866,7 +2866,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2884,7 +2884,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2902,7 +2902,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -2919,7 +2919,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
                 break;
             }
@@ -2943,7 +2943,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
             {
                 point.pointId = 0;
                 point.multiplier = 1.0;
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
             }
     }
     return retCode;

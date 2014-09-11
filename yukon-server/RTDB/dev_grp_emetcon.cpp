@@ -68,7 +68,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
                                           CtiMessageList    &retList,
                                           OutMessageList    &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -160,7 +160,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
                     if(parse.getCommand() == ControlRequest)
                         reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, getLastCommand() );
 
-                    pRet->setStatus(NoError);
+                    pRet->setStatus(ClientErrors::None);
                 }
                 else     // An error occured in the processing/communication
                 {
@@ -182,7 +182,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
         case PutConfigRequest:
         default:
             {
-                nRet = NoExecuteRequestMethod;
+                nRet = ClientErrors::NoMethodForExecuteRequest;
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                       string(OutMessage->Request.CommandStr),
@@ -218,7 +218,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
     }
     else
     {
-        nRet = NoRouteGroupDevice;
+        nRet = ClientErrors::NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
 

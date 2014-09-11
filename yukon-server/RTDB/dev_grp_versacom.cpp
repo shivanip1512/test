@@ -49,7 +49,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg     *pReq,
                                            CtiMessageList    &retList,
                                            OutMessageList    &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -146,7 +146,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg     *pReq,
     }
     else
     {
-        nRet = NoRouteGroupDevice;
+        nRet = ClientErrors::NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
 

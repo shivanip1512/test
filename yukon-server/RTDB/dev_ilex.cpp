@@ -55,12 +55,12 @@ INT CtiDeviceILEX::header(PBYTE  Header,          /* Pointer to message */
     if(SubFunction2) Header[0] |= 0x08;
     Header[1] = LOBYTE (getAddress() >> 3);
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -88,7 +88,7 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -116,7 +116,7 @@ INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
 INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -142,7 +142,7 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT             status = NoError;
+    INT             status = ClientErrors::None;
     CtiPointSPtr    PointRecord;
     CtiPointNumericSPtr NumericPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -183,7 +183,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return MEMORY;
+            return ClientErrors::MemoryAccess;
         }
         ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
@@ -747,7 +747,7 @@ INT CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 
 INT CtiDeviceILEX::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -795,7 +795,7 @@ INT CtiDeviceILEX::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 
 INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     /*  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -835,7 +835,7 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
-            status = NoExecuteRequestMethod;
+            status = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -860,7 +860,7 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
 INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(!isInhibited())
     {
@@ -881,9 +881,9 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
             if ( ! point )
             {
                 std::string errorMessage = "The specified point is not on device " + getName();
-                returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+                returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
-                return ErrorPointLookupFailed;
+                return ClientErrors::PointLookupFailed;
             }
 
             ctlPoint = boost::static_pointer_cast<CtiPointStatus>(point);
@@ -944,7 +944,7 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         else
                         {
                             delete (MyOutMessage);
-                            return(BADSTATE);
+                            return ClientErrors::BadState;
                         }
 
                         /* set the point number */

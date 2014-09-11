@@ -98,7 +98,7 @@ bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 
 INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     // Get a loop done maybe?
     if( OutMessage != NULL )
@@ -181,7 +181,7 @@ INT CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
     }
 
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 unsigned CtiDeviceCCU::queuedWorkCount() const
@@ -219,7 +219,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg     *pReq,
                                  CtiMessageList    &retList,
                                  OutMessageList    &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -254,7 +254,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg     *pReq,
                 }
                 else
                 {
-                    nRet = NoMethod;
+                    nRet = ClientErrors::NoMethod;
                     retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                             string(OutMessage->Request.CommandStr),
                                                             string("Non-711 CCUs do not support this command"),
@@ -280,7 +280,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg     *pReq,
         case PutConfigRequest:
         default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -324,7 +324,7 @@ INT CtiDeviceCCU::CCULoop(OUTMESS* OutMessage)
 
     OutMessage->Buffer.OutMessage[PREIDL] = NO_OP;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -351,6 +351,6 @@ INT CtiDeviceCCU::CCU711Reset(OUTMESS* OutMessage)
 
     EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
 
-    return NoError;
+    return ClientErrors::None;
 }
 

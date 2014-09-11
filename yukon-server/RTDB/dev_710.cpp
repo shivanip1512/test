@@ -10,7 +10,7 @@ using namespace std;
 
 INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("loop");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -40,7 +40,7 @@ INT CtiDeviceCCU710::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 INT CtiDeviceCCU710::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -97,7 +97,7 @@ INT CtiDeviceCCU710::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow
                 if( retMsg != NULL)
                 {
                     retMsg->setResultString(getName() + " / ping failed");
-                    retVal = FRAMEERR;
+                    retVal = ClientErrors::Framing;
                     retMsg->setStatus(retVal);
                 }
             }
@@ -134,7 +134,7 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg     *pReq,
                                     CtiMessageList    &retList,
                                     OutMessageList    &outList)
 {
-   INT nRet = NoError;
+   INT nRet = ClientErrors::None;
    /*
     *  This method should only be called by the dev_base method
     *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -170,7 +170,7 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg     *pReq,
    case PutConfigRequest:
    default:
       {
-         nRet = NoExecuteRequestMethod;
+         nRet = ClientErrors::NoMethodForExecuteRequest;
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
          retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -212,7 +212,7 @@ INT CtiDeviceCCU710::Loopback(OUTMESS* OutMessage)
    OutMessage->ReturnNexus = NULL;
    OutMessage->SaveNexus   = NULL;
 
-   return NoError;
+   return ClientErrors::None;
 }
 
 CtiDeviceCCU710::CtiDeviceCCU710()
@@ -247,6 +247,6 @@ INT CtiDeviceCCU710::LPreamble(PBYTE Pre, USHORT Remote)
    for(i = 0; i < 3; i++)
       Pre[i] = Parity_C (Pre[i]);
 
-   return NoError;
+   return ClientErrors::None;
 }
 

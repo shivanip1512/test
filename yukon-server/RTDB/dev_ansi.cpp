@@ -54,7 +54,7 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
          retMsg = CTIDBG_new CtiReturnMsg(getID(),
                              pReq->CommandString(),
                              string(getName() + " / loopback in progress"),
-                             NoError,
+                             ClientErrors::None,
                              pReq->RouteId(),
                              pReq->MacroOffset(),
                              1, //pReq->Attempt(),
@@ -70,9 +70,9 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
-   return NoError;
+   return ClientErrors::None;
 }
 
 //=========================================================================================================================================
@@ -112,7 +112,7 @@ INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NoError,
+                                          ClientErrors::None,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -131,9 +131,9 @@ INT CtiDeviceAnsi::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
-   return NoError;
+   return ClientErrors::None;
 }
 
 INT CtiDeviceAnsi::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
@@ -216,14 +216,14 @@ INT CtiDeviceAnsi::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OU
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
 
    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << "outList.size() = " <<outList.size()<< endl;
    }
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -235,7 +235,7 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg    *pReq,
                                   CtiMessageList    &retList,
                                   OutMessageList    &outList )
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
 
     //_parseFlags = parse.getFlags();
 
@@ -264,7 +264,7 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg    *pReq,
                 dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on Ansi Device route. Command = " << parse.getCommand( ) << endl;
             }
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
 
             break;
         }

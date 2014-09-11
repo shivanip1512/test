@@ -72,7 +72,7 @@ void CtiDeviceGroupSA305::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     ULONG etime = 0;
     std::string resultString;
 
@@ -101,7 +101,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             etime = CtiTime().seconds() + shed_seconds;
         }
         else
-            nRet = BADPARAM;
+            nRet = ClientErrors::BadParameter;
 
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)
@@ -203,7 +203,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     }
     else
     {
-        nRet = NoRouteGroupDevice;
+        nRet = ClientErrors::NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),

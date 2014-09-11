@@ -115,7 +115,7 @@ LONG CtiDeviceGroupMCT::getAddress() const
 
 INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT        nRet  = NoError;
+    INT        nRet  = ClientErrors::None;
     CtiRouteSPtr Route;
     string  resultString;
     long routeID;
@@ -139,7 +139,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                 dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command to MCT loadgroup \"" << getName( ) << "\". Command = " << parse.getCommand( ) << endl;
             }
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
 
             break;
         }
@@ -266,7 +266,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
             }
             else
             {
-                nRet = BADROUTE;
+                nRet = ClientErrors::BadRoute;
 
                 resultString = "ERROR: Route or Route Transmitter not available for device " + getName();
 
@@ -303,7 +303,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
 INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     bool found = false;
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
 
     INT function;
 
@@ -366,11 +366,11 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
     //  check that we found a function and that we have an address to send it to
     if( !found )
     {
-        nRet = NoMethod;
+        nRet = ClientErrors::NoMethod;
     }
     else if( !getAddress() )
     {
-        nRet = ADDRESSERROR;
+        nRet = ClientErrors::Address;
     }
     else
     {

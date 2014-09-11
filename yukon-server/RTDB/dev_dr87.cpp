@@ -267,7 +267,7 @@ CtiDeviceDR87& CtiDeviceDR87::setNumberOfIncompleteMsgs (INT aNumberOfIncomplete
 
 YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     switch (getCurrentState())
     {
@@ -349,7 +349,7 @@ YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, CtiMes
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
             }
     }
     return retCode;
@@ -357,7 +357,7 @@ YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, CtiMes
 
 YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, CtiMessageList &traceList )
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     switch (getCurrentCommand())
     {
@@ -387,7 +387,7 @@ YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, CtiMessageList 
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
                 break;
             }
 
@@ -398,7 +398,7 @@ YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, CtiMessageList 
 
 YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     // get appropriate data
     switch (getCurrentState())
@@ -458,7 +458,7 @@ YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, CtiMessageL
             }
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
 
     return retCode;
@@ -468,7 +468,7 @@ YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, CtiMessageL
 INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
     BYTEUSHORT worker;
-    INT retVal = NoError;
+    INT retVal = ClientErrors::None;
 
     worker.sh = getLogoffFunction();
 
@@ -484,7 +484,7 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, CtiMessageList 
         Transfer.setInCountExpected (0);
         Transfer.setInTimeout (1);
         setCurrentState (StateScanDecode7);
-        retVal = Error_Abnormal;
+        retVal = ClientErrors::Abnormal;
     }
     else
     {
@@ -529,7 +529,7 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, CtiMessageList 
 
 YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
     DR87LoadProfile_t * localLP = (DR87LoadProfile_t*)iLoadProfileBuffer;
 
     /*
@@ -755,7 +755,7 @@ YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, CtiM
             }
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
-            retCode = Error_Abnormal;
+            retCode = ClientErrors::Abnormal;
     }
 
     return retCode;
@@ -830,14 +830,14 @@ YukonError_t CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, YukonEr
                 break;
             }
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 
 
 YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
 
     switch (getCurrentCommand())
     {
@@ -871,7 +871,7 @@ YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t com
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
                 break;
             }
     }
@@ -880,7 +880,7 @@ YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t com
 
 YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
     int x, msgDecodeRetVal;
     DR87ScanData_t * localData = (DR87ScanData_t*)iDataBuffer;
 
@@ -997,7 +997,7 @@ YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t
                     {
                         // problem generating the terminate command is the only way we get here
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                         break;
                     }
 
@@ -1007,7 +1007,7 @@ YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t
                             dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                 }
                 break;
             }
@@ -1041,7 +1041,7 @@ YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t
 
 YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList)
 {
-    YukonError_t retCode = NoError;
+    YukonError_t retCode = ClientErrors::None;
     int x, msgDecodeRetVal;
     DR87LoadProfile_t * localLP = (DR87LoadProfile_t*)iLoadProfileBuffer;
 
@@ -1266,7 +1266,7 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
                         {
                             // problem generating the terminate command is the only way we get here
                             setCurrentState (StateScanAbort);
-                            retCode = Error_Abnormal;
+                            retCode = ClientErrors::Abnormal;
                             break;
                         }
 
@@ -1276,7 +1276,7 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
                             dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
-                        retCode = Error_Abnormal;
+                        retCode = ClientErrors::Abnormal;
                 }
                 break;
             }
@@ -1345,7 +1345,7 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg     *pReq,
                                OutMessageList    &outList,
                                INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1397,7 +1397,7 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg     *pReq,
     }
     else
     {
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
     }
     return status;
 }
@@ -1425,7 +1425,7 @@ INT CtiDeviceDR87::allocateDataBins(OUTMESS *outMess)
     setTotalByteCount (0);
     setCurrentCommand ((CtiDeviceIED::CtiMeterCmdStates_t)outMess->Buffer.DUPReq.Command[0]);
     setCurrentState (StateHandshakeInitialize);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1455,7 +1455,7 @@ INT CtiDeviceDR87::freeDataBins()
 
     iLPPulseVector.erase(iLPPulseVector.begin(), iLPPulseVector.end());
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceDR87::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes)
@@ -1468,7 +1468,7 @@ INT CtiDeviceDR87::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes)
     */
     ::memcpy (aInMessBuffer, iDataBuffer, sizeof (DR87ScanData_t));
     aTotalBytes = sizeof (DR87ScanData_t);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1477,7 +1477,7 @@ INT CtiDeviceDR87::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 
     ::memcpy(aInMessBuffer, iLoadProfileBuffer, sizeof (DR87LoadProfile_t));
     aTotalBytes = sizeof (DR87LoadProfile_t);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1546,7 +1546,7 @@ INT  CtiDeviceDR87::ResultDecode(const INMESS   &InMessage,
                 }
             }
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceDR87::ErrorDecode (const INMESS   &InMessage,
@@ -1558,7 +1558,7 @@ INT CtiDeviceDR87::ErrorDecode (const INMESS   &InMessage,
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
@@ -1661,7 +1661,7 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS   &InMessage,
                 pMsg->insert(
                         InMessage.ErrorCode
                             ? InMessage.ErrorCode
-                            : GeneralScanAborted);
+                            : ClientErrors::GeneralScanAborted);
             }
 
             insertPointIntoReturnMsg (pMsg, pPIL);
@@ -1716,7 +1716,7 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS   &InMessage,
 
     if( DebugLevel & 0x0001 )
         ResultDisplay(InMessage);
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1726,7 +1726,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS   &InMessage,
                                             CtiMessageList &retList,
                                             OutMessageList &outList)
 {
-    int retCode = NoError;
+    int retCode = ClientErrors::None;
     const DIALUPREPLY        *DUPRep       = &InMessage.Buffer.DUPSt.DUPRep;
     const DR87LoadProfile_t  *ptr = (const DR87LoadProfile_t *)DUPRep->Message;
 
@@ -1886,7 +1886,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS   &InMessage,
 
 LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
 {
-    LONG retCode = NoError;
+    LONG retCode = ClientErrors::None;
     CtiPointNumericSPtr   pNumericPoint;
 
     switch (aChannel)
@@ -1903,7 +1903,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -1920,7 +1920,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -1937,7 +1937,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -1955,7 +1955,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
                 {
                     point.pointId = 0;
                     point.multiplier = 1.0;
-                    retCode = Error_Abnormal;
+                    retCode = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -1964,7 +1964,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
             {
                 point.pointId = 0;
                 point.multiplier = 1.0;
-                retCode = Error_Abnormal;
+                retCode = ClientErrors::Abnormal;
             }
     }
     return retCode;
@@ -2082,7 +2082,7 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, Cti
 INT CtiDeviceDR87::ResultDisplay (const INMESS &InMessage)
 
 {
-    return NoError;
+    return ClientErrors::None;
 }
 
 BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (LONG   aPointId,
@@ -2230,14 +2230,14 @@ USHORT  CtiDeviceDR87::calculateCRC(UCHAR* buffer, LONG length, BOOL bAdd)
 INT CtiDeviceDR87::checkCRC(BYTE *InBuffer,ULONG InCount)
 {
     BYTEUSHORT  CRC;
-    INT         retVal = Error_Abnormal;
+    INT         retVal = ClientErrors::Abnormal;
 
 
     CRC.sh = calculateCRC (InBuffer, InCount - 2, FALSE);
 
     if (CRC.ch[0] == InBuffer[InCount - 2] && CRC.ch[1] == InBuffer[InCount - 1])
     {
-        retVal = NoError;
+        retVal = ClientErrors::None;
     }
 
     return retVal;
@@ -2365,7 +2365,7 @@ INT CtiDeviceDR87::getMessageInDataStream (CtiXfer  &Transfer, int aCommValue)
 INT CtiDeviceDR87::fillUploadTransferObject (CtiXfer  &aTransfer, USHORT aCmd, USHORT aStartAddress, USHORT aByteNumber, USHORT aBytesToRead)
 {
     BYTEUSHORT startAddress,byteCount;
-    INT retVal = NoError;
+    INT retVal = ClientErrors::None;
 
     startAddress.sh = aStartAddress;
     byteCount.sh = (~aBytesToRead)+0x01;

@@ -38,7 +38,7 @@ Protocol::Interface *Ccu721Device::getProtocol()
 
 INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     switch( parse.getCommand() )
     {
@@ -47,7 +47,7 @@ INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         {
             OutMessage->Sequence = KlondikeProtocol::Command_Loopback;
 
-            nRet = NoError;
+            nRet = ClientErrors::None;
 
             break;
         }
@@ -57,7 +57,7 @@ INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             {
                 OutMessage->Sequence = KlondikeProtocol::Command_TimeRead;
 
-                nRet = NoError;
+                nRet = ClientErrors::None;
             }
         }
         case PutConfigRequest:
@@ -68,13 +68,13 @@ INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 OutMessage->OutLength = parse.getsValue("raw").length();
                 memcpy(OutMessage->Buffer.OutMessage, parse.getsValue("raw").data(), OutMessage->OutLength);
 
-                nRet = NoError;
+                nRet = ClientErrors::None;
             }
             else if( parse.isKeyValid("timesync") )
             {
                 OutMessage->Sequence = KlondikeProtocol::Command_TimeSync;
 
-                nRet = NoError;
+                nRet = ClientErrors::None;
             }
 
             break;
@@ -108,7 +108,7 @@ INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
 INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -384,7 +384,7 @@ DeviceQueueInterface *Ccu721Device::getDeviceQueueHandler()
 
 YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    YukonError_t retval = NoError;
+    YukonError_t retval = ClientErrors::None;
 
     // If they are the same, it is a message to the CCU and should not be queued
     // Instead of checking this, should all messages to the CCU be marked DTRAN?
@@ -398,7 +398,7 @@ YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *d
                 dout << CtiTime() << " **** Checkpoint - " << __FUNCTION__ << " - unable to insert duplicate OM pointer (" << OutMessage << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            return MEMORY;
+            return ClientErrors::MemoryAccess;
         }
 
         vector<unsigned char> queued_message;
@@ -415,7 +415,7 @@ YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *d
 
         *dqcnt = _queued_outmessages.size();
 
-        retval = QUEUED_TO_DEVICE;
+        retval = ClientErrors::QueuedToDevice;
     }
 
     return retval;
@@ -525,7 +525,7 @@ YukonError_t Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 {
     if( !OutMessage )
     {
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     _current_om = OutMessage;
@@ -671,23 +671,23 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
 }
 
 
-YukonError_t Ccu721Device::translateKlondikeError(KlondikeProtocol::Errors error)
+YukonError_t Ccu721Device::translateKlondikeError(KlondikeProtocol::KlondikeErrors error)
 {
     switch( error )
     {
-        case KlondikeProtocol::Error_None:                      return NoError;
+        case KlondikeProtocol::Error_None:                      return ClientErrors::None;
 
-        case KlondikeProtocol::Error_BusDisabled:               return BADBUSS;
-        case KlondikeProtocol::Error_InvalidBus:                return BADBUSS;
-        case KlondikeProtocol::Error_InvalidDLCType:            return Error_Abnormal;
-        case KlondikeProtocol::Error_InvalidMessageLength:      return BADLENGTH;
-        case KlondikeProtocol::Error_InvalidSequence:           return BADSEQUENCE;
-        case KlondikeProtocol::Error_NoRoutes:                  return RTNF;
-        case KlondikeProtocol::Error_QueueEntryLost:            return QUEUEFLUSHED;
-        case KlondikeProtocol::Error_TransmitterOverheating:    return ErrorTransmitterOverheating;
+        case KlondikeProtocol::Error_BusDisabled:               return ClientErrors::BadBusSpecification;
+        case KlondikeProtocol::Error_InvalidBus:                return ClientErrors::BadBusSpecification;
+        case KlondikeProtocol::Error_InvalidDLCType:            return ClientErrors::Abnormal;
+        case KlondikeProtocol::Error_InvalidMessageLength:      return ClientErrors::BadLength;
+        case KlondikeProtocol::Error_InvalidSequence:           return ClientErrors::BadSequence;
+        case KlondikeProtocol::Error_NoRoutes:                  return ClientErrors::RouteNotFound;
+        case KlondikeProtocol::Error_QueueEntryLost:            return ClientErrors::CcuQueueFlushed;
+        case KlondikeProtocol::Error_TransmitterOverheating:    return ClientErrors::TransmitterOverheating;
 
         default:
-        case KlondikeProtocol::Error_Unknown:                   return Error_Abnormal;
+        case KlondikeProtocol::Error_Unknown:                   return ClientErrors::Abnormal;
     }
 }
 
@@ -797,7 +797,7 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
 
         switch( dword_status )
         {
-            case NoError:
+            case ClientErrors::None:
             {
                 im.Buffer.DSt = tmp_d_struct;
                 im.Buffer.DSt.Time    = im.Time;
@@ -807,7 +807,7 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
 
                 break;
             }
-            case EWORDRCV:
+            case ClientErrors::EWordReceived:
             {
                 im.Buffer.RepeaterError.ESt = tmp_e_struct;
                 im.Buffer.RepeaterError.Details = 0;  //  no details yet, may be filled in by portfield.cpp/CommunicateDevice()
@@ -826,7 +826,7 @@ YukonError_t Ccu721Device::processInbound(const OUTMESS *om, INMESS &im)
 
     im.InLength = 0;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -845,7 +845,7 @@ YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsign
     {
         unsigned short unused;
 
-        YukonError_t status = NoError;
+        YukonError_t status = ClientErrors::None;
 
         switch( i )
         {
@@ -855,7 +855,7 @@ YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsign
             case 3:  status = D23_Word(input_itr, &DSt->Message[8], &unused, &unused);  break;
         }
 
-        if( status == EWORDRCV )
+        if( status == ClientErrors::EWordReceived )
         {
             return decodeEWord(input_itr, input_end - input_itr, ESt);
         }
@@ -865,7 +865,7 @@ YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsign
         }
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -873,12 +873,12 @@ YukonError_t Ccu721Device::decodeEWord(const unsigned char *input, const unsigne
 {
     if( input_length < EWORDLEN )
     {
-        return MEMORY;
+        return ClientErrors::MemoryAccess;
     }
 
     YukonError_t error = E_Word(input, ESt);
 
-    if( error != EWORDRCV )
+    if( error != ClientErrors::EWordReceived )
     {
         return error;
     }
@@ -886,10 +886,10 @@ YukonError_t Ccu721Device::decodeEWord(const unsigned char *input, const unsigne
     //  Was this the CCU?
     if( ESt->echo_address == 0 )
     {
-        if( ESt->diagnostics.incoming_bch_error )        return BADBCH;
+        if( ESt->diagnostics.incoming_bch_error )        return ClientErrors::BadBch;
 
         //  this means the signal dropped out
-        if( ESt->diagnostics.weak_signal )               return NACK1;
+        if( ESt->diagnostics.weak_signal )               return ClientErrors::Word1Nack;
 
         //  these all indicate no response
         //if( ESt->diagnostics.incoming_no_response )
@@ -897,10 +897,10 @@ YukonError_t Ccu721Device::decodeEWord(const unsigned char *input, const unsigne
         //if( ESt->diagnostics.listen_ahead_no_response )
         //if( ESt->diagnostics.repeater_code_mismatch )
 
-        return NACKPAD1;
+        return ClientErrors::Word1NackPadded;
     }
 
-    return EWORDRCV;
+    return ClientErrors::EWordReceived;
 }
 
 

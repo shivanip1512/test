@@ -26,7 +26,7 @@ using Cti::MacroOffset;
 
 INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = NoError;
+    INT   nRet = ClientErrors::None;
     string resultString;
 
     static const int DEFAULT_EXPIRATION_20_MINUTES = 20*60;
@@ -110,9 +110,9 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
         if(nRet || xcom.entries() <= 0)
         {
-            if (nRet == NoError)
+            if (nRet == ClientErrors::None)
             {
-                nRet = BADPARAM;
+                nRet = ClientErrors::BadParameter;
             }
 
             resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + GetErrorString(nRet);

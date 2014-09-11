@@ -93,7 +93,7 @@ bool DnpDevice::clearedForScan(int scantype)
 
 INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     setScanFlag(ScanRateGeneral, true);
@@ -121,7 +121,7 @@ INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
 
 INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan integrity");
 
     setScanFlag(ScanRateIntegrity, true);
@@ -149,7 +149,7 @@ INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTME
 
 INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
 
     Protocol::DNPInterface::Command command = Protocol::DNPInterface::Command_Invalid;
     Protocol::DNPInterface::output_point controlout;
@@ -184,9 +184,9 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 if ( ! point )
                 {
                     std::string errorMessage = "The specified point is not on device " + getName();
-                    returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+                    returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
-                    return ErrorPointLookupFailed;
+                    return ClientErrors::PointLookupFailed;
                 }
 
                 if( point->isStatus() )
@@ -394,7 +394,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                     dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                nRet = MISCONFIG;
+                nRet = ClientErrors::MissingConfig;
                 break;
             }
 
@@ -467,9 +467,9 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                     if ( ! point )
                     {
                         std::string errorMessage = "The specified point is not on device " + getName();
-                        returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+                        returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
-                        return ErrorPointLookupFailed;
+                        return ClientErrors::PointLookupFailed;
                     }
 
                     if( point->getType() == AnalogPointType )
@@ -489,9 +489,9 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
                             std::string temp = "Control is inhibited for the specified analog point on device " + getName();
 
-                            returnErrorMessage(ControlInhibitedOnPoint, OutMessage, retList, temp);
+                            returnErrorMessage(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
 
-                            return ControlInhibitedOnPoint;
+                            return ClientErrors::ControlInhibitedOnPoint;
                         }
                         else
                         {
@@ -615,7 +615,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 
 
-        nRet = NoError;
+        nRet = ClientErrors::None;
     }
 
     return nRet;
@@ -630,7 +630,7 @@ Protocol::Interface *DnpDevice::getProtocol()
 
 int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    int retVal = NoError;
+    int retVal = ClientErrors::None;
 
     //  write the outmess_header
     outmess_header *om_buf = reinterpret_cast<outmess_header *>(OutMessage->Buffer.OutMessage);
@@ -676,7 +676,7 @@ int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
             dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -685,7 +685,7 @@ int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
 
 YukonError_t DnpDevice::recvCommRequest( OUTMESS *OutMessage )
 {
-    YukonError_t retVal = NoError;
+    YukonError_t retVal = ClientErrors::None;
 
     if( OutMessage )
     {
@@ -721,7 +721,7 @@ YukonError_t DnpDevice::recvCommRequest( OUTMESS *OutMessage )
             dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retVal = MemoryError;
+        retVal = ClientErrors::Memory;
     }
 
     return retVal;
@@ -795,7 +795,7 @@ YukonError_t DnpDevice::sendCommResult(INMESS &InMessage)
     //  and mark the end with a null, again, just to be sure
     InMessage.Buffer.InMessage[sizeof(InMessage.Buffer.InMessage) - 1] = 0;
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1086,7 +1086,7 @@ INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
 INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = NoError;
+    INT retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
 
@@ -1121,7 +1121,7 @@ INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
         pMsg->insert(
                 InMessage.ErrorCode
                     ? InMessage.ErrorCode
-                    : GeneralScanAborted);
+                    : ClientErrors::GeneralScanAborted);
 
         retList.push_back( pMsg );
     }

@@ -119,7 +119,7 @@ void Cbc8020Device::processPoints( Cti::Protocol::Interface::pointlist_t &points
 
 INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
     bool didExecute = false;
 
     if( parse.getCommand() == PutConfigRequest )
@@ -143,9 +143,9 @@ INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
             if ( ! point )
             {
                 std::string errorMessage = "The specified point is not on device " + getName();
-                returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+                returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
-                return ErrorPointLookupFailed;
+                return ClientErrors::PointLookupFailed;
             }
 
             if( point->isStatus() )

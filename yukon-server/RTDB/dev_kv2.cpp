@@ -72,7 +72,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           string(getName() + " / scan general in progress"),
-                                          NoError,
+                                          ClientErrors::None,
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
@@ -91,9 +91,9 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
-   return NoError;
+   return ClientErrors::None;
 }
 
 INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
@@ -222,14 +222,14 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
    }
    else
    {
-      return MEMORY;
+      return ClientErrors::MemoryAccess;
    }
 
    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << "outList.size() = " <<outList.size()<< endl;
    }
-   return NoError;
+   return ClientErrors::None;
 }
 
 
@@ -241,7 +241,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg     *pReq,
                                   CtiMessageList    &retList,
                                   OutMessageList    &outList )
 {
-    int nRet = NoError;
+    int nRet = ClientErrors::None;
     OutMessageList tmpOutList;
 
     //_parseFlags = parse.getFlags();
@@ -308,7 +308,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg     *pReq,
                 dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
             }
-            nRet = NoMethod;
+            nRet = ClientErrors::NoMethod;
 
             break;
         }
@@ -622,7 +622,7 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     //getKV2Protocol().buildWantedTableList (aMsg);
 
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 /*************************************************************************************
@@ -705,7 +705,7 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 
     // keep the list on the scanner side for decode
     //getKV2Protocol().buildWantedTableList (aMsg);
-    return NoError;
+    return ClientErrors::None;
 }
 
 

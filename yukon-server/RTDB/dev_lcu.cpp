@@ -114,7 +114,7 @@ CtiDeviceLCU::~CtiDeviceLCU()
 
 INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -147,7 +147,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     }
     else
     {
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
     }
 
     return status;
@@ -155,7 +155,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
 INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -168,7 +168,7 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     }
     else
     {
-        status = MEMORY;
+        status = ClientErrors::MemoryAccess;
     }
 
     return status;
@@ -187,7 +187,7 @@ INT CtiDeviceLCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 /* Routine to output freeze to an LCU */
 INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     /* Load the freeze message */
     if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERFREEZE, 0) )
@@ -207,7 +207,7 @@ INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
 /* Routine to reset freeze to an LCU */
 INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     setScanFlag(ScanResetting);
 
@@ -229,7 +229,7 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
 /* Routine to scan ALL LCU status */
 INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to place command on queue */
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     if(_lcuType == LCU_T3026)
     {
@@ -253,7 +253,7 @@ INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to pla
 /* Routine to scan internal LCU status */
 INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     /* Load the forced scan message */
     if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0) )
@@ -270,7 +270,7 @@ INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
 /* Routine to scan internal LCU status */
 INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     /* Load the forced scan message */
     if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANEXT, 0) )
@@ -475,7 +475,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
             dout << CtiTime() << " Message is not a proper MASTERCOM reply" << endl;
         }
 
-        status = FRAMEERR;
+        status = ClientErrors::Framing;
     }
 
     return status;
@@ -484,7 +484,7 @@ INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 
 INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     resetForScan(desolveScanRateType(string(InMessage.Return.CommandStr)));
     /* see what handshake was */
@@ -524,7 +524,7 @@ INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList,OutMessageList &outList)
 {
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
     OUTMESS *pOM = 0;
 
     switch(parse.getCommand())
@@ -538,9 +538,9 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 if ( ! point )
                 {
                     std::string errorMessage = "The specified point is not on device " + getName();
-                    returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+                    returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
-                    return ErrorPointLookupFailed;
+                    return ClientErrors::PointLookupFailed;
                 }
 
                 if( point->isStatus() )
@@ -655,7 +655,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     case PutConfigRequest:
     default:
         {
-            nRet = NoExecuteRequestMethod;
+            nRet = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -806,7 +806,7 @@ INT CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
         OutMessage->SaveNexus               = NULL;
     }
 
-    return NoError;
+    return ClientErrors::None;
 }
 
 
@@ -1828,11 +1828,11 @@ CtiMutex& CtiDeviceLCU::getLCUExclusionMux()
  */
 INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     CtiTime now;
 
     // Pretend for the simulated ports!
-    if(InMessage.ErrorCode == ErrPortSimulated)
+    if(InMessage.ErrorCode == ClientErrors::PortSimulated)
     {
         if(getNextCommandTime() > now)
         {
@@ -2292,7 +2292,7 @@ INT CtiDeviceLCU::getProtocolWrap() const
 /*  */
 INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool lockout)
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
     USHORT cmd = (lockout ? MASTERLOCKOUTSET : MASTERLOCKOUTRESET);
 
     /* Load the forced scan message */

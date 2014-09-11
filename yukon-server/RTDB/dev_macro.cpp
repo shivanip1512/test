@@ -97,7 +97,7 @@ void CtiDeviceMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     CtiLockGuard<CtiMutex> guard(_deviceListMux);
-    INT nRet = NoError;
+    INT nRet = ClientErrors::None;
 
     if( !_deviceList.empty( ) )
     {
@@ -137,7 +137,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
             }
             else
             {
-                nRet = MEMORY;
+                nRet = ClientErrors::MemoryAccess;
             }
 
             parse = origparse;      // Reassign parse in case the last device added some clutter.
@@ -305,7 +305,7 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, CtiMessageList 
             vgList.push_back( pData );
         }
     }
-    return NoError;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceMacro::processTrxID( int trx,  CtiMessageList  &vgList)
@@ -358,7 +358,7 @@ INT CtiDeviceMacro::processTrxID( int trx,  CtiMessageList  &vgList)
 
 INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = NoError;
+    INT status = ClientErrors::None;
 
     // Do we need to process Ripple Bit Packing?
     if(gCoalesceRippleBits)

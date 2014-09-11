@@ -43,7 +43,7 @@ Cbc7020Device::ConfigPartsList Cbc7020Device::initConfigParts()
 
 INT Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = NoMethod;
+    INT nRet = ClientErrors::NoMethod;
     bool didExecute = false;
 
     //  if it's a control open/close request without an offset
