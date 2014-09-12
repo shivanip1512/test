@@ -11348,7 +11348,7 @@
                 <init>true</init>
                 <name>Temperature</name>
                 <archive>
-                    <type>ON_CHANGE</type>
+                    <type>ON_UPDATE</type>
                     <interval>ZERO</interval>
                 </archive>
                 <multiplier value="1.0" />
@@ -11359,7 +11359,7 @@
                 <init>true</init>
                 <name>Relative Humidity</name>
                 <archive>
-                    <type>ON_CHANGE</type>
+                    <type>ON_UPDATE</type>
                     <interval>ZERO</interval>
                 </archive>
                 <multiplier value="1.0" />
