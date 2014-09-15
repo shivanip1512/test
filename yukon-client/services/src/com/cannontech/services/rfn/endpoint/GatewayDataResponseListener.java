@@ -16,7 +16,6 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.google.common.collect.ImmutableList;
 
-//TODO: logging
 public class GatewayDataResponseListener extends ArchiveRequestListenerBase<GatewayDataResponse> {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDataResponseListener.class);
@@ -52,7 +51,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
                 rfnGatewayDataCache.put(rfnDevice.getPaoIdentifier(), data);
             } catch (Exception e) {
                 log.warn("Data processing failed for " + rfnDevice, e);
-                log.warn("Gateway data: " + message);
+                log.debug("Gateway data: " + message);
                 throw new RuntimeException("Data processing failed for " + rfnDevice, e);
             }
         }

@@ -17,7 +17,6 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.google.common.collect.ImmutableList;
 
-//TODO: logging
 @ManagedResource
 public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<GatewayArchiveRequest> {
     
@@ -53,6 +52,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
                 rfnGatewayDataCache.get(paoIdentifier);
                 log.debug("Successfully cached data for gateway: " + paoIdentifier);
             } catch (Exception e) {
+                //Catch any exceptions here - creation still succeeded even if data retrieval failed
                 log.warn("Exception updating gateway data cache for new gateway: " + paoIdentifier, e);
             }
         }
