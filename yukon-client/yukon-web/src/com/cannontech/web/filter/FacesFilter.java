@@ -22,18 +22,20 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class FacesFilter implements Filter {
-    
+
     private final Logger log = YukonLogManager.getLogger(getClass());
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
-    private final static ImmutableList<String> excludedFilePaths = 
-        ImmutableList.of("/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/prototype.PrototypeResourceLoader/*",
-                         "/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/calendar.HtmlCalendarRenderer/popcalendar.js");
-    
+    private final static ImmutableList<String> excludedFilePaths =
+        ImmutableList.of(
+            "/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/prototype.PrototypeResourceLoader/*",
+            "/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/calendar.HtmlCalendarRenderer/popcalendar.js");
+
     private final static String capcontrolFacesPath = "/editor/cbcBase.jsf*";
 
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
-            throws IOException, ServletException {
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
+            ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpSession session = request.getSession();
 
@@ -43,10 +45,10 @@ public class FacesFilter implements Filter {
             log.debug("Filtering out unneeded resource: " + urlPathHelper.getPathWithinApplication(request));
             return;
         }
-        
+
         // Add navigation bean to session for capcontrol jsf if not present
         if (ServletUtil.isPathMatch(request, Lists.newArrayList(capcontrolFacesPath))) {
-            CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+            CtiNavObject nav = (CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE);
             if (nav == null) {
                 nav = new CtiNavObject();
                 session.setAttribute(ServletUtils.NAVIGATE, nav);
@@ -56,9 +58,13 @@ public class FacesFilter implements Filter {
         chain.doFilter(req, resp);
     }
 
+    @Override
     public void destroy() {
+        // Nothing to tear down for this filter.
     }
 
+    @Override
     public void init(FilterConfig arg0) throws ServletException {
+        // Nothing to init for this filter.
     }
 }
