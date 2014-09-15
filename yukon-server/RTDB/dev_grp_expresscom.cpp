@@ -101,9 +101,9 @@ void CtiDeviceGroupExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, CtiMessageList &vgList, CtiMessageList &retList, string &resultString)
+YukonError_t CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, CtiMessageList &vgList, CtiMessageList &retList, string &resultString)
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     checkForEmptyParseAddressing( parse, OutMessage, retList );
 
@@ -242,9 +242,9 @@ void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse,
 }
 
 
-INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;

@@ -113,9 +113,9 @@ LONG CtiDeviceGroupMCT::getAddress() const
 }
 
 
-INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT        nRet  = ClientErrors::None;
+    YukonError_t nRet  = ClientErrors::None;
     CtiRouteSPtr Route;
     string  resultString;
     long routeID;
@@ -300,10 +300,10 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
 }
 
 
-INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     bool found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     INT function;
 

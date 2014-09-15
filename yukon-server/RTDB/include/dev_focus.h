@@ -32,10 +32,10 @@ public:
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
    virtual unsigned long updateLastLpTime();
 
-   int buildScannerTableRequest (BYTE *ptr, UINT flags);
-   int buildCommanderTableRequest (BYTE *ptr, UINT flags);
-   int buildSingleTableRequest(BYTE *ptr, UINT tableId);
-   int buildTableRequest (BYTE *aMsg, Cti::Protocols::Ansi::ANSI_TABLE_WANTS* table, 
+   void buildScannerTableRequest  (BYTE *ptr, UINT flags) override;
+   void buildCommanderTableRequest(BYTE *ptr, UINT flags) override;
+   void buildSingleTableRequest(BYTE *ptr, UINT tableId) override;
+   int buildTableRequest (BYTE *aMsg, Cti::Protocols::Ansi::ANSI_TABLE_WANTS* table,
                           WANTS_HEADER  header, BYTE scanOperation, UINT flags);
 
 private:

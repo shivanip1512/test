@@ -71,10 +71,10 @@ void CtiDeviceGroupPoint::DecodeDatabaseReader(Cti::RowReader &rdr)
 //====================================================================================================================
 //====================================================================================================================
 
-INT CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = ClientErrors::None;
-    RWCString resultString;
+    YukonError_t nRet = ClientErrors::None;
+    string resultString;
 
     CtiRouteSPtr Route;
 

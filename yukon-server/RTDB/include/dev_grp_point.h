@@ -33,7 +33,7 @@ public:
     virtual std::string getSQLCoreStatement() const;
 
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
-    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     const CtiTablePointGroup& getLoadGroup() const { return _loadGroup; }
 

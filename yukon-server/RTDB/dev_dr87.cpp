@@ -1337,15 +1337,15 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
 
 
 
-INT CtiDeviceDR87::GeneralScan(CtiRequestMsg     *pReq,
-                               CtiCommandParser  &parse,
-                               OUTMESS          *&OutMessage,
-                               CtiMessageList    &vgList,
-                               CtiMessageList    &retList,
-                               OutMessageList    &outList,
-                               INT ScanPriority)
+YukonError_t CtiDeviceDR87::GeneralScan(CtiRequestMsg     *pReq,
+                                        CtiCommandParser  &parse,
+                                        OUTMESS          *&OutMessage,
+                                        CtiMessageList    &vgList,
+                                        CtiMessageList    &retList,
+                                        OutMessageList    &outList,
+                                        INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1481,11 +1481,11 @@ INT CtiDeviceDR87::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 }
 
 
-INT  CtiDeviceDR87::ResultDecode(const INMESS   &InMessage,
-                                 const CtiTime   TimeNow,
-                                 CtiMessageList &vgList,
-                                 CtiMessageList &retList,
-                                 OutMessageList &outList)
+YukonError_t CtiDeviceDR87::ResultDecode(const INMESS   &InMessage,
+                                         const CtiTime   TimeNow,
+                                         CtiMessageList &vgList,
+                                         CtiMessageList &retList,
+                                         OutMessageList &outList)
 {
 
     /****************************
@@ -1549,7 +1549,7 @@ INT  CtiDeviceDR87::ResultDecode(const INMESS   &InMessage,
     return ClientErrors::None;
 }
 
-INT CtiDeviceDR87::ErrorDecode (const INMESS   &InMessage,
+YukonError_t CtiDeviceDR87::ErrorDecode (const INMESS   &InMessage,
                                 const CtiTime   TimeNow,
                                 CtiMessageList &retList)
 {
@@ -1558,7 +1558,7 @@ INT CtiDeviceDR87::ErrorDecode (const INMESS   &InMessage,
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = ClientErrors::None;
+    YukonError_t retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),

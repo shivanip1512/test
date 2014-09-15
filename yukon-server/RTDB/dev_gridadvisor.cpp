@@ -48,9 +48,9 @@ CtiDeviceGridAdvisor::CtiDeviceGridAdvisor()
 {
 }
 
-INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
 
     bool found = false;
@@ -173,9 +173,9 @@ INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser 
 
 
 
-INT CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -199,9 +199,9 @@ INT CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &pa
 
 
 
-INT CtiDeviceGridAdvisor::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t CtiDeviceGridAdvisor::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -228,9 +228,9 @@ LONG CtiDeviceGridAdvisor::getPortID() const
     return _commport.getPortID();
 }
 
-INT CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan accumulator");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )

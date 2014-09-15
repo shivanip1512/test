@@ -69,9 +69,9 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(Cti::RowReader &rdr)
     _loadGroup.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;

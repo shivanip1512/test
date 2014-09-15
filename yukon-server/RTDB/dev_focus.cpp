@@ -28,7 +28,7 @@ CtiDeviceFocus::CtiDeviceFocus()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiDeviceFocus::buildSingleTableRequest(BYTE *aMsg, UINT tableId)
+void CtiDeviceFocus::buildSingleTableRequest(BYTE *aMsg, UINT tableId)
 {
     WANTS_HEADER   header = {0, 1, 0};
 
@@ -47,10 +47,6 @@ int CtiDeviceFocus::buildSingleTableRequest(BYTE *aMsg, UINT tableId)
             &scanOperation, sizeof(BYTE));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
             &flags, sizeof(UINT));
-
-
-    return ClientErrors::None;
-
 }
 
 
@@ -127,7 +123,7 @@ int CtiDeviceFocus::getScannerTables(ANSI_TABLE_WANTS* table )
 * different tables
 *************************************************************************************
 */
-int CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
+void CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
     ANSI_TABLE_WANTS table[100];
@@ -156,7 +152,7 @@ int CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         }
     }
 
-    return buildTableRequest (aMsg, table, header, scanOperation, flags);
+    buildTableRequest (aMsg, table, header, scanOperation, flags);
 }
 
 /*************************************************************************************
@@ -164,7 +160,7 @@ int CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 * different tables
 *************************************************************************************
 */
-int CtiDeviceFocus::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
+void CtiDeviceFocus::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
     ANSI_TABLE_WANTS table[100];
@@ -173,8 +169,7 @@ int CtiDeviceFocus::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     header.command = 5; //
     BYTE scanOperation = 1; //1 = general pil scan
 
-    return buildTableRequest (aMsg, table, header, scanOperation, flags);
-
+    buildTableRequest (aMsg, table, header, scanOperation, flags);
 }
 
 int CtiDeviceFocus::buildTableRequest (BYTE *aMsg, ANSI_TABLE_WANTS *table, WANTS_HEADER  header, BYTE scanOperation, UINT flags)

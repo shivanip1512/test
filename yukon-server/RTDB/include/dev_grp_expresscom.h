@@ -27,7 +27,7 @@ protected:
     void reportChildControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, std::string cmd, int controlPriority );
     std::string getAddressingAsString();
 
-    int extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, CtiMessageList &vgList, CtiMessageList &retList, std::string &resultString);
+    YukonError_t extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, CtiMessageList &vgList, CtiMessageList &retList, std::string &resultString);
     void reportAndLogControlStart(CtiCommandParser &parse, CtiMessageList &vgList, const std::string &commandString);
 
 public:
@@ -41,7 +41,7 @@ public:
     virtual LONG getRouteID();
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
-    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
     virtual std::string getPutConfigAssignment(UINT modifier = 0);
     virtual void reportControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, std::string cmd = std::string(""), int priority = 0 );
 

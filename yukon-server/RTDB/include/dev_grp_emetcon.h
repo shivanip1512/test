@@ -31,7 +31,7 @@ public:
 
    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
-   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    static std::string CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage);
 };

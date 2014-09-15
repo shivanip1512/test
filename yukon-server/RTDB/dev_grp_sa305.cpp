@@ -70,9 +70,9 @@ void CtiDeviceGroupSA305::DecodeDatabaseReader(Cti::RowReader &rdr)
     _loadGroup.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     ULONG etime = 0;
     std::string resultString;
 

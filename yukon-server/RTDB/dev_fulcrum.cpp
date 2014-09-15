@@ -42,7 +42,7 @@ using std::string;
 using std::endl;
 using std::list;
 
-INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg     *pReq,
+YukonError_t CtiDeviceFulcrum::GeneralScan(CtiRequestMsg     *pReq,
                                   CtiCommandParser  &parse,
                                   OUTMESS          *&OutMessage,
                                   CtiMessageList    &vgList,
@@ -50,7 +50,7 @@ INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg     *pReq,
                                   OutMessageList    &outList,
                                   INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -100,9 +100,9 @@ void CtiDeviceGroupSA105::DecodeDatabaseReader(Cti::RowReader &rdr)
 //====================================================================================================================
 //====================================================================================================================
 
-INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;

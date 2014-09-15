@@ -206,8 +206,8 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                         INT ScanPriority = MAXPRIORITY - 4) override;
+   YukonError_t GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                 INT ScanPriority = MAXPRIORITY - 4) override;
 
    // interrogation routines
    YukonError_t generateCommandHandshake  (CtiXfer  &Transfer, CtiMessageList &traceList) override;
