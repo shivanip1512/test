@@ -23,21 +23,19 @@ import com.google.common.collect.Lists;
 
 public class FacesFilter implements Filter {
 
-    private final Logger log = YukonLogManager.getLogger(getClass());
+    private final static Logger log = YukonLogManager.getLogger(FacesFilter.class);
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
     private final static ImmutableList<String> excludedFilePaths =
         ImmutableList.of(
             "/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/prototype.PrototypeResourceLoader/*",
             "/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/calendar.HtmlCalendarRenderer/popcalendar.js");
-
     private final static String capcontrolFacesPath = "/editor/cbcBase.jsf*";
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
             ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
-        HttpSession session = request.getSession();
 
         // Block any undesirable resources
         boolean excludedRequest = ServletUtil.isPathMatch(request, excludedFilePaths);
@@ -46,8 +44,10 @@ public class FacesFilter implements Filter {
             return;
         }
 
+
         // Add navigation bean to session for capcontrol jsf if not present
         if (ServletUtil.isPathMatch(request, Lists.newArrayList(capcontrolFacesPath))) {
+            HttpSession session = request.getSession();
             CtiNavObject nav = (CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE);
             if (nav == null) {
                 nav = new CtiNavObject();
