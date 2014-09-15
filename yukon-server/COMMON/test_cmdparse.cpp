@@ -21,6 +21,39 @@ BOOST_AUTO_TEST_CASE(testString)
     BOOST_CHECK_EQUAL_COLLECTIONS(parsedStrings.begin(), parsedStrings.end(), parse_asString, parse_asString + expected_size);
 }
 
+BOOST_AUTO_TEST_CASE(test_parsevalue)
+{
+    CtiParseValue one(1);
+
+    BOOST_CHECK(one.isIntValid());
+    BOOST_CHECK(one.isRealValid());
+    BOOST_CHECK( ! one.isStringValid());
+
+    BOOST_CHECK_EQUAL(one.getInt(),  1);
+    BOOST_CHECK_EQUAL(one.getReal(), 1.0);
+    BOOST_CHECK(one.getString().empty());
+
+    CtiParseValue two(2);
+
+    BOOST_CHECK(two.isIntValid());
+    BOOST_CHECK(two.isRealValid());
+    BOOST_CHECK( ! two.isStringValid());
+
+    BOOST_CHECK_EQUAL(two.getInt(),  2);
+    BOOST_CHECK_EQUAL(two.getReal(), 2.0);
+    BOOST_CHECK(two.getString().empty());
+
+    CtiParseValue x = two;
+
+    BOOST_CHECK(x.isIntValid());
+    BOOST_CHECK(x.isRealValid());
+    BOOST_CHECK( ! x.isStringValid());
+
+    BOOST_CHECK_EQUAL(x.getInt(),  2);
+    BOOST_CHECK_EQUAL(x.getReal(), 2.0);
+    BOOST_CHECK(x.getString().empty());
+}
+
 BOOST_AUTO_TEST_CASE(testDeviceGroupQuotes)
 {
     const std::string lead_trail_apos = "getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''";

@@ -266,5 +266,7 @@ std::string inputStrings[] = {
 "getvalue lp channel 1 12/24/1997 12:34 12/25/1997",
 "getvalue lp channel 1 12/24/1997 12/25/1997 12:35",
 "getvalue lp channel 1 12/24/1997 12:34 12/25/1997 12:35",
+"putstatus emetcon freeze one",
+"putstatus emetcon freeze two"
 };
 
