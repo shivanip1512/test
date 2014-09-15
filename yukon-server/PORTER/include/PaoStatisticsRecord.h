@@ -2,6 +2,8 @@
 
 #include "ctitime.h"
 
+#include "yukon.h"
+
 #include <string>
 #include <vector>
 
@@ -24,7 +26,7 @@ public:
     bool isDirty() const;
 
     void incrementRequests();
-    void incrementAttempts(int status);
+    void incrementAttempts(const YukonError_t status);
     void incrementCompletions();
 
     unsigned getCompletions() const;

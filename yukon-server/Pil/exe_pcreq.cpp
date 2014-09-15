@@ -13,9 +13,9 @@
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 
-INT CtiRequestExecutor::ServerExecute(CtiServer *Svr)
+YukonError_t CtiRequestExecutor::ServerExecute(CtiServer *Svr)
 {
-   int nRet = ClientErrors::None;
+   YukonError_t nRet = ClientErrors::None;
 
    Cti::Pil::PilServer *Server = static_cast<Cti::Pil::PilServer *>(Svr);
 

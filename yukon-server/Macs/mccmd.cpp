@@ -1475,7 +1475,7 @@ int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
     }
 
   int id = atoi(argv[1]);
-  string err_str = GetErrorString(id);
+  string err_str = GetErrorString(static_cast<YukonError_t>(id));
   Tcl_Obj* tcl_str = Tcl_NewStringObj(err_str.c_str(),-1);
   Tcl_SetObjResult(interp, tcl_str);
   return TCL_OK;

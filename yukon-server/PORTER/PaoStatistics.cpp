@@ -152,7 +152,7 @@ void PaoStatistics::incrementRequests(const CtiTime request_time)
     _lifetime->incrementRequests();
 }
 
-void PaoStatistics::incrementAttempts(const CtiTime attempt_time, int attempt_status)
+void PaoStatistics::incrementAttempts(const CtiTime attempt_time, YukonError_t attempt_status)
 {
     freshenRecords(attempt_time);
 
@@ -162,7 +162,7 @@ void PaoStatistics::incrementAttempts(const CtiTime attempt_time, int attempt_st
     _lifetime->incrementAttempts(attempt_status);
 }
 
-void PaoStatistics::incrementCompletion(const CtiTime completion_time, int completion_status)
+void PaoStatistics::incrementCompletion(const CtiTime completion_time, YukonError_t completion_status)
 {
     incrementAttempts(completion_time, completion_status);
 

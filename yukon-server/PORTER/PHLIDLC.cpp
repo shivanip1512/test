@@ -34,7 +34,7 @@ INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
     extern void DisplayTraceList( CtiPortSPtr prt, list< CtiMessage* > &traceList, bool consume);
     BYTE Message[30], Reply[30];
     ULONG Count;
-    ULONG i;
+    YukonError_t i;
     list< CtiMessage* > traceList;
 
     /* First check if the port or remote is inhibited */

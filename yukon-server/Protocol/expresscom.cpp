@@ -91,15 +91,15 @@ bool CtiProtocolExpresscom::validateAddressWithZero(const unsigned int address,
     return (address == 0) || validateAddress(address, minimum, maximum);
 }
 
-INT CtiProtocolExpresscom::addAddressing( UINT    serial,
-                                           USHORT  spid,
-                                           USHORT  geo,
-                                           USHORT  substation,
-                                           USHORT  feeder,
-                                           UINT    zip,
-                                           USHORT  uda,
-                                           BYTE    program,
-                                           BYTE    splinter)
+YukonError_t CtiProtocolExpresscom::addAddressing( UINT    serial,
+                                                   USHORT  spid,
+                                                   USHORT  geo,
+                                                   USHORT  substation,
+                                                   USHORT  feeder,
+                                                   UINT    zip,
+                                                   USHORT  uda,
+                                                   BYTE    program,
+                                                   BYTE    splinter)
 {
     _uniqueAddress      = serial;
     _spidAddress        = spid;
@@ -126,7 +126,7 @@ INT CtiProtocolExpresscom::addAddressing( UINT    serial,
     return valid ? ClientErrors::None : ClientErrors::BadParameter;
 }
 
-INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 {
     _uniqueAddress      = static_cast<UINT>(parse.getiValue("xc_serial",   0));  //( serial     != -1 ? serial     : 0);
     _spidAddress        = parse.getiValue("xc_spid",     0);  //( spid       != -1 ? spid       : 0);
@@ -143,7 +143,7 @@ INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
     return validateParseAddressing(parse) ? ClientErrors::None : ClientErrors::BadParameter;
 }
 
-INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
 {
     _uniqueAddress      = static_cast<UINT>(parse.getiValue("xca_serial_target",   0));  //( serial     != -1 ? serial     : 0);
     _spidAddress        = parse.getiValue("xca_spid_target",     0);  //( spid       != -1 ? spid       : 0);
@@ -223,17 +223,17 @@ void CtiProtocolExpresscom::addressMessage()
     return;
 }
 
-INT CtiProtocolExpresscom::sync()
+YukonError_t CtiProtocolExpresscom::sync()
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     _message.push_back(mtSync);
     incrementMessageCount();
     return status;
 }
 
-INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
+YukonError_t CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiTime delayedTime = local + ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
     CtiDate theDate     = delayedTime.dateGMT();
@@ -257,9 +257,9 @@ INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
     return status;
 }
 
-INT CtiProtocolExpresscom::tamperInformation()
+YukonError_t CtiProtocolExpresscom::tamperInformation()
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     _message.push_back( mtTamper );
     _message.push_back( 0x03 ); // Requests both of the tamper bits from the LCR 3102.
@@ -268,9 +268,9 @@ INT CtiProtocolExpresscom::tamperInformation()
     return status;
 }
 
-INT CtiProtocolExpresscom::demandResponseSummary()
+YukonError_t CtiProtocolExpresscom::demandResponseSummary()
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     _message.push_back( mtDemandResponseSummary );
 
@@ -279,9 +279,9 @@ INT CtiProtocolExpresscom::demandResponseSummary()
     return status;
 }
 
-INT CtiProtocolExpresscom::signalTest(BYTE test)
+YukonError_t CtiProtocolExpresscom::signalTest(BYTE test)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     switch(test)
     {
@@ -310,9 +310,9 @@ INT CtiProtocolExpresscom::signalTest(BYTE test)
     return status;
 }
 
-INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin, BYTE randout, USHORT delay )
+YukonError_t CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin, BYTE randout, USHORT delay )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flag;
     BYTE shedtime = 0;
     BYTE load;
@@ -371,9 +371,9 @@ INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds
 }
 
 
-INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE random, USHORT delay )
+YukonError_t CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE random, USHORT delay )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flag;
     BYTE load;
 
@@ -411,9 +411,9 @@ INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE random, USHORT
 }
 
 
-INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle)
+YukonError_t CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flag;
     BYTE load;
 
@@ -457,9 +457,9 @@ INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BY
 }
 
 //Very similar to cycleLoadControl, however different enough that I didnt want to mangle the cycleLoadControl function
-INT CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle, CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle, CtiCommandParser &parse)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     int kwhValue = 0;
     BYTE flag;
     BYTE load;
@@ -630,9 +630,9 @@ INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercen
  *  BYTE delta_S_f);
  *
  */
-INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp, USHORT T_r, USHORT T_a, USHORT T_b, BYTE delta_S_b, USHORT T_c, USHORT T_d, BYTE delta_S_d, USHORT T_e, USHORT T_f, BYTE delta_S_f, bool hold, bool bumpFlag, BYTE stage)
+YukonError_t CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp, USHORT T_r, USHORT T_a, USHORT T_b, BYTE delta_S_b, USHORT T_c, USHORT T_d, BYTE delta_S_d, USHORT T_e, USHORT T_f, BYTE delta_S_f, bool hold, bool bumpFlag, BYTE stage)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     BYTE flaghi = 0x00;
     BYTE flaglo = (hold ? 0x80 : 0x00);
@@ -739,7 +739,7 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
     incrementMessageCount();
     return status;
 }
-INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod)
+YukonError_t CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod)
 {
     _message.push_back( mtBacklightIllumination );
     _message.push_back( numCycles );
@@ -750,9 +750,9 @@ INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCyc
     return ClientErrors::None;
 }
 
-INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
-                                                 BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake,
-                                                 BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep)
+YukonError_t CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
+                                                          BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake,
+                                                          BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep)
 {
     CPPFlags_t flag;
     flag.raw = 0;
@@ -802,7 +802,7 @@ INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE min
 }
 
 
-INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE data)
+YukonError_t CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE data)
 {
     _message.push_back( mtConfiguration );
     _message.push_back( configNumber );
@@ -817,7 +817,7 @@ INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE d
     return ClientErrors::None;
 }
 
-INT CtiProtocolExpresscom::rawconfiguration(string str)
+YukonError_t CtiProtocolExpresscom::rawconfiguration(string str)
 {
     int i = 0;
     BYTE configNumber = 0;
@@ -843,7 +843,7 @@ INT CtiProtocolExpresscom::rawconfiguration(string str)
     return configuration(configNumber, i, raw);
 }
 
-INT CtiProtocolExpresscom::rawmaintenance(string str)
+YukonError_t CtiProtocolExpresscom::rawmaintenance(string str)
 {
     int i = 0;
     BYTE function = 0;
@@ -870,9 +870,9 @@ INT CtiProtocolExpresscom::rawmaintenance(string str)
 }
 
 
-INT CtiProtocolExpresscom::maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4)
+YukonError_t CtiProtocolExpresscom::maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     _message.push_back( mtMaintenance );
     _message.push_back( function );
@@ -886,9 +886,9 @@ INT CtiProtocolExpresscom::maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE
 }
 
 
-INT CtiProtocolExpresscom::service(BYTE action)
+YukonError_t CtiProtocolExpresscom::service(BYTE action)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE load;
 
     _message.push_back( mtService );
@@ -899,9 +899,9 @@ INT CtiProtocolExpresscom::service(BYTE action)
     return status;
 }
 
-INT CtiProtocolExpresscom::service(UINT loadMask, bool activate)
+YukonError_t CtiProtocolExpresscom::service(UINT loadMask, bool activate)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE load;
 
     for(load = 0; load < 15; load++)
@@ -921,9 +921,9 @@ INT CtiProtocolExpresscom::service(UINT loadMask, bool activate)
 }
 
 
-INT CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool deactiveColdLoad, bool deactiveLights)
+YukonError_t CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool deactiveColdLoad, bool deactiveLights)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flags = (cancel ? 0x80 : 0x00) | (deactiveColdLoad ? 0x02 : 0x00) | (deactiveLights ? 0x01 : 0x00);
 
     _message.push_back( mtTemporaryService );
@@ -940,7 +940,7 @@ INT CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool d
 }
 
 
-INT CtiProtocolExpresscom::data(string str, BYTE configByte)
+YukonError_t CtiProtocolExpresscom::data(string str, BYTE configByte)
 {
     int i = 0;
     BYTE raw[256];
@@ -959,9 +959,9 @@ INT CtiProtocolExpresscom::data(string str, BYTE configByte)
     return data(raw, i, configByte>>4, configByte & 0x0F);
 }
 
-INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, string str)
+YukonError_t CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, string str)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flags = 0;
     BYTE msgBlock[124];
     INT i = 0;
@@ -991,9 +991,9 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
 
 }
 
-INT CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, BYTE targetPort)
+YukonError_t CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, BYTE targetPort)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE txTypePort = 0;
     txTypePort |= ((dataTransmitType << 4) & 0xf0);
     txTypePort |= (targetPort & 0x0f);
@@ -1012,9 +1012,9 @@ INT CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, 
 }
 
 
-INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, BYTE data2)
+YukonError_t CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, BYTE data2)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     _message.push_back( mtCapcontrol );
     _message.push_back( action );
@@ -1074,9 +1074,9 @@ INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, B
 }
 
 
-INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     addressMessage();
 
@@ -1224,9 +1224,9 @@ BYTE CtiProtocolExpresscom::getStopByte() const
     return(_useProtocolCRC ? 'v' : 't');
 }
 
-INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
 {
-    INT  status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(parse.isKeyValid("xctamper"))
     {
@@ -1245,10 +1245,10 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
 {
     INT  i;
-    INT  status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
     INT  relaymask  = parse.getiValue("relaymask", 0);
 
@@ -1402,9 +1402,9 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
 }
 
 
-INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     int serial = parse.getiValue("xc_serial", 0);
     int relaymask  = parse.getiValue("relaymask", 0);
@@ -1603,11 +1603,11 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     else if (parse.isKeyValid("xcextier"))
     {
         status = extendedTierCommand(parse.getiValue("xcextierlevel", -1),
-                            parse.getiValue("xcextierrate", -1),
-                            parse.getiValue("xcextiercmd", -1),
-                            parse.getiValue("xcextierdisp", -1),
-                            parse.getiValue("xctiertimeout", -1),
-                            parse.getiValue("xctierdelay", -1));
+                                     parse.getiValue("xcextierrate", -1),
+                                     parse.getiValue("xcextiercmd", -1),
+                                     parse.getiValue("xcextierdisp", -1),
+                                     parse.getiValue("xctiertimeout", -1),
+                                     parse.getiValue("xctierdelay", -1));
 
     }
     else if(parse.isKeyValid("xcutilusage"))
@@ -1705,9 +1705,9 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(parse.isKeyValid("xcproptest"))
     {
@@ -1726,9 +1726,9 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
+YukonError_t CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     //This is here to work around firmware bug. We always send the timesync with this message now.
     if(gConfigParms.isTrue("PREPEND_TSTAT_CONTROL_TIMESYNC", true))
@@ -1747,18 +1747,18 @@ INT CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
     return status;
 }
 
-INT CtiProtocolExpresscom::compareRSSI()
+YukonError_t CtiProtocolExpresscom::compareRSSI()
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     _message.push_back(mtCompareRSSI);
 
     incrementMessageCount();
     return status;
 }
 
-INT CtiProtocolExpresscom::commandInitiator(BYTE commandId)
+YukonError_t CtiProtocolExpresscom::commandInitiator(BYTE commandId)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
      _message.push_back(mtCommandInitiator);
      _message.push_back(commandId);
 
@@ -1766,9 +1766,9 @@ INT CtiProtocolExpresscom::commandInitiator(BYTE commandId)
     return status;
 }
 
-INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
+YukonError_t CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     INT numUsageValues = parse.getiValue("xcnumutilvalues", 0);
     _message.push_back( mtUpdateUtilityUsage );
     _message.push_back( numUsageValues );
@@ -1797,10 +1797,10 @@ INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
 }
 
 
-INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
-                                                     BOOL currencyInCents, string optionalString)
+YukonError_t CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
+                                                              BOOL currencyInCents, string optionalString)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE config = 0x00;
     BYTE utilFlags = 0x00;
 
@@ -1849,9 +1849,9 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost
 }
 
 
-INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     BYTE dow;
     BYTE pod;
@@ -1878,15 +1878,6 @@ INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
             if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
             {
                 // One of them were defined!
-#if 0
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << hhstr << " " << (int)hh << endl;
-                    dout << mmstr << " " << (int)mm << endl;
-                    dout << heatstr << " " << (int)heat << endl;
-                    dout << coolstr << " " << (int)cool << endl;
-                }
-#endif
                 schedule.push_back(per);
                 schedule.push_back(hh);
                 schedule.push_back(mm);
@@ -1903,9 +1894,9 @@ INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
+YukonError_t CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(schedule.size() > 1)
     {
@@ -1925,9 +1916,9 @@ INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
     return status;
 }
 
-INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::BadParameter;
+    YukonError_t status = ClientErrors::BadParameter;
 
     BYTE length = 1;
     BYTE raw[20];
@@ -1986,9 +1977,9 @@ INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
 }
 
 // Takes a list of programs, splinters, and loads and possibly sends multiple commands
-INT CtiProtocolExpresscom::configureLoadMaskAddressing(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureLoadMaskAddressing(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::BadParameter;
+    YukonError_t status = ClientErrors::BadParameter;
 
     BYTE length = 1;
     BYTE raw[8];
@@ -2042,9 +2033,9 @@ INT CtiProtocolExpresscom::configureLoadMaskAddressing(CtiCommandParser &parse)
 
 // Configures a single load (1-15) or all loads (0)
 // Returns BADPARAM if the parameters are non existang, and MISPARAM if half of the parameters exist
-INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::BadParameter;
+    YukonError_t status = ClientErrors::BadParameter;
 
     BYTE length = 1;
     BYTE raw[8];
@@ -2073,9 +2064,9 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, bool restore, int timeout_min, int setpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
+YukonError_t CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, bool restore, int timeout_min, int setpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flaghi;
     BYTE flaglo;
     BYTE load;
@@ -2146,9 +2137,9 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
     return status;
 }
 
-INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool temporary, bool restore, int timeout_min, int setcoolpoint, int setheatpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
+YukonError_t CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool temporary, bool restore, int timeout_min, int setcoolpoint, int setheatpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flaghi;
     BYTE flaglo;
     BYTE load;
@@ -2233,10 +2224,9 @@ INT CtiProtocolExpresscom::thermostatSetStateTwoSetpoint(UINT loadMask, bool tem
     return status;
 }
 
-INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int display, int timeout, int delay)
+YukonError_t CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int display, int timeout, int delay)
 {
-
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE flags;
     _message.push_back( mtExtendedTierMsg );
 
@@ -2280,9 +2270,9 @@ INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int
     return status;
 }
 
-INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     BYTE config[3];
     USHORT time;
 
@@ -2320,9 +2310,9 @@ INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::configureLCRMode(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureLCRMode(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::Syntax;
+    YukonError_t status = ClientErrors::Syntax;
     BYTE config = 0;
 
     /*  Length: 1 byte
@@ -2358,9 +2348,9 @@ INT CtiProtocolExpresscom::configureLCRMode(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::configureEmetconGoldAddress(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureEmetconGoldAddress(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::Syntax;
+    YukonError_t status = ClientErrors::Syntax;
     BYTE config = 0;
 
     config = parse.getiValue("gold");
@@ -2376,9 +2366,9 @@ INT CtiProtocolExpresscom::configureEmetconGoldAddress(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse)
 {
-    INT status = ClientErrors::Syntax;
+    YukonError_t status = ClientErrors::Syntax;
     BYTE config = 0;
 
     config = parse.getiValue("silver");
@@ -2393,7 +2383,7 @@ INT CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse
     return status;
 }
 
-INT CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
 {
     std::vector<float> channels = parse.parseListOfFloats(parse.getsValue("preferredchannellist"));
 
@@ -2420,7 +2410,7 @@ INT CtiProtocolExpresscom::configurePreferredChannels(CtiCommandParser &parse)
     }
 }
 
-INT CtiProtocolExpresscom::configureTargetLoadAmps(CtiCommandParser &parse)
+YukonError_t CtiProtocolExpresscom::configureTargetLoadAmps(CtiCommandParser &parse)
 {
     BYTE config[2];
     DOUBLE amps;
@@ -2435,9 +2425,9 @@ INT CtiProtocolExpresscom::configureTargetLoadAmps(CtiCommandParser &parse)
     return configuration( cfgTargetLoadAmps, 2, config);
 }
 
-INT CtiProtocolExpresscom::priority(BYTE priority)
+YukonError_t CtiProtocolExpresscom::priority(BYTE priority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(priority > 3) priority = 3;
 

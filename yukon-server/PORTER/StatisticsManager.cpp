@@ -36,7 +36,7 @@ StatisticsManager::~StatisticsManager()
 }
 
 
-void StatisticsManager::enqueueEvent(statistics_event_t::EventType action, int result, long port_id, long device_id, long target_id)
+void StatisticsManager::enqueueEvent(statistics_event_t::EventType action, YukonError_t result, long port_id, long device_id, long target_id)
 {
     CtiLockGuard<CtiCriticalSection> guard(_event_queue_lock);
 
@@ -65,10 +65,10 @@ void StatisticsManager::newRequest(long port_id, long device_id, long target_id,
 {
     messageFlags |= MessageFlag_StatisticsRequested;
 
-    enqueueEvent(statistics_event_t::Request, 0, port_id, device_id, target_id);
+    enqueueEvent(statistics_event_t::Request, ClientErrors::None, port_id, device_id, target_id);
 }
 
-void StatisticsManager::newAttempt(long port_id, long device_id, long target_id, int result, unsigned messageFlags)
+void StatisticsManager::newAttempt(long port_id, long device_id, long target_id, YukonError_t result, unsigned messageFlags)
 {
     if( messageFlags & MessageFlag_StatisticsRequested )
     {
@@ -81,7 +81,7 @@ void StatisticsManager::newAttempt(long port_id, long device_id, long target_id,
     }
 }
 
-void StatisticsManager::newCompletion(long port_id, long device_id, long target_id, int result, unsigned &messageFlags)
+void StatisticsManager::newCompletion(long port_id, long device_id, long target_id, YukonError_t result, unsigned &messageFlags)
 {
     if( messageFlags & MessageFlag_StatisticsRequested )
     {
@@ -99,7 +99,7 @@ void StatisticsManager::newCompletion(long port_id, long device_id, long target_
 
 void StatisticsManager::deleteRecord(const long pao_id)
 {
-    enqueueEvent(statistics_event_t::Deletion, 0, 0, 0, pao_id);
+    enqueueEvent(statistics_event_t::Deletion, ClientErrors::None, 0, 0, pao_id);
 }
 
 

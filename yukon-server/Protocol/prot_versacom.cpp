@@ -47,7 +47,7 @@ INT CtiProtocolVersacom::setNibble (INT iNibble, INT iValue)
 }
 
 
-INT CtiProtocolVersacom::initVersacomMessage()
+YukonError_t CtiProtocolVersacom::initVersacomMessage()
 {
     _vst.back()->Nibbles = 2;
 
@@ -76,7 +76,7 @@ INT CtiProtocolVersacom::initVersacomMessage()
     return ClientErrors::None;
 }
 
-INT CtiProtocolVersacom::assembleCommandToMessage()
+YukonError_t CtiProtocolVersacom::assembleCommandToMessage()
 {
     ULONG    i;
     USHORT   Mask;
@@ -602,9 +602,9 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
     return ClientErrors::None;
 }
 
-INT CtiProtocolVersacom::assembleAddressing()
+YukonError_t CtiProtocolVersacom::assembleAddressing()
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     ULONG IAddress = 0;
 
     /* Now go ahead and figure out the addressing */
@@ -711,9 +711,9 @@ INT CtiProtocolVersacom::assembleAddressing()
     return status;
 }
 
-INT CtiProtocolVersacom::updateVersacomMessage()
+YukonError_t CtiProtocolVersacom::updateVersacomMessage()
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     status = initVersacomMessage();     // Prime the message buffer and the constants
     if(!status) status = assembleCommandToMessage();
@@ -1331,9 +1331,9 @@ INT CtiProtocolVersacom::VersacomCountResetCommand(UINT resetmask)
     return updateVersacomMessage();
 }
 
-INT CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
+YukonError_t CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     VSTRUCT *newvst = CTIDBG_new VSTRUCT;
 
     if(newvst)
@@ -1359,9 +1359,9 @@ void CtiProtocolVersacom::removeLastVStruct()
     return;
 }
 
-INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &aVst)
+YukonError_t CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &aVst)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     switch(parse.getCommand())
     {

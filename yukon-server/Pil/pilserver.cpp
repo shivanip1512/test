@@ -181,7 +181,7 @@ int PilServer::execute()
 void PilServer::mainThread()
 {
     BOOL          bQuit = FALSE;
-    int           status;
+    YukonError_t  status;
 
     CtiMessage   *MsgPtr;
     int groupBypass = 0;
@@ -672,12 +672,12 @@ struct InMessageResultProcessor : Devices::DeviceHandler
     {
     }
 
-    int execute(CtiDeviceBase &dev)
+    YukonError_t execute(CtiDeviceBase &dev)
     {
         return dev.ProcessResult(im, CtiTime::now(), vgList, retList, outList);
     }
 
-    int execute(Devices::RfnDevice &dev)
+    YukonError_t execute(Devices::RfnDevice &dev)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " InMessageResultProcessor called on RFN device:" << endl;
@@ -807,7 +807,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
     {
     }
 
-    int execute(CtiDeviceBase &dev)
+    YukonError_t execute(CtiDeviceBase &dev)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " RfnDeviceResultProcessor called on non-RFN device:" << endl;
@@ -816,7 +816,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
         return ClientErrors::NoMethod;
     }
 
-    int execute(Devices::RfnDevice &dev)
+    YukonError_t execute(Devices::RfnDevice &dev)
     {
         std::auto_ptr<CtiReturnMsg> retMsg(
                 new CtiReturnMsg(
@@ -1131,18 +1131,18 @@ struct RequestExecuter : Devices::DeviceHandler
         parse(parse_)
     {}
 
-    int execute(CtiDeviceBase &dev)
+    YukonError_t execute(CtiDeviceBase &dev)
     {
         return dev.beginExecuteRequest(pReq, parse, vgList, retList, outList);
     }
 
-    virtual int execute(Devices::RfnDevice &dev)
+    virtual YukonError_t execute(Devices::RfnDevice &dev)
     {
         Devices::RfnDevice::RfnCommandList commands;
 
         Devices::RfnDevice::ReturnMsgList returnMsgList;
 
-        const int retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
+        const YukonError_t retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
 
         RfnDeviceRequest req;
 
@@ -1171,7 +1171,7 @@ struct RequestExecuter : Devices::DeviceHandler
 };
 
 
-int PilServer::executeRequest(const CtiRequestMsg *pReq)
+YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 {
     if( pReq->UserMessageId() != _currentUserMessageId ||
         !_currentParse.isEqual(pReq->CommandString()))
@@ -1239,7 +1239,7 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
         return ClientErrors::None;
     }
 
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     list< CtiMessage* >  vgList;
     list< CtiMessage* >  retList;
@@ -1459,9 +1459,9 @@ int PilServer::executeRequest(const CtiRequestMsg *pReq)
     return status;
 }
 
-int PilServer::executeMulti(const CtiMultiMsg *pMulti)
+YukonError_t PilServer::executeMulti(const CtiMultiMsg *pMulti)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiMessage *pMyMsg = NULL;
 

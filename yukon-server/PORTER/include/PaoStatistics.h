@@ -67,8 +67,8 @@ public:
     static void buildDatabaseReader(Database::DatabaseReader &rdr, const CtiTime reader_time, std::set<long>::const_iterator id_begin, std::set<long>::const_iterator id_end);
 
     void incrementRequests  (const CtiTime request_time);
-    void incrementAttempts  (const CtiTime attempt_time,    int attempt_status);
-    void incrementCompletion(const CtiTime completion_time, int completion_status);
+    void incrementAttempts  (const CtiTime attempt_time,    YukonError_t attempt_status);
+    void incrementCompletion(const CtiTime completion_time, YukonError_t completion_status);
 
     bool isDirty() const;
 

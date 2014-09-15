@@ -16,7 +16,7 @@ YukonError_t RTUReply (PBYTE, USHORT);
 YukonError_t RTUReplyHeader (USHORT, USHORT, PBYTE, PULONG);
 YukonError_t IDLCRej (PBYTE, PUSHORT);
 INT IDLCSArm (PBYTE, USHORT);
-INT IDLCua (PBYTE, PUSHORT, PUSHORT);
+YukonError_t IDLCua (PBYTE, PUSHORT, PUSHORT);
 INT IDLCAlgStat (PBYTE, PUSHORT);
 
 /* Prototypes from PORTER.C */

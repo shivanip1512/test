@@ -662,7 +662,7 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
         }
 
         //  this packet was unhandled, so we trace it
-        traceInbound(p->describeAddress(), 0, recv_buf, recv_len);
+        traceInbound(p->describeAddress(), ClientErrors::None, recv_buf, recv_len);
 
         delete p;
 
@@ -714,7 +714,7 @@ bool UdpPortHandler::validatePacket(ip_packet *&p)
         }
 
         //  this packet was unhandled, so we trace it
-        traceInbound(p->describeAddress(), 0, p->data, p->len);
+        traceInbound(p->describeAddress(), ClientErrors::None, p->data, p->len);
 
         delete p->data;
         delete p;
@@ -755,7 +755,7 @@ void UdpPortHandler::distributePacket(ip_packet *p)
     if( p )
     {
         //  this packet was unhandled, so we trace it
-        traceInbound(p->describeAddress(), 0, p->data, p->len);
+        traceInbound(p->describeAddress(), ClientErrors::None, p->data, p->len);
 
         delete p->data;
         delete p;
@@ -832,7 +832,7 @@ void UdpPortHandler::handleGpuffPacket(ip_packet *&p)
             {
                 updateDeviceIpAndPort(*dr, *p);
 
-                traceInbound(p->describeAddress(), 0, p->data, p->len);
+                traceInbound(p->describeAddress(), ClientErrors::None, p->data, p->len);
 
                 addInboundWork(*dr, p);
 

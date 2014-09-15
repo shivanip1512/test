@@ -436,7 +436,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
             if( CtiConnection *conn = static_cast<CtiConnection *>(OutMessage->Request.Connection) )
             {
                 //  Provide an interim error so they know the comms channel is stalled.
-                const int error = ClientErrors::PortNotInitialized;
+                const YukonError_t error = ClientErrors::PortNotInitialized;
 
                 string error_string = "Error " + CtiNumStr(error) + ": " + GetErrorString(error);
 
@@ -715,7 +715,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
 {
     extern CtiClientConnection VanGoghConnection;
 
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiRequestMsg pReq(OutMessage.DeviceID, OutMessage.Request.CommandStr);
     list< CtiMessage* >  vgList;

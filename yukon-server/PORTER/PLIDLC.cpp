@@ -355,7 +355,7 @@ INT IDLCSArm (PBYTE Message, USHORT Remote)
 
 /* function to check for a correct reset acknowledge and reset framing */
 
-INT IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
+YukonError_t IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
 {
    USHORT Store;
 

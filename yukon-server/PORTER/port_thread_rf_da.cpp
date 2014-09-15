@@ -178,7 +178,7 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
         for each( const Messaging::Rfn::E2eMessenger::Indication & ind in recentIndications )
         {
             //  this packet was unhandled, so we trace it
-            traceInbound("(unhandled)", 0, &ind.payload.front(), ind.payload.size());
+            traceInbound("(unhandled)", ClientErrors::None, &ind.payload.front(), ind.payload.size());
         }
 
         return false;

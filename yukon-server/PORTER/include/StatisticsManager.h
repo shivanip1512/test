@@ -23,7 +23,7 @@ class StatisticsManager
 
         CtiTime time;
         long pao_id;
-        int result;
+        YukonError_t result;
         EventType action;
     };
 
@@ -49,7 +49,7 @@ class StatisticsManager
     event_queue_t *_active_event_queue;
     event_queue_t *_inactive_event_queue;
 
-    void enqueueEvent(statistics_event_t::EventType action, int result, long port_id, long device_id, long target_id);
+    void enqueueEvent(statistics_event_t::EventType action, YukonError_t result, long port_id, long device_id, long target_id);
     void processEvent(const statistics_event_t &evt);
 
     void runWriterThreads(unsigned num_threads, ThreadStatusKeeper &threadKeeper);
@@ -63,9 +63,9 @@ public:
     void processEvents(ThreadStatusKeeper &threadKeeper);
     void writeRecords (ThreadStatusKeeper &threadKeeper);
 
-    void newRequest   (long port_id, long device_id, long target_id,             unsigned &messageFlags);
-    void newAttempt   (long port_id, long device_id, long target_id, int result, unsigned  messageFlags);
-    void newCompletion(long port_id, long device_id, long target_id, int result, unsigned &messageFlags);
+    void newRequest   (long port_id, long device_id, long target_id,                      unsigned &messageFlags);
+    void newAttempt   (long port_id, long device_id, long target_id, YukonError_t result, unsigned  messageFlags);
+    void newCompletion(long port_id, long device_id, long target_id, YukonError_t result, unsigned &messageFlags);
 
     void deleteRecord(long pao_id);
 };

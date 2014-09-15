@@ -142,7 +142,7 @@ protected:
     bool    _coolingMode;                   // Default to true/yes;
     bool    _absoluteTemps;                 // Default to false/no. (Implies delta)
 
-    INT parseTargetAddressing(CtiCommandParser &parse);
+    YukonError_t parseTargetAddressing(CtiCommandParser &parse);
 
 private:
 
@@ -155,25 +155,25 @@ private:
     void addressMessage();
     void terminateMessage();
     void resolveAddressLevel();
-    INT assembleGetValue(CtiCommandParser &parse);
-    INT assembleControl(CtiCommandParser &parse);
-    INT assemblePutConfig(CtiCommandParser &parse);
-    INT assemblePutStatus(CtiCommandParser &parse);
+    YukonError_t assembleGetValue(CtiCommandParser &parse);
+    YukonError_t assembleControl(CtiCommandParser &parse);
+    YukonError_t assemblePutConfig(CtiCommandParser &parse);
+    YukonError_t assemblePutStatus(CtiCommandParser &parse);
 
-    INT parseSchedule(CtiCommandParser &parse);
-    INT schedulePoint(std::vector< BYTE > &schedule);
+    YukonError_t parseSchedule(CtiCommandParser &parse);
+    YukonError_t schedulePoint(std::vector< BYTE > &schedule);
 
-    INT sync();
-    INT timeSync(const CtiTime &gmt, bool fullsync = true);
+    YukonError_t sync();
+    YukonError_t timeSync(const CtiTime &gmt, bool fullsync = true);
 
-    INT tamperInformation();
-    INT demandResponseSummary();
+    YukonError_t tamperInformation();
+    YukonError_t demandResponseSummary();
 
-    INT signalTest(BYTE test);
-    INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
-    INT restoreLoadControl(UINT loadMask, BYTE rand = 0, USHORT delay = 0 );
-    INT cycleLoadControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay = 0, bool preventrampin = false, bool allowTrueCycle = false);
-    INT targetReductionCycleControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle, CtiCommandParser &parse);
+    YukonError_t signalTest(BYTE test);
+    YukonError_t timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
+    YukonError_t restoreLoadControl(UINT loadMask, BYTE rand = 0, USHORT delay = 0 );
+    YukonError_t cycleLoadControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay = 0, bool preventrampin = false, bool allowTrueCycle = false);
+    YukonError_t targetReductionCycleControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle, CtiCommandParser &parse);
     /*
      *
      *
@@ -226,44 +226,44 @@ private:
      *  BYTE delta_S_f);
      *
      */
-    INT extendedTierCommand(int level, int rate, int cmd, int display, int timeout, int delay);
-    INT backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod);
-    INT criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
-                              BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake,
-                              BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep);
+    YukonError_t extendedTierCommand(int level, int rate, int cmd, int display, int timeout, int delay);
+    YukonError_t backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod);
+    YukonError_t criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
+                                       BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake,
+                                       BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep);
 
-    INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false, bool bumpFlag = false, BYTE stage = 0x00);
-    INT thermostatSetStateTwoSetpoint(UINT loadMask = 0x01, bool temporary = true, bool restore = false, int timeout_min = 0, int setcoolpoint = -1, int setheatpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
-    INT thermostatSetState(UINT loadmask = 0x01, bool temporary = true, bool restore = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
-    INT updateUtilityUsage(CtiCommandParser &parse);
-    INT updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
-                                  BOOL currencyInCents, std::string optionalString);
-    INT compareRSSI();
-    INT commandInitiator(BYTE commandId);
-    INT configurePriceTierCommand(BYTE priceTier);
-    INT dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, std::string str);
-    INT disableContractorMode(bool enableFlag);
-    INT configuration(BYTE configNumber, BYTE length, PBYTE data);
-    INT rawconfiguration(std::string str);
-    INT rawmaintenance(std::string str);
-    INT maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4);
-    INT service(BYTE action);
-    INT service(UINT loadMask, bool activate = true);
-    INT temporaryService(USHORT hoursout, bool cancel = false, bool deactiveColdLoad = false, bool deactiveLights = false);
-    INT data(std::string str, BYTE configByte);
-    INT data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
-    INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
+    YukonError_t thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false, bool bumpFlag = false, BYTE stage = 0x00);
+    YukonError_t thermostatSetStateTwoSetpoint(UINT loadMask = 0x01, bool temporary = true, bool restore = false, int timeout_min = 0, int setcoolpoint = -1, int setheatpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
+    YukonError_t thermostatSetState(UINT loadmask = 0x01, bool temporary = true, bool restore = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
+    YukonError_t updateUtilityUsage(CtiCommandParser &parse);
+    YukonError_t updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
+                                           BOOL currencyInCents, std::string optionalString);
+    YukonError_t compareRSSI();
+    YukonError_t commandInitiator(BYTE commandId);
+    YukonError_t configurePriceTierCommand(BYTE priceTier);
+    YukonError_t dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, std::string str);
+    YukonError_t disableContractorMode(bool enableFlag);
+    YukonError_t configuration(BYTE configNumber, BYTE length, PBYTE data);
+    YukonError_t rawconfiguration(std::string str);
+    YukonError_t rawmaintenance(std::string str);
+    YukonError_t maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4);
+    YukonError_t service(BYTE action);
+    YukonError_t service(UINT loadMask, bool activate = true);
+    YukonError_t temporaryService(USHORT hoursout, bool cancel = false, bool deactiveColdLoad = false, bool deactiveLights = false);
+    YukonError_t data(std::string str, BYTE configByte);
+    YukonError_t data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
+    YukonError_t capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
 
-    INT configureGeoAddressing(CtiCommandParser &parse);
-    INT configureLoadMaskAddressing(CtiCommandParser &parse);
-    INT configureLoadAddressing(CtiCommandParser &parse);
-    INT configureColdLoad(CtiCommandParser &parse);
-    INT configureLCRMode(CtiCommandParser &parse);
-    INT configureEmetconGoldAddress(CtiCommandParser &parse);
-    INT configureEmetconSilverAddress(CtiCommandParser &parse);
-    INT configureTargetLoadAmps(CtiCommandParser &parse);
-    INT configurePreferredChannels(CtiCommandParser &parse);
-    INT priority(BYTE priority);
+    YukonError_t configureGeoAddressing(CtiCommandParser &parse);
+    YukonError_t configureLoadMaskAddressing(CtiCommandParser &parse);
+    YukonError_t configureLoadAddressing(CtiCommandParser &parse);
+    YukonError_t configureColdLoad(CtiCommandParser &parse);
+    YukonError_t configureLCRMode(CtiCommandParser &parse);
+    YukonError_t configureEmetconGoldAddress(CtiCommandParser &parse);
+    YukonError_t configureEmetconSilverAddress(CtiCommandParser &parse);
+    YukonError_t configureTargetLoadAmps(CtiCommandParser &parse);
+    YukonError_t configurePreferredChannels(CtiCommandParser &parse);
+    YukonError_t priority(BYTE priority);
 
     static bool validateAddress(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum);
     static bool validateAddressWithZero(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum);
@@ -302,8 +302,8 @@ public:
     /*
      * This method incorporates all the assigned addressing into the parse object.
      */
-    INT addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0);
-    INT parseAddressing(CtiCommandParser &parse);
+    YukonError_t addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0);
+    YukonError_t parseAddressing(CtiCommandParser &parse);
 
     typedef enum
     {
@@ -357,7 +357,7 @@ public:
     } CtiExpresscomCapControlSubActions;
 
 
-    INT parseRequest(CtiCommandParser &parse);
+    YukonError_t parseRequest(CtiCommandParser &parse);
 
     BYTE getByte(int pos, int messageNum = 0);
     int messageSize(int messageNum = 0);

@@ -36,7 +36,7 @@ struct test_RouteManager : CtiRouteManager
         test_route() {
             _tblPAO.setID(84);
         }
-        INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override { return 0; }
+        YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override { return ClientErrors::None; }
     };
 
     test_RouteManager() :

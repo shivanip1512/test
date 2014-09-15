@@ -17,7 +17,7 @@ public:
    virtual ~CtiRequestExecutor()
    {}
 
-   int  ServerExecute(CtiServer *Svr);
+   YukonError_t ServerExecute(CtiServer *Svr);
 };
 
 

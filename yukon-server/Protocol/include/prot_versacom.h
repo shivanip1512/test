@@ -154,9 +154,9 @@ private:
 
    INT setNibble (INT iNibble, INT iValue);
 
-   INT initVersacomMessage();
-   INT assembleCommandToMessage();
-   INT assembleAddressing();
+   YukonError_t initVersacomMessage();
+   YukonError_t assembleCommandToMessage();
+   YukonError_t assembleAddressing();
 
 public:
 
@@ -181,7 +181,7 @@ public:
    bool                    isConfigFullAddressValid(LONG sn) const;
    INT                     getAddressMode() const     { return _addressMode; }
 
-   INT                     primeAndAppend(const VSTRUCT &vTemp);
+   YukonError_t            primeAndAppend(const VSTRUCT &vTemp);
 
    /*-------------------------------------------------------------------------*
     * This method will seldom if ever be called by the user directly.  Its
@@ -190,7 +190,7 @@ public:
     * a FULLY completed (and correct) VSTRUCT.  In order to generate a message
     * buffer this method is required.
     *-------------------------------------------------------------------------*/
-   INT                     updateVersacomMessage();
+   YukonError_t            updateVersacomMessage();
 
 
    /*-------------------------------------------------------------------------*
@@ -369,7 +369,7 @@ public:
    INT    VersacomConfigColdLoadCommand(INT relay, INT seconds);
 
    void                    dumpMessageBuffer();
-   INT                     parseRequest(CtiCommandParser &parse, const VSTRUCT &aVst);
+   YukonError_t            parseRequest(CtiCommandParser &parse, const VSTRUCT &aVst);
 
    INT                     assemblePutConfig(CtiCommandParser  &parse, const VSTRUCT &aVst);
    INT                     assemblePutStatus(CtiCommandParser  &parse, const VSTRUCT &aVst);

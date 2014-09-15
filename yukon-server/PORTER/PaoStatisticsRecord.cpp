@@ -132,7 +132,7 @@ void PaoStatisticsRecord::incrementRequests()
     _dirty = true;
 }
 
-void PaoStatisticsRecord::incrementAttempts(int attempt_status)
+void PaoStatisticsRecord::incrementAttempts(const YukonError_t attempt_status)
 {
     ++_attempts;
 

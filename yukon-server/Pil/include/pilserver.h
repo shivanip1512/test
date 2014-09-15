@@ -94,8 +94,8 @@ public:
    virtual void  clientShutdown(CtiServer::ptr_type CM);
    virtual void  shutdown();
 
-   int   executeRequest(const CtiRequestMsg*);
-   int   executeMulti(const CtiMultiMsg*);
+   YukonError_t executeRequest(const CtiRequestMsg*);
+   YukonError_t executeMulti(const CtiMultiMsg*);
    int   execute();
    void  mainThread();
    void  connectionThread();

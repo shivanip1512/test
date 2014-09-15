@@ -778,7 +778,7 @@ void UnsolicitedHandler::traceOutbound( const device_record &dr, YukonError_t st
 }
 
 
-void UnsolicitedHandler::traceInbound( string address, int status, const unsigned char *message, int mCount, const device_record *dr )
+void UnsolicitedHandler::traceInbound( string address, YukonError_t status, const unsigned char *message, int mCount, const device_record *dr )
 {
     CtiTraceMsg mTrace;
     string msg;
