@@ -504,15 +504,9 @@ MctDevice::CommandSet MctDevice::initCommandStore()
  *  The general scan for a mct type device is performed and collects DEMAND accumulators
  *  from the device, as well as status info, if the device can supply it in the same read.
  *****************************************************************************************/
-INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
-                           CtiCommandParser &parse,
-                           OUTMESS *&OutMessage,
-                           CtiMessageList &vgList,
-                           CtiMessageList &retList,
-                           OutMessageList &outList,
-                           INT ScanPriority)
+YukonError_t MctDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -560,15 +554,9 @@ INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
  *  from the device.  This is valid esp for DLC devices which require separate reads to
  *  collect status information
  *****************************************************************************************/
-INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
-                             CtiCommandParser &parse,
-                             OUTMESS *&OutMessage,
-                             CtiMessageList &vgList,
-                             CtiMessageList &retList,
-                             OutMessageList &outList,
-                             INT ScanPriority)
+YukonError_t MctDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -614,15 +602,9 @@ INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
  *  The accumulator scan for a mct type device is performed and collects pulse data
  *  from the device, as well as status info, if the device can supply it in the same read.
  *****************************************************************************************/
-INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
-                               CtiCommandParser &parse,
-                               OUTMESS *&OutMessage,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList,
-                               INT ScanPriority)
+YukonError_t MctDevice::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -670,15 +652,9 @@ INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
  *  The load profile scan for a mct type device is dependent on the load profile scan rate,
  *  and gathers load profile whenever 6 intervals have passed
  *****************************************************************************************/
-INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
-                               CtiCommandParser &parse,
-                               OUTMESS *&OutMessage,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList,
-                               INT ScanPriority)
+YukonError_t MctDevice::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -726,12 +702,12 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     //  extract the DynamicPaoInfo first so we have it during the decode
     extractDynamicPaoInfo(InMessage);
 
-    INT status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+    YukonError_t status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
     if( status == ClientErrors::NoMethodForResultDecode )
     {
@@ -789,9 +765,9 @@ INT MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 }
 
 
-INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     switch( InMessage.Sequence )
     {
@@ -930,9 +906,9 @@ INT MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
     return status;
 }
 
-INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
+YukonError_t MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = ClientErrors::None;
+    YukonError_t retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
@@ -1128,15 +1104,10 @@ int MctDevice::insertPointFail( const INMESS &InMessage, CtiReturnMsg *pPIL, int
 
 
 
-INT MctDevice::executeLoopback(CtiRequestMsg *pReq,
-                               CtiCommandParser &parse,
-                               OUTMESS *&OutMessage,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList)
+YukonError_t MctDevice::executeLoopback(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool found = false;
-    INT  nRet  = ClientErrors::None;
+    YukonError_t nRet  = ClientErrors::None;
     INT  function;
     int  i;
 
@@ -1177,15 +1148,10 @@ INT MctDevice::executeLoopback(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::executeScan(CtiRequestMsg *pReq,
-                           CtiCommandParser &parse,
-                           OUTMESS *&OutMessage,
-                           CtiMessageList &vgList,
-                           CtiMessageList &retList,
-                           OutMessageList &outList)
+YukonError_t MctDevice::executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool found = false;
-    INT  nRet  = ClientErrors::None;
+    YukonError_t nRet  = ClientErrors::None;
     string tester;
 
     INT            function;
@@ -1262,15 +1228,10 @@ INT MctDevice::executeScan(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
-                               CtiCommandParser &parse,
-                               OUTMESS *&OutMessage,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList )
+YukonError_t MctDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     bool found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -1449,14 +1410,9 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
     return nRet;
 }
 
-INT MctDevice::executePutValue(CtiRequestMsg *pReq,
-                               CtiCommandParser &parse,
-                               OUTMESS *&OutMessage,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList)
+YukonError_t MctDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT    nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     long   rawPulses;
     double reading;
 
@@ -1534,15 +1490,10 @@ INT MctDevice::executePutValue(CtiRequestMsg *pReq,
     return nRet;
 }
 
-INT MctDevice::executeGetStatus(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                CtiMessageList &vgList,
-                                CtiMessageList &retList,
-                                OutMessageList &outList)
+YukonError_t MctDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -1620,15 +1571,10 @@ INT MctDevice::executeGetStatus(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                CtiMessageList &vgList,
-                                CtiMessageList &retList,
-                                OutMessageList &outList)
+YukonError_t MctDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool  found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     BSTRUCT &BSt = OutMessage->Buffer.BSt;
 
     INT function = -1;
@@ -1738,15 +1684,10 @@ INT MctDevice::executePutStatus(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::executeGetConfig(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                CtiMessageList &vgList,
-                                CtiMessageList &retList,
-                                OutMessageList &outList)
+YukonError_t MctDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string temp;
 
     INT function;
@@ -1884,16 +1825,11 @@ INT MctDevice::executeGetConfig(CtiRequestMsg *pReq,
     return nRet;
 }
 
-INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                CtiMessageList &vgList,
-                                CtiMessageList &retList,
-                                OutMessageList &outList)
+YukonError_t MctDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool  found = false;
     INT   function;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     int   intervallength;
     string temp;
     CtiTime NowTime;
@@ -2446,16 +2382,11 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::executeControl(CtiRequestMsg *pReq,
-                              CtiCommandParser &parse,
-                              OUTMESS *&OutMessage,
-                              CtiMessageList &vgList,
-                              CtiMessageList &retList,
-                              OutMessageList &outList)
+YukonError_t MctDevice::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool found = false;
 
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     INT function;
 
@@ -2568,10 +2499,9 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
 }
 
 
-INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = ClientErrors::None,
-          j;
+    YukonError_t status = ClientErrors::None;
     ULONG pfCount = 0;
     string resultString;
 
@@ -2596,9 +2526,9 @@ INT MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -2661,9 +2591,9 @@ INT MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
     CtiCommandParser parse(InMessage.Return.CommandStr);
@@ -2907,9 +2837,9 @@ INT MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime TimeNow, C
 }
 
 
-INT MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 
@@ -3038,7 +2968,7 @@ INT MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const CtiTime 
 }
 
 
-INT MctDevice::decodeControl(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodeControl(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
        new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3052,7 +2982,7 @@ INT MctDevice::decodeControl(const INMESS &InMessage, const CtiTime TimeNow, Cti
 }
 
 
-INT MctDevice::decodeControlDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodeControlDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
        new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3111,7 +3041,7 @@ bool MctDevice::disconnectRequiresCollar() const
 }
 
 
-INT MctDevice::decodePutValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodePutValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     std::auto_ptr<CtiReturnMsg> ReturnMsg(
         new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
@@ -3127,10 +3057,9 @@ INT MctDevice::decodePutValue(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = ClientErrors::None,
-          j;
+    YukonError_t status = ClientErrors::None;
     ULONG pfCount = 0;
     string resultString;
 
@@ -3155,9 +3084,9 @@ INT MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime TimeNow, C
 }
 
 
-INT MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     ULONG pfCount = 0;
     string resultString;
     OUTMESS *OutTemplate;
@@ -3610,10 +3539,8 @@ bool MctDevice::getOperationFromStore( const CommandSet &store, const UINT &cmd,
 }
 
 
-INT MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    INT nRet = ClientErrors::None;
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -3625,8 +3552,6 @@ INT MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &out
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -3915,9 +3840,9 @@ void MctDevice::setExpectedFreeze( int next_freeze )
 }
 
 
-int MctDevice::checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, string &error_string )
+YukonError_t MctDevice::checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, string &error_string )
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected) )
     {

@@ -204,10 +204,8 @@ ULONG Mct310Device::calcNextLPScanTime( void )
 }
 
 
-INT Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = ClientErrors::None;
-
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
     unsigned long  lpBlocksToCollect,
@@ -300,8 +298,6 @@ INT Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -531,9 +527,9 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -627,9 +623,9 @@ INT Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     ULONG i,x;
     string resultString;
 
@@ -667,9 +663,9 @@ INT Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, const CtiTime
 }
 
 
-INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     ULONG i,x;
     INT pid;
     string resultString;
@@ -762,9 +758,9 @@ INT Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = ClientErrors::None, demand_interval;
+    YukonError_t status = ClientErrors::None;
     double    Value;
     string resultString;
     unsigned long pulses;
@@ -800,8 +796,6 @@ INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 
     pulses = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
 
-    demand_interval = getDemandInterval();
-
     // look for first defined DEMAND accumulator
     pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
 
@@ -813,7 +807,7 @@ INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
     {
         //  if no fatal problems with the quality,
         //    adjust for the demand interval
-        Value = pulses * (3600 / demand_interval);
+        Value = pulses * (3600 / getDemandInterval());
 
         if( pPoint )
         {
@@ -850,9 +844,9 @@ INT Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     double    Value;
     string resultString;
 
@@ -931,9 +925,9 @@ INT Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
 }
 
 
-INT Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -1144,9 +1138,9 @@ void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, const BYTE 
 }
 
 
-INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
 
@@ -1217,9 +1211,9 @@ INT Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 }
 
 
-INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -1257,9 +1251,9 @@ INT Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 }
 
 
-INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -1366,9 +1360,9 @@ INT Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const unsigned char *optBuf  = InMessage.Buffer.DSt.Message;
 

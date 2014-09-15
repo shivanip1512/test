@@ -219,10 +219,8 @@ ULONG Mct31xDevice::calcNextLPScanTime( void )
 }
 
 
-INT Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = ClientErrors::None;
-
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
     unsigned long  lpBlocksToCollect,
@@ -319,8 +317,6 @@ INT Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -399,7 +395,7 @@ Mct31xDevice::IedTypesToCommands Mct31xDevice::initIedResetCommands()
 }
 
 
-INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( parse.isKeyValid("ied") && parse.isKeyValid("reset")
           && (getType() == TYPEMCT360 || getType() == TYPEMCT370) )
@@ -442,9 +438,9 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 }
 
 
-INT Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -543,9 +539,9 @@ INT Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
+YukonError_t Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool expectMore)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     USHORT SaveCount;
     string resultString;
 
@@ -622,9 +618,9 @@ INT Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime TimeNow, C
 }
 
 
-INT Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     INT pid, rateOffset;
     string resultString, name, ratename;
 
@@ -896,9 +892,9 @@ INT Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const CtiTime Time
 }
 
 
-INT Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     string resultString;
 
     std::auto_ptr<DSTRUCT> DSt(
@@ -1154,9 +1150,9 @@ INT Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const CtiTime Time
 }
 
 
-INT Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     INT pid, rateOffset;
     string pointDescriptor, resultString, name, ratename;
 
@@ -1992,9 +1988,9 @@ INT Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     INT pid;
     string resultString;
 
@@ -2077,9 +2073,9 @@ INT Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     INT pnt_offset, byte_offset;
     ULONG i,x;
     INT pid;
@@ -2200,9 +2196,9 @@ INT Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int       status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     double    Value;
     string resultString;
 
@@ -2281,9 +2277,9 @@ INT Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const CtiTime Time
 }
 
 
-INT Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 

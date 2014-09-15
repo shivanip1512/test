@@ -23,8 +23,8 @@ struct test_Mct4xxDevice : Cti::Devices::Mct4xxDevice
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
     long getLoadProfileInterval(unsigned channel)
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
-    INT decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
-        {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }
+    YukonError_t decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+        {  BOOST_FAIL("this virtual should never be called during this unit test");  return ClientErrors::None;  }
     ConfigPartsList getPartsList()
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return ConfigPartsList();  }
     bool isSupported(const Features feature) const

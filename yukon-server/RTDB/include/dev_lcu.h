@@ -129,9 +129,9 @@ public:
 
     CtiLCUType_t   getLCUType() const;
 
-    INT            lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList);
+    void           lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList);
 
-    INT            lcuDecode(const INMESS&,const CtiTime, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
+    YukonError_t   lcuDecode(const INMESS&,const CtiTime, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList);
     CtiReturnMsg*  lcuDecodeStatus(const INMESS &InMessage);
     CtiReturnMsg*  lcuDecodeAnalogs(const INMESS &InMessage);
     CtiReturnMsg*  lcuDecodeDigitalInputs(const INMESS &InMessage);
@@ -144,10 +144,10 @@ public:
     bool           isLCUAlarmed(const INMESS &InMessage);
     OUTMESS*       lcuStage(OUTMESS *&OutMessage);
     OUTMESS*       lcuControl(OUTMESS *&OutMessage);
-    INT            lcuScanAll(OUTMESS *&OutMessage);
-    INT            lcuLoop(OUTMESS *&OutMessage);
-    INT lcuScanInternalStatus(OUTMESS *&OutMessage);
-    INT lcuScanExternalStatus(OUTMESS *&OutMessage);
+    YukonError_t   lcuScanAll(OUTMESS *&OutMessage);
+    YukonError_t   lcuLoop(OUTMESS *&OutMessage);
+    YukonError_t   lcuScanInternalStatus(OUTMESS *&OutMessage);
+    YukonError_t   lcuScanExternalStatus(OUTMESS *&OutMessage);
 
     static ULONG   lcuTime(OUTMESS *&OutMessage,  UINT lcuType = 0);
     static void    initLCUGlobals();
@@ -160,14 +160,14 @@ public:
     static ULONG   lcuRetries();
     void           lcuResetFlagsAndTags();
     INT            lcuReset(OUTMESS *&OutMessage);
-    INT            lcuFreeze(OUTMESS *&OutMessage);
+    YukonError_t   lcuFreeze(OUTMESS *&OutMessage);
 
-    INT    AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4) override;
-    INT    IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4) override;
-    INT    GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4) override;
-    INT    ResultDecode(const INMESS&,const CtiTime, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList) override;
-    INT    ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
-    INT    ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
+    YukonError_t AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4) override;
+    YukonError_t IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4) override;
+    YukonError_t GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4) override;
+    YukonError_t ResultDecode(const INMESS&,const CtiTime, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
     virtual CtiTime selectCompletionTime() const;
 
     bool           exceedsDutyCycle(BYTE *bptr);

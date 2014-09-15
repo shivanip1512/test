@@ -94,10 +94,10 @@ void CtiDeviceMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     CtiLockGuard<CtiMutex> guard(_deviceListMux);
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     if( !_deviceList.empty( ) )
     {

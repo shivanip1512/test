@@ -49,10 +49,10 @@ int Ipc420ADDevice::getScannerTables(ANSI_TABLE_WANTS* table )
 
 
     int sizeOfTable = 0;
-   
+
     for each (ANSI_TABLE_WANTS tableInfo in scanValues)
     {
-        table[sizeOfTable++] = tableInfo; 
+        table[sizeOfTable++] = tableInfo;
     }
     return sizeOfTable;
 }
@@ -84,10 +84,10 @@ int Ipc420ADDevice::getCommanderTables(ANSI_TABLE_WANTS* table )
 
 
     int sizeOfTable = 0;
-   
+
     for each (ANSI_TABLE_WANTS tableInfo in scanValues)
     {
-        table[sizeOfTable++] = tableInfo; 
+        table[sizeOfTable++] = tableInfo;
     }
     return sizeOfTable;
 }
@@ -98,13 +98,13 @@ int Ipc420ADDevice::getCommanderTables(ANSI_TABLE_WANTS* table )
 * different tables
 *************************************************************************************
 */
-int Ipc420ADDevice::buildScannerTableRequest (BYTE *aMsg, UINT flags)
+void Ipc420ADDevice::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
     ANSI_TABLE_WANTS table[100];
     header.numTablesRequested = getScannerTables(table);
     header.lastLoadProfileTime = 0;
-    header.command = 5; // 
+    header.command = 5; //
     BYTE scanOperation = 0; //0 = general scan
 
     // currently defaulted at billing data only
@@ -127,7 +127,7 @@ int Ipc420ADDevice::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         }
     }
 
-    return buildTableRequest (aMsg, table, header, scanOperation, flags);
+    buildTableRequest (aMsg, table, header, scanOperation, flags);
 }
 
 /*************************************************************************************
@@ -135,17 +135,16 @@ int Ipc420ADDevice::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 * different tables
 *************************************************************************************
 */
-int Ipc420ADDevice::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
+void Ipc420ADDevice::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
     ANSI_TABLE_WANTS table[100];
     header.numTablesRequested = getCommanderTables(table);
     header.lastLoadProfileTime = 0;
-    header.command = 5; // 
+    header.command = 5; //
     BYTE scanOperation = 1; //1 = general pil scan
 
-    return buildTableRequest (aMsg, table, header, scanOperation, flags);
-
+    buildTableRequest (aMsg, table, header, scanOperation, flags);
 }
 
 }

@@ -5,7 +5,7 @@
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB Ipc420ADDevice : public CtiDeviceFocus 
+class IM_EX_DEVDB Ipc420ADDevice : public CtiDeviceFocus
 {
 private:
     // WORKAROUND:
@@ -20,9 +20,9 @@ public:
    typedef CtiDeviceFocus Inherited;
 
    Ipc420ADDevice();
-  
-   int buildScannerTableRequest (BYTE *ptr, UINT flags);
-   int buildCommanderTableRequest (BYTE *ptr, UINT flags);
+
+   void buildScannerTableRequest  (BYTE *ptr, UINT flags) override;
+   void buildCommanderTableRequest(BYTE *ptr, UINT flags) override;
 
 private:
    int getScannerTables(Cti::Protocols::Ansi::ANSI_TABLE_WANTS* table );

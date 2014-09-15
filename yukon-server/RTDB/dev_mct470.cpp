@@ -1274,9 +1274,8 @@ Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, long
 }
 
 
-INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = ClientErrors::None;
     CtiTime Now;
 
     if( !isLPDynamicInfoCurrent() )
@@ -1429,8 +1428,6 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -1530,7 +1527,7 @@ Mct470Device::DecodeMapping Mct470Device::initDecodeLookup()
 const Mct470Device::DecodeMapping Mct470Device::_decodeMethods = Mct470Device::initDecodeLookup();
 
 
-INT Mct470Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage.Sequence);
 
@@ -1544,9 +1541,9 @@ INT Mct470Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
     return Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 }
 
-INT Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
+YukonError_t Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 CtiString(InMessage.Return.CommandStr),
@@ -1673,14 +1670,9 @@ bool Mct470Device::isPrecannedTableCurrent() const
 }
 
 
-INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  CtiMessageList &vgList,
-                                  CtiMessageList &retList,
-                                  OutMessageList &outList)
+YukonError_t Mct470Device::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function;
@@ -1987,15 +1979,10 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
     return nRet;
 }
 
-INT Mct470Device::executeScan(CtiRequestMsg *pReq,
-                              CtiCommandParser &parse,
-                              OUTMESS *&OutMessage,
-                              CtiMessageList &vgList,
-                              CtiMessageList &retList,
-                              OutMessageList &outList)
+YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool found = false;
-    INT  nRet  = ClientErrors::None;
+    YukonError_t nRet  = ClientErrors::None;
 
     switch(parse.getiValue("scantype"))
     {
@@ -2129,14 +2116,9 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
 }
 
 
-INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
-                                   CtiCommandParser &parse,
-                                   OUTMESS *&OutMessage,
-                                   CtiMessageList &vgList,
-                                   CtiMessageList &retList,
-                                   OutMessageList &outList )
+YukonError_t Mct470Device::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function;
@@ -2327,14 +2309,9 @@ bool Mct470Device::computeMultiplierFactors(double multiplier, unsigned &numerat
 }
 
 
-INT Mct470Device::executePutConfig(CtiRequestMsg *pReq,
-                                   CtiCommandParser &parse,
-                                   OUTMESS *&OutMessage,
-                                   CtiMessageList &vgList,
-                                   CtiMessageList &retList,
-                                   OutMessageList &outList )
+YukonError_t Mct470Device::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function;
@@ -2660,14 +2637,9 @@ const Mct470Device::IedTypesToCommands
                 (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
 
 
-INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  CtiMessageList &vgList,
-                                  CtiMessageList &retList,
-                                  OutMessageList &outList )
+YukonError_t Mct470Device::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function;
@@ -2808,7 +2780,7 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
     return nRet;
 }
 
-int Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
+YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -3115,9 +3087,9 @@ int Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &pars
     return ClientErrors::None;
 }
 
-int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
+YukonError_t Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -3329,9 +3301,9 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
     return nRet;
 }
 
-int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
+YukonError_t Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -3403,9 +3375,9 @@ int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &p
     return ClientErrors::None;
 }
 
-int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
+YukonError_t Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     long value;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -3468,9 +3440,9 @@ int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser 
     return nRet;
 }
 
-int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
+YukonError_t Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
@@ -3680,9 +3652,9 @@ int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList,
     return nRet;
 }
 
-INT Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -3801,9 +3773,10 @@ INT Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int  status = ClientErrors::None, i;
+    YukonError_t status = ClientErrors::None;
+    int i;
     bool demand_defined = false;
     point_info pi;
 
@@ -3884,9 +3857,10 @@ INT Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct470Device::decodeGetValueMinMaxDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetValueMinMaxDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int         status = ClientErrors::None, base_offset;
+    YukonError_t status = ClientErrors::None;
+    int base_offset;
     point_info  pi, pi_time;
     CtiTime     pointTime;
 
@@ -3992,10 +3966,10 @@ void Mct470Device::reportPointData(const CtiPointType_t pointType, const int poi
 }
 
 
-INT Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int        status = ClientErrors::None,
-               frozen = 0,
+    YukonError_t status = ClientErrors::None;
+    int        frozen = 0,
                offset = 0,
                rate   = 0;
     point_info pi;
@@ -4623,9 +4597,9 @@ INT Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-int Mct470Device::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const string &demand_name, const unsigned consumption_offset, const string &consumption_name, CtiReturnMsg *ReturnMsg)
+YukonError_t Mct470Device::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const string &demand_name, const unsigned consumption_offset, const string &consumption_name, CtiReturnMsg *ReturnMsg)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     {
         point_info consumption_value, consumption_time_info;
@@ -4732,9 +4706,9 @@ unsigned long Mct470Device::convertTimestamp(const unsigned long timestamp, cons
 }
 
 
-INT Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     point_info     pi;
     string         resultString;
@@ -4972,9 +4946,9 @@ INT Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const CtiTime Time
 }
 
 
-INT Mct470Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct470Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
 
@@ -5062,16 +5036,16 @@ INT Mct470Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 }
 
 
-INT Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None, lp_channel;
+    YukonError_t status = ClientErrors::None;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    lp_channel = (parse.getiValue("loadprofile_offset") < 3)?1:3;
+    int lp_channel = (parse.getiValue("loadprofile_offset") < 3)?1:3;
 
     string resultString;
     unsigned long lpTime;
@@ -5121,9 +5095,9 @@ INT Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 }
 
 
-INT Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None, lp_channel;
+    YukonError_t status = ClientErrors::None;
 
     const unsigned char *geneBuf = InMessage.Buffer.DSt.Message;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
@@ -5181,9 +5155,9 @@ INT Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const CtiTime Tim
     return status;
 }
 
-INT Mct470Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct470Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-     INT status = ClientErrors::None;
+     YukonError_t status = ClientErrors::None;
 
      const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -5236,9 +5210,9 @@ INT Mct470Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime 
      return status;
 }
 
-INT Mct470Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5281,9 +5255,9 @@ INT Mct470Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTim
 }
 
 
-INT Mct470Device::decodeGetConfigIedDnpAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetConfigIedDnpAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5381,9 +5355,9 @@ string Mct470Device::describeChannel(unsigned char channel_config) const
 }
 
 
-INT Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5418,9 +5392,9 @@ INT Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, const Cti
 }
 
 
-INT Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -5476,9 +5450,9 @@ INT Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
     return status;
 }
 
-INT Mct470Device::decodeGetConfigMultiplier(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetConfigMultiplier(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
@@ -5628,9 +5602,9 @@ void Mct470Device::decodeDNPRealTimeRead(const BYTE *buffer, int readNumber, str
 }
 
 
-INT Mct470Device::decodeGetValuePhaseCurrent(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct470Device::decodeGetValuePhaseCurrent(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT &DSt   = InMessage.Buffer.DSt;
 

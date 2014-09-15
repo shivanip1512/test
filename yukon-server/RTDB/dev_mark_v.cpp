@@ -21,7 +21,7 @@ CtiDeviceMarkV::CtiDeviceMarkV()
 //=====================================================================================================================
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg      *pReq,
+YukonError_t CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg      *pReq,
                                      CtiCommandParser  &parse,
                                      OUTMESS          *&OutMessage,
                                      CtiMessageList    &vgList,
@@ -96,21 +96,21 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg      *pReq,
       return ClientErrors::MemoryAccess;
    }
 
-   return( 1 );
+   return ClientErrors::Abnormal;
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg     *pReq,
-                                 CtiCommandParser  &parse,
-                                 OUTMESS          *&OutMessage,
-                                 CtiMessageList    &vgList,
-                                 CtiMessageList    &retList,
-                                 OutMessageList    &outList,
-                                 INT ScanPriority)
+YukonError_t CtiDeviceMarkV::GeneralScan( CtiRequestMsg     *pReq,
+                                          CtiCommandParser  &parse,
+                                          OUTMESS          *&OutMessage,
+                                          CtiMessageList    &vgList,
+                                          CtiMessageList    &retList,
+                                          OutMessageList    &outList,
+                                          INT ScanPriority)
 {
-   INT status = ClientErrors::None;
+   YukonError_t status = ClientErrors::None;
    CtiCommandParser newParse( "scan general" );
 
    pReq->setCommandString( "scan general" );
@@ -123,15 +123,15 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg     *pReq,
 //=====================================================================================================================
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg     *pReq,
-                                     CtiCommandParser  &parse,
-                                     OUTMESS          *&OutMessage,
-                                     CtiMessageList    &vgList,
-                                     CtiMessageList    &retList,
-                                     OutMessageList    &outList,
-                                     INT ScanPriority)
+YukonError_t CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg     *pReq,
+                                              CtiCommandParser  &parse,
+                                              OUTMESS          *&OutMessage,
+                                              CtiMessageList    &vgList,
+                                              CtiMessageList    &retList,
+                                              OutMessageList    &outList,
+                                              INT ScanPriority)
 {
-   INT status = ClientErrors::None;
+   YukonError_t status = ClientErrors::None;
    CtiCommandParser newParse( "scan loadprofile" );
 
    pReq->setCommandString( "scan loadprofile" );
@@ -144,14 +144,14 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg     *pReq,
 //=====================================================================================================================
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
-                                  const CtiTime   TimeNow,
-                                  CtiMessageList &vgList,
-                                  CtiMessageList &retList,
-                                  OutMessageList &outList)
+YukonError_t CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
+                                           const CtiTime   TimeNow,
+                                           CtiMessageList &vgList,
+                                           CtiMessageList &retList,
+                                           OutMessageList &outList)
 {
    vector<CtiTransdataData *> transVector;
-   INT                        retCode = ClientErrors::Abnormal;
+   YukonError_t retCode = ClientErrors::Abnormal;
 
    try
    {
@@ -196,11 +196,11 @@ INT CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
 //at the moment, all we do is fail in general, without setting points 'non-updated' or anything fancy
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::ErrorDecode( const INMESS   &InMessage,
-                                 const CtiTime   TimeNow,
-                                 CtiMessageList &retList)
+YukonError_t CtiDeviceMarkV::ErrorDecode( const INMESS   &InMessage,
+                                          const CtiTime   TimeNow,
+                                          CtiMessageList &retList)
 {
-   INT retCode = ClientErrors::None;
+   YukonError_t retCode = ClientErrors::None;
 
    CtiCommandParser parse( InMessage.Return.CommandStr );
 
@@ -237,11 +237,11 @@ INT CtiDeviceMarkV::ErrorDecode( const INMESS   &InMessage,
 // point data messages and stick those into the retlist for shipping back to ... dispatch?
 //=====================================================================================================================
 
-int CtiDeviceMarkV::decodeResultScan( const INMESS   &InMessage,
-                                      const CtiTime   TimeNow,
-                                      CtiMessageList &vgList,
-                                      CtiMessageList &retList,
-                                      vector<CtiTransdataData *> transVector)
+YukonError_t CtiDeviceMarkV::decodeResultScan( const INMESS   &InMessage,
+                                               const CtiTime   TimeNow,
+                                               CtiMessageList &vgList,
+                                               CtiMessageList &retList,
+                                               vector<CtiTransdataData *> transVector)
 {
    CtiPointDataMsg   *pData = NULL;
    CtiPointSPtr      pPoint;
@@ -684,7 +684,7 @@ int CtiDeviceMarkV::decodeResultScan( const INMESS   &InMessage,
 
    resetScanFlag(ScanRateGeneral);
 
-   return( 1 );   //bs
+   return ClientErrors::Abnormal;
 }
 
 //=====================================================================================================================

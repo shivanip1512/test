@@ -112,9 +112,9 @@ CtiDeviceLCU::~CtiDeviceLCU()
 }
 
 
-INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -153,9 +153,9 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     return status;
 }
 
-INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -174,20 +174,20 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     return status;
 }
 
-INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
-INT CtiDeviceLCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceLCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return lcuDecode(InMessage, TimeNow, vgList, retList, outList);
 }
 
 /* Routine to output freeze to an LCU */
-INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
+YukonError_t CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     /* Load the freeze message */
     if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERFREEZE, 0) )
@@ -227,9 +227,9 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
 }
 
 /* Routine to scan ALL LCU status */
-INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to place command on queue */
+YukonError_t CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to place command on queue */
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(_lcuType == LCU_T3026)
     {
@@ -251,9 +251,9 @@ INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to pla
 }
 
 /* Routine to scan internal LCU status */
-INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
+YukonError_t CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     /* Load the forced scan message */
     if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANINT, 0) )
@@ -268,9 +268,9 @@ INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
 }
 
 /* Routine to scan internal LCU status */
-INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
+YukonError_t CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     /* Load the forced scan message */
     if( status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERSCANEXT, 0) )
@@ -284,9 +284,9 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
     return(status);
 }
 
-INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = InMessage.ErrorCode;
+    YukonError_t status = InMessage.ErrorCode;
 
     if( status )
     {
@@ -482,9 +482,9 @@ INT CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 }
 
 
-INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
+YukonError_t CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     resetForScan(desolveScanRateType(string(InMessage.Return.CommandStr)));
     /* see what handshake was */
@@ -522,9 +522,9 @@ INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
     return status;
 }
 
-INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList,OutMessageList &outList)
+YukonError_t CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList,OutMessageList &outList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     OUTMESS *pOM = 0;
 
     switch(parse.getCommand())
@@ -779,7 +779,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
 
 
 /* Routine to execute a loop message */
-INT CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
+YukonError_t CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
 {
     if(_lcuType == LCU_T3026)
     {
@@ -1826,9 +1826,8 @@ CtiMutex& CtiDeviceLCU::getLCUExclusionMux()
  *   This is a porter side decode used only when the OutMessage sent was RIPPLE'd and a control!
  *   It makes him pound the LCU into submission!
  */
-INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList)
+void CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, CtiMessageList  &vgList)
 {
-    INT status = ClientErrors::None;
     CtiTime now;
 
     // Pretend for the simulated ports!
@@ -2002,8 +2001,6 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessag
             dout << "  Message is not a proper MASTERCOM reply" << endl;
         }
     }
-
-    return status;
 }
 
 

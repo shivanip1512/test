@@ -150,10 +150,8 @@ ULONG Mct24xDevice::calcNextLPScanTime( void )
 }
 
 
-INT Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = ClientErrors::None;
-
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
     unsigned long  lpBlocksToCollect,
@@ -246,8 +244,6 @@ INT Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -296,10 +292,9 @@ bool Mct24xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
-
+    YukonError_t status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -353,9 +348,9 @@ INT Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -541,9 +536,9 @@ INT Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 }
 
 
-INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -695,9 +690,9 @@ INT Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTime TimeNo
 }
 
 
-INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
@@ -730,9 +725,9 @@ INT Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
 /*
  *  This code handles the decode for all 24X series model configs..
  */
-INT Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

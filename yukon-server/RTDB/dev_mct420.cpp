@@ -248,12 +248,12 @@ bool Mct420Device::isProfileTablePointerCurrent(const unsigned char table_pointe
 }
 
 
-int Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
-                                    CtiCommandParser  &parse,
-                                    OUTMESS          *&OutMessage,
-                                    CtiMessageList    &vgList,
-                                    CtiMessageList    &retList,
-                                    OutMessageList    &outList )
+YukonError_t Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
+                                             CtiCommandParser  &parse,
+                                             OUTMESS          *&OutMessage,
+                                             CtiMessageList    &vgList,
+                                             CtiMessageList    &retList,
+                                             OutMessageList    &outList )
 {
     //  Load all the other stuff that is needed
     OutMessage->TargetID  = getID();
@@ -352,7 +352,7 @@ int Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
 }
 
 
-int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
+YukonError_t Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -458,13 +458,7 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
     return ClientErrors::None;
 }
 
-int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
-                                                  CtiCommandParser &parse,
-                                                  OUTMESS *&OutMessage,
-                                                  CtiMessageList &vgList,
-                                                  CtiMessageList &retList,
-                                                  OutMessageList &outList,
-                                                  bool readsOnly)
+YukonError_t Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
     if( !deviceConfig )
@@ -614,14 +608,14 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
     return ClientErrors::None;
 }
 
-int Mct420Device::executeGetConfig( CtiRequestMsg     *pReq,
-                                    CtiCommandParser  &parse,
-                                    OUTMESS          *&OutMessage,
-                                    CtiMessageList    &vgList,
-                                    CtiMessageList    &retList,
-                                    OutMessageList    &outList )
+YukonError_t Mct420Device::executeGetConfig( CtiRequestMsg     *pReq,
+                                             CtiCommandParser  &parse,
+                                             OUTMESS          *&OutMessage,
+                                             CtiMessageList    &vgList,
+                                             CtiMessageList    &retList,
+                                             OutMessageList    &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
     bool found = false;
 
     //  Explicitly disallow this command for the MCT-420
@@ -668,7 +662,7 @@ DlcBaseDevice::DlcCommandAutoPtr Mct420Device::makeHourlyReadCommand(const CtiDa
  * so any decode that is supported by a parent class should be
  * omitted from this function.
  */
-INT Mct420Device::ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct420Device::ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     switch(InMessage.Sequence)
     {
@@ -683,7 +677,7 @@ INT Mct420Device::ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, C
         }
     }
 
-    const int status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+    const YukonError_t status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
     if( status )
     {
@@ -695,9 +689,9 @@ INT Mct420Device::ModelDecode( const INMESS &InMessage, const CtiTime TimeNow, C
     return status;
 }
 
-int Mct420Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct420Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     string resultString;
 
     switch ( InMessage.Sequence )
@@ -736,7 +730,7 @@ int Mct420Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNo
 }
 
 
-int Mct420Device::decodePutConfigChannel2NetMetering( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct420Device::decodePutConfigChannel2NetMetering( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     // Execute a read to get the configuration data to be stored in dynamic pao info.
     {
@@ -781,7 +775,7 @@ string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt) const
 }
 
 
-int Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -825,7 +819,7 @@ int Mct420Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const 
 }
 
 
-int Mct420Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct420Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -863,7 +857,7 @@ int Mct420Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime Ti
     return ClientErrors::None;
 }
 
-int Mct420Device::decodeGetConfigOptions( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct420Device::decodeGetConfigOptions( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -938,7 +932,7 @@ int Mct420Device::decodeGetConfigOptions( const INMESS &InMessage, const CtiTime
 }
 
 
-int Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 

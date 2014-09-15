@@ -456,10 +456,10 @@ public:
      *  These guys initiate a scan based upon the type requested.
      */
 
-    INT GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority ) override;
+    YukonError_t GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority ) override;
 
-    INT ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList    &outList ) override;
-    INT ErrorDecode ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
+    YukonError_t ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList    &outList ) override;
+    YukonError_t ErrorDecode ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
     // interrogation routines
     YukonError_t decodeResponseHandshake  ( CtiXfer &Transfer, YukonError_t commReturnValue, CtiMessageList &traceList ) override;

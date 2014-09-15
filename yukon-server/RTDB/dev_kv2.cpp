@@ -42,8 +42,8 @@ CtiDeviceKV2::CtiDeviceKV2() :
 //to the ansi protocol object to get info about the tables we know we need for a GeneralScan
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
-                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                                        CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    ULONG BytesWritten;
@@ -96,8 +96,8 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
    return ClientErrors::None;
 }
 
-INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
-                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                                        CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    if( OutMessage != NULL )
@@ -234,14 +234,14 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
 
 
-INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg     *pReq,
-                                  CtiCommandParser  &parse,
-                                  OUTMESS          *&OutMessage,
-                                  CtiMessageList    &vgList,
-                                  CtiMessageList    &retList,
-                                  OutMessageList    &outList )
+YukonError_t CtiDeviceKV2::ExecuteRequest( CtiRequestMsg     *pReq,
+                                           CtiCommandParser  &parse,
+                                           OUTMESS          *&OutMessage,
+                                           CtiMessageList    &vgList,
+                                           CtiMessageList    &retList,
+                                           OutMessageList    &outList )
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     OutMessageList tmpOutList;
 
     //_parseFlags = parse.getFlags();
@@ -345,7 +345,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg     *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList&retList,
+YukonError_t CtiDeviceKV2::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList&retList,
                                 OutMessageList    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
@@ -458,7 +458,7 @@ INT CtiDeviceKV2::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, 
     }
 
 
-    return( 0 ); //just a val
+    return ClientErrors::None;
 }
 YukonError_t CtiDeviceKV2::sendCommResult( INMESS &InMessage)
 {

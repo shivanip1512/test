@@ -696,9 +696,8 @@ void Mct410Device::sendIntervals( OUTMESS *&OutMessage, OutMessageList &outList 
 }
 
 
-INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = ClientErrors::None;
     CtiTime Now;
 
     if( !_intervalsSent )
@@ -790,8 +789,6 @@ INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -897,7 +894,7 @@ Mct410Device::DecodeMapping Mct410Device::initDecodeLookup()
 const Mct410Device::DecodeMapping Mct410Device::_decodeMethods = Mct410Device::initDecodeLookup();
 
 
-INT Mct410Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage.Sequence);
 
@@ -920,9 +917,9 @@ INT Mct410Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
 
     switch( InMessage.Sequence )
     {
@@ -1021,14 +1018,14 @@ void Mct410Device::handleCommandResult(const Mct410DisconnectConfigurationComman
 }
 
 
-INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
-                                       CtiCommandParser           &parse,
-                                       OUTMESS                   *&OutMessage,
-                                       CtiMessageList &vgList,
-                                       CtiMessageList &retList,
-                                       OutMessageList &outList )
+YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
+                                             CtiCommandParser           &parse,
+                                             OUTMESS                   *&OutMessage,
+                                             CtiMessageList &vgList,
+                                             CtiMessageList &retList,
+                                             OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function = -1;
@@ -1544,7 +1541,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
     return nRet;
 }
 
-int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+YukonError_t Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     if (!isSupported(Feature_Disconnect))
     {
@@ -1717,7 +1714,7 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
     return ClientErrors::None;
 }
 
-int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+YukonError_t Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -1802,7 +1799,7 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
     return ClientErrors::None;
 }
 
-INT Mct410Device::executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct410Device::executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     if( parse.getFlags() & CMD_FLAG_PS_RESET_ALARMS )
     {
@@ -1976,14 +1973,14 @@ bool Mct410Device::isDailyReadVulnerableToAliasing(const CtiDate &date, const Ct
 
 
 
-INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
-                                      CtiCommandParser           &parse,
-                                      OUTMESS                   *&OutMessage,
-                                      CtiMessageList &vgList,
-                                      CtiMessageList &retList,
-                                      OutMessageList &outList )
+YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
+                                            CtiCommandParser           &parse,
+                                            OUTMESS                   *&OutMessage,
+                                            CtiMessageList &vgList,
+                                            CtiMessageList &retList,
+                                            OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     bool found = false;
     int function;
@@ -2453,14 +2450,14 @@ DlcBaseDevice::DlcCommandAutoPtr Mct410Device::makeHourlyReadCommand(const CtiDa
 }
 
 
-INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
-                                       CtiCommandParser           &parse,
-                                       OUTMESS                   *&OutMessage,
-                                       CtiMessageList &vgList,
-                                       CtiMessageList &retList,
-                                       OutMessageList &outList )
+YukonError_t Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
+                                             CtiCommandParser           &parse,
+                                             OUTMESS                   *&OutMessage,
+                                             CtiMessageList &vgList,
+                                             CtiMessageList &retList,
+                                             OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
 
     bool found = false;
@@ -2589,9 +2586,9 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
 }
 
 
-INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiTime pointTime;
     bool valid_data = true;
 
@@ -2716,9 +2713,9 @@ INT Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiTime pointTime;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
@@ -2813,9 +2810,9 @@ INT Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     point_info pi;
 
@@ -2881,9 +2878,9 @@ INT Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -2935,9 +2932,9 @@ INT Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const CtiTime 
 }
 
 
-INT Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
@@ -3121,9 +3118,9 @@ INT Mct410Device::decodeGetValueOutage( const INMESS &InMessage, const CtiTime T
 }
 
 
-INT Mct410Device::decodeGetValueFreezeCounter( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct410Device::decodeGetValueFreezeCounter( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const unsigned char   *msgbuf = InMessage.Buffer.DSt.Message;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -3140,7 +3137,7 @@ INT Mct410Device::decodeGetValueFreezeCounter( const INMESS &InMessage, const Ct
 }
 
 
-int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     long requestId = InMessage.Return.OptionsField;
 
@@ -3216,7 +3213,7 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &InMessage
 }
 
 
-INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     long requestId = InMessage.Return.OptionsField;
 
@@ -3229,7 +3226,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, c
         return ClientErrors::None;
     }
 
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3371,7 +3368,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InMessage, c
 }
 
 
-INT Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -3420,9 +3417,9 @@ void Mct410Device::tryVerifyDailyReadInterestDate(const unsigned interest_day, c
 }
 
 
-INT Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     string resultString;
     bool expectMore = false;
@@ -3802,9 +3799,9 @@ string Mct410Device::describeStatusAndEvents(const unsigned char *buf)
 }
 
 
-INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -3887,9 +3884,9 @@ INT Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTim
 }
 
 
-INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -3950,9 +3947,9 @@ INT Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const Cti
     return status;
 }
 
-INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-     INT status = ClientErrors::None;
+     YukonError_t status = ClientErrors::None;
 
      const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -4028,9 +4025,9 @@ INT Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const CtiTime 
      return status;
 }
 
-INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4068,9 +4065,9 @@ INT Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, const CtiTim
     return status;
 }
 
-INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4111,9 +4108,9 @@ INT Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, const CtiTi
     return status;
 }
 
-INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4150,9 +4147,9 @@ INT Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const CtiTime T
     return status;
 }
 
-INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4220,9 +4217,10 @@ INT Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessage, const 
 
 
 
-INT Mct410Device::decodeGetConfigDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None, state = 0;
+    YukonError_t status = ClientErrors::None;
+    int state = 0;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4412,9 +4410,9 @@ string Mct410Device::decodeDisconnectCyclingConfig(const boost::optional<int> co
 }
 
 
-INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4447,9 +4445,9 @@ INT Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const CtiTime 
 }
 
 
-INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4532,9 +4530,9 @@ INT Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, const CtiT
     return status;
 }
 
-INT Mct410Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
@@ -4696,9 +4694,9 @@ bool Mct410Device::sspecValid(const unsigned sspec, const unsigned rev) const
     return sspec == Mct410Device::Sspec;
 }
 
-INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 
@@ -4750,9 +4748,9 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( const INMESS &InMessage
     return status;
 }
 
-INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Mct410Device::decodeGetConfigLongLoadProfileStorageDays( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

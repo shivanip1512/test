@@ -47,7 +47,7 @@ public:
     virtual std::string getSQLCoreStatement() const;
 
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
-    INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
+    YukonError_t ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
     virtual INT processTrxID( int trx, CtiMessageList  &vgList );
     virtual INT initTrxID( int trx, CtiCommandParser &parse, CtiMessageList  &vgList );
     virtual std::string getDescription(const CtiCommandParser & parse) const;

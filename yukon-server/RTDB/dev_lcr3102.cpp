@@ -24,22 +24,20 @@ Lcr3102Device::Lcr3102Device( )
 
 }
 
-INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList )
+YukonError_t Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList )
 {
-    INT retCode = ClientErrors::None;
-
     if( InMessage.Sequence == EmetconProtocol::Scan_Integrity )
     {
         resetScanFlag(ScanRateIntegrity);
     }
 
-    return retCode;
+    return ClientErrors::None;
 }
 
 
-INT Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -133,9 +131,9 @@ INT Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow,
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -164,9 +162,9 @@ INT Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, const Cti
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -194,9 +192,9 @@ INT Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage, const C
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -249,9 +247,9 @@ INT Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, const CtiTim
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -333,9 +331,9 @@ INT Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage, const Ct
 }
 
 //Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
-INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -467,9 +465,9 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessage, const 
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     BSTRUCT       BSt;
@@ -546,9 +544,9 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &InMessage,
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -624,9 +622,9 @@ INT Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, const Cti
     return status;
 }
 
-INT Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -657,9 +655,9 @@ INT Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, const CtiTi
     return status;
 }
 
-INT Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -695,9 +693,9 @@ INT Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiTime TimeN
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -772,9 +770,9 @@ INT Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime Ti
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -815,9 +813,9 @@ INT Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, const CtiTi
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -892,9 +890,9 @@ INT Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, const Cti
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -1022,15 +1020,9 @@ Lcr3102Device::CommandSet Lcr3102Device::initCommandStore()
     return cs;
 }
 
-INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
-                                CtiCommandParser &parse,
-                                OUTMESS *&OutMessage,
-                                CtiMessageList &vgList,
-                                CtiMessageList &retList,
-                                OutMessageList &outList,
-                                INT ScanPriority)
+YukonError_t Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -1067,9 +1059,9 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
 }
 
 
-INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     int  function = -1;
     bool found    = false;
@@ -1228,15 +1220,15 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
     return nRet;
 }
 
-INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              CtiMessageList      &vgList,
-                              CtiMessageList      &retList,
-                              OutMessageList         &outList)
+YukonError_t Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
+                                        CtiCommandParser               &parse,
+                                        OUTMESS                        *&OutMessage,
+                                        CtiMessageList      &vgList,
+                                        CtiMessageList      &retList,
+                                        OutMessageList         &outList)
 {
     bool found = false;
-    INT  nRet  = ClientErrors::None;
+    YukonError_t nRet  = ClientErrors::None;
     string tester;
 
     INT            function;
@@ -1269,9 +1261,9 @@ INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     int  function = -1;
     bool found    = false;
@@ -1349,9 +1341,9 @@ INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
     return nRet;
 }
 
-INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     int  function = -1;
     bool found    = false;
@@ -1392,9 +1384,9 @@ INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
     return nRet;
 }
 
-int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, OutMessageList &outList )
+YukonError_t Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    int nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
     int function = -1;
 
     if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
