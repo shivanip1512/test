@@ -1651,7 +1651,18 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
         }
         if(CmdStr.contains(" freeze"))
         {
-            _cmd["freeze"] = true;
+            if(CmdStr.contains(" one"))
+            {
+                _cmd["freeze"] = CtiParseValue(1);
+            }
+            else if(CmdStr.contains(" two"))
+            {
+                _cmd["freeze"] = CtiParseValue(2);
+            }
+            else
+            {
+                _cmd["freeze"] = CtiParseValue(0);
+            }
         }
         if(CmdStr.contains(" critical"))
         {
@@ -4153,19 +4164,6 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
         }
         if(CmdStr.contains(" freeze"))
         {
-            if(CmdStr.contains(" one"))
-            {
-                _cmd["freeze"] = CtiParseValue(1);
-            }
-            else if(CmdStr.contains(" two"))
-            {
-                _cmd["freeze"] = CtiParseValue(2);
-            }
-            else
-            {
-                _cmd["freeze"] = CtiParseValue(0);
-            }
-
             if(CmdStr.contains(" voltage"))
             {
                 _cmd["voltage"] = CtiParseValue(TRUE);
