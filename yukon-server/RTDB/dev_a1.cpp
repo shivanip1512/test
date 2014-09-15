@@ -136,30 +136,25 @@ INT CtiDeviceAlphaA1::freeDataBins  ()
 }
 
 
-INT CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg     *pReq,
-                                  CtiCommandParser  &parse,
-                                  OUTMESS          *&OutMessage,
-                                  CtiMessageList    &vgList,
-                                  CtiMessageList    &retList,
-                                  OutMessageList    &outList,
-                                  INT ScanPriority)
+YukonError_t CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg     *pReq,
+                                           CtiCommandParser  &parse,
+                                           OUTMESS          *&OutMessage,
+                                           CtiMessageList    &vgList,
+                                           CtiMessageList    &retList,
+                                           OutMessageList    &outList,
+                                           INT ScanPriority)
 {
-    INT status = ClientErrors::None;
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
     }
 
-    if (OutMessage != NULL)
-    {
-        status = Inherited::GeneralScan (pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
-        return status;
-    }
-    else
+    if( ! OutMessage )
     {
         return ClientErrors::MemoryAccess;
     }
+
+    return Inherited::GeneralScan (pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
 }
 
 USHORT CtiDeviceAlphaA1::calculateStartingByteCountForCurrentScanState (int aClass)

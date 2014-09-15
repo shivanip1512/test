@@ -40,18 +40,18 @@ protected:
 
     bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const override;
 
-    INT ModelDecode  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
+    YukonError_t ModelDecode  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
-    INT decodeGetValueDemand ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigModel ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeScanLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    YukonError_t decodeGetValueDemand ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    YukonError_t decodeGetConfigModel ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    YukonError_t decodeScanLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
 public:
 
    Dct501Device( );
 
    virtual ULONG calcNextLPScanTime( void );
-   virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
+   virtual void  calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
 };

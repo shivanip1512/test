@@ -25,7 +25,7 @@ public:
 
     //  we need to transform "control open" and "control close" into "control open offset 1" and "control close offset 1"
     //  also, we now need to allow configs to be sent out.
-    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     //virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList&vgList, CtiMessageList&retList, OutMessageList&outList);
 
@@ -46,19 +46,19 @@ private:
     static const ConfigPartsList _config_parts;
     static ConfigPartsList initConfigParts();
 
-    int executePutConfigSingle        (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigVoltage       (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigCommsLost     (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigFaultDetection(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigTimeAndTemp1  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigTimeAndTemp2  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigControlTimes  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigDataLogging   (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    //int executePutConfigAddressing    (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigDNP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int executePutConfigUDP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
-    int sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, CtiMessageList&vgList, CtiMessageList&retList, OutMessageList   &outList);
+    YukonError_t executePutConfigSingle        (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigVoltage       (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigCommsLost     (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigFaultDetection(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigTimeAndTemp1  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigTimeAndTemp2  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigControlTimes  (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigDataLogging   (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    //YukonError_t executePutConfigAddressing    (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigDNP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t executePutConfigUDP           (CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList   &outList);
+    YukonError_t sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, CtiMessageList&vgList, CtiMessageList&retList, OutMessageList   &outList);
 
     static const char *PutConfigPart_all;
     static const char *PutConfigPart_comms_lost;

@@ -26,25 +26,25 @@ private:
 public:
    CtiDeviceAnsi();
 
-   INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                           INT ScanPriority=MAXPRIORITY-4) override;
+   YukonError_t GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                    INT ScanPriority=MAXPRIORITY-4) override;
 
-   virtual INT executeLoopback(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-   virtual INT DemandReset    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                               INT ScanPriority=MAXPRIORITY-4);
+   YukonError_t executeLoopback(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
+   virtual YukonError_t DemandReset(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                            INT ScanPriority=MAXPRIORITY-4);
 
-   INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   YukonError_t ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-   INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
+   YukonError_t ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
 
    virtual void processDispatchReturnMessage( std::list< CtiReturnMsg* > &retList, UINT archiveFlag );
    virtual unsigned long updateLastLpTime();
 
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void ) = 0;
-   virtual int buildScannerTableRequest (BYTE *ptr, UINT flags) = 0;
-   virtual int buildCommanderTableRequest (BYTE *ptr, UINT flags) = 0;
-   virtual int buildSingleTableRequest(BYTE *ptr, UINT tableId = 0);
+   virtual void buildScannerTableRequest  (BYTE *ptr, UINT flags) = 0;
+   virtual void buildCommanderTableRequest(BYTE *ptr, UINT flags) = 0;
+   virtual void buildSingleTableRequest(BYTE *ptr, UINT tableId = 0);
 
    YukonError_t sendCommResult( INMESS &InMessage);
 

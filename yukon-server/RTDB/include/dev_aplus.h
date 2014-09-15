@@ -353,8 +353,8 @@ public:
     }
 
     virtual INT ResultDisplay (const INMESS &InMessage);
-    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                            INT ScanPriority = MAXPRIORITY - 4) override;
+    YukonError_t GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                    INT ScanPriority = MAXPRIORITY - 4) override;
 
     INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived) override;
     INT copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes) override;

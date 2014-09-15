@@ -91,9 +91,8 @@ bool DnpDevice::clearedForScan(int scantype)
 }
 
 
-INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     setScanFlag(ScanRateGeneral, true);
@@ -107,7 +106,7 @@ INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
     pReq->setCommandString("scan general");
     pReq->setMessagePriority(ScanPriority);
 
-    status = ExecuteRequest(pReq, newParse, OutMessage, vgList, retList, outList);
+    YukonError_t status = ExecuteRequest(pReq, newParse, OutMessage, vgList, retList, outList);
 
     if(OutMessage)
     {
@@ -119,9 +118,9 @@ INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
 }
 
 
-INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan integrity");
 
     setScanFlag(ScanRateIntegrity, true);
@@ -147,9 +146,9 @@ INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTME
 }
 
 
-INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     Protocol::DNPInterface::Command command = Protocol::DNPInterface::Command_Invalid;
     Protocol::DNPInterface::output_point controlout;
@@ -1012,7 +1011,7 @@ void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     CtiReturnMsg *retMsg;
 
@@ -1084,9 +1083,9 @@ INT DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 }
 
 
-INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
+YukonError_t DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = ClientErrors::None;
+    YukonError_t retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
 

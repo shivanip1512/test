@@ -41,9 +41,9 @@ Cbc7020Device::ConfigPartsList Cbc7020Device::initConfigParts()
     return tempList;
 }
 
-INT Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
     bool didExecute = false;
 
     //  if it's a control open/close request without an offset
@@ -154,7 +154,7 @@ void Cbc7020Device::processPoints( Protocol::Interface::pointlist_t &points )
     Inherited::processPoints(points);
 }
 
-int Cbc7020Device::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Cbc7020Device::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     string tempStr = "putvalue analog " + CtiNumStr(outputPt) + " " + CtiNumStr(value);
     OUTMESS *tempOutMess = CTIDBG_new OUTMESS(*OutMessage);

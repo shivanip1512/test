@@ -37,7 +37,7 @@ private:
     typedef DlcBaseDevice Self;
     typedef CtiDeviceSingle Parent;
 
-    typedef int (Self::*ExecuteMethod)(CtiRequestMsg *, CtiCommandParser &, OUTMESS *&, CtiMessageList &, CtiMessageList &, OutMessageList &);
+    typedef YukonError_t (Self::*ExecuteMethod)(CtiRequestMsg *, CtiCommandParser &, OUTMESS *&, CtiMessageList &, CtiMessageList &, OutMessageList &);
 
     static const std::map<CtiClientRequest_t, ExecuteMethod> _executeMethods;
     static const std::map<CtiClientRequest_t, ExecuteMethod> buildExecuteMethodMap();
@@ -80,14 +80,14 @@ protected:
 
     unsigned int getLPRetryRate( unsigned int interval );
 
-    virtual INT executeLoopback ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
-    virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
-    virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
-    virtual INT executeGetStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
-    virtual INT executeControl  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
-    virtual INT executePutValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
-    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
-    virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executeLoopback ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executeGetStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executeControl  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executePutValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
+    virtual YukonError_t executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) {  return ClientErrors::NoMethod;  };
 
     bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr command);
 
@@ -99,18 +99,18 @@ protected:
 
     void populateDlcOutMessage(OUTMESS &OutMessage);
 
-    int executeOnDLCRoute( CtiRequestMsg              *pReq,
-                           CtiCommandParser           &parse,
-                           OutMessageList     &tmpOutList,
-                           CtiMessageList  &vgList,
-                           CtiMessageList  &retList,
-                           OutMessageList     &outList,
-                           bool                  broadcastWritesOnMacroSubroutes );
+    YukonError_t  executeOnDLCRoute( CtiRequestMsg              *pReq,
+                                     CtiCommandParser           &parse,
+                                     OutMessageList     &tmpOutList,
+                                     CtiMessageList  &vgList,
+                                     CtiMessageList  &retList,
+                                     OutMessageList     &outList,
+                                     bool                  broadcastWritesOnMacroSubroutes );
 
-    INT SubmitRetry (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
-    INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t SubmitRetry (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-    INT retMsgHandler( std::string commandStr, int status, CtiReturnMsg *retMsg, CtiMessageList &vgList, CtiMessageList &retList, bool expectMore = false ) const;
+    void retMsgHandler( std::string commandStr, YukonError_t status, CtiReturnMsg *retMsg, CtiMessageList &vgList, CtiMessageList &retList, bool expectMore = false ) const;
 
     class CommandStore
     {
@@ -166,7 +166,7 @@ public:
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;
 
-    INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     virtual bool processAdditionalRoutes( const INMESS &InMessage, int nRet ) const;
     virtual MacroOffset selectInitialMacroRouteOffset(LONG routeid = 0) const;

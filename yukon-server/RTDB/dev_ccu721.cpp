@@ -36,9 +36,9 @@ Protocol::Interface *Ccu721Device::getProtocol()
 }
 
 
-INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     switch( parse.getCommand() )
     {
@@ -106,9 +106,9 @@ INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 }
 
 
-INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -131,7 +131,7 @@ INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT Ccu721Device::ResultDecode( const INMESS &InMessage, const CtiTime Now, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Ccu721Device::ResultDecode( const INMESS &InMessage, const CtiTime Now, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     if( ! InMessage.ErrorCode )
     {
@@ -148,7 +148,7 @@ INT Ccu721Device::ResultDecode( const INMESS &InMessage, const CtiTime Now, CtiM
         resetScanFlag();
     }
 
-    return 0;
+    return ClientErrors::None;
 }
 
 

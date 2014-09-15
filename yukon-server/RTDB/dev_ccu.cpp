@@ -96,28 +96,26 @@ bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 }
 
 
-INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
-
     // Get a loop done maybe?
-    if( OutMessage != NULL )
+    if( OutMessage )
     {
         CCULoop(OutMessage);
         outList.push_back( OutMessage );
         OutMessage = NULL;
     }
 
-    return status;
+    return ClientErrors::None;
 }
 
-INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,  INT ScanPriority)
+YukonError_t CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,  INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
-INT CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanFlag(ScanRateGeneral);
@@ -212,14 +210,14 @@ Cti::DeviceQueueInterface* CtiDeviceCCU::getDeviceQueueHandler()
 }
 
 /* Routine to decode returned CCU message and update database */
-INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg     *pReq,
-                                 CtiCommandParser  &parse,
-                                 OUTMESS          *&OutMessage,
-                                 CtiMessageList    &vgList,
-                                 CtiMessageList    &retList,
-                                 OutMessageList    &outList)
+YukonError_t CtiDeviceCCU::ExecuteRequest(CtiRequestMsg     *pReq,
+                                          CtiCommandParser  &parse,
+                                          OUTMESS          *&OutMessage,
+                                          CtiMessageList    &vgList,
+                                          CtiMessageList    &retList,
+                                          OutMessageList    &outList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)

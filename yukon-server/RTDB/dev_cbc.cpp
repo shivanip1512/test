@@ -77,14 +77,14 @@ int CtiDeviceCBC::getCBCRetries( void )
 }
 
 
-INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg     *pReq,
+YukonError_t CtiDeviceCBC::ExecuteRequest(CtiRequestMsg     *pReq,
                                  CtiCommandParser  &parse,
                                  OUTMESS          *&OutMessage,
                                  CtiMessageList    &vgList,
                                  CtiMessageList    &retList,
                                  OutMessageList    &outList)
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
 
     //  make sure we keep trying
     OutMessage->Retry = getCBCRetries();
@@ -112,14 +112,14 @@ INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg     *pReq,
     return nRet;
 }
 
-INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
-                                         CtiCommandParser  &parse,
-                                         OUTMESS          *&OutMessage,
-                                         CtiMessageList    &vgList,
-                                         CtiMessageList    &retList,
-                                         OutMessageList    &outList)
+YukonError_t CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
+                                                  CtiCommandParser  &parse,
+                                                  OUTMESS          *&OutMessage,
+                                                  CtiMessageList    &vgList,
+                                                  CtiMessageList    &retList,
+                                                  OutMessageList    &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
     int   address;
 
@@ -265,14 +265,14 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
 }
 
 
-INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg     *pReq,
-                                     CtiCommandParser  &parse,
-                                     OUTMESS          *&OutMessage,
-                                     CtiMessageList    &vgList,
-                                     CtiMessageList    &retList,
-                                     OutMessageList    &outList)
+YukonError_t CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg     *pReq,
+                                              CtiCommandParser  &parse,
+                                              OUTMESS          *&OutMessage,
+                                              CtiMessageList    &vgList,
+                                              CtiMessageList    &retList,
+                                              OutMessageList    &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;
@@ -441,14 +441,14 @@ void CtiDeviceCBC::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg     *pReq,
-                                       CtiCommandParser  &parse,
-                                       OUTMESS          *&OutMessage,
-                                       CtiMessageList    &vgList,
-                                       CtiMessageList    &retList,
-                                       OutMessageList    &outList)
+YukonError_t CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg     *pReq,
+                                                CtiCommandParser  &parse,
+                                                OUTMESS          *&OutMessage,
+                                                CtiMessageList    &vgList,
+                                                CtiMessageList    &retList,
+                                                OutMessageList    &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
 
     CtiRouteSPtr Route;

@@ -170,13 +170,13 @@ bool CtiDeviceAlpha::isReturnedBufferValid (CtiXfer  &Transfer)
     return retVal;
 }
 
-INT CtiDeviceAlpha::GeneralScan(CtiRequestMsg     *pReq,
-                                CtiCommandParser  &parse,
-                                OUTMESS          *&OutMessage,
-                                CtiMessageList    &vgList,
-                                CtiMessageList    &retList,
-                                OutMessageList    &outList,
-                                INT ScanPriority)
+YukonError_t CtiDeviceAlpha::GeneralScan(CtiRequestMsg     *pReq,
+                                         CtiCommandParser  &parse,
+                                         OUTMESS          *&OutMessage,
+                                         CtiMessageList    &vgList,
+                                         CtiMessageList    &retList,
+                                         OutMessageList    &outList,
+                                         INT ScanPriority)
 {
     ULONG BytesWritten;
 
@@ -485,7 +485,7 @@ INT CtiDeviceAlpha::freeDataBins  ()
 }
 
 
-INT CtiDeviceAlpha::ResultDecode(const INMESS   &InMessage,
+YukonError_t CtiDeviceAlpha::ResultDecode(const INMESS   &InMessage,
                                  const CtiTime   TimeNow,
                                  CtiMessageList &vgList,
                                  CtiMessageList &retList,
@@ -538,16 +538,16 @@ INT CtiDeviceAlpha::ResultDecode(const INMESS   &InMessage,
     return ClientErrors::None;
 }
 
-INT CtiDeviceAlpha::ErrorDecode (const INMESS   &InMessage,
-                                 const CtiTime   TimeNow,
-                                 CtiMessageList &retList)
+YukonError_t CtiDeviceAlpha::ErrorDecode (const INMESS   &InMessage,
+                                          const CtiTime   TimeNow,
+                                          CtiMessageList &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = ClientErrors::None;
+    YukonError_t retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             InMessage.Return.CommandStr,

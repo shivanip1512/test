@@ -45,22 +45,20 @@ using std::list;
 CtiDeviceDavis::CtiDeviceDavis()
 {}
 
-INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
-
-    if(OutMessage != NULL)
+    if( OutMessage )
     {
-        status = generateScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
+        return generateScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
     }
 
-    return status;
+    return ClientErrors::None;
 }
 
 
-INT CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
+YukonError_t CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -82,9 +80,9 @@ INT CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, 
     return nRet;
 }
 
-INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -131,7 +129,7 @@ INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 
 /* Routine to output Forced scan to a WelCo device */
-INT CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     if(OutMessage)
     {
@@ -168,7 +166,7 @@ INT CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 
 /* Routine to decode returned Davis message and update database */
-INT CtiDeviceDavis::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceDavis::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     /* Misc. definitions */
     ULONG i;

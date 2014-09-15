@@ -75,17 +75,17 @@ void IM_EX_DEVDB attachRouteManagerToDevice(const long id, CtiDeviceSPtr device,
     }
 }
 
-int CtiDeviceBase::invokeDeviceHandler(Cti::Devices::DeviceHandler &handler)
+YukonError_t CtiDeviceBase::invokeDeviceHandler(Cti::Devices::DeviceHandler &handler)
 {
     return handler.execute(*this);
 }
 
 
-INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg *pReq,
-                                       CtiCommandParser &parse,
-                                       CtiMessageList &vgList,
-                                       CtiMessageList &retList,
-                                       OutMessageList &outList)
+YukonError_t CtiDeviceBase::beginExecuteRequest(CtiRequestMsg *pReq,
+                                                CtiCommandParser &parse,
+                                                CtiMessageList &vgList,
+                                                CtiMessageList &retList,
+                                                OutMessageList &outList)
 {
     return beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, 0);
 }
@@ -103,15 +103,14 @@ bool CtiDeviceBase::executeBackgroundRequest(const std::string &commandString, c
     return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, &OutMessageTemplate) == ClientErrors::None;
 }
 
-INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
-                                                   CtiCommandParser &parse,
-                                                   CtiMessageList &vgList,
-                                                   CtiMessageList &retList,
-                                                   OutMessageList &outList,
-                                                   const OUTMESS *OutTemplate)
+YukonError_t CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
+                                                            CtiCommandParser &parse,
+                                                            CtiMessageList &vgList,
+                                                            CtiMessageList &retList,
+                                                            OutMessageList &outList,
+                                                            const OUTMESS *OutTemplate)
 {
-    INT      status = ClientErrors::None;
-    LONG     Id;
+    YukonError_t status = ClientErrors::None;
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
@@ -268,46 +267,31 @@ CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, CtiPointTy
 }
 
 
-INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&tempOut,
-                                  CtiMessageList &vgList,
-                                  CtiMessageList &retList,
-                                  OutMessageList &outList)
+YukonError_t CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    string resultString;
-
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "in dev_base ExecuteRequest" << endl;
     }
 
-    resultString = getName() + " has no type specific ExecuteRequest Method";
+    string resultString = getName() + " has no type specific ExecuteRequest Method";
 
-    CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                 string(tempOut->Request.CommandStr),
-                                                 resultString,
-                                                 ClientErrors::NoMethodForExecuteRequest,
-                                                 tempOut->Request.RouteID,
-                                                 tempOut->Request.RetryMacroOffset,
-                                                 tempOut->Request.Attempt,
-                                                 tempOut->Request.GrpMsgID,
-                                                 tempOut->Request.UserID,
-                                                 tempOut->Request.SOE,
-                                                 CtiMultiMsg_vec());
-    if( pRet != NULL )
-    {
-        retList.push_back( pRet );
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
+    CtiReturnMsg* pRet =
+        new CtiReturnMsg(
+                getID(),
+                string(tempOut->Request.CommandStr),
+                resultString,
+                ClientErrors::NoMethodForExecuteRequest,
+                tempOut->Request.RouteID,
+                tempOut->Request.RetryMacroOffset,
+                tempOut->Request.Attempt,
+                tempOut->Request.GrpMsgID,
+                tempOut->Request.UserID,
+                tempOut->Request.SOE,
+                CtiMultiMsg_vec());
+
+    retList.push_back( pRet );
 
     return ClientErrors::NoMethodForExecuteRequest;
 }
@@ -346,35 +330,22 @@ string CtiDeviceBase::getPutConfigAssignment(UINT modifier)
     return  string("config not done ") + getName();
 }
 
-INT CtiDeviceBase::executeScan(CtiRequestMsg *pReq,
-                               CtiCommandParser &parse,
-                               OUTMESS *&OutMessage,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList)
+YukonError_t CtiDeviceBase::executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   nRet = ClientErrors::None;
-
-    INT function;
-
-    // The following switch fills in the BSTRUCT's Function, Length, and IO parameters.
     switch(parse.getiValue("scantype"))
     {
     case ScanRateStatus:
     case ScanRateGeneral:
         {
-            nRet = GeneralScan(pReq,parse,OutMessage,vgList,retList,outList);
-            break;
+            return GeneralScan(pReq,parse,OutMessage,vgList,retList,outList);
         }
     case ScanRateAccum:
         {
-            nRet = AccumulatorScan(pReq,parse,OutMessage,vgList,retList,outList);
-            break;
+            return AccumulatorScan(pReq,parse,OutMessage,vgList,retList,outList);
         }
     case ScanRateIntegrity:
         {
-            nRet = IntegrityScan(pReq,parse,OutMessage,vgList,retList,outList);
-            break;
+            return IntegrityScan(pReq,parse,OutMessage,vgList,retList,outList);
         }
     default:
         {
@@ -382,11 +353,10 @@ INT CtiDeviceBase::executeScan(CtiRequestMsg *pReq,
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            break;
+
+            return ClientErrors::NoMethod;
         }
     }
-
-    return nRet;
 }
 
 
@@ -489,35 +459,35 @@ INT CtiDeviceBase::ReportError(INT mess)
 }
 
 /* Properly defined by the device types themselves... */
-INT CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceBase::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return ClientErrors::NoMethodForGeneralScan;
 }
-INT CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceBase::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return ClientErrors::NoMethodForIntegrityScan;
 }
-INT CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceBase::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return ClientErrors::NoMethodForAccumulatorScan;
 }
-INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     return ClientErrors::NoMethodForLoadProfileScan;
 }
 
-INT CtiDeviceBase::ResultDecode(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceBase::ResultDecode(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return ClientErrors::NoMethodForResultDecode;
 }
 
-INT CtiDeviceBase::ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceBase::ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return ClientErrors::NoMethodForProcessResult;
 }
 
 
-INT CtiDeviceBase::ErrorDecode(const INMESS & InMessage, const CtiTime TimeNow,  CtiMessageList &retList)
+YukonError_t CtiDeviceBase::ErrorDecode(const INMESS & InMessage, const CtiTime TimeNow,  CtiMessageList &retList)
 {
     return ClientErrors::NoMethodForErrorDecode;
 }
@@ -701,9 +671,9 @@ void CtiDeviceBase::setOutMessageTargetID( LONG &omtid )
 }
 
 
-INT CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage)
+YukonError_t CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(isInhibited())
     {

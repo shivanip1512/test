@@ -108,14 +108,14 @@ const std::map<CtiClientRequest_t, DlcBaseDevice::ExecuteMethod> DlcBaseDevice::
             (PutConfigRequest, &Self::executePutConfig);
 }
 
-INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
-                                   CtiCommandParser  &parse,
-                                   OUTMESS          *&OutMessage,
-                                   CtiMessageList    &vgList,
-                                   CtiMessageList    &retList,
-                                   OutMessageList    &outList )
+YukonError_t DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
+                                            CtiCommandParser  &parse,
+                                            OUTMESS          *&OutMessage,
+                                            CtiMessageList    &vgList,
+                                            CtiMessageList    &retList,
+                                            OutMessageList    &outList )
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     bool broadcast = false;
     OutMessageList tmpOutList;
 
@@ -178,7 +178,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
 }
 
 
-INT DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     try
     {
@@ -198,7 +198,7 @@ INT DlcBaseDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, 
 }
 
 
-INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     try
     {
@@ -214,15 +214,14 @@ INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, C
                 e.error_code));
     }
 
-    return ExecutionComplete;
+    return ClientErrors::None;
 }
 
 
-INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, CtiMessageList &vgList, CtiMessageList &retList, bool expectMore ) const
+void DlcBaseDevice::retMsgHandler( string commandStr, YukonError_t status, CtiReturnMsg *retMsg, CtiMessageList &vgList, CtiMessageList &retList, bool expectMore ) const
 {
     CtiReturnMsg    *tmpVGRetMsg = NULL;
     CtiPointDataMsg *tmpMsg;
-    int retVal = 0;
     bool archive = false;
 
     archive = (commandStr.find(" update") != string::npos);
@@ -297,16 +296,12 @@ INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *r
             }
 
             retList.push_back(retMsg);
-
-            retVal = TRUE;
         }
         else
         {
             delete retMsg;
         }
     }
-
-    return retVal;
 }
 
 bool DlcBaseDevice::dlcAddressMismatch(const DSTRUCT dst, const CtiDeviceBase & temDevice)
@@ -526,15 +521,15 @@ bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandAutoPtr com
 }
 
 
-int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
-                                         CtiCommandParser &parse,
-                                         OutMessageList   &tmpOutList,
-                                         CtiMessageList   &vgList,
-                                         CtiMessageList   &retList,
-                                         OutMessageList   &outList,
-                                         bool              broadcastWritesOnMacroSubroutes )
+YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
+                                               CtiCommandParser &parse,
+                                               OutMessageList   &tmpOutList,
+                                               CtiMessageList   &vgList,
+                                               CtiMessageList   &retList,
+                                               OutMessageList   &outList,
+                                               bool              broadcastWritesOnMacroSubroutes )
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     string resultString;
     long      routeID;

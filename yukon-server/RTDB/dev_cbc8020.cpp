@@ -117,9 +117,9 @@ void Cbc8020Device::processPoints( Cti::Protocol::Interface::pointlist_t &points
     DnpDevice::processPoints(points);
 }
 
-INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = ClientErrors::NoMethod;
+    YukonError_t nRet = ClientErrors::NoMethod;
     bool didExecute = false;
 
     if( parse.getCommand() == PutConfigRequest )

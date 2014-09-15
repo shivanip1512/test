@@ -150,10 +150,8 @@ ULONG Dct501Device::calcNextLPScanTime( void )
 }
 
 
-INT Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = ClientErrors::None;
-
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
     unsigned long  lpBlocksToCollect,
@@ -250,8 +248,6 @@ INT Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -309,9 +305,9 @@ bool Dct501Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
 
     switch(InMessage.Sequence)
@@ -353,9 +349,9 @@ INT Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
 }
 
 
-INT Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     INT pnt_offset, byte_offset;
     ULONG i,x;
     INT pid;
@@ -474,9 +470,9 @@ INT Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const CtiTime Ti
 }
 
 
-INT Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -663,9 +659,9 @@ INT Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime T
 }
 
 
-INT Dct501Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Dct501Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 

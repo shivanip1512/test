@@ -201,11 +201,11 @@ public:
     INT checkCRC(BYTE *InBuffer,ULONG InCount);
 
 
-    INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                            INT ScanPriority=MAXPRIORITY-4) override;
+    YukonError_t GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                    INT ScanPriority=MAXPRIORITY-4) override;
 
-    INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
-    INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
+    YukonError_t ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
 
     // all defined in dev_alpha.cpp
     YukonError_t generateCommand          (CtiXfer &Transfer, CtiMessageList &traceList) override;

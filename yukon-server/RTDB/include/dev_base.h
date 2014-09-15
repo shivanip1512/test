@@ -166,28 +166,28 @@ public:
     INT         ReportError(INT mess);
 
     /* Properly defined by the device types themselves... */
-    virtual INT  GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
-    virtual INT  IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
-    virtual INT  AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 12);
-    virtual INT  LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 6);
-    virtual INT  ResultDecode (const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    virtual INT  ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual YukonError_t GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
+    virtual YukonError_t IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 11);
+    virtual YukonError_t AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 12);
+    virtual YukonError_t LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = 6);
+    virtual YukonError_t ResultDecode (const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual YukonError_t ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     bool executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList);
 
-    virtual int invokeDeviceHandler(Cti::Devices::DeviceHandler &handler);
+    virtual YukonError_t invokeDeviceHandler(Cti::Devices::DeviceHandler &handler);
 
     // This is a preprocessing method which calls ExecuteRequest.
-    INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    INT beginExecuteRequestFromTemplate(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate);
+    YukonError_t beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    YukonError_t beginExecuteRequestFromTemplate(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate);
 
     // This one is implemented in the child classes
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT processTrxID( int trx, CtiMessageList &vgList );
     virtual INT initTrxID( int trx, CtiCommandParser &parse, CtiMessageList &vgList );
 
     void propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq );
-    virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList& retList);
+    virtual YukonError_t ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList& retList);
 
     bool getLogOnNeeded() const;
     void setLogOnNeeded(bool b);
@@ -205,7 +205,7 @@ public:
     virtual bool isMeter() const;
     virtual INT deviceMaxCommFails() const;
 
-    INT checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage);
+    YukonError_t checkForInhibitedDevice(CtiMessageList &retList, const OUTMESS *OutMessage);
 
     INT             getCommFailCount() const;
     CtiDeviceBase&  setCommFailCount(const INT i);
@@ -218,7 +218,7 @@ public:
     INT             getAttemptSuccessCount() const;
     CtiDeviceBase&  setAttemptSuccessCount(const INT i);
 
-    virtual INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual YukonError_t executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     bool adjustCommCounts( bool &isCommFail, bool retry );
     bool isCommFailed() const;
 
@@ -355,8 +355,8 @@ namespace Devices {
 
 struct DeviceHandler
 {
-    virtual int execute(CtiDeviceBase &) = 0;
-    virtual int execute(RfnDevice &) = 0;
+    virtual YukonError_t execute(CtiDeviceBase &) = 0;
+    virtual YukonError_t execute(RfnDevice &) = 0;
 };
 
 }
