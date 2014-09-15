@@ -42,7 +42,7 @@ public:
 
     struct Request : PayloadMessage
     {
-        char priority;
+        unsigned char priority : 7;  //  7 bits - this needs to fit into a signed byte
     };
 
     struct Indication : PayloadMessage, CallbackFor<Indication>
