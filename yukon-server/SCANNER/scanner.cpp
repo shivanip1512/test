@@ -142,7 +142,7 @@ static void applyResetScanFlags(const long key, CtiDeviceSPtr Device, void *d)
 
 static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void *d)
 {
-    INT   nRet = 0;
+    YukonError_t nRet = ClientErrors::None;
     CtiTime TimeNow;
     CtiDeviceBase::OutMessageList &outList = *(static_cast<CtiDeviceBase::OutMessageList *>(d));
 
@@ -252,7 +252,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
 
 static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
 {
-    INT nRet;
+    YukonError_t nRet;
     CtiTime TimeNow;
     list< OUTMESS* > &outList =  *((list< OUTMESS* > *)d);
 

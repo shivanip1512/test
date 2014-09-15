@@ -30,9 +30,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "exe_cmd.h"
 #include "logger.h"
 
-INT CtiCommandExecutor::ServerExecute(CtiServer *Svr)
+YukonError_t CtiCommandExecutor::ServerExecute(CtiServer *Svr)
 {
-    INT nRet = ClientErrors::None;      // Everything was ok, please clean up my message memory
+    YukonError_t nRet = ClientErrors::None;      // Everything was ok, please clean up my message memory
 
     CtiCommandMsg* Cmd = (CtiCommandMsg*)getMessage();
 

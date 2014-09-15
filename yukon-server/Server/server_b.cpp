@@ -70,9 +70,9 @@ void CtiServer::clientShutdown(CtiServer::ptr_type CM)
 }
 
 
-int  CtiServer::clientRegistration(CtiServer::ptr_type CM)
+YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
 {
-    int         nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CtiTime      NowTime;
     RWBoolean   validEntry(TRUE);
     RWBoolean   removeMgr(FALSE);

@@ -75,7 +75,7 @@ public:
    virtual RWWaitStatus join(unsigned long milliseconds);
    virtual void  clientConnect(CtiServer::ptr_type CM);
    virtual void  clientShutdown(CtiServer::ptr_type CM);
-   virtual int   clientRegistration(CtiServer::ptr_type CM);
+   virtual YukonError_t clientRegistration(CtiServer::ptr_type CM);
    virtual int   commandMsgHandler(CtiCommandMsg *Cmd);
    virtual int   clientArbitrationWinner(CtiServer::ptr_type CM);
    virtual int   clientConfrontEveryone(PULONG pClientCount = NULL);

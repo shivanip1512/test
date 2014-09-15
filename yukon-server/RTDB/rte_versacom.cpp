@@ -72,16 +72,16 @@ void CtiRouteVersacom::DecodeVersacomDatabaseReader(Cti::RowReader &rdr)
 
 
 
-INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                     CtiCommandParser               &parse,
-                                     OUTMESS                        *&OutMessage,
-                                     list< CtiMessage* >      &vgList,
-                                     list< CtiMessage* >      &retList,
-                                     list< OUTMESS* >         &outList)
+YukonError_t CtiRouteVersacom::ExecuteRequest(CtiRequestMsg        *pReq,
+                                              CtiCommandParser     &parse,
+                                              OUTMESS             *&OutMessage,
+                                              list< CtiMessage* >  &vgList,
+                                              list< CtiMessage* >  &retList,
+                                              list< OUTMESS* >     &outList)
 {
 #define ABUFSIZE 40
 
-    INT       status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     bool      xmore = true;
     string resultString;
     BYTE      ABuf[ABUFSIZE];
@@ -197,7 +197,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << resultString << endl;
         }
-        status = -1;
+        status = ClientErrors::NoTransmitterForRoute;
     }
 
     if( status )
@@ -245,14 +245,14 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     return status;
 }
 
-INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pReq,
-                                              CtiCommandParser               &parse,
-                                              OUTMESS                        *OutMessage,
-                                              list< CtiMessage* >      &vgList,
-                                              list< CtiMessage* >      &retList,
-                                              list< OUTMESS* >         &outList)
+YukonError_t CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pReq,
+                                                       CtiCommandParser               &parse,
+                                                       OUTMESS                        *OutMessage,
+                                                       list< CtiMessage* >      &vgList,
+                                                       list< CtiMessage* >      &retList,
+                                                       list< OUTMESS* >         &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     ULONG          i, j;
     USHORT         Length;

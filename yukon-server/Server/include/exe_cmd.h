@@ -10,7 +10,7 @@ public:
 
    CtiCommandExecutor(CtiMessage *p = NULL);
    virtual ~CtiCommandExecutor();
-   INT  ServerExecute(CtiServer *);
+   YukonError_t ServerExecute(CtiServer *);
 };
 
 

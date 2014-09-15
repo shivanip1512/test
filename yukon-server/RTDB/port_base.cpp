@@ -20,9 +20,9 @@
 
 using namespace std;
 
-INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
+YukonError_t CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, YukonError_t ErrorCode) const
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     string msg;
 
@@ -110,9 +110,9 @@ INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPt
     return status;
 }
 
-INT CtiPort::traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
+YukonError_t CtiPort::traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, YukonError_t ErrorCode) const
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(!isTAP() || (Dev && !Dev->isTAP()))
     {
@@ -131,9 +131,9 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceS
     return status;
 }
 
-INT CtiPort::traceOut(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT ErrorCode) const
+YukonError_t CtiPort::traceOut(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, YukonError_t ErrorCode) const
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     string msg;
 
     try
@@ -1347,60 +1347,6 @@ INT CtiPort::searchQueue( void *ptr, BOOL (*myFunc)(void*, void*), bool useFirst
 INT CtiPort::portMaxCommFails() const
 {
     return gDefaultPortCommFailCount;
-}
-
-bool CtiPort::adjustCommCounts( INT CommResult )
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    bool bAdjust = false;
-    bool bStateChange = false;
-    bool success = (CommResult == ClientErrors::None);
-    bool isCommClassError = (GetErrorType(CommResult) == ERRTYPECOMM);      // is this a comm class error (else device attributable)
-
-    bool isCommFail;
-
-    CtiTime now;
-    INT lastCommCount = _commFailCount;
-
-    ++_attemptCount;
-
-    if(success)
-    {
-        _commFailCount = 0;             // reset the consecutive fails.
-        ++_attemptSuccessCount;
-    }
-    else
-    {
-        if(isCommClassError)
-        {
-            ++_attemptCommFailCount;        // This is a comm error.
-            ++_commFailCount;               // These are the only errors which count towards port failures.
-        }
-        else
-        {
-            ++_attemptOtherFailCount;       // This is not a comm error must be protocol or device related.
-        }
-    }
-
-    bool badtogood = ( success && lastCommCount >= portMaxCommFails() );
-    bool goodtobad = ( !success && (lastCommCount < portMaxCommFails()) && (_commFailCount >= portMaxCommFails()) );
-
-    if( goodtobad )
-    {
-        bStateChange = true;
-    }
-    else if( badtogood )
-    {
-        bStateChange = true;
-    }
-
-    if( bStateChange || now > _lastReport )
-    {
-        bAdjust = true;
-        _lastReport = nextScheduledTimeAlignedOnRate(now, gConfigParms.getValueAsULong("COMM_FAIL_REPORT_TIME", 300)); // ((now - (now.seconds() % COMM_FAIL_REPORT_TIME)) + COMM_FAIL_REPORT_TIME);
-    }
-
-    return(bAdjust);
 }
 
 // Return all queue entries to the processing parent.

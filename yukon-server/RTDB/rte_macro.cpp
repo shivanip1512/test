@@ -74,9 +74,9 @@ void CtiRouteMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
     }
 }
 
-INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+YukonError_t CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     MacroOffset offset = (OutMessage->Request.RetryMacroOffset) ? OutMessage->Request.RetryMacroOffset : pReq->MacroOffset();
 
     try
@@ -116,7 +116,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                 dout << CtiTime() << " Execute Macro Route Target \"" << pRoute->getName() << "\" " << pRoute->getRouteID()<< endl;
                             }
 
-                            int status = pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                            YukonError_t status = pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
 
                             if(status == ClientErrors::DeviceInhibited && NewOMess && NewOMess->Request.RetryMacroOffset )
                             {

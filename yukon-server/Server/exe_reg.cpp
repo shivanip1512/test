@@ -25,9 +25,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "server_b.h"
 #include "msg_reg.h"
 
-INT CtiRegistrationExecutor::ServerExecute(CtiServer *Svr)
+YukonError_t CtiRegistrationExecutor::ServerExecute(CtiServer *Svr)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     CtiRegistrationMsg   *Msg = (CtiRegistrationMsg*)getMessage();
 

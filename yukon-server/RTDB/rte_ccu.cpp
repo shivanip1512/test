@@ -26,14 +26,14 @@ static bool NoQueingEmetcon    = gConfigParms.isTrue("EMETCON_CCU_NOQUEUE");
 static bool NoQueingExpresscom = gConfigParms.isTrue("EXPRESSCOM_CCU_NOQUEUE");
 static bool NoQueing = gConfigParms.isTrue("CCU_NOQUEUE");
 
-INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
-                                CtiCommandParser         &parse,
-                                OUTMESS                 *&OutMessage,
-                                list< CtiMessage* >      &vgList,
-                                list< CtiMessage* >      &retList,
-                                list< OUTMESS* >         &outList)
+YukonError_t CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
+                                         CtiCommandParser         &parse,
+                                         OUTMESS                 *&OutMessage,
+                                         list< CtiMessage* >      &vgList,
+                                         list< CtiMessage* >      &retList,
+                                         list< OUTMESS* >         &outList)
 {
-    INT      status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
@@ -75,22 +75,22 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ERROR: Route " << getName() << " has no  associated transmitter device" << endl;
-        status = -1;
+        status = ClientErrors::NoTransmitterForRoute;
     }
 
     return status;
 }
 
 
-INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
-                                         CtiCommandParser         &parse,
-                                         OUTMESS                  *OutMessage,
-                                         list< CtiMessage* >      &vgList,
-                                         list< CtiMessage* >      &retList,
-                                         list< OUTMESS* >         &outList)
+YukonError_t CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
+                                                  CtiCommandParser         &parse,
+                                                  OUTMESS                  *OutMessage,
+                                                  list< CtiMessage* >      &vgList,
+                                                  list< CtiMessage* >      &retList,
+                                                  list< OUTMESS* >         &outList)
 {
     INT            i, j;
-    INT            status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     string      resultString;
     string      byteString;
     BSTRUCT        BSt;
@@ -337,13 +337,13 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
     return status;
 }
 
-INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
-                                    OUTMESS             *&OutMessage,
-                                    list< CtiMessage* >  &vgList,
-                                    list< CtiMessage* >  &retList,
-                                    list< OUTMESS* >     &outList)
+YukonError_t CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
+                                             OUTMESS             *&OutMessage,
+                                             list< CtiMessage* >  &vgList,
+                                             list< CtiMessage* >  &retList,
+                                             list< OUTMESS* >     &outList)
 {
-    INT           status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage->EventCode & BWORD)
     {
@@ -537,17 +537,17 @@ void CtiRouteCCU::adjustOutboundStagesToFollow(unsigned short &stagesToFollow, u
 
 
 
-INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
-                                         CtiCommandParser         &parse,
-                                         OUTMESS                  *OutMessage,
-                                         list< CtiMessage* >      &vgList,
-                                         list< CtiMessage* >      &retList,
-                                         list< OUTMESS* >         &outList)
+YukonError_t CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
+                                                    CtiCommandParser         &parse,
+                                                    OUTMESS                  *OutMessage,
+                                                    list< CtiMessage* >      &vgList,
+                                                    list< CtiMessage* >      &retList,
+                                                    list< OUTMESS* >         &outList)
 {
-    INT            status = ClientErrors::None;
-    string      resultString;
-    string      byteString;
-    BSTRUCT        BSt;
+    YukonError_t status = ClientErrors::None;
+    string       resultString;
+    string       byteString;
+    BSTRUCT      BSt;
 
     unsigned cwordCount = 0;
 

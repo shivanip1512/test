@@ -8,7 +8,7 @@ public:
 
    CtiRegistrationExecutor(CtiMessage *p = NULL);
    ~CtiRegistrationExecutor();
-   INT  ServerExecute(CtiServer *);
+   YukonError_t ServerExecute(CtiServer *);
 };
 
 

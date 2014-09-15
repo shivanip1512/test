@@ -71,17 +71,17 @@ void CtiRouteExpresscom::DecodeVersacomDatabaseReader(Cti::RowReader &rdr)
 
 
 
-INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                     CtiCommandParser               &parse,
-                                     OUTMESS                        *&OutMessage,
-                                     list< CtiMessage* >      &vgList,
-                                     list< CtiMessage* >      &retList,
-                                     list< OUTMESS* >         &outList)
+YukonError_t CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
+                                                CtiCommandParser               &parse,
+                                                OUTMESS                        *&OutMessage,
+                                                list< CtiMessage* >      &vgList,
+                                                list< CtiMessage* >      &retList,
+                                                list< OUTMESS* >         &outList)
 {
 #define ABUFSIZE 40
 #define A_WORD_LEN 7
 
-    INT       status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     bool      xmore = true;
     CtiString resultString;
     BYTE      ABuf[ABUFSIZE];
@@ -223,7 +223,7 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << resultString << endl;
         }
-        status = -1;
+        status = ClientErrors::NoTransmitterForRoute;
     }
 
     if( status )

@@ -67,14 +67,14 @@ void CtiRouteXCU::DecodeDatabaseReader(Cti::RowReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
-                                CtiCommandParser            &parse,
-                                OUTMESS                     *&OutMessage,
-                                list< CtiMessage* >   &vgList,
-                                list< CtiMessage* >   &retList,
-                                list< OUTMESS* >      &outList)
+YukonError_t CtiRouteXCU::ExecuteRequest(CtiRequestMsg        *pReq,
+                                         CtiCommandParser     &parse,
+                                         OUTMESS             *&OutMessage,
+                                         list< CtiMessage* >  &vgList,
+                                         list< CtiMessage* >  &retList,
+                                         list< OUTMESS* >     &outList)
 {
-    INT      status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     ULONG    BytesWritten;
 
     try
@@ -142,7 +142,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " ERROR: Route " << getName() << " has no associated transmitter device" << endl;
             }
-            status = -1;
+            status = ClientErrors::NoTransmitterForRoute;
         }
     }
     catch(...)
@@ -157,14 +157,14 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
 }
 
 
-INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
-                                         CtiCommandParser            &parse,
-                                         OUTMESS                     *&OutMessage,
-                                         list< CtiMessage* >   &vgList,
-                                         list< CtiMessage* >   &retList,
-                                         list< OUTMESS* >      &outList)
+YukonError_t CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
+                                                  CtiCommandParser            &parse,
+                                                  OUTMESS                     *&OutMessage,
+                                                  list< CtiMessage* >   &vgList,
+                                                  list< CtiMessage* >   &retList,
+                                                  list< OUTMESS* >      &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -335,14 +335,14 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
     return status;
 }
 
-INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
-                                       CtiCommandParser            &parse,
-                                       OUTMESS                     *&OutMessage,
-                                       list< CtiMessage* >   &vgList,
-                                       list< CtiMessage* >   &retList,
-                                       list< OUTMESS* >      &outList)
+YukonError_t CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
+                                                CtiCommandParser            &parse,
+                                                OUTMESS                     *&OutMessage,
+                                                list< CtiMessage* >   &vgList,
+                                                list< CtiMessage* >   &retList,
+                                                list< OUTMESS* >      &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     ULONG          i, j;
@@ -418,14 +418,14 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
 }
 
 
-INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
-                                             CtiCommandParser            &parse,
-                                             OUTMESS                     *&OutMessage,
-                                             list< CtiMessage* >   &vgList,
-                                             list< CtiMessage* >   &retList,
-                                             list< OUTMESS* >      &outList)
+YukonError_t CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
+                                                      CtiCommandParser            &parse,
+                                                      OUTMESS                     *&OutMessage,
+                                                      list< CtiMessage* >   &vgList,
+                                                      list< CtiMessage* >   &retList,
+                                                      list< OUTMESS* >      &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     ULONG          i, j;
@@ -563,15 +563,14 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
     return status;
 }
 
-INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+YukonError_t CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     bool           isAscii = true;
-    string      resultString;
-    string      byteString;
+    string         resultString;
+    string         byteString;
     ULONG          i, j;
-    USHORT         Length;
 
     /*
      * Addressing variables SHALL have been assigned at an earlier level!
@@ -797,14 +796,14 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     return status;
 }
 
-INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
-                                      CtiCommandParser &parse,
-                                      OUTMESS *&OutMessage,
-                                      list< CtiMessage* >   &vgList,
-                                      list< CtiMessage* >   &retList,
-                                      list< OUTMESS* >      &outList)
+YukonError_t CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
+                                               CtiCommandParser &parse,
+                                               OUTMESS *&OutMessage,
+                                               list< CtiMessage* >   &vgList,
+                                               list< CtiMessage* >   &retList,
+                                               list< OUTMESS* >      &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -954,14 +953,14 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
-                                         CtiCommandParser &parse,
-                                         OUTMESS *&OutMessage,
-                                         list< CtiMessage* >   &vgList,
-                                         list< CtiMessage* >   &retList,
-                                         list< OUTMESS* >      &outList)
+YukonError_t CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
+                                                  CtiCommandParser &parse,
+                                                  OUTMESS *&OutMessage,
+                                                  list< CtiMessage* >   &vgList,
+                                                  list< CtiMessage* >   &retList,
+                                                  list< OUTMESS* >      &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;
@@ -1060,14 +1059,14 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
-                                         CtiCommandParser &parse,
-                                         OUTMESS *&OutMessage,
-                                         list< CtiMessage* >   &vgList,
-                                         list< CtiMessage* >   &retList,
-                                         list< OUTMESS* >      &outList)
+YukonError_t CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
+                                                  CtiCommandParser &parse,
+                                                  OUTMESS *&OutMessage,
+                                                  list< CtiMessage* >   &vgList,
+                                                  list< CtiMessage* >   &retList,
+                                                  list< OUTMESS* >      &outList)
 {
-    INT            status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
     bool           xmore = true;
     string      resultString;
     string      byteString;

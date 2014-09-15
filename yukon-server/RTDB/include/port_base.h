@@ -69,9 +69,9 @@ public:
     virtual YukonError_t inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
     virtual YukonError_t outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList) = 0;
     virtual YukonError_t outInMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, std::list< CtiMessage* > &traceList);
-    virtual INT traceIn(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = ClientErrors::None) const;
-    virtual INT traceOut(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = ClientErrors::None) const;
-    virtual INT traceXfer(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT status = ClientErrors::None) const;
+    virtual YukonError_t traceIn(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, YukonError_t status = ClientErrors::None) const;
+    virtual YukonError_t traceOut(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, YukonError_t status = ClientErrors::None) const;
+    virtual YukonError_t traceXfer(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, YukonError_t status = ClientErrors::None) const;
 
     static INT traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, std::list< CtiMessage* > &traceList);
     INT logBytes(BYTE *Message, ULONG Length) const;
@@ -193,7 +193,6 @@ public:
 
 
     virtual INT portMaxCommFails() const;
-    bool adjustCommCounts( INT CommResult );
     bool isQuestionable() const;
     YukonError_t requeueToParent(OUTMESS *&OutMessage);            // Return all queue entries to the processing parent.
     bool isMinMaxIdle() const;

@@ -51,7 +51,7 @@ public:
    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
    void DecodeMacroReader(Cti::RowReader &rdr);
 
-   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override;
+   YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override;
 
    bool processAdditionalRoutes( const INMESS &InMessage ) const override;
 

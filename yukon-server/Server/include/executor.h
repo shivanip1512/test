@@ -8,6 +8,7 @@
 
 #include "message.h"
 #include "dlldefs.h"
+#include "yukon.h"
 
 // Forward Declarations
 class CtiConnectionManager;
@@ -35,6 +36,6 @@ public:
    void releaseMessage();
 
 
-   virtual INT  ServerExecute(CtiServer *Svr) = 0;
+   virtual YukonError_t ServerExecute(CtiServer *Svr) = 0;
 
 };
