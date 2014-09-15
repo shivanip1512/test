@@ -82,12 +82,9 @@ protected:
         ScanPriority_LoadProfile = 6
     };
 
-    enum
-    {
-        // Return value to allow non error returns
-        // where error was handled in code.
-        ExecutionComplete = ClientErrors::None
-    };
+    // Return value to allow non error returns
+    // where error was handled in code.
+    static const YukonError_t ExecutionComplete = ClientErrors::None;
 
     CtiTableDeviceScanRate       *_scanRateTbl[ScanRateInvalid];    // Multiple Scan Rates
 
@@ -116,7 +113,7 @@ protected:
 
     virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const std::string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
 
-    virtual INT  SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual YukonError_t SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     // Places error onto the retlist, DELETES OUT MESSAGE
     void returnErrorMessage( int retval, OUTMESS *&om, CtiMessageList &retList, const std::string &error ) const;
@@ -195,18 +192,18 @@ public:
     virtual void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
     virtual void getQueuedResults(std::vector<queued_result_t> &results);
 
-    virtual INT  ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual YukonError_t ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
     CtiTime         firstScan( const CtiTime &When, INT rate );
     void           validateScanTimes(bool force = false);
 
-    INT         doDeviceInit(void);
-    INT         initiateGeneralScan    (OutMessageList &outList, INT ScanPriority = ScanPriority_General);
-    INT         initiateIntegrityScan  (OutMessageList &outList, INT ScanPriority = ScanPriority_Integrity);
-    INT         initiateAccumulatorScan(OutMessageList &outList, INT ScanPriority = ScanPriority_Accumulator);
+    INT doDeviceInit(void);
+    YukonError_t initiateGeneralScan    (OutMessageList &outList, INT ScanPriority = ScanPriority_General);
+    YukonError_t initiateIntegrityScan  (OutMessageList &outList, INT ScanPriority = ScanPriority_Integrity);
+    YukonError_t initiateAccumulatorScan(OutMessageList &outList, INT ScanPriority = ScanPriority_Accumulator);
     //  Load Profile gets a low priority so it doesn't butt heads so hard with other reads
-    INT         initiateLoadProfileScan(OutMessageList &outList, INT ScanPriority = ScanPriority_LoadProfile);
+    YukonError_t initiateLoadProfileScan(OutMessageList &outList, INT ScanPriority = ScanPriority_LoadProfile);
 
     bool isScanDataValid() const;
     BOOL isWindowOpen(CtiTime &aNow=CtiTime(), CtiTime &opensAt = CtiTime(), CtiDeviceWindow_t windowType = DeviceWindowScan) const;

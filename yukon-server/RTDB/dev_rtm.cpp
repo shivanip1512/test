@@ -32,9 +32,9 @@ CtiDeviceRTM::CtiDeviceRTM() :
 }
 
 
-INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
@@ -57,9 +57,9 @@ INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string      resultString;
 
     switch(parse.getCommand())
@@ -196,7 +196,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceRTM::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceRTM::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     const YukonError_t ErrReturn = InMessage.ErrorCode;
 
@@ -243,9 +243,9 @@ INT CtiDeviceRTM::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, C
 }
 
 
-INT CtiDeviceRTM::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
+YukonError_t CtiDeviceRTM::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    INT retCode = ClientErrors::None;
+    YukonError_t retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiPointDataMsg  *commFailed;

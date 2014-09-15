@@ -29,7 +29,7 @@ public:
     typedef std::vector<Commands::RfnCommandSPtr> RfnCommandList;
     typedef boost::ptr_deque<CtiReturnMsg> ReturnMsgList;
 
-    int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     virtual std::string getSQLCoreStatement() const;
     void DecodeDatabaseReader(RowReader &rdr) override;
@@ -37,7 +37,7 @@ public:
     RfnIdentifier getRfnIdentifier() const;
 
     virtual void extractCommandResult(const Commands::RfnCommand &command);
-    virtual int  invokeDeviceHandler(DeviceHandler &handler);
+    virtual YukonError_t invokeDeviceHandler(DeviceHandler &handler);
 
 protected:
 

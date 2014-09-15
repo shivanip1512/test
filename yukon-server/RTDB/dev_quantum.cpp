@@ -182,7 +182,7 @@ CtiDeviceQuantum &CtiDeviceQuantum::setBasePageStart( ULONG pageStart )
 //  this routine was copied straight over from CtiDeviceSchlumberger, because
 //    the Quantum has multiple ways of handling slave devices.
 //  daisy-chained master-slave implemented.
-INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg     *pReq,
+YukonError_t CtiDeviceQuantum::GeneralScan( CtiRequestMsg     *pReq,
                                    CtiCommandParser  &parse,
                                    OUTMESS          *&OutMessage,
                                    CtiMessageList    &vgList,
@@ -190,7 +190,7 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg     *pReq,
                                    OutMessageList    &outList,
                                    INT ScanPriority )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     ULONG BytesWritten;
 

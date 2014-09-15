@@ -31,7 +31,7 @@ public:
 
     virtual std::string getSQLCoreStatement() const;
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
-    INT  ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
     virtual LONG getAddress() const;
 
     static bool isPacketValid(const unsigned char *buf, const size_t len);

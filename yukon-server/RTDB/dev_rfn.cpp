@@ -28,7 +28,7 @@ std::string RfnDevice::getSQLCoreStatement() const
 }
 
 
-int RfnDevice::invokeDeviceHandler(DeviceHandler &handler)
+YukonError_t RfnDevice::invokeDeviceHandler(DeviceHandler &handler)
 {
     return handler.execute(*this);
 }
@@ -54,7 +54,7 @@ void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
 }
 
 
-int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     typedef YukonError_t (RfnDevice::*RfnExecuteMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 

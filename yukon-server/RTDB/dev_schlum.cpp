@@ -326,15 +326,15 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
 }
 
 
-INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg     *pReq,
-                                       CtiCommandParser  &parse,
-                                       OUTMESS          *&OutMessage,
-                                       CtiMessageList    &vgList,
-                                       CtiMessageList    &retList,
-                                       OutMessageList    &outList,
-                                       INT ScanPriority)
+YukonError_t CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg     *pReq,
+                                                CtiCommandParser  &parse,
+                                                OUTMESS          *&OutMessage,
+                                                CtiMessageList    &vgList,
+                                                CtiMessageList    &retList,
+                                                OutMessageList    &outList,
+                                                INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     ULONG BytesWritten;
 
@@ -458,11 +458,11 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     return retCode;
 }
 
-INT CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
-                                        const CtiTime   TimeNow,
-                                        CtiMessageList &vgList,
-                                        CtiMessageList &retList,
-                                        OutMessageList &outList)
+YukonError_t CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
+                                                 const CtiTime   TimeNow,
+                                                 CtiMessageList &vgList,
+                                                 CtiMessageList &retList,
+                                                 OutMessageList &outList)
 {
     /****************************
     *
@@ -526,16 +526,16 @@ INT CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
     return ClientErrors::None;
 }
 
-INT CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
-                                        const CtiTime   TimeNow,
-                                        CtiMessageList &retList)
+YukonError_t CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
+                                                 const CtiTime   TimeNow,
+                                                 CtiMessageList &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = ClientErrors::None;
+    YukonError_t retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),

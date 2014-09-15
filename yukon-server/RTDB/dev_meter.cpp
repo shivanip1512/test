@@ -119,14 +119,14 @@ bool CtiDeviceMeter::shouldRetrieveLoadProfile(ULONG &aLPTime, int aIntervalLeng
 }
 
 
-INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg     *pReq,
-                                   CtiCommandParser  &parse,
-                                   OUTMESS          *&OutMessage,
-                                   CtiMessageList    &vgList,
-                                   CtiMessageList    &retList,
-                                   OutMessageList    &outList)
+YukonError_t CtiDeviceMeter::ExecuteRequest(CtiRequestMsg     *pReq,
+                                            CtiCommandParser  &parse,
+                                            OUTMESS          *&OutMessage,
+                                            CtiMessageList    &vgList,
+                                            CtiMessageList    &retList,
+                                            OutMessageList    &outList)
 {
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     string resultString;
 
     bool found = false;

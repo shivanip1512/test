@@ -138,9 +138,9 @@ void CtiDeviceSingle::validateScanTimes(bool force)
     }
 }
 
-INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPriority)
 {
-    INT      nRet = 0;
+    YukonError_t nRet = ClientErrors::None;
     CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
@@ -263,9 +263,9 @@ INT CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, INT ScanPr
 }
 
 
-INT CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPriority)
 {
-    INT      nRet = 0;
+    YukonError_t nRet = ClientErrors::None;
     CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
@@ -390,9 +390,9 @@ INT CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT ScanPrio
 }
 
 
-INT CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT ScanPriority)
 {
-    INT      nRet = 0;
+    YukonError_t nRet = ClientErrors::None;
     CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
 
@@ -537,9 +537,9 @@ INT CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT ScanPriori
 }
 
 
-INT CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, INT ScanPriority)
 {
-    INT      nRet = 0;
+    YukonError_t nRet = ClientErrors::None;
     CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
@@ -777,14 +777,14 @@ std::string CtiDeviceSingle::eWordReport(const ESTRUCT &ESt, Cti::Optional<repea
 }
 
 
-INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
-                                   const CtiTime   TimeNow,
-                                   CtiMessageList &vgList,
-                                   CtiMessageList &retList,
-                                   OutMessageList &outList)
+YukonError_t CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
+                                            const CtiTime   TimeNow,
+                                            CtiMessageList &vgList,
+                                            CtiMessageList &retList,
+                                            OutMessageList &outList)
 {
-    INT   nRet = InMessage.ErrorCode;
-    INT   status = 0;
+    YukonError_t nRet = InMessage.ErrorCode;
+    YukonError_t status = ClientErrors::None;
     bool  bLastFail = false;
 
     if( !nRet )
@@ -946,11 +946,11 @@ INT CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
 }
 
 
-INT CtiDeviceSingle::SubmitRetry(const INMESS   &InMessage,
-                                 const CtiTime   TimeNow,
-                                 CtiMessageList &vgList,
-                                 CtiMessageList &retList,
-                                 OutMessageList &outList)
+YukonError_t CtiDeviceSingle::SubmitRetry(const INMESS   &InMessage,
+                                          const CtiTime   TimeNow,
+                                          CtiMessageList &vgList,
+                                          CtiMessageList &retList,
+                                          OutMessageList &outList)
 {
     //  default to no retries
     return ClientErrors::None;

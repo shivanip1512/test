@@ -59,9 +59,9 @@ bool Repeater900Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 }
 
 
-INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -102,15 +102,15 @@ INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 }
 
 
-INT Repeater900Device::executeLoopback(CtiRequestMsg        *pReq,
-                                          CtiCommandParser  &parse,
-                                          OUTMESS          *&OutMessage,
-                                          CtiMessageList    &vgList,
-                                          CtiMessageList    &retList,
-                                          OutMessageList    &outList)
+YukonError_t Repeater900Device::executeLoopback(CtiRequestMsg        *pReq,
+                                                CtiCommandParser  &parse,
+                                                OUTMESS          *&OutMessage,
+                                                CtiMessageList    &vgList,
+                                                CtiMessageList    &retList,
+                                                OutMessageList    &outList)
 {
     bool found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -136,15 +136,15 @@ INT Repeater900Device::executeLoopback(CtiRequestMsg        *pReq,
 }
 
 
-INT Repeater900Device::executeGetConfig(CtiRequestMsg        *pReq,
-                                           CtiCommandParser  &parse,
-                                           OUTMESS          *&OutMessage,
-                                           CtiMessageList    &vgList,
-                                           CtiMessageList    &retList,
-                                           OutMessageList    &outList)
+YukonError_t Repeater900Device::executeGetConfig(CtiRequestMsg        *pReq,
+                                                 CtiCommandParser  &parse,
+                                                 OUTMESS          *&OutMessage,
+                                                 CtiMessageList    &vgList,
+                                                 CtiMessageList    &retList,
+                                                 OutMessageList    &outList)
 {
     bool found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -206,16 +206,16 @@ INT Repeater900Device::executeGetConfig(CtiRequestMsg        *pReq,
 }
 
 
-INT Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
-                                           CtiCommandParser  &parse,
-                                           OUTMESS          *&OutMessage,
-                                           CtiMessageList    &vgList,
-                                           CtiMessageList    &retList,
-                                           OutMessageList    &outList)
+YukonError_t Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
+                                                 CtiCommandParser  &parse,
+                                                 OUTMESS          *&OutMessage,
+                                                 CtiMessageList    &vgList,
+                                                 CtiMessageList    &retList,
+                                                 OutMessageList    &outList)
 {
     int   i;
     bool  found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CHAR  Temp[80];
     string temp2;
 
@@ -417,15 +417,15 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
 }
 
 
-INT Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
-                                          CtiCommandParser  &parse,
-                                          OUTMESS          *&OutMessage,
-                                          CtiMessageList    &vgList,
-                                          CtiMessageList    &retList,
-                                          OutMessageList    &outList)
+YukonError_t Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
+                                                CtiCommandParser  &parse,
+                                                OUTMESS          *&OutMessage,
+                                                CtiMessageList    &vgList,
+                                                CtiMessageList    &retList,
+                                                OutMessageList    &outList)
 {
     bool found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CHAR Temp[80];
 
     INT function;
@@ -456,9 +456,9 @@ INT Repeater900Device::executeGetValue(CtiRequestMsg        *pReq,
 }
 
 
-INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
 
     switch(InMessage.Sequence)
@@ -513,9 +513,9 @@ INT Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -544,9 +544,9 @@ INT Repeater900Device::decodeLoopback(const INMESS &InMessage, const CtiTime Tim
 }
 
 
-INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -587,9 +587,9 @@ INT Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTi
 }
 
 
-INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -636,9 +636,9 @@ INT Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, const CtiTim
 }
 
 
-INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
@@ -703,9 +703,9 @@ INT Repeater900Device::decodePutConfigRole(const INMESS &InMessage, const CtiTim
     return status;
 }
 
-INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::Abnormal;
+    YukonError_t status = ClientErrors::Abnormal;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -758,9 +758,9 @@ INT Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, const CtiTim
     return status;
 }
 
-INT Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::Abnormal;
+    YukonError_t status = ClientErrors::Abnormal;
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi

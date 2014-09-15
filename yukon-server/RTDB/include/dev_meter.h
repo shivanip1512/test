@@ -39,12 +39,12 @@ public:
 
    bool shouldRetrieveLoadProfile(ULONG &aLPTime, int aIntervalLength);
 
-   virtual INT ExecuteRequest(CtiRequestMsg              *pReq,
-                              CtiCommandParser           &parse,
-                              OUTMESS                   *&OutMessage,
-                              CtiMessageList  &vgList,
-                              CtiMessageList  &retList,
-                              OutMessageList     &outList);
+   virtual YukonError_t ExecuteRequest(CtiRequestMsg              *pReq,
+                                       CtiCommandParser           &parse,
+                                       OUTMESS                   *&OutMessage,
+                                       CtiMessageList  &vgList,
+                                       CtiMessageList  &retList,
+                                       OutMessageList     &outList);
 
    /*
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with

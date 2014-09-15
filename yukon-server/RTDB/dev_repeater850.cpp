@@ -53,10 +53,9 @@ bool Repeater850Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 }
 
 
-INT Repeater850Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater850Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
-
+    YukonError_t status = ClientErrors::None;
 
     switch( InMessage.Sequence )
     {
@@ -83,9 +82,9 @@ INT Repeater850Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Repeater850Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater850Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

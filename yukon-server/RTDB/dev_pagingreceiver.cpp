@@ -48,7 +48,7 @@ _retryTime(second_clock::universal_time())
     resetStates(true);
 }
 
-INT CtiDevicePagingReceiver::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDevicePagingReceiver::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     //So far I am doing nothing with the result...
     resetScanFlag();
@@ -62,9 +62,9 @@ YukonError_t CtiDevicePagingReceiver::sendCommResult(INMESS &InMessage)
     return ClientErrors::None;
 }
 
-INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  CtiMessageList &vgList,CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
 
@@ -88,16 +88,17 @@ INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &
     return status;
 }
 
-INT CtiDevicePagingReceiver::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDevicePagingReceiver::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT nRet = Normal;
-    OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
+    OUTMESS *OutMTemp = new OUTMESS(*OutMessage);
+
     OutMTemp->Port     = getPortID();
     OutMTemp->DeviceID = getID();
     OutMTemp->TargetID = getID();
     OutMTemp->EventCode = RESULT;//send a return message!
     outList.push_back( OutMTemp );
-    return nRet;
+
+    return ClientErrors::None;
 
 }
 

@@ -47,16 +47,16 @@ void MctBroadcastDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 
 
-INT MctBroadcastDevice::executePutConfig(CtiRequestMsg        *pReq,
-                                            CtiCommandParser  &parse,
-                                            OUTMESS          *&OutMessage,
-                                            CtiMessageList    &vgList,
-                                            CtiMessageList    &retList,
-                                            OutMessageList    &outList)
+YukonError_t MctBroadcastDevice::executePutConfig(CtiRequestMsg        *pReq,
+                                                  CtiCommandParser  &parse,
+                                                  OUTMESS          *&OutMessage,
+                                                  CtiMessageList    &vgList,
+                                                  CtiMessageList    &retList,
+                                                  OutMessageList    &outList)
 {
     bool  found = false;
     INT   function = 0;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     int   intervallength;
     string temp;
     CtiTime NowTime;
@@ -121,15 +121,15 @@ INT MctBroadcastDevice::executePutConfig(CtiRequestMsg        *pReq,
     return nRet;
 }
 
-INT MctBroadcastDevice::executePutStatus(CtiRequestMsg        *pReq,
-                                            CtiCommandParser  &parse,
-                                            OUTMESS          *&OutMessage,
-                                            CtiMessageList    &vgList,
-                                            CtiMessageList    &retList,
-                                            OutMessageList    &outList)
+YukonError_t MctBroadcastDevice::executePutStatus(CtiRequestMsg        *pReq,
+                                                  CtiCommandParser  &parse,
+                                                  OUTMESS          *&OutMessage,
+                                                  CtiMessageList    &vgList,
+                                                  CtiMessageList    &retList,
+                                                  OutMessageList    &outList)
 {
     bool  found = false;
-    INT   nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     int   intervallength;
     string temp;
     CtiTime NowTime;
@@ -227,15 +227,15 @@ INT MctBroadcastDevice::executePutStatus(CtiRequestMsg        *pReq,
 }
 
 
-INT MctBroadcastDevice::executePutValue(CtiRequestMsg        *pReq,
-                                           CtiCommandParser  &parse,
-                                           OUTMESS          *&OutMessage,
-                                           CtiMessageList    &vgList,
-                                           CtiMessageList    &retList,
-                                           OutMessageList    &outList)
+YukonError_t MctBroadcastDevice::executePutValue(CtiRequestMsg        *pReq,
+                                                 CtiCommandParser  &parse,
+                                                 OUTMESS          *&OutMessage,
+                                                 CtiMessageList    &vgList,
+                                                 CtiMessageList    &retList,
+                                                 OutMessageList    &outList)
 {
-    INT    nRet = ClientErrors::None,
-           i;
+    YukonError_t nRet = ClientErrors::None;
+    int    i;
     long   rawPulses;
     double dial;
 
@@ -308,9 +308,9 @@ bool MctBroadcastDevice::getOperation( const UINT &cmd, USHORT &function, USHORT
     return found;
 }
 
-INT MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
 
     {

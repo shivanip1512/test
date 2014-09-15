@@ -26,19 +26,19 @@ public:
 
    CtiDeviceSentinel();
 
-   INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                           INT ScanPriority = MAXPRIORITY-4) override;
-   virtual INT DemandReset(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                           INT ScanPriority = MAXPRIORITY-4);
+   YukonError_t GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                    INT ScanPriority = MAXPRIORITY-4) override;
+   virtual YukonError_t DemandReset(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                            INT ScanPriority = MAXPRIORITY-4);
 
 
-   INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   YukonError_t ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
-   int buildScannerTableRequest (BYTE *ptr, UINT flags);
-   int buildCommanderTableRequest (BYTE *ptr, UINT flags);
+   void buildScannerTableRequest  (BYTE *ptr, UINT flags) override;
+   void buildCommanderTableRequest(BYTE *ptr, UINT flags) override;
    YukonError_t sendCommResult( INMESS &InMessage);
 
    struct WANTS_HEADER

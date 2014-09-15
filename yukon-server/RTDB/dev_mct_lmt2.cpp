@@ -114,10 +114,8 @@ ULONG Lmt2Device::calcNextLPScanTime( void )
 }
 
 
-INT Lmt2Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
+void Lmt2Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    int nRet = ClientErrors::None;
-
     int            lpDemandRate;
     unsigned int   lpBlockAddress;
     unsigned long  lpBlocksToCollect,
@@ -210,8 +208,6 @@ INT Lmt2Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &ou
         delete OutMessage;
         OutMessage = NULL;
     }
-
-    return nRet;
 }
 
 
@@ -256,9 +252,9 @@ bool Lmt2Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *
 }
 
 
-INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -304,9 +300,9 @@ INT Lmt2Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiM
 }
 
 
-INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
@@ -492,9 +488,9 @@ INT Lmt2Device::decodeScanLoadProfile(const INMESS &InMessage, const CtiTime Tim
 }
 
 
-INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
@@ -550,9 +546,9 @@ INT Lmt2Device::decodeGetStatusInternal( const INMESS &InMessage, const CtiTime 
 }
 
 
-INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+YukonError_t Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     CtiReturnMsg *ReturnMsg = NULL;
     string resultString;
@@ -582,9 +578,9 @@ INT Lmt2Device::decodeGetStatusLoadProfile( const INMESS &InMessage, const CtiTi
 }
 
 
-INT Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Lmt2Device::decodeGetConfigModel(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-   INT status = ClientErrors::None;
+   YukonError_t status = ClientErrors::None;
 
    const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

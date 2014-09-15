@@ -30,16 +30,16 @@ public:
 
    CtiDeviceWelco();
 
-   INT WelCoContinue    (OUTMESS *OutMessage, INT Priority);
-   INT WelCoGetError    (OUTMESS *OutMessage, INT Priority);
-   INT WelCoPoll        (OUTMESS *OutMessage, INT Priority);
-   INT WelCoReset       (OUTMESS *OutMessage, INT Priority);
-   INT WelCoTimeSync    (OUTMESS *OutMessage, INT Priority);
+   YukonError_t WelCoContinue    (OUTMESS *OutMessage, INT Priority);
+   void         WelCoGetError    (OUTMESS *OutMessage, INT Priority);
+   void         WelCoPoll        (OUTMESS *OutMessage, INT Priority);
+   YukonError_t WelCoReset       (OUTMESS *OutMessage, INT Priority);
+   YukonError_t WelCoTimeSync    (OUTMESS *OutMessage, INT Priority);
 
-   INT WelCoDeadBands   (OUTMESS *OutMessage, OutMessageList &outList, INT Priority);
+   YukonError_t WelCoDeadBands   (OUTMESS *OutMessage, OutMessageList &outList, INT Priority);
 
-   INT WelCoDeadBands   (const INMESS  &InMessage,  OutMessageList &outList, INT Priority);
-   INT WelCoTimeSync    (const INMESS  &InMessage,  OutMessageList &outList, INT Priority);
+   YukonError_t WelCoDeadBands   (const INMESS  &InMessage,  OutMessageList &outList, INT Priority);
+   YukonError_t WelCoTimeSync    (const INMESS  &InMessage,  OutMessageList &outList, INT Priority);
 
    bool getDeadbandsSent() const;
    void incDeadbandsSent();
@@ -49,19 +49,19 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                               INT ScanPriority = MAXPRIORITY - 4) override;
-   INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                               INT ScanPriority = MAXPRIORITY - 3) override;
-   INT IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
-                               INT ScanPriority = MAXPRIORITY - 4) override;
+   YukonError_t GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                        INT ScanPriority = MAXPRIORITY - 4) override;
+   YukonError_t AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                        INT ScanPriority = MAXPRIORITY - 3) override;
+   YukonError_t IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList,
+                                        INT ScanPriority = MAXPRIORITY - 4) override;
 
-   INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
-   INT ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   YukonError_t ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList) override;
+   YukonError_t ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-   INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
+   YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-   virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+   virtual YukonError_t executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
    virtual bool clearedForScan(int scantype);
    virtual void resetForScan(int scantype);

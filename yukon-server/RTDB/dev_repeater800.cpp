@@ -57,10 +57,9 @@ bool Repeater800Device::getOperation( const UINT &cmd, USHORT &function, USHORT 
 }
 
 
-INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
-
+    YukonError_t status = ClientErrors::None;
 
     switch(InMessage.Sequence)
     {
@@ -87,9 +86,9 @@ INT Repeater800Device::ResultDecode(const INMESS &InMessage, const CtiTime TimeN
 }
 
 
-INT Repeater800Device::decodeGetValuePFCount(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t Repeater800Device::decodeGetValuePFCount(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     const DSTRUCT *DSt   = &InMessage.Buffer.DSt;
 

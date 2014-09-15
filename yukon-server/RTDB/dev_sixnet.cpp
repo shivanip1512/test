@@ -1656,10 +1656,9 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
     return;
 }
 
-INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
-
+    YukonError_t status = ClientErrors::None;
 
     if (!isScanFlagSet(ScanRateGeneral))
     {
@@ -1706,9 +1705,9 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     return status;
 }
 
-INT  CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     /****************************
     *
@@ -1764,14 +1763,14 @@ INT  CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTime TimeNo
     return status;
 }
 
-INT CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
+YukonError_t CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    INT retCode = ClientErrors::None;
+    YukonError_t retCode = ClientErrors::None;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
                                             GetErrorString(InMessage.ErrorCode),
@@ -1830,9 +1829,9 @@ void CtiDeviceSixnet::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 
 
-INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
 
     int recCnt = *((const int*)&InMessage.Buffer.DUPSt.DUPRep.Message);
@@ -1965,7 +1964,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, const Cti
 
 
 
-INT CtiDeviceSixnet::decodeResultScan(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceSixnet::decodeResultScan(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     resetScanFlag(ScanForced);
     resetScanFlag(ScanRateGeneral);

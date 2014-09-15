@@ -77,15 +77,15 @@ static char StatusPointNames55[][40] = {
 };
 
 
-INT CtiDeviceTCU::GeneralScan(CtiRequestMsg     *pReq,
-                              CtiCommandParser  &parse,
-                              OUTMESS          *&OutMessage,
-                              CtiMessageList    &vgList,
-                              CtiMessageList    &retList,
-                              OutMessageList    &outList,
-                              INT ScanPriority)
+YukonError_t CtiDeviceTCU::GeneralScan(CtiRequestMsg     *pReq,
+                                       CtiCommandParser  &parse,
+                                       OUTMESS          *&OutMessage,
+                                       CtiMessageList    &vgList,
+                                       CtiMessageList    &retList,
+                                       OutMessageList    &outList,
+                                       INT ScanPriority)
 {
-   INT status = ClientErrors::None;
+   YukonError_t status = ClientErrors::None;
 
    if(OutMessage != NULL)
    {
@@ -106,38 +106,32 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg     *pReq,
    return status;
 }
 
-INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg     *pReq,
-                                CtiCommandParser  &parse,
-                                OUTMESS          *&OutMessage,
-                                CtiMessageList    &vgList,
-                                CtiMessageList    &retList,
-                                OutMessageList    &outList,
-                                INT ScanPriority)
+YukonError_t CtiDeviceTCU::IntegrityScan(CtiRequestMsg     *pReq,
+                                         CtiCommandParser  &parse,
+                                         OUTMESS          *&OutMessage,
+                                         CtiMessageList    &vgList,
+                                         CtiMessageList    &retList,
+                                         OutMessageList    &outList,
+                                         INT ScanPriority)
 {
    return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
-INT CtiDeviceTCU::ResultDecode(const INMESS   &InMessage,
-                               const CtiTime   TimeNow,
-                               CtiMessageList &vgList,
-                               CtiMessageList &retList,
-                               OutMessageList &outList)
+YukonError_t CtiDeviceTCU::ResultDecode(const INMESS   &InMessage,
+                                        const CtiTime   TimeNow,
+                                        CtiMessageList &vgList,
+                                        CtiMessageList &retList,
+                                        OutMessageList &outList)
 {
-#if 0
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " Result decode for device " << getName() << " in progress " << endl;
-   }
-#endif
-   return(TCUDecode(InMessage, TimeNow, retList));
-};
+   return TCUDecode(InMessage, TimeNow, retList);
+}
 
 
 /* Routine to scan internal TCU status */
-INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to place command on queue */
+YukonError_t CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to place command on queue */
 {
-   ULONG       i;
+   YukonError_t i;
    ULONG       BytesWritten;
 
    /* Load the forced scan message */
@@ -153,7 +147,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
 }
 
 /* Routine to decode returned TCU message and update database */
-INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, CtiMessageList &retList)
+YukonError_t CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, CtiMessageList &retList)
 {
    /* Misc. definitions */
    ULONG i;
@@ -260,14 +254,14 @@ INT CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime ScanTime, Ct
 
 
 
-INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
-                                 CtiCommandParser  &parse,
-                                 OUTMESS          *&OutMessage,
-                                 CtiMessageList    &vgList,
-                                 CtiMessageList    &retList,
-                                 OutMessageList    &outList)
+YukonError_t CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
+                                          CtiCommandParser  &parse,
+                                          OUTMESS          *&OutMessage,
+                                          CtiMessageList    &vgList,
+                                          CtiMessageList    &retList,
+                                          OutMessageList    &outList)
 {
-   INT nRet = ClientErrors::None;
+   YukonError_t nRet = ClientErrors::None;
    /*
     *  This method should only be called by the dev_base method
     *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -434,7 +428,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
 }
 
 /* Routine to execute a versacom message */
-INT CtiDeviceTCU::TCUControl(OUTMESS* OutMessage, VSTRUCT *VSt)
+YukonError_t CtiDeviceTCU::TCUControl(OUTMESS* OutMessage, VSTRUCT *VSt)
 {
    /* Load up the pieces of the structure */
    OutMessage->DeviceID                = getID();
@@ -452,7 +446,7 @@ INT CtiDeviceTCU::TCUControl(OUTMESS* OutMessage, VSTRUCT *VSt)
 }
 
 /* Routine to execute a loop message */
-INT CtiDeviceTCU::TCULoop(OUTMESS* OutMessage)
+YukonError_t CtiDeviceTCU::TCULoop(OUTMESS* OutMessage)
 {
    /* Build a mastercom loopback request */
    MasterHeader (OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERLOOPBACK, 0);

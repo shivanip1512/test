@@ -92,15 +92,15 @@ CtiDeviceVectron& CtiDeviceVectron::setCommandPacket (INT aCmd)
 }
 
 
-INT CtiDeviceVectron::GeneralScan(CtiRequestMsg     *pReq,
-                                  CtiCommandParser  &parse,
-                                  OUTMESS          *&OutMessage,
-                                  CtiMessageList    &vgList,
-                                  CtiMessageList    &retList,
-                                  OutMessageList    &outList,
-                                  INT ScanPriority)
+YukonError_t CtiDeviceVectron::GeneralScan(CtiRequestMsg     *pReq,
+                                           CtiCommandParser  &parse,
+                                           OUTMESS          *&OutMessage,
+                                           CtiMessageList    &vgList,
+                                           CtiMessageList    &retList,
+                                           OutMessageList    &outList,
+                                           INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

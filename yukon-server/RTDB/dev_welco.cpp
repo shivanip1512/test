@@ -49,19 +49,19 @@ CtiDeviceWelco::CtiDeviceWelco()
     :   _deadbandsSent(0)
 {}
 
-INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
-                                    CtiCommandParser &parse,
-                                    OUTMESS *&OutMessage,
-                                    CtiMessageList &vgList,
-                                    CtiMessageList &retList,
-                                    OutMessageList &outList,
-                                    INT ScanPriority)
+YukonError_t CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
+                                             CtiCommandParser &parse,
+                                             OUTMESS *&OutMessage,
+                                             CtiMessageList &vgList,
+                                             CtiMessageList &retList,
+                                             OutMessageList &outList,
+                                             INT ScanPriority)
 {
     /*
      *  This is the WelCoFreeze code from the bad old daze.
      */
 
-    INT         status      = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -95,9 +95,9 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
+YukonError_t CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(getDeadbandsSent() == false)      // We are currently unsure whether a deadband request has ever been sent.
     {
@@ -119,13 +119,7 @@ INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
-                                  CtiCommandParser &parse,
-                                  OUTMESS *&OutMessage,
-                                  CtiMessageList &vgList,
-                                  CtiMessageList &retList,
-                                  OutMessageList &outList,
-                                  INT ScanPriority)
+YukonError_t CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority)
 {
     INT      AIOffset = 0;
 
@@ -138,7 +132,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     USHORT   AccumFirst = 0xffff;
     USHORT   AccumLast = 0;
 
-    INT         status      = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -305,7 +299,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList   &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     bool continue_required = false;             // This is not the last report from this device for the previous request.
     bool accums_spill_frame = false;            // The accumulator block spills across this frame into the next one.
@@ -1197,10 +1191,8 @@ INT CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime TimeNow,
 
 
 /* Routine to error codes from a WelCo device */
-INT CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            /* Priority to place command on queue */
+void CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            /* Priority to place command on queue */
 {
-    INT   status = ClientErrors::None;
-
     /* Load the sectn to reset the RTU */
     OutMessage->Buffer.OutMessage[5] = IDLC_DIAGNOSTICS | 0x80;  // This is what it should be. CGP.
     OutMessage->Buffer.OutMessage[6] = 0;
@@ -1211,18 +1203,15 @@ INT CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            
     EstablishOutMessagePriority( OutMessage, Priority );
     OutMessage->OutLength    = 0;
     OutMessage->InLength     = -1;
-
-    return status;
 }
 
 
 
 
 /* Routine to output continue message to a WelCo device */
-INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
-
+YukonError_t CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
 {
-    INT   status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(getDebugLevel() & DEBUGLEVEL_WELCO_PROTOCOL)
     {
@@ -1247,10 +1236,8 @@ INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
 
 
 /* Routine to output continue message to a WelCo device */
-INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
+void CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
 {
-    INT   status = ClientErrors::None;
-
     /* Load the sectn to scan the stati */
     OutMessage->Buffer.OutMessage[5] = IDLC_POLL | 0x80;
     OutMessage->Buffer.OutMessage[6] = 0;
@@ -1261,14 +1248,11 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
     EstablishOutMessagePriority( OutMessage, Priority );
     OutMessage->OutLength    = 0;
     OutMessage->InLength     = -1;
-
-    return status;
-
 }
 
-INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outList, INT Priority)
+YukonError_t CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outList, INT Priority)
 {
-    INT   status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     OUTMESS *OutMessage = new OUTMESS;
 
@@ -1284,9 +1268,9 @@ INT CtiDeviceWelco::WelCoTimeSync(const INMESS &InMessage, OutMessageList &outLi
 }
 
 /* Routine to send a time sync to a WelCo device */
-INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
+YukonError_t CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
 {
-    INT   status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(OutMessage != NULL)
     {
@@ -1317,9 +1301,9 @@ INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
 
 
 /* Routine to reset a WelCo device */
-INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
+YukonError_t CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 {
-    INT   status = ClientErrors::None;
+    YukonError_t   status = ClientErrors::None;
 
     /* Load the sectn to reset the RTU */
     OutMessage->Buffer.OutMessage[5] = IDLC_RESET | 0x80;
@@ -1339,7 +1323,7 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
 }
 
 
-INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, OutMessageList &outList, INT Priority)
+YukonError_t CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, OutMessageList &outList, INT Priority)
 {
     OUTMESS *OutMessage = new OUTMESS;
 
@@ -1349,7 +1333,7 @@ INT CtiDeviceWelco::WelCoDeadBands(const INMESS &InMessage, OutMessageList &outL
 }
 
 /* Routine to download deadbands for analogs */
-INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, OutMessageList &outList, INT Priority)
+YukonError_t CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, OutMessageList &outList, INT Priority)
 {
     INT      Position;
     ULONG    ByteCount;
@@ -1359,7 +1343,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, OutMessageList &outList,
 
     CtiPointSPtr PointRecord;
 
-    INT   status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     OUTMESS *MyOutMessage = NULL;
 
@@ -1495,11 +1479,11 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, OutMessageList &outList,
 
 
 
-INT CtiDeviceWelco::ErrorDecode(const INMESS   &InMessage,
-                                const CtiTime   TimeNow,
-                                CtiMessageList &retList)
+YukonError_t CtiDeviceWelco::ErrorDecode(const INMESS   &InMessage,
+                                         const CtiTime   TimeNow,
+                                         CtiMessageList &retList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
@@ -1555,14 +1539,14 @@ INT CtiDeviceWelco::ErrorDecode(const INMESS   &InMessage,
     return nRet;
 }
 
-INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg     *pReq,
-                                   CtiCommandParser  &parse,
-                                   OUTMESS          *&OutMessage,
-                                   CtiMessageList    &vgList,
-                                   CtiMessageList    &retList,
-                                   OutMessageList    &outList)
+YukonError_t CtiDeviceWelco::ExecuteRequest(CtiRequestMsg     *pReq,
+                                            CtiCommandParser  &parse,
+                                            OUTMESS          *&OutMessage,
+                                            CtiMessageList    &vgList,
+                                            CtiMessageList    &retList,
+                                            OutMessageList    &outList)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -1711,9 +1695,9 @@ CtiDeviceWelco& CtiDeviceWelco::setDeadbandsSent(const bool b)
 }
 
 
-INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
 
     if(!isInhibited())
     {

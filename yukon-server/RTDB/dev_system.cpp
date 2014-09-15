@@ -40,9 +40,9 @@ using std::string;
 using std::endl;
 using std::list;
 
-INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     INT iTemp;
 
     CtiRouteSPtr Route;
@@ -70,7 +70,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         {
             if (parse.isKeyValid("phasedetect") && parse.isKeyValid("broadcast"))
             {
-                int nRet = ClientErrors::None;
+                YukonError_t nRet = ClientErrors::None;
                 string broadcastType = parse.getsValue("broadcast");
 
                 CtiReturnMsg * errRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
@@ -818,7 +818,7 @@ void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-INT CtiDeviceSystem::ProcessResult(const INMESS& InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceSystem::ProcessResult(const INMESS& InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     string resultString;
     string commandType;

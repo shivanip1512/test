@@ -33,8 +33,8 @@ CtiDeviceSentinel::CtiDeviceSentinel() :
 //to the ansi protocol object to get info about the tables we know we need for a GeneralScan
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
-                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                                             CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    ULONG BytesWritten;
@@ -87,8 +87,8 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
    return ClientErrors::None;
 }
 
-INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
-                               CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
+YukonError_t CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList,
+                                             CtiMessageList &retList, OutMessageList &outList, INT ScanPriority )
 {
 
    if( OutMessage != NULL )
@@ -179,14 +179,14 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
 
 
 
-INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
-                                       CtiCommandParser  &parse,
-                                       OUTMESS          *&OutMessage,
-                                       CtiMessageList    &vgList,
-                                       CtiMessageList    &retList,
-                                       OutMessageList    &outList )
+YukonError_t CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
+                                                CtiCommandParser  &parse,
+                                                OUTMESS          *&OutMessage,
+                                                CtiMessageList    &vgList,
+                                                CtiMessageList    &retList,
+                                                OutMessageList    &outList )
 {
-    int nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     OutMessageList tmpOutList;
 
     //_parseFlags = parse.getFlags();
@@ -290,8 +290,8 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList&retList,
-                                OutMessageList    &outList)
+YukonError_t CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList&retList,
+                                              OutMessageList    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
     string inMsgResultString = "";
@@ -418,7 +418,7 @@ INT CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const CtiTime Time
     }
 
 
-    return( 0 ); //just a val
+    return ClientErrors::None;
 }
 YukonError_t CtiDeviceSentinel::sendCommResult( INMESS &InMessage)
 {
@@ -486,7 +486,7 @@ YukonError_t CtiDeviceSentinel::sendCommResult( INMESS &InMessage)
 * different tables
 *************************************************************************************
 */
-int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
+void CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
 
@@ -592,13 +592,6 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
             &scanOperation, sizeof(BYTE));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
             &flags, sizeof(UINT));
-
-
-    // keep the list on the scanner side for decode
-    //getANSIProtocol().buildWantedTableList (aMsg);
-
-
-    return ClientErrors::None;
 }
 
 /*************************************************************************************
@@ -606,7 +599,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 * different tables
 *************************************************************************************
 */
-int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
+void CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
     //AnsiScanOperation scanOperation = generalScan;
@@ -676,8 +669,6 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
             &scanOperation, sizeof(BYTE));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
             &flags, sizeof(UINT));
-
-    return ClientErrors::None;
 }
 
 

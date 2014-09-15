@@ -41,12 +41,12 @@ public:
    virtual std::string getSQLCoreStatement() const;
 
    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
-   virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
-                          CtiCommandParser               &parse,
-                          OUTMESS                        *&OutMessage,
-                          CtiMessageList      &vgList,
-                          CtiMessageList      &retList,
-                          OutMessageList         &outList);
+   YukonError_t ExecuteRequest(CtiRequestMsg     *pReq,
+                               CtiCommandParser  &parse,
+                               OUTMESS          *&OutMessage,
+                               CtiMessageList    &vgList,
+                               CtiMessageList    &retList,
+                               OutMessageList    &outList) override;
 
    bool isTransactionComplete();
 
