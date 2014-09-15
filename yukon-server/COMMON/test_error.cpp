@@ -10,7 +10,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     //  0
     ("Normal (Success) Return")
     ("Not Normal (Unsuccessful) Return")
-    ("Unknown Error")
+    ("Route has no associated transmitter")
     ("Bad Message Type")
     ("D Word Wrong length")
     ("Unknown Error")
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE(test_GetErrorString)
 
     for( int i = 0; i < 350; i++ )
     {
-        results.push_back(GetErrorString(i));
+        results.push_back(GetErrorString(static_cast<YukonError_t>(i)));
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(test_GetErrorType)
 
     for( int i = 0; i < 350; i++ )
     {
-        results.push_back(GetErrorType(i));
+        results.push_back(GetErrorType(static_cast<YukonError_t>(i)));
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(

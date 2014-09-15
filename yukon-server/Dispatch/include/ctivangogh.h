@@ -223,7 +223,7 @@ public:
     BOOL  isSignalForConnection(const CtiServer::ptr_type &Conn, const CtiSignalMsg &Msg);
     BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
 
-    int   processMessage(CtiMessage *pMsg);
+    YukonError_t processMessage(CtiMessage *pMsg);
     INT   postMOAUploadToConnection(CtiServer::ptr_type &VGCM, int flags);
 
     void  loadPendingSignals();
@@ -250,7 +250,7 @@ public:
 
     virtual int clientPurgeQuestionables(PULONG pDeadClients);
     virtual std::string getMyServerName() const;
-    virtual int   clientRegistration(CtiServer::ptr_type CM);
+    YukonError_t clientRegistration(CtiServer::ptr_type CM) override;
     virtual int   clientArbitrationWinner(CtiServer::ptr_type CM);
     void messageDump(CtiMessage *pMsg);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements

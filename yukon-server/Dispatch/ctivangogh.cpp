@@ -2666,9 +2666,9 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
     return status;
 }
 
-int CtiVanGogh::processMessage(CtiMessage *pMsg)
+YukonError_t CtiVanGogh::processMessage(CtiMessage *pMsg)
 {
-    int status = ClientErrors::None;
+    YukonError_t status = ClientErrors::None;
     CtiMultiWrapper MultiWrapper;
 
     CtiServerExclusion guard(_server_exclusion);
@@ -4037,9 +4037,9 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 }
 
 
-int  CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
+YukonError_t CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
 {
-    int         nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
     CtiTime      NowTime;
     RWBoolean   validEntry(TRUE);
     RWBoolean   questionedEntry(FALSE);

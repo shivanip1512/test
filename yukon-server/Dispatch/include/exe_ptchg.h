@@ -14,7 +14,7 @@ public:
 
    CtiPointChangeExecutor(CtiMessage *p = NULL);// :CtiExecutor(p);
    virtual ~CtiPointChangeExecutor();
-   INT  ServerExecute(CtiServer *Svr);
+   YukonError_t ServerExecute(CtiServer *Svr);
 };
 
 

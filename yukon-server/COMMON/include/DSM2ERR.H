@@ -1,9 +1,9 @@
 #pragma once
 
 #include "dlldefs.h"
-#include <string>
+#include "yukon.h"
 
-#include "intsafe.h"  //  for INT, CHAR, etc
+#include <string>
 
 enum IM_EX_CTIBASE ErrorTypes
 {
@@ -15,6 +15,6 @@ enum IM_EX_CTIBASE ErrorTypes
 };
 
 
-IM_EX_CTIBASE ErrorTypes  GetErrorType  (int errorNumber);
-IM_EX_CTIBASE std::string GetErrorString(int errorNumber);
+IM_EX_CTIBASE ErrorTypes  GetErrorType  (YukonError_t errorNumber);
+IM_EX_CTIBASE std::string GetErrorString(YukonError_t errorNumber);
 

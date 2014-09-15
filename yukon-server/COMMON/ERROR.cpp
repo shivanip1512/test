@@ -18,11 +18,12 @@ struct error_info {
     {}
 };
 
-typedef std::map<int, error_info> ErrorLookup;
+typedef std::map<YukonError_t, error_info> ErrorLookup;
 
-static const ErrorLookup CtiErrors = boost::assign::map_list_of<int, error_info>
+static const ErrorLookup CtiErrors = boost::assign::map_list_of
     (ClientErrors::None,                        error_info(ERRTYPENONE,     "Normal (Success) Return"))
     (ClientErrors::Abnormal,                    error_info(ERRTYPESYSTEM,   "Not Normal (Unsuccessful) Return"))
+    (ClientErrors::NoTransmitterForRoute,       error_info(ERRTYPESYSTEM,   "Route has no associated transmitter"))
     (ClientErrors::BadType,                     error_info(ERRTYPEPROTOCOL, "Bad Message Type"))
     (ClientErrors::DLength,                     error_info(ERRTYPEPROTOCOL, "D Word Wrong length"))
     (ClientErrors::BadId,                       error_info(ERRTYPESYSTEM,   "Bad ID Specification"))
@@ -166,7 +167,7 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of<int, error_info>
 
 
 //  Returns the error's description
-IM_EX_CTIBASE std::string GetErrorString(int errorNumber)
+IM_EX_CTIBASE std::string GetErrorString(YukonError_t errorNumber)
 {
     ErrorLookup::const_iterator itr = CtiErrors.find(errorNumber);
 
@@ -180,7 +181,7 @@ IM_EX_CTIBASE std::string GetErrorString(int errorNumber)
 
 
 //  Returns the error's type
-IM_EX_CTIBASE ErrorTypes GetErrorType(int errorNumber)
+IM_EX_CTIBASE ErrorTypes GetErrorType(YukonError_t errorNumber)
 {
     ErrorLookup::const_iterator itr = CtiErrors.find(errorNumber);
 

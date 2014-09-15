@@ -40,7 +40,7 @@
 
 
 /* Routine to build the mastercomm header */
-int MasterHeader (PBYTE Message, USHORT Remote, USHORT Command, USHORT Length)
+YukonError_t MasterHeader (PBYTE Message, USHORT Remote, USHORT Command, USHORT Length)
 {
    /* Start Byte */
    Message[0] = MASTERHEADER;

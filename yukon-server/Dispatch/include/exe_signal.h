@@ -20,5 +20,5 @@ public:
    virtual ~CtiSignalExecutor();
 
 
-   INT  ServerExecute(CtiServer *Svr);
+   YukonError_t ServerExecute(CtiServer *Svr);
 };

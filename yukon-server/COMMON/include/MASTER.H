@@ -96,7 +96,7 @@
 #define VSERVICE_TEMPOUT    0x01
 
 /* Prototypes from MASTER.C */
-IM_EX_CTIBASE INT MasterHeader (PBYTE, USHORT, USHORT, USHORT);
+IM_EX_CTIBASE YukonError_t MasterHeader (PBYTE, USHORT, USHORT, USHORT);
 IM_EX_CTIBASE INT PreMaster (PBYTE, USHORT);
 IM_EX_CTIBASE YukonError_t PostMaster (PBYTE, USHORT, PULONG);
 IM_EX_CTIBASE YukonError_t MasterReply (PBYTE, USHORT);

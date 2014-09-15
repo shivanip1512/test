@@ -26,9 +26,9 @@
 
 using namespace std;
 
-INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
+YukonError_t CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
 {
-   INT nRet = ClientErrors::None;
+   YukonError_t nRet = ClientErrors::None;
 
    CtiVanGogh *VG = (CtiVanGogh *)Svr;
 

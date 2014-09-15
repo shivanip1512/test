@@ -23,9 +23,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "exe_signal.h"
 #include "msg_signal.h"
 
-INT CtiSignalExecutor::ServerExecute(CtiServer *Svr)
+YukonError_t CtiSignalExecutor::ServerExecute(CtiServer *Svr)
 {
-    INT nRet = ClientErrors::None;
+    YukonError_t nRet = ClientErrors::None;
 
     CtiVanGogh *VG = (CtiVanGogh *)Svr;
 
