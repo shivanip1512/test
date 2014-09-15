@@ -91,7 +91,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
               USHORT Dest,      /* id of destination process */
               USHORT Function)  /* function to execute */
 {
-    INT status = (ClientErrors::None);
+    INT status = ClientErrors::None;
 
     OUTMESS *OutMessage;
 
