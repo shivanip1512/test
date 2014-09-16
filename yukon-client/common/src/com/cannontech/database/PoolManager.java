@@ -32,7 +32,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
-import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.debug.LoggingDataSource;
@@ -58,11 +57,6 @@ public class PoolManager {
         DatabaseVendor type;
     }
     
-    private enum UrlStyle {
-        COLON,
-        SLASH
-    };
-
     static private PoolManager instance;
 
     private DataSource mainPool = null;
@@ -73,7 +67,24 @@ public class PoolManager {
     private String primaryUser;
 	private BasicDataSource bds;
 	
-	private enum DatabaseVendor { ORACLE_DATABASE, ORACLE12_DATABASE, MSSQL_DATABASE }
+	private enum DatabaseVendor { 
+	    ORACLE_DATABASE(":"), 
+	    ORACLE12_DATABASE("/"),
+	    MSSQL_DATABASE(""),
+	    MYSQL(""),        //MS SQL Server doesn't use this URL style in the JDBC string.
+	    ;
+	    
+	    String urlCharacter;
+	    
+	    DatabaseVendor(String urlChar) {
+	        this.urlCharacter = urlChar;
+	    }
+	    
+	    public String getUrlCharacter() {
+	        return urlCharacter;
+	    }
+	
+	}
 
     private PoolManager() {
         init();
@@ -100,68 +111,46 @@ public class PoolManager {
             return new ConnectionDescription(jdbcUrl, dbType);
         }
         
-        if (dbType == DatabaseVendor.MSSQL_DATABASE) {
-            // configure as microsoft
-            // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
-            StringBuilder url = new StringBuilder();
-            url.append("jdbc:jtds:sqlserver://");
-            String host = configSource.getRequiredString(DB_SQLSERVER);
-            Pattern pattern = Pattern.compile("([^\\\\]+)\\\\(.+)");
-            Matcher matcher = pattern.matcher(host);
-            if (matcher.matches()) {
-                host = matcher.group(1);
-            }
-            url.append(host);
-            url.append(":1433;APPNAME=yukon-client;TDS=8.0");
-            //setup the connection for SSL
-            if(configSource.getBoolean(DB_SSL_ENABLED, false)){
-            	url.append(";ssl=require;socketKeepAlive=true");
-            }
-            log.debug("Found MSSQL");
-            return new ConnectionDescription(url.toString(), dbType);
-        } else if (dbType == DatabaseVendor.ORACLE_DATABASE) {
-            try {
+        StringBuilder url = new StringBuilder();
+        String host;
+        switch(dbType) {
+            case MSSQL_DATABASE:
+                // configure as microsoft
+                // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
+                url.append("jdbc:jtds:sqlserver://");
+                host = configSource.getRequiredString(DB_SQLSERVER);
+                Pattern pattern = Pattern.compile("([^\\\\]+)\\\\(.+)");
+                Matcher matcher = pattern.matcher(host);
+                if (matcher.matches()) {
+                    host = matcher.group(1);
+                }
+                url.append(host);
+                url.append(":1433;APPNAME=yukon-client;TDS=8.0");
+                //setup the connection for SSL
+                if(configSource.getBoolean(DB_SSL_ENABLED, false)){
+                    url.append(";ssl=require;socketKeepAlive=true");
+                }
+                log.debug("Found MSSQL");
+                return new ConnectionDescription(url.toString(), dbType);
+            case ORACLE_DATABASE:
+            case ORACLE12_DATABASE:
                 // Configure using SID, which is used by Oracle 9, 10, and 11. 
                 // format: jdbc:oracle:thin:@<host>:<port>:<SID>
                 // Note: As of Oracle version 12c, use of SID has been deprecated in favor of using service name.
-                StringBuilder url = buildOracleJdbcUrl(UrlStyle.COLON);
+                url.append("jdbc:oracle:thin:@");
+                host = configSource.getRequiredString(DB_SQLSERVER_HOST);
+                url.append(host);
+                url.append(":1521");
+                url.append(dbType.getUrlCharacter());
+                String tnsName = configSource.getRequiredString(DB_SQLSERVER);
+                url.append(tnsName);
                 
                 log.debug("Found Oracle");
                 return new ConnectionDescription(url.toString(), dbType);
-            } catch (UnknownKeyException e) {
-                throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
-            }
-        } else if (dbType == DatabaseVendor.ORACLE12_DATABASE) {
-            try {
-                // Configure using service name, not SID.  Required by Oracle 12c and later.
-                // format: jdbc:oracle:thin:@<host>:<port>/<serviceName>
-                StringBuilder url = buildOracleJdbcUrl(UrlStyle.SLASH);
-                
-                log.debug("Found Oracle 12C");
-                return new ConnectionDescription(url.toString(), dbType);
-            } catch (UnknownKeyException e) {
-                throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
-            }
         }
         
         //unreachable
         throw new BadConfigurationException("Unable to generate connection URL");
-    }
-
-    private StringBuilder buildOracleJdbcUrl(UrlStyle style) {
-        StringBuilder url = new StringBuilder();
-        url.append("jdbc:oracle:thin:@");
-        String host = configSource.getRequiredString(DB_SQLSERVER_HOST);
-        url.append(host);
-        url.append(":1521");
-        if (style == UrlStyle.SLASH) {
-            url.append("/");
-        } else {
-            url.append(":");
-        }
-        String tnsName = configSource.getRequiredString(DB_SQLSERVER);
-        url.append(tnsName);
-        return url;
     }
 
     private void createPools() {
