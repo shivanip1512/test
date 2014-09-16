@@ -49,9 +49,9 @@ import com.google.common.collect.Sets;
 public class MeterOutagesWidget extends WidgetControllerBase {
 
     private MeterDao meterDao;
-    PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-    @Autowired DeviceAttributeReadService deviceAttributeReadService;
-    AttributeService attributeService;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    private AttributeService attributeService;
 
     //Contains <DeviceID>,<PerishableOutageData>
     private final ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
