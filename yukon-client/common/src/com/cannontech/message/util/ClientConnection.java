@@ -27,7 +27,6 @@ import com.cannontech.yukon.IServerConnection;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
 
 @ManagedResource
 public abstract class ClientConnection extends Observable implements IServerConnection {
@@ -196,11 +195,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
             if (logger.isDebugEnabled()) {
                 logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + messageEvent);
             }
-            // At one time, the listeners were processed in reverse so that the messageReceived
-            // implementation could remove itself as a listener without causing a concurrent
-            // modification problem. That is no longer a problem, but just in case there is some code
-            // that relies on the reverse ordering, we'll keep it.
-            for (MessageListener messageListener : Lists.reverse(messageListeners)) {
+            for (MessageListener messageListener : messageListeners) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("sending MessageEvent to " + messageListener);
                 }
