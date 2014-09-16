@@ -1,6 +1,7 @@
 package com.cannontech.amr.meter.model;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.pao.PaoIdentifier;
 
@@ -51,10 +52,10 @@ public class PlcMeter extends YukonMeter {
 
     @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("meter", super.toString());
-        tsc.append("address", getAddress());
-        tsc.append("route", getRoute());
-        return tsc.toString();
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("address", getAddress());
+        tsb.append("route", getRoute());
+        return tsb.toString();
     }
 }

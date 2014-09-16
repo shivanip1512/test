@@ -5,6 +5,7 @@ import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -26,6 +27,7 @@ import com.cannontech.multispeak.service.MultispeakMeterService;
 
 public class OD_ServerImpl implements OD_ServerSoap_PortType
 {
+    public MultispeakEventLogService multispeakEventLogService;
     public MultispeakMeterService multispeakMeterService;
     public MultispeakFuncs multispeakFuncs;
     
@@ -98,6 +100,7 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateOutageDetectionEventRequest", vendor.getCompanyName());
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
 
         errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);

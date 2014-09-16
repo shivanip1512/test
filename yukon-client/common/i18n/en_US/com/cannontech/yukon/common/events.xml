@@ -467,21 +467,21 @@
 
     <!-- MultiSpeak log events -->
     <entry key="yukon.common.events.multispeak.methodInvoked">Received {1} from {2}.</entry>
-    <entry key="yukon.common.events.multispeak.returnObjects">Returning {7} {1}(s), ObjectsRemaining:{8}, LastSent:{2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.returnObjects">Returning {7} {1}(s); ObjectsRemaining: {8}; LastSent: {2}. {3} by {4}.</entry>
     <entry key="yukon.common.events.multispeak.returnObjects.1">Type</entry>
+    <entry key="yukon.common.events.multispeak.returnObjects.2">Last Sent</entry>
     <entry key="yukon.common.events.multispeak.returnObjects.7">Number Returned</entry>
     <entry key="yukon.common.events.multispeak.returnObjects.8">Objects Remaining</entry>
     <entry key="yukon.common.events.multispeak.returnObject">Returning {1} for meter number {2}. {3} {4}.</entry>
     <entry key="yukon.common.events.multispeak.returnObject.1">Object Type</entry>
     
     <entry key="yukon.common.events.multispeak.meterCreated">Created new meter named {1}: {2}. {3} by {4}.</entry>
-    <entry key="yukon.common.events.multispeak.meterRemoved">Disabled meter {1}: {2}. {3} by {4}.</entry>
     <entry key="yukon.common.events.multispeak.meterFound">Found existing meter {1}: {2}. {3} by {4}.</entry>
     
     <entry key="yukon.common.events.multispeak.meterNotFound">Meter number {1} not found. {2} by {3}.</entry>
     <entry key="yukon.common.events.multispeak.meterNotFoundByPaoName">No meters found for name {1}. {2} by {3}.</entry>
     <entry key="yukon.common.events.multispeak.substationNotFound">Substation {1} not found for meter number {2}. No route locate will occur. {3} by {4}.</entry>
-    <entry key="yukon.common.events.multispeak.routeNotFound">No route(s) found for substation {1}. Meter number {3} set to route {3}. {4} by {5}.</entry>
+    <entry key="yukon.common.events.multispeak.routeNotFound">No route(s) found for substation {1}. Meter number {3} set to route {2}. {4} by {5}.</entry>
     <entry key="yukon.common.events.multispeak.objectNotFoundByVendor">No records returned from {2} for objectId {1}. {3} by {4}.</entry>
     <entry key="yukon.common.events.multispeak.objectNotFoundByVendor.1">Object Id</entry>
     <entry key="yukon.common.events.multispeak.objectNotFoundByVendor.2">Method</entry>
@@ -495,12 +495,24 @@
     
     <entry key="yukon.common.events.multispeak.initiateMeterReadRequest">Meter reads requested for {7} meters. {1} by {2}.</entry>
     <entry key="yukon.common.events.multispeak.initiateMeterReadRequest.7">Number Requested</entry>
-    <entry key="yukon.common.events.multispeak.initiateMeterRead">Meter read initiated for meter number {1}: {2}. {3} by {4}.</entry>
-    <entry key="yukon.common.events.multispeak.initiateCDRequest">Connect/Disconnect requested for {7} meters. {2} by {3}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateMeterRead">Meter read initiated for meter number {1}: {2}; TransactionId: {3}. {4} by {5}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateMeterRead.3">TransactionId</entry>
+    <entry key="yukon.common.events.multispeak.initiateCDRequest">Connect/Disconnect requested for {7} meters. {1} by {2}.</entry>
     <entry key="yukon.common.events.multispeak.initiateCDRequest.7">Number Requested</entry>
-    <entry key="yukon.common.events.multispeak.initiateCD">{3} initiated due to {4} for meter number {1}: {2}. {5} by {6}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateCD">{3} initiated for meter number {1}: {2}; TransactionId: {4}. {5} by {6}.</entry>
     <entry key="yukon.common.events.multispeak.initiateCD.3">Command</entry>
-    <entry key="yukon.common.events.multispeak.initiateCD.4">Reason</entry>
+    <entry key="yukon.common.events.multispeak.initiateCD.4">TransactionId</entry>
+    <entry key="yukon.common.events.multispeak.initiateDemandResetRequest">Demand Reset requested for {7} meters; Sent: {8} Invalid: {9}; Unsupported: {10}. {1} by {2}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateDemandResetRequest.7">Total Requested</entry>
+    <entry key="yukon.common.events.multispeak.initiateDemandResetRequest.8">Total Sent</entry>
+    <entry key="yukon.common.events.multispeak.initiateDemandResetRequest.9">Invalid Meters</entry>
+    <entry key="yukon.common.events.multispeak.initiateDemandResetRequest.10">Unsupported Meters</entry>
+    <entry key="yukon.common.events.multispeak.initiateDemandReset">Demand Reset initiated for meter number {1}: {2}; TransactionId: {3}. {4} by {5}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateDemandReset.3">TransactionId</entry>
+    <entry key="yukon.common.events.multispeak.initiateODEventRequest">Outage ping requested for {7} meters. {1} by {2}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateODEventRequest.7">Number Requested</entry>
+    <entry key="yukon.common.events.multispeak.initiateODEvent">Outage ping initiated for meter number {1}: {2}; TransactionId: {3}. {4} by {5}.</entry>
+    <entry key="yukon.common.events.multispeak.initiateODEvent.3">TransactionId</entry>
 
     <entry key="yukon.common.events.multispeak.routeUpdated">Meter number {2} set to route {1} (no discovery). {3} by {4}.</entry>
     <entry key="yukon.common.events.multispeak.routeUpdatedByDiscovery">Meter number {2} initially set to route {1}. Discovery started on routes: {3}. {4} by {5}.</entry>
@@ -517,5 +529,11 @@
     <entry key="yukon.common.events.multispeak.enableDevice">Enabled meter {1}: {2}. {3} by {4}.</entry>
     <entry key="yukon.common.events.multispeak.disableDevice">Disabled meter {1}: {2}. {3} by {4}.</entry>
 
+    <entry key="yukon.common.events.multispeak.notificationResponse">{1} initiated for meter number {3}; TransactionId: {2}, Comments: {4}, Errors received: {7}, Url: {5}.</entry>
+    <entry key="yukon.common.events.multispeak.notificationResponse.2">TransactionId</entry>
+    <entry key="yukon.common.events.multispeak.notificationResponse.4">Comments</entry>
+    <entry key="yukon.common.events.multispeak.notificationResponse.5">Url</entry>
+    <entry key="yukon.common.events.multispeak.notificationResponse.7">Errors</entry>
     <entry key="yukon.common.events.multispeak.errorObject">Encountered error: {1}. {2} by {3}.</entry>
 </properties>
+

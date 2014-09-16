@@ -11,6 +11,7 @@ import com.cannontech.amr.demandreset.service.DemandResetVerificationCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -36,14 +37,17 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
     private final MspObjectDao mspObjectDao;
 
     private final List<ErrorObject> errors = Lists.newArrayList();
+    private final MultispeakEventLogService multispeakEventLogService;
     private final MultispeakVendor vendor;
     private final Map<PaoIdentifier, String> meterNumbersByPaoId;
     private final CB_ServerSoap_PortType port;
+    private final String responseUrl;
     private final String transactionId;
 
-    public MRServerDemandResetCallback(MspObjectDao mspObjectDao, MultispeakVendor vendor,
-                                       Map<PaoIdentifier, String> meterNumbersByPaoId,
+    public MRServerDemandResetCallback(MspObjectDao mspObjectDao, MultispeakEventLogService multispeakEventLogService, 
+                                       MultispeakVendor vendor, Map<PaoIdentifier, String> meterNumbersByPaoId,
                                        String responseURL, String transactionId) {
+        this.multispeakEventLogService = multispeakEventLogService;
         this.mspObjectDao = mspObjectDao;
         this.vendor = vendor;
         this.meterNumbersByPaoId = meterNumbersByPaoId;
@@ -52,12 +56,12 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
         // objects should also work either way.  (The API is identical.)
         port = MultispeakPortFactory.getCB_ServerPort(vendor, responseURL);
         if (port == null) {
-            log.error("Port not found for (" + vendor.getCompanyName() + ") with URL "
-                    + responseURL);
+            log.error("Port not found for (" + vendor.getCompanyName() + ") with URL " + responseURL);
             errors.add(mspObjectDao.getErrorObject(transactionId, "could not get responseURL port",
                                                    "Meter", "initiateDemandResponse", null));
         }
 
+        this.responseUrl = responseURL;
         this.transactionId = transactionId;
     }
 
@@ -102,7 +106,9 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
             null, null, null, new ExtensionsItem[] { extensionItem },
             new EventInstance[] { eventInstance });
         try {
-            port.meterEventNotification(events);
+            ErrorObject [] errObject = port.meterEventNotification(events);
+            multispeakEventLogService.notificationResponse("initiateDemandReset", transactionId, meterNumber, 
+                                                           "Reset and Verified", errObject.length, responseUrl);
         } catch (RemoteException re) {
             log.error("error pushing verification notice", re);
         }

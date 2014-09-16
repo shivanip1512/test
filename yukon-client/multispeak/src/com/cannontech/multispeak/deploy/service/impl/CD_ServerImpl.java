@@ -123,15 +123,17 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
 
         boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
         
+        LoadActionCode loadActionCode;
         // Performs an actual meter read instead of simply replying from the database.
         // CDMeterState can handle multiple types of communications, 
         //  but there is no gain from performing a real time read for non-porter meters...to-date. 
         if (canInitiatePorterRequest) {
-            LoadActionCode loadActionCode = multispeakMeterService.CDMeterState(vendor, meter);
-            return loadActionCode;
+            loadActionCode = multispeakMeterService.CDMeterState(vendor, meter);
         } else {    // if we can't initiate a new request (aka RFN meter), then just return what dispatch has stored.
-            return getLoadActionCodeFromCache(meter);
+            loadActionCode = getLoadActionCodeFromCache(meter);
         }
+        multispeakEventLogService.returnObject("LoadActionCode." + loadActionCode.getValue(), meterNo, "getCDMeterState", vendor.getCompanyName());
+        return loadActionCode;
     }
 
     @Override

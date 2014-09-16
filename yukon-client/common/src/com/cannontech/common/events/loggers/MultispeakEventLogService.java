@@ -30,12 +30,6 @@ public interface MultispeakEventLogService {
             @Arg(ArgEnum.mspVendor) String mspVendor);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
-    public void meterRemoved(@Arg(ArgEnum.meterNumber) String meterNumber,
-            @Arg(ArgEnum.meterDescription) YukonMeter meter,
-            @Arg(ArgEnum.mspMethod) String mspMethod,
-            @Arg(ArgEnum.mspVendor) String mspVendor);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
     public void meterFound(@Arg(ArgEnum.meterNumber) String meterNumber,
             @Arg(ArgEnum.meterDescription) YukonMeter meter,
             @Arg(ArgEnum.mspMethod) String mspMethod,
@@ -102,6 +96,7 @@ public interface MultispeakEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
     public void initiateMeterRead(@Arg(ArgEnum.meterNumber) String meterNumber,
             @Arg(ArgEnum.meterDescription) YukonMeter meter,
+            String transactionId,
             @Arg(ArgEnum.mspMethod) String mspMethod,
             @Arg(ArgEnum.mspVendor) String mspVendor);
 
@@ -114,7 +109,31 @@ public interface MultispeakEventLogService {
     public void initiateCD(@Arg(ArgEnum.meterNumber) String meterNumber,
             @Arg(ArgEnum.meterDescription) YukonMeter meter,
             String loadActionCode,
-            String reasonCode,
+            String transactionId,
+            @Arg(ArgEnum.mspMethod) String mspMethod,
+            @Arg(ArgEnum.mspVendor) String mspVendor);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
+    public void initiateDemandResetRequest(int totalRequested, int totalSent, int totalInvalid, int totalUnsupported,
+            @Arg(ArgEnum.mspMethod) String mspMethod,
+            @Arg(ArgEnum.mspVendor) String mspVendor);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
+    public void initiateDemandReset(@Arg(ArgEnum.meterNumber) String meterNumber,
+            @Arg(ArgEnum.meterDescription) YukonMeter meter,
+            String transactionId,
+            @Arg(ArgEnum.mspMethod) String mspMethod,
+            @Arg(ArgEnum.mspVendor) String mspVendor);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
+    public void initiateODEventRequest(int numberRequested,
+            @Arg(ArgEnum.mspMethod) String mspMethod,
+            @Arg(ArgEnum.mspVendor) String mspVendor);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
+    public void initiateODEvent(@Arg(ArgEnum.meterNumber) String meterNumber,
+            @Arg(ArgEnum.meterDescription) YukonMeter meter,
+            String transactionId,
             @Arg(ArgEnum.mspMethod) String mspMethod,
             @Arg(ArgEnum.mspVendor) String mspVendor);
 
@@ -167,6 +186,14 @@ public interface MultispeakEventLogService {
             @Arg(ArgEnum.mspMethod) String mspMethod,
             @Arg(ArgEnum.mspVendor) String mspVendor);
 
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
+    public void notificationResponse(@Arg(ArgEnum.mspMethod) String mspMethod,
+            String transactionID, 
+            @Arg(ArgEnum.meterNumber) String meterNumber,
+            String additionalInfo,
+            Integer numberErrors,
+            String responseUrl);
+    
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
     public void errorObject(@Arg(ArgEnum.message) String errorMessage,
             @Arg(ArgEnum.mspMethod) String mspMethod,

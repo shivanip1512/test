@@ -229,7 +229,8 @@ public class DevEventLogCreationService {
                 accountEventLogService.thermostatManuallySet(yukonUser, serialNumber);
                 accountEventLogService.thermostatLabelChanged(yukonUser, accountNumber, serialNumber,
                     oldThermostatLabel, newThermostatLabel);
-
+                accountEventLogService.thermostatScheduleCreationAttempted(yukonUser, newAccountNumber, serialNumber, oldScheduleName, devEventLog.getEventSource());
+                accountEventLogService.thermostatScheduleUpdateAttempted(yukonUser, newAccountNumber, serialNumber, oldScheduleName, devEventLog.getEventSource());
                 accountEventLogService.thermostatScheduleNameChanged(yukonUser, oldScheduleName, newScheduleName);
             }
         });
@@ -501,17 +502,21 @@ public class DevEventLogCreationService {
                 multispeakEventLogService.disableDevice(meterNumber, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.enableDevice(meterNumber, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.errorObject("ErrorObject", mspMethod, mspVendor);
-                multispeakEventLogService.initiateCD(meterNumber, plcMeter, "Connect", "NonPayment", mspMethod, mspVendor);
+                multispeakEventLogService.initiateCD(meterNumber, plcMeter, "Connect", "1000", mspMethod, mspVendor);
                 multispeakEventLogService.initiateCDRequest(10, mspMethod, mspVendor);
-                multispeakEventLogService.initiateMeterRead(meterNumber, plcMeter, mspMethod, mspVendor);
+                multispeakEventLogService.initiateMeterRead(meterNumber, plcMeter, "1000", mspMethod, mspVendor);
                 multispeakEventLogService.initiateMeterReadRequest(25, mspMethod, mspVendor);
-                multispeakEventLogService.meterCreated(meterNumber, plcMeter, mspMethod, mspVendor);
+                multispeakEventLogService.initiateDemandReset(meterNumber, plcMeter, "1000", mspMethod, mspVendor);
+                multispeakEventLogService.initiateDemandResetRequest(20,  15,  3,  2, mspMethod, mspVendor);
+                multispeakEventLogService.initiateODEvent(meterNumber, plcMeter, "1000", mspMethod, mspVendor);
+                multispeakEventLogService.initiateODEventRequest(30, mspMethod, mspVendor);
+                multispeakEventLogService.meterCreated(paoName, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.meterFound(meterNumber, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor);
                 multispeakEventLogService.meterNotFoundByPaoName(paoName, mspMethod, mspVendor);
                 multispeakEventLogService.meterNumberUpdated("456456", plcMeter, mspMethod, mspVendor);
-                multispeakEventLogService.meterRemoved(meterNumber, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.methodInvoked(mspMethod, mspVendor);
+                multispeakEventLogService.notificationResponse(mspMethod, "1000", meterNumber, "additional information", 0, "http://cis:80/soap/CB_ServerSoap");
                 multispeakEventLogService.objectNotFoundByVendor("123456789", "getMeterByServLoc", mspMethod, mspVendor);
                 multispeakEventLogService.paoNameUpdated("456456-Name", plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.removeMeterFromGroup(meterNumber, deviceGroup, mspMethod, mspVendor);
@@ -790,7 +795,7 @@ public class DevEventLogCreationService {
     }
 
     public static enum LogType implements Displayable {
-        ACCOUNT(AccountEventLogService.class, 57),
+        ACCOUNT(AccountEventLogService.class, 59),
         COMMAND_REQUEST_EXECUTOR(CommandRequestExecutorEventLogService.class, 2),
         COMMAND_SCHEDULE(CommandScheduleEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
@@ -801,7 +806,7 @@ public class DevEventLogCreationService {
         HARDWARE(HardwareEventLogService.class, 22),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 4),
         METERING(MeteringEventLogService.class, 2),
-        MULTISPEAK(MultispeakEventLogService.class, 28),
+        MULTISPEAK(MultispeakEventLogService.class, 32),
         OUTAGE(OutageEventLogService.class, 10),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),

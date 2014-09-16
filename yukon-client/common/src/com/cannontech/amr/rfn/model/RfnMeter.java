@@ -2,7 +2,8 @@ package com.cannontech.amr.rfn.model;
 
 import java.io.Serializable;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonPao;
@@ -38,10 +39,10 @@ public class RfnMeter extends YukonMeter implements YukonRfn, Serializable {
     
     @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("meter", super.toString());
-        tsc.append("rfnId", meterIdentifier);
-        return tsc.toString();
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("rfnId", meterIdentifier);
+        return tsb.toString();
     }
 
     @Override

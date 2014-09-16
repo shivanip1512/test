@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -21,29 +22,28 @@ import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 
-public class ODEvent extends MultispeakEvent{
+public class ODEvent extends MultispeakEvent {
 
     private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
-    private final MultispeakMeterService multispeakMeterService = YukonSpringHook.getBean("multispeakMeterService", MultispeakMeterService.class);
+    private final MultispeakEventLogService multispeakEventLogService = YukonSpringHook.getBean("multispeakEventLogService",
+                                                                                                MultispeakEventLogService.class);
+    private final MultispeakMeterService multispeakMeterService = YukonSpringHook.getBean("multispeakMeterService",
+                                                                                          MultispeakMeterService.class);
+    private OutageDetectionEvent outageDetectionEvent = null;
 
-   private OutageDetectionEvent outageDetectionEvent = null;
+    /**
+     * @param vendorName_
+     * @param pilMessageID_
+     */
+    public ODEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_, String responseUrl) {
+        super(mspVendor_, pilMessageID_, transactionID_, responseUrl);
+    }
 
-	/**
-	 * @param vendorName_
-	 * @param pilMessageID_
-	 */
-	public ODEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_, String responseUrl)
-	{
-		super(mspVendor_, pilMessageID_, transactionID_, responseUrl);
-	}
-
-    public OutageDetectionEvent getOutageDetectionEvent()
-    {
+    public OutageDetectionEvent getOutageDetectionEvent() {
         return outageDetectionEvent;
     }
 
-    public void setOutageDetectionEvent(OutageDetectionEvent outageDetectionEvent_)
-    {
+    public void setOutageDetectionEvent(OutageDetectionEvent outageDetectionEvent_) {
         this.outageDetectionEvent = outageDetectionEvent_;
     }
 
@@ -121,6 +121,8 @@ public class ODEvent extends MultispeakEvent{
             OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(getMspVendor(), getResponseUrl());
             if (port != null) {
                 ErrorObject[] errObjects = port.ODEventNotification(odEvents, getTransactionID());
+                multispeakEventLogService.notificationResponse("ODEventNotification", getTransactionID(), getOutageDetectionEvent().getObjectID(), 
+                                                               getOutageDetectionEvent().getOutageEventType().toString(), errObjects.length, getResponseUrl());
                 if( errObjects != null)
                     ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(getResponseUrl(), "ODEventNotification", errObjects);
             } else {

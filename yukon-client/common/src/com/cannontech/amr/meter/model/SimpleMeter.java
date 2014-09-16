@@ -1,6 +1,6 @@
 package com.cannontech.amr.meter.model;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
@@ -34,9 +34,9 @@ public class SimpleMeter implements YukonDevice {
     
     @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("paoIdentifier", getPaoIdentifier());
-        tsc.append("meterNumber", getMeterNumber());
-        return tsc.toString();
+        ToStringBuilder tsb = new ToStringBuilder(this);
+        tsb.append("paoIdentifier", getPaoIdentifier());
+        tsb.append("meterNumber", getMeterNumber());
+        return tsb.toString();
     }
 }

@@ -985,12 +985,16 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             return errors.toArray(new ErrorObject[errors.size()]);
         }
 
+        log.info("Received " + meterIDs.length + " Meter(s) for Demand Reset from " + vendor.getCompanyName());
+        multispeakEventLogService.initiateDemandResetRequest(meterNumbers.size(), meterNumbersByPaoId.size(), 
+                                                             invalidMeterNumbers.size(), unsupportedMeters.size(),
+                                                             "initiateConnectDisconnect", vendor.getCompanyName());
+
         MRServerDemandResetCallback callback =
-                new MRServerDemandResetCallback(mspObjectDao, vendor, meterNumbersByPaoId,
-                                                responseURL, transactionId);
+                new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor, meterNumbersByPaoId, responseURL, transactionId);
+        
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
-        // TODO - some logging for number supported or not, for demand reset
         return errors.toArray(new ErrorObject[errors.size()]);
     }
 

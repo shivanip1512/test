@@ -1,6 +1,6 @@
 package com.cannontech.amr.meter.model;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -53,10 +53,10 @@ public abstract class YukonMeter extends SimpleMeter implements DisplayablePao {
 
     @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("meter", super.toString());
-        tsc.append("name", getName());
-        tsc.append("disabled", isDisabled());
-        return tsc.toString();
+        ToStringBuilder tsb = new ToStringBuilder(this);
+        tsb.appendSuper(super.toString());
+        tsb.append("name", getName());
+        tsb.append("disabled", isDisabled());
+        return tsb.toString();
     }
 }
