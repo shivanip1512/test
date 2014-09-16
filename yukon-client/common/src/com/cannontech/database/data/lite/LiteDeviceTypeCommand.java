@@ -1,170 +1,74 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.SqlUtils;
-
-/*
- */
-public class LiteDeviceTypeCommand extends LiteBase
-{
-	private int commandID = 0;
-	private String deviceType = null;
-	private int displayOrder = 0;
-	private char visibleFlag = 'Y';
-		
-	/**
-	 * LiteDeviceTypeCommand
-	 */
-	public LiteDeviceTypeCommand( int devCmdID) 
-	{
-		super();
-		setLiteID(devCmdID);
-		setLiteType(LiteTypes.DEVICE_TYPE_COMMAND);
-	}
-	
-	/**
-	 * LiteDeviceTypeCommand
-	 */
-	public LiteDeviceTypeCommand( int devCmdID, int cmdID, String devType, int order, char visible ) 
-	{
-		this( devCmdID );
-		setCommandID(cmdID);
-		setDeviceType(devType);
-		setDisplayOrder(order);
-		setVisibleFlag(visible);
-	}
-	
-	/**
-	 * retrieve method comment.
-	 */
-	public void retrieve(String databaseAlias) 
-	{
-	   //nearly the same as the DeviceTypeLoader's run() method
-	   String sqlString = "SELECT COMMANDID, DISPLAYORDER, VISIBLEFLAG, DEVICETYPE " +
-	            " FROM DEVICETYPECOMMAND WHERE DEVICECOMMANDID = " + getDeviceCommandID();
-	
-	
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try
-		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(sqlString);
-	
-			while( rset.next() )
-			{
-				setCommandID(rset.getInt(1));
-				setDisplayOrder(rset.getInt(2));
-				setVisibleFlag(rset.getString(3).charAt(0));
-				setDeviceType(rset.getString(4));
-			}
-		}
-		catch( Exception  e )
-		{
-			CTILogger.error( e.getMessage(), e);
-		}
-		finally
-		{
-			SqlUtils.close(rset, stmt, conn );
-		}
-	}
-	
-	/**
-	 * This method was created by Cannon Technologies Inc.
-	 */
-	public String toString()
-	{
-		return getCommandID() +" " + getDeviceType();
-	}
+import com.cannontech.database.data.command.YukonCommand;
 
 
-	/**
-	 * @return
-	 */
-	public int getCommandID()
-	{
-		return commandID;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getDeviceType()
-	{
-		return deviceType;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getDisplayOrder()
-	{
-		return displayOrder;
-	}
-
-	/**
-	 * @return
-	 */
-	public char getVisibleFlag()
-	{
-		return visibleFlag;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setCommandID(int i)
-	{
-		commandID = i;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setDeviceType(String string)
-	{
-		deviceType = string;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setDisplayOrder(int i)
-	{
-		displayOrder = i;
-	}
-
-	/**
-	 * @param c
-	 */
-	public void setVisibleFlag(char c)
-	{
-		visibleFlag = c;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getDeviceCommandID()
-	{
-		return getLiteID();
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setDeviceCommandID(int i)
-	{
-		setLiteID(i);
-	}
-	public boolean isVisible()
-	{
-		if( getVisibleFlag() == 'Y' )
-			return true;
-		return false;
-	}
-
+public class LiteDeviceTypeCommand extends LiteBase implements YukonCommand {
+    
+    private int commandId = 0;
+    private String deviceType;
+    private int displayOrder = 0;
+    private char visibleFlag = 'Y';
+    
+    public LiteDeviceTypeCommand(int deviceCommandId, int commandId, String devType, int order, char visible) {
+        
+        setLiteType(LiteTypes.DEVICE_TYPE_COMMAND);
+        
+        setLiteID(deviceCommandId);
+        setCommandId(commandId);
+        setDeviceType(devType);
+        setDisplayOrder(order);
+        setVisibleFlag(visible);
+    }
+    
+    public int getDeviceCommandId() {
+        return getLiteID();
+    }
+    
+    public void setDeviceCommandId(int deviceCommandId) {
+        setLiteID(deviceCommandId);
+    }
+    
+    @Override
+    public int getCommandId() {
+        return commandId;
+    }
+    
+    public void setCommandId(int commandId) {
+        this.commandId = commandId;
+    }
+    
+    public String getDeviceType() {
+        return deviceType;
+    }
+    
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+    
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+    
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+    
+    public boolean isVisible() {
+        return getVisibleFlag() == 'Y';
+    }
+    
+    public char getVisibleFlag() {
+        return visibleFlag;
+    }
+    
+    public void setVisibleFlag(char visibleFlag) {
+        this.visibleFlag = visibleFlag;
+    }
+    
+    @Override
+    public String toString() {
+        return getCommandId() + " " + getDeviceType();
+    }
+    
 }

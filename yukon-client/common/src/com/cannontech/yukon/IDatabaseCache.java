@@ -140,7 +140,11 @@ public interface IDatabaseCache {
     Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap();
 
     List<LiteDeviceTypeCommand> getAllDeviceTypeCommands();
-
+    
+    Map<Integer, LiteDeviceTypeCommand> getAllDeviceTypeCommandsMap();
+    
+    LiteDeviceTypeCommand getDeviceTypeCommand(int deviceCommandId);
+    
     /**
      * Returns the LiteBase object that was added, deleted or updated,
      * else null is returned.
@@ -215,4 +219,5 @@ public interface IDatabaseCache {
     List<Integer> getDevicesByCommPort(int portId);
 
     List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
+
 }

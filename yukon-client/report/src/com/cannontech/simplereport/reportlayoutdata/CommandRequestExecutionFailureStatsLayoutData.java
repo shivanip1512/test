@@ -11,7 +11,7 @@ public class CommandRequestExecutionFailureStatsLayoutData implements ReportLayo
         this.bodyColumns = new ColumnLayoutData[] {
             new ColumnLayoutData("Status", "status", 500),
             new ColumnLayoutData("Count", "count", 100),
-            new ColumnLayoutData("Percentage of Failures", "percentage", 100),
+            new ColumnLayoutData("Failure Percentage", "percentage", 100),
         };
     }
     

@@ -303,7 +303,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public LiteYukonPAObject[] getRoutesByType(PaoType[] routeTypes) {
+    public LiteYukonPAObject[] getRoutesByType(PaoType... routeTypes) {
         List<LiteYukonPAObject> routeList = new ArrayList<>(10);
         synchronized (databaseCache) {
             List<LiteYukonPAObject> routes = databaseCache.getAllRoutes();

@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -107,9 +106,9 @@ public class GroupCommanderController {
             
         this.meterCommands = new ArrayList<LiteCommand>();
         
-        Vector<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(DeviceTypes.STRING_MCT_410IL[0]);
+        List<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(DeviceTypes.STRING_MCT_410IL[0]);
         for (LiteDeviceTypeCommand devTypeCmd : devTypeCmds) {
-            int cmdId = devTypeCmd.getCommandID();
+            int cmdId = devTypeCmd.getCommandId();
             LiteCommand liteCmd = commandDao.getCommand(cmdId);
             this.meterCommands.add(liteCmd);
         }
@@ -119,7 +118,7 @@ public class GroupCommanderController {
     public void collectionProcessing(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model)
     throws ServletException {
         
-        List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, user);
+        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, user);
         model.addAttribute("commands", commands);
         
         model.addAttribute("deviceCollection", deviceCollection);
@@ -130,7 +129,7 @@ public class GroupCommanderController {
     public void groupProcessing(LiteYukonUser user, ModelMap model)
             throws ServletException {
 
-        List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, user);
+        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, user);
         model.addAttribute("commands", commands);
     }
     
@@ -184,7 +183,7 @@ public class GroupCommanderController {
             }
         } else {
             // check that the command is in the authorized list (implies that it is authorized)
-            List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, userContext.getYukonUser());
+            List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
             List<String> commandStrings = new MappingList<LiteCommand, String>(commands, new ObjectMapper<LiteCommand, String>() {
                 @Override
                 public String map(LiteCommand from)

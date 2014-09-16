@@ -1,6 +1,7 @@
 package com.cannontech.database.db.command;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -24,57 +25,57 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class Command extends DBPersistent implements com.cannontech.database.db.CTIDbChange
 {
-	private Integer commandID = null;
-	private String command = null;
-	private String label = null;
-	private String category = PAOGroups.STRING_CAT_DEVICE;	//default
-	
-	public static final String[] SETTER_COLUMNS = 
-	{ 
-		"Command", "Label", "Category"
-	};
-	
-	public static final String[] CONSTRAINT_COLUMNS = { "CommandID" };
-	
-	public static final String TABLE_NAME = "Command";
-	
-	private static final String allSql =
-		"SELECT COMMANDID FROM " + TABLE_NAME;
-	
+    private Integer commandID = null;
+    private String command = null;
+    private String label = null;
+    private String category = PAOGroups.STRING_CAT_DEVICE;    //default
+    
+    public static final String[] SETTER_COLUMNS = 
+    { 
+        "Command", "Label", "Category"
+    };
+    
+    public static final String[] CONSTRAINT_COLUMNS = { "CommandID" };
+    
+    public static final String TABLE_NAME = "Command";
+    
+    private static final String allSql =
+        "SELECT COMMANDID FROM " + TABLE_NAME;
+    
 /**
  * Command constructor comment.
  */
 public Command() {
-	super();
+    super();
 }
 /**
  * @exception java.sql.SQLException The exception description.
  */
 public void add() throws java.sql.SQLException 
 {
-	if (getCommandID() == null)
-		setCommandID( getNextID(CtiUtilities.getDatabaseAlias()) );
-	
-	Object[] addValues = 
-	{ 
-		getCommandID(),
-		getCommand(),
-		getLabel(),
-		getCategory()
-	};
+    if (getCommandID() == null)
+        setCommandID( getNextID(CtiUtilities.getDatabaseAlias()) );
+    
+    Object[] addValues = 
+    { 
+        getCommandID(),
+        getCommand(),
+        getLabel(),
+        getCategory()
+    };
 
-	//if any of the values are null, return
-	if( !isValidValues(addValues) )
-		return;
-	
-	add( TABLE_NAME, addValues );
+    //if any of the values are null, return
+    if( !isValidValues(addValues) )
+        return;
+    
+    add( TABLE_NAME, addValues );
 }
 /**
  */
 public void delete() throws java.sql.SQLException 
 {
-	deleteDeviceTypeCommands();
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getCommandID() );
+    deleteDeviceTypeCommands();
+    delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getCommandID() );
 }
 
 /**
@@ -82,23 +83,23 @@ public void delete() throws java.sql.SQLException
  */
 private void deleteDeviceTypeCommands() throws java.sql.SQLException
 {
-	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	synchronized( cache )
-	{
-		java.util.List devTypeCmds = cache.getAllDeviceTypeCommands();
-		
-		for( int i = 0; i < devTypeCmds.size(); i++ )
-		{
-			LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)devTypeCmds.get(i);
+    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    synchronized( cache )
+    {
+        java.util.List devTypeCmds = cache.getAllDeviceTypeCommands();
+        
+        for( int i = 0; i < devTypeCmds.size(); i++ )
+        {
+            LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)devTypeCmds.get(i);
 
-			if( ldtc.getCommandID() == getCommandID().intValue() )
-			{
-				DeviceTypeCommand dbP = (DeviceTypeCommand)LiteFactory.createDBPersistent( ldtc );
-				dbP.setDbConnection( getDbConnection() );
-				dbP.delete();
-			}
-		}
-	}
+            if( ldtc.getCommandId() == getCommandID().intValue() )
+            {
+                DeviceTypeCommand dbP = (DeviceTypeCommand)LiteFactory.createDBPersistent( ldtc );
+                dbP.setDbConnection( getDbConnection() );
+                dbP.delete();
+            }
+        }
+    }
 }
 /**
  * Insert the method's description here.
@@ -107,60 +108,60 @@ private void deleteDeviceTypeCommands() throws java.sql.SQLException
  */
 public boolean equals(Object o)
 {
-	if( o instanceof Command )	
-		return ((Command)o).getCommandID().equals( getCommandID() )
-			? true 
-			: false;
-	else
-		return false;
+    if( o instanceof Command )    
+        return ((Command)o).getCommandID().equals( getCommandID() )
+            ? true 
+            : false;
+    else
+        return false;
 }
 
 /**
  * @param dbAlias java.lang.String
  */
 public static long[] getAllCommandIDs() {
-	return getAllCommandIDs(CtiUtilities.getDatabaseAlias());
+    return getAllCommandIDs(CtiUtilities.getDatabaseAlias());
 }
 /**
  * @param dbAlias java.lang.String
  */
 public static long[] getAllCommandIDs(String dbAlias) {
-	
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	
-	try
-	{
-		conn = PoolManager.getInstance().getConnection(dbAlias);
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(allSql);
+    
+    java.sql.Connection conn = null;
+    java.sql.Statement stmt = null;
+    java.sql.ResultSet rset = null;
+    
+    try
+    {
+        conn = PoolManager.getInstance().getConnection(dbAlias);
+        stmt = conn.createStatement();
+        rset = stmt.executeQuery(allSql);
 
-		java.util.ArrayList idList = new java.util.ArrayList();	
-		while( rset.next() )
-		{
-			idList.add( new Long(rset.getLong(1)) );
-		}
+        java.util.ArrayList idList = new java.util.ArrayList();    
+        while( rset.next() )
+        {
+            idList.add( new Long(rset.getLong(1)) );
+        }
 
-		long[] retIDs = new long[idList.size()];
-		for( int i = 0; i < idList.size(); i++ )
-		{
-			retIDs[i] = ((Long) idList.get(i)).longValue();
-		}
-		
-		return retIDs;			
-	}
-	catch(java.sql.SQLException e)
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, stmt, conn );
-	}
+        long[] retIDs = new long[idList.size()];
+        for( int i = 0; i < idList.size(); i++ )
+        {
+            retIDs[i] = ((Long) idList.get(i)).longValue();
+        }
+        
+        return retIDs;            
+    }
+    catch(java.sql.SQLException e)
+    {
+        CTILogger.error( e.getMessage(), e );
+    }
+    finally
+    {
+        SqlUtils.close(rset, stmt, conn );
+    }
 
-	// An exception must have occured
-	return new long[0];
+    // An exception must have occured
+    return new long[0];
 }
 
 /**
@@ -170,240 +171,240 @@ public static long[] getAllCommandIDs(String dbAlias) {
  */
 public static final Command[] getCommands(java.sql.Connection conn)
 {
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	java.util.ArrayList list = new java.util.ArrayList();
-	
-	String sql = "SELECT COMMANDID, COMMAND, LABEL, CATEGORY " + 
-						" FROM " + TABLE_NAME;
+    java.sql.PreparedStatement pstmt = null;
+    java.sql.ResultSet rset = null;
+    java.util.ArrayList list = new java.util.ArrayList();
+    
+    String sql = "SELECT COMMANDID, COMMAND, LABEL, CATEGORY " + 
+                        " FROM " + TABLE_NAME;
 
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection should not be (null).");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());			
-			rset = pstmt.executeQuery();
-	
-			while( rset.next() )
-			{
-				Command ex = new Command();
-				ex.setCommandID( new Integer(rset.getInt(CONSTRAINT_COLUMNS[0])) );
-				ex.setCommand(rset.getString(SETTER_COLUMNS[0]) );
-				ex.setLabel( rset.getString(SETTER_COLUMNS[1]));
-				ex.setCategory(rset.getString(SETTER_COLUMNS[2]));
+    try
+    {        
+        if( conn == null )
+        {
+            throw new IllegalStateException("Database connection should not be (null).");
+        }
+        else
+        {
+            pstmt = conn.prepareStatement(sql.toString());            
+            rset = pstmt.executeQuery();
+    
+            while( rset.next() )
+            {
+                Command ex = new Command();
+                ex.setCommandID( new Integer(rset.getInt(CONSTRAINT_COLUMNS[0])) );
+                ex.setCommand(rset.getString(SETTER_COLUMNS[0]) );
+                ex.setLabel( rset.getString(SETTER_COLUMNS[1]));
+                ex.setCategory(rset.getString(SETTER_COLUMNS[2]));
 
-				list.add( ex );
-			}
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt );
-	}
+                list.add( ex );
+            }
+        }        
+    }
+    catch( java.sql.SQLException e )
+    {
+        CTILogger.error( e.getMessage(), e );
+    }
+    finally
+    {
+        SqlUtils.close(rset, pstmt );
+    }
 
 
-	Command[] cmpys = new Command[ list.size() ];	
-	return (Command[])list.toArray( cmpys );
+    Command[] cmpys = new Command[ list.size() ];    
+    return (Command[])list.toArray( cmpys );
 }
 
 /**
  * @return java.lang.Integer
  */
 public java.lang.Integer getCommandID() {
-	return commandID;
+    return commandID;
 }
 /**
  * Returns the label, the user-friendly string.
  * @return java.lang.String
  */
 public java.lang.String getLabel() {
-	return label;
+    return label;
 }
 /**
  * @return java.lang.Integer
  */
 public static final Integer getNextID(String databaseAlias)
 {
-	Integer result = new Integer(1);	//default in case nothing returns?
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	java.sql.Connection conn = null;
+    Integer result = new Integer(1);    //default in case nothing returns?
+    java.sql.PreparedStatement pstmt = null;
+    java.sql.ResultSet rset = null;
+    java.sql.Connection conn = null;
 
-	String sql = "SELECT MAX(COMMANDID)+1 FROM " + TABLE_NAME + " WHERE COMMANDID >= 0 ";
+    String sql = "SELECT MAX(COMMANDID)+1 FROM " + TABLE_NAME + " WHERE COMMANDID >= 0 ";
 
-	try
-	{
-		conn = PoolManager.getInstance().getConnection(databaseAlias );
+    try
+    {
+        conn = PoolManager.getInstance().getConnection(databaseAlias );
 
-		pstmt = conn.prepareStatement(sql.toString());		
-		rset = pstmt.executeQuery();							
+        pstmt = conn.prepareStatement(sql.toString());        
+        rset = pstmt.executeQuery();                            
 
-		while( rset.next() )
-			result = new Integer(rset.getInt(1));
-	}
-	catch( java.sql.SQLException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt, conn );
-	}
+        while( rset.next() )
+            result = new Integer(rset.getInt(1));
+    }
+    catch( java.sql.SQLException e )
+    {
+        CTILogger.error( e.getMessage(), e );
+    }
+    finally
+    {
+        SqlUtils.close(rset, pstmt, conn );
+    }
 
-	return result;
+    return result;
 }
 /**
  * @return boolean
  */
 private boolean isValidValues( Object[] values ) 
 {
-	if( values == null )
-		return false;
+    if( values == null )
+        return false;
 
-	for( int i = 0; i < values.length; i++ )
-		if( values[i] == null )
-			return false;
+    for( int i = 0; i < values.length; i++ )
+        if( values[i] == null )
+            return false;
 
 
-	return true;
+    return true;
 }
 /**
  */
 public void retrieve() throws java.sql.SQLException 
 {
-	Object[] constraintValues =  { getCommandID() };
+    Object[] constraintValues =  { getCommandID() };
 
-	Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+    Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
-	if( results.length == SETTER_COLUMNS.length )
-	{
-		setCommand( (String) results[0] );
-		setLabel( (String)results[1] );
-		setCategory((String)results[2]);
-	}
-	else
-		throw new RuntimeException("Incorrect number of columns in result");
-	
+    if( results.length == SETTER_COLUMNS.length )
+    {
+        setCommand( (String) results[0] );
+        setLabel( (String)results[1] );
+        setCategory((String)results[2]);
+    }
+    else
+        throw new RuntimeException("Incorrect number of columns in result");
+    
 }
 /**
  * @param newCommandID java.lang.Integer
  */
 public void setCommandID(java.lang.Integer newCommandID) {
-	commandID = newCommandID;
+    commandID = newCommandID;
 }
 /**
  * @param newLabel java.lang.String
  */
 public void setLabel(java.lang.String newLabel) {
-	label = newLabel;
+    label = newLabel;
 }
 /**
  * toString() override
  */
 public String toString()
 {
-	return getLabel() + " : " + getCommand() + " : " + getCategory();
+    return getLabel() + " : " + getCommand() + " : " + getCategory();
 }
 /**
  * @exception java.sql.SQLException The exception description.
  */
 public void update() throws java.sql.SQLException 
 {
-	Object[] setValues = 
-	{
-		getCommand(),
-		getLabel(),
-		getCategory()
-	};
+    Object[] setValues = 
+    {
+        getCommand(),
+        getLabel(),
+        getCategory()
+    };
 
-	//if any of the values are null, return
-	if( !isValidValues(setValues) )
-		return;
+    //if any of the values are null, return
+    if( !isValidValues(setValues) )
+        return;
 
-	
-	Object[] constraintValues =  { getCommandID() };
+    
+    Object[] constraintValues =  { getCommandID() };
 
-	Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+    Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
-	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+    update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
-	/**
-	 * Returns the command, the actual command being requested.
-	 * @return String
-	 */
-	public String getCommand() {
-		return command;
-	}
+    /**
+     * Returns the command, the actual command being requested.
+     * @return String
+     */
+    public String getCommand() {
+        return command;
+    }
 
-	/**
-	 * Sets the command.
-	 * @param command_ The command to set
-	 */
-	public void setCommand(String command_)
-	{
-		command = command_;
-	}
+    /**
+     * Sets the command.
+     * @param command_ The command to set
+     */
+    public void setCommand(String command_)
+    {
+        command = command_;
+    }
 
-	/**
-	 * Returns the category of command (not used as of 9/4/04)
-	 * @return
-	 */
-	public String getCategory() {
-		return category;
-	}
+    /**
+     * Returns the category of command (not used as of 9/4/04)
+     * @return
+     */
+    public String getCategory() {
+        return category;
+    }
 
-	/**
-	 * Sets the category
-	 * @param String
-	 */
-	public void setCategory(String category_)
-	{
-		category = category_;
-	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
-	 */
-	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
-	{
-		ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
+    /**
+     * Sets the category
+     * @param String
+     */
+    public void setCategory(String category_)
+    {
+        category = category_;
+    }
+    /* (non-Javadoc)
+     * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
+     */
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
+    {
+        ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
-		//add the basic change method
-		list.add( new DBChangeMsg(
-						getCommandID().intValue(),
-						DBChangeMsg.CHANGE_COMMAND_DB,
-						DBChangeMsg.CAT_COMMAND,
-						DBChangeMsg.CAT_COMMAND,
-						dbChangeType ) );
+        //add the basic change method
+        list.add( new DBChangeMsg(
+                        getCommandID().intValue(),
+                        DBChangeMsg.CHANGE_COMMAND_DB,
+                        DBChangeMsg.CAT_COMMAND,
+                        DBChangeMsg.CAT_COMMAND,
+                        dbChangeType ) );
  
-		//if we are deleteing this Command, we need to take in account the DeviceTypeCommand entries that also get deleted	
-		if( dbChangeType == DbChangeType.DELETE )
-		{
-			//get all the deviceCommandIds that have this Command
-		    Vector<LiteDeviceTypeCommand> liteDevTypeCmds = YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(getCommandID().intValue());
-			
-		    for (LiteDeviceTypeCommand liteDeviceTypeCommand : liteDevTypeCmds) {
-            	DBChangeMsg msg = new DBChangeMsg(
-							liteDeviceTypeCommand.getDeviceCommandID(),
-							DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB,
-							DBChangeMsg.CAT_DEVICETYPE_COMMAND,
-							DBChangeMsg.CAT_DEVICETYPE_COMMAND,
-							dbChangeType );
-						
-				list.add( msg );
-			}	
-		}
-		
-		DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
-		return list.toArray( dbChange );
-		
-	}
+        //if we are deleteing this Command, we need to take in account the DeviceTypeCommand entries that also get deleted    
+        if( dbChangeType == DbChangeType.DELETE )
+        {
+            //get all the deviceCommandIds that have this Command
+            List<LiteDeviceTypeCommand> liteDevTypeCmds = YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(getCommandID());
+            
+            for (LiteDeviceTypeCommand liteDeviceTypeCommand : liteDevTypeCmds) {
+                DBChangeMsg msg = new DBChangeMsg(
+                            liteDeviceTypeCommand.getDeviceCommandId(),
+                            DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB,
+                            DBChangeMsg.CAT_DEVICETYPE_COMMAND,
+                            DBChangeMsg.CAT_DEVICETYPE_COMMAND,
+                            dbChangeType );
+                        
+                list.add( msg );
+            }    
+        }
+        
+        DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
+        return list.toArray( dbChange );
+        
+    }
 
 }

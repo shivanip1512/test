@@ -41,7 +41,6 @@
 					<!-- Including deviceGroupWidget's resources here since this particular
 					     widget is being added to the page via ajax  -->
 					<cti:includeScript link="JQUERY_COOKIE" />
-					<cti:includeScript link="JQUERY_SCROLLTO" />
 					<cti:includeScript link="JQUERY_TREE" />
 					<cti:includeScript link="JQUERY_TREE_HELPERS" />
 					<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>

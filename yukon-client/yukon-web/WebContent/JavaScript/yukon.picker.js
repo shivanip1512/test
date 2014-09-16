@@ -259,19 +259,15 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         if (json && json.hits.startIndex > 0) {
             this.previousIndex = json.hits.previousStartIndex;
-            $('.previous-page.js-enabled-action', $(pickerDiv)).show();
-            $('.previous-page.js-disabled-action', $(pickerDiv)).hide();
+            $('.previous-page', $(pickerDiv)).visible();
         } else {
-            $('.previous-page.js-enabled-action', $(pickerDiv)).hide();
-            $('.previous-page.js-disabled-action', $(pickerDiv)).show();
+            $('.previous-page', $(pickerDiv)).invisible();
         }
         if (json && json.hits.endIndex < json.hits.hitCount) {
             this.nextIndex = json.hits.endIndex;
-            $('.next-page.js-enabled-action', $(pickerDiv)).show();
-            $('.next-page.js-disabled-action', $(pickerDiv)).hide();
+            $('.next-page', $(pickerDiv)).visible();
         } else {
-            $('.next-page.js-enabled-action', $(pickerDiv)).hide();
-            $('.next-page.js-disabled-action', $(pickerDiv)).show();
+            $('.next-page', $(pickerDiv)).invisible();
         }
         $('.page-num-text', $(pickerDiv))[0].innerHTML = json ? json.pages : '';
     },

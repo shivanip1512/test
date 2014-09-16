@@ -133,7 +133,7 @@ public interface PaoDao {
     
     public LiteYukonPAObject[] getAllLiteRoutes();
     
-    public LiteYukonPAObject[] getRoutesByType(PaoType[] routeTypes);
+    public LiteYukonPAObject[] getRoutesByType(PaoType... routeTypes);
 
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address);

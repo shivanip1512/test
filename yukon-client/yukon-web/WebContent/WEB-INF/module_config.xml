@@ -175,6 +175,7 @@
       <page name="search" type="BASIC">
         <link>/search</link>
       </page>
+      <page name="commander" type="BASIC"/>
       <page name="trends" type="BASIC"/>
       <page name="trend" type="DETAIL">
         <labelArgument>${trendName}</labelArgument>
@@ -414,7 +415,7 @@
           </page>
         </pages>
       </page>
-      <page name="commander.select" type="BASIC" >
+      <page name="commander.select" type="BASIC">
         <link>/commander/select</link>
         <pages>
           <page name="commander.command" type="DETAIL_CHILD">

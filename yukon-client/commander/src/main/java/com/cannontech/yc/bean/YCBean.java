@@ -91,11 +91,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
                         + deviceErrorDesc.getDescription() + "<BR>" + returnMsg.getResultString());
             }
             
-            if (returnMsg.getVector().size() > 0) {
+            if (returnMsg.getMessages().size() > 0) {
                 
-                for (int i = 0; i < returnMsg.getVector().size(); i++) {
+                for (int i = 0; i < returnMsg.getMessages().size(); i++) {
                     
-                    Object o = returnMsg.getVector().elementAt(i);
+                    Object o = returnMsg.getMessages().get(i);
                     
                     if (o instanceof PointData) {
                         // Clear the Error Message Log, we did eventually read the meter.
@@ -144,7 +144,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
         
         log.debug(" DEVICE TYPE for command lookup: " + deviceType);
         
-        setLiteDeviceTypeCommandsVector(commandDao.getAllDevTypeCommands(deviceType));
+        setLiteDeviceTypeCommands(commandDao.getAllDevTypeCommands(deviceType));
     }
 
     public final LiteYukonPAObject[] getValidRoutes() {

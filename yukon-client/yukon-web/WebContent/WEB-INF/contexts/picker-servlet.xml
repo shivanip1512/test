@@ -61,9 +61,19 @@
             <bean class="com.cannontech.web.search.lucene.criteria.DeviceCriteria"/>
         </property>
     </bean>
+    <bean name="commanderDevicePicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.CommanderDeviceCriteria"/>
+        </property>
+    </bean>
     <bean name="meterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.MeterCriteria"/>
+        </property>
+    </bean>
+    <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.WaterUsageCriteria"/>
         </property>
     </bean>
     <bean name="voltageRegulatorPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
@@ -119,12 +129,6 @@
     <bean name="availableCapBankPicker" class="com.cannontech.web.picker.AvailableCapBankPicker"/>
     <bean name="availableVoltageRegulatorGangPicker" class="com.cannontech.web.picker.AvailableVoltageRegulatorGangPicker"/>
     <bean name="availableVoltageRegulatorPhasePicker" class="com.cannontech.web.picker.AvailableVoltageRegulatorPhasePicker"/>
-
-    <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
-        <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.WaterUsageCriteria"/>
-        </property>
-    </bean>
 
     <bean name="userPicker" class="com.cannontech.web.picker.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>

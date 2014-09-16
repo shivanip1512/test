@@ -2,7 +2,6 @@ package com.cannontech.web.amr.manual;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,83 +33,59 @@ import com.cannontech.yc.bean.YCBean;
 @CheckRoleProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER)
 public class ManualCommandController extends MultiActionController {
 
-	private PaoDao paoDao = null;
-	private MeterDao meterDao = null;
-	private CommandDao commandDao = null;
+    @Autowired private PaoDao paoDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private CommandDao commandDao;
+    
+    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-	public ManualCommandController() {
-		super();
-	}
+        ModelAndView mav = new ModelAndView("manualCommand.jsp");
 
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request,
+                "deviceId");
+        YukonMeter meter = meterDao.getForId(deviceId);
+        mav.addObject("deviceId", deviceId);
+        mav.addObject("deviceName", meter.getName());
 
-	public void setCommandDao(CommandDao commandDao) {
-		this.commandDao = commandDao;
-	}
+        // Get or create the YCBean and put it into the session
+        YCBean ycBean = (YCBean) request.getSession().getAttribute("YC_BEAN");
+        if (ycBean == null) {
+            ycBean = new YCBean();
+        }
+        request.getSession().setAttribute("YC_BEAN", ycBean);
 
-	@SuppressWarnings("unchecked")
-	public ModelAndView home(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException {
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        ycBean.setUserID(user.getUserID());
+        ycBean.setLiteYukonPao(deviceId);
+        ycBean.setDeviceType(deviceId);
+        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        ycBean.setUserContext(userContext);
 
-		ModelAndView mav = new ModelAndView("manualCommand.jsp");
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        mav.addObject("device", device);
+        mav.addObject("deviceType", ycBean.getDeviceType());
 
-		int deviceId = ServletRequestUtils.getRequiredIntParameter(request,
-				"deviceId");
-		YukonMeter meter = meterDao.getForId(deviceId);
-		mav.addObject("deviceId", deviceId);
-		mav.addObject("deviceName", meter.getName());
-
-		// Get or create the YCBean and put it into the session
-		YCBean ycBean = (YCBean) request.getSession().getAttribute("YC_BEAN");
-		if (ycBean == null) {
-			ycBean = new YCBean();
-		}
-		request.getSession().setAttribute("YC_BEAN", ycBean);
-
-		LiteYukonUser user = ServletUtil.getYukonUser(request);
-		ycBean.setUserID(user.getUserID());
-		ycBean.setLiteYukonPao(deviceId);
-		ycBean.setDeviceType(deviceId);
-		
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		ycBean.setUserContext(userContext);
-
-		LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-		mav.addObject("device", device);
-		mav.addObject("deviceType", ycBean.getDeviceType());
-
-		// Get the list of commands
-		Vector<LiteDeviceTypeCommand> commands = ycBean
-				.getLiteDeviceTypeCommandsVector();
-		List<LiteCommand> commandList = new ArrayList<LiteCommand>();
-		for (LiteDeviceTypeCommand ldtc : commands) {
-
-			LiteCommand command = commandDao.getCommand(ldtc.getCommandID());
-			if (ldtc.isVisible()
-					&& ycBean
-							.isAllowCommand(command.getCommand(), user, device)) {
-				commandList.add(command);
-			}
-		}
-		mav.addObject("commandList", commandList);
-
-		String errorMsg = ServletRequestUtils.getStringParameter(request,
-				"errorMsg");
-		if (errorMsg == null && ycBean.getErrorMsg() != null) {
-			errorMsg = ycBean.getErrorMsg();
-			ycBean.setErrorMsg("");
-		}
-
-		mav.addObject("errorMsg", errorMsg);
-
-		return mav;
-	}
-
-	@Autowired
-	public void setMeterDao(MeterDao meterDao) {
-	    this.meterDao = meterDao;
-	}
-	
+        // Get the list of commands
+        List<LiteDeviceTypeCommand> commands = ycBean.getLiteDeviceTypeCommands();
+        List<LiteCommand> commandList = new ArrayList<LiteCommand>();
+        for (LiteDeviceTypeCommand ldtc : commands) {
+            LiteCommand command = commandDao.getCommand(ldtc.getCommandId());
+            if (ldtc.isVisible() && ycBean.isAllowCommand(command.getCommand(), user, device)) {
+                commandList.add(command);
+            }
+        }
+        mav.addObject("commandList", commandList);
+        
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
+        if (errorMsg == null && ycBean.getErrorMsg() != null) {
+            errorMsg = ycBean.getErrorMsg();
+            ycBean.setErrorMsg("");
+        }
+        
+        mav.addObject("errorMsg", errorMsg);
+        
+        return mav;
+    }
+    
 }

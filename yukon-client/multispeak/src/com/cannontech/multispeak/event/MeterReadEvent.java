@@ -119,12 +119,12 @@ public class MeterReadEvent extends MultispeakEvent{
         else {
             
             CTILogger.info("MeterReadEvent(" + yukonMeter.getMeterNumber() + ") - Reading Successful" );
-            if(returnMsg.getVector().size() > 0 )
+            if(returnMsg.getMessages().size() > 0 )
             {
                 PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
-                for (int i = 0; i < returnMsg.getVector().size(); i++)
+                for (int i = 0; i < returnMsg.getMessages().size(); i++)
                 {
-                    Object o = returnMsg.getVector().elementAt(i);
+                    Object o = returnMsg.getMessages().get(i);
                     //TODO SN - Hoping at this point that only one value comes back in the point data vector 
                     if (o instanceof PointData) {
                         PointData pointData = (PointData) o;

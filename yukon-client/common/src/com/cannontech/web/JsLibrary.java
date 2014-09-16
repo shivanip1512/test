@@ -23,7 +23,7 @@ public enum JsLibrary {
     JQUERY_IFRAME_TRANSPORT("/JavaScript/lib/jQuery/plugins/fileupload/jquery.iframe-transport.js"), //https://github.com/blueimp/jQuery-File-Upload/tree/master/js
     JQUERY_MOUSEWHEEL("/JavaScript/lib/jQuery/plugins/mousewheel/jquery.mousewheel.min.js"), //https://github.com/brandonaaron/jquery-mousewheel
     JQUERY_PLACEHOLDER("/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"), //https://github.com/mathiasbynens/jquery-placeholder
-    JQUERY_SCROLLTO("/JavaScript/lib/jQuery/plugins/scrollTo/jquery.scrollTo.min.js"), //http://demos.flesler.com/jquery/scrollTo/
+    JQUERY_SCROLLTO("/resources/js/lib/scroll.to/jquery.scrollTo.min.js"), //https://github.com/flesler/jquery.scrollTo/releases
     JQUERY_SPECTRUM("/JavaScript/lib/jQuery/plugins/spectrum/spectrum.js"), //http://bgrins.github.io/spectrum/
     JQUERY_TIPSY("/JavaScript/lib/jQuery/plugins/tipsy/javascripts/jquery.tipsy.js"), //https://github.com/jaz303/tipsy
     JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.js"), //http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
@@ -66,6 +66,9 @@ public enum JsLibrary {
     YUKON_SURVEYS_OPT_OUT("/JavaScript/yukon.surveys.optOut.js"),
     YUKON_TIME_FORMATTER("/JavaScript/yukon.format.time.js"),
     
+    MOMENT("/resources/js/lib/moment/moment.min.js"),
+    MOMENT_TZ("/resources/js/lib/moment/moment-timezone-with-data.min.js"),
+    JS_TIMEZONE_DETECT("/resources/js/lib/js.timezone.detect/jstz-1.0.4.min.js"),
     MODERNIZR("/JavaScript/lib/modernizr/custom.js");
     
     private String path = "";

@@ -29,7 +29,6 @@
 
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 <cti:includeCss link="/resources/js/lib/dynatree/skin/device.group.css"/>
-<cti:includeScript link="JQUERY_SCROLLTO"/>
 <cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
     <cti:includeScript link="JQUERY_TREE"/>
 </cti:checkRolesAndProperties>
@@ -42,7 +41,7 @@
 <c:set var="titleKey" value="${multi ? 'yukon.common.selectGroups.title' : 'yukon.common.selectGroup.title'}"/>
 <c:set var="selectKey" value="${multi ? 'yukon.common.selectGroups' : 'yukon.common.selectGroup'}"/>
 
-<a href="javascript:void(0);" 
+<a href="javascript:void(0);"
         <c:if test="${not empty pageScope.id}">id="${id}"</c:if> 
         <c:if test="${multi}">data-multi</c:if>
         data-groups="${fn:escapeXml(groups)}"

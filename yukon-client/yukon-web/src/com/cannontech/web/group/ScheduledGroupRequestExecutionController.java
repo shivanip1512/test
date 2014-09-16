@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -192,7 +191,7 @@ public class ScheduledGroupRequestExecutionController {
 		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
 		
 		// commands
-		List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, userContext.getYukonUser());
+		List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
 		mav.addObject("commands", commands);
 		
 		// cron
@@ -425,7 +424,7 @@ public class ScheduledGroupRequestExecutionController {
             
         } else {
             // check that the command is in the authorized list (implies that it is authorized)
-            List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, userContext.getYukonUser());
+            List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
             List<String> commandStrings = new MappingList<LiteCommand, String>(commands, new ObjectMapper<LiteCommand, String>() {
                 @Override
                 public String map(LiteCommand from) throws ObjectMappingException {
@@ -535,9 +534,9 @@ public class ScheduledGroupRequestExecutionController {
         
         this.meterCommands = new ArrayList<LiteCommand>();
         
-        Vector<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(DeviceTypes.STRING_MCT_410IL[0]);
+        List<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(DeviceTypes.STRING_MCT_410IL[0]);
         for (LiteDeviceTypeCommand devTypeCmd : devTypeCmds) {
-            int cmdId = devTypeCmd.getCommandID();
+            int cmdId = devTypeCmd.getCommandId();
             LiteCommand liteCmd = commandDao.getCommand(cmdId);
             this.meterCommands.add(liteCmd);
         }

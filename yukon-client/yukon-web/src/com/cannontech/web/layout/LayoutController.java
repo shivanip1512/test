@@ -73,19 +73,22 @@ public class LayoutController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonUserDao userDao;
     @Autowired private WebUtilityService webUtilService;
-
+    
     private List<String> layoutScriptFiles;
-
+    
     @PostConstruct
     public void initialize() {
+        
         boolean dev = configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
-
+        
         Builder<String> builder = ImmutableList.builder();
-
+        
         builder.add(JsLibrary.DEBUGGER.getPath());
-
         builder.add(JsLibrary.MODERNIZR.getPath());
-
+        builder.add(JsLibrary.JS_TIMEZONE_DETECT.getPath());
+        builder.add(JsLibrary.MOMENT.getPath());
+        builder.add(JsLibrary.MOMENT_TZ.getPath());
+        
         builder.add(dev ? JsLibrary.JQUERY.getPath() : JsLibrary.JQUERY_MIN.getPath());
         builder.add(dev ? JsLibrary.JQUERY_UI.getPath() : JsLibrary.JQUERY_UI_MIN.getPath());
         builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
@@ -95,7 +98,8 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_TIPSY.getPath());
         builder.add(JsLibrary.JQUERY_SPECTRUM.getPath());
         builder.add(JsLibrary.JQUERY_CHOSEN.getPath());
-
+        builder.add(JsLibrary.JQUERY_SCROLLTO.getPath());
+        
         // add the other standard libs
         builder.add(JsLibrary.YUKON.getPath());
         builder.add(JsLibrary.YUKON_ALERTS.getPath());
@@ -108,7 +112,7 @@ public class LayoutController {
         builder.add("/JavaScript/yukon.analytics.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
         builder.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath());
-
+        
         layoutScriptFiles = builder.build();
     }
 
@@ -124,7 +128,7 @@ public class LayoutController {
         
         // get data passed over - in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
-
+        
         // create a callback for writing out the body (as opposed to just putting a string of the body in the model)
         model.addAttribute("bodyContent", new Writable() {
             @Override
@@ -132,17 +136,17 @@ public class LayoutController {
                 bodyContent.writeOut(out);
             }
         });
-
+        
         final StandardPageInfo tagInfo = StandardPageTag.getStandardPageInfo(request);
         model.addAttribute("info", tagInfo);
-
+        
         // used for determining page title etc...
         final Module moduleBase = getModuleBase(tagInfo.getModuleName());
         model.addAttribute("module", moduleBase);
-
+        
         // parse the module_config.xml and figure out our hierarchy for menus etc...
         PageInfo pageInfo = moduleBase.getPageInfo(tagInfo.getPageName());
-
+        
         PageDetail pageDetailTemp;
         if (pageInfo != null) {
             model.addAttribute("canFavorite", !pageInfo.isHideFavorite());
@@ -167,42 +171,42 @@ public class LayoutController {
                     pageDetailTemp.setPageTitle(accessor.getMessageWithDefault(
                         "yukon.web.defaults.pageTitle", ""));
                 }
-
+                
             }
         }
-
+        
         final PageDetail pageDetail = pageDetailTemp;
-
+        
         model.addAttribute("pageDetail", pageDetail);
-
+        
         model.addAttribute("servletPath", tagInfo.getServletPath());
-
+        
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);
         model.addAttribute("moduleConfigCss", moduleConfigCssList);
-
+        
         List<String> innerContentCssList = new ArrayList<String>(tagInfo.getCssFiles());
         removeDuplicates(innerContentCssList);
         model.addAttribute("innerContentCss", innerContentCssList);
-
+        
         String cssLocations = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
         cssLocations = StringUtils.defaultString(cssLocations, "");
         String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
         List<String> loginGroupCssList = new ArrayList<String>(Arrays.asList(cssLocationArray));
         removeDuplicates(loginGroupCssList);
         model.addAttribute("loginGroupCss", loginGroupCssList);
-
+        
         Set<String> finalScriptList = new LinkedHashSet<String>();
-
+        
         finalScriptList.addAll(layoutScriptFiles);
-
+        
         // get script files declared in the module
         finalScriptList.addAll(moduleBase.getScriptFiles());
         finalScriptList.addAll(tagInfo.getScriptFiles());
         model.addAttribute("javaScriptFiles", finalScriptList);
-
+        
         LayoutSkinEnum skin = moduleBase.getSkin();
-
+        
         // setup menu
         if (skin.isLeftSideMenu()) {
             // handle new and old methods for specifying menu (but not both)
@@ -215,9 +219,9 @@ public class LayoutController {
             if (showOldMenu && showNewMenu) {
                 throw new IllegalStateException("Menu cannot be specified on JSP and in module_config.xml");
             }
-
+            
             String menuSelection = null;
-
+            
             if (showOldMenu) {
                 menuSelection = tagInfo.getMenuSelection();
                 showMenu = true;
@@ -225,7 +229,7 @@ public class LayoutController {
                 menuSelection = pageInfo.getMenuSelection();
                 showMenu = true;
             }
-
+            
             if (showMenu) {
                 final LeftSideMenuRenderer menuRenderer =
                     new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
@@ -263,7 +267,7 @@ public class LayoutController {
                     searchRenderer.render(moduleBase, request, out);
                 }
             });
-
+            
             model.addAttribute("bcRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
@@ -276,23 +280,23 @@ public class LayoutController {
                 }
             });
         }
-
+        
         LiteYukonUser yukonUser = userContext.getYukonUser();
         String username = yukonUser.getUsername();
         String energyCompanyName = null;
-
+        
         try {
             YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
         } catch (EnergyCompanyNotFoundException e) {
             // The user does not need an Energy Company just to log in.
         }
-
+        
         model.addAttribute("energyCompanyName", energyCompanyName);
         model.addAttribute("username", username);
-
+        
         model.addAttribute("displayName", buildDisplayName(userDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
-
+        
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         model.addAttribute("showContextualNavigation", showContextualNavigation);
         if (showContextualNavigation) {
@@ -303,15 +307,15 @@ public class LayoutController {
                 }
             });
         }
-
+        
         model.addAttribute("currentTime", new Date());
-
+        
         model.addAttribute("alertSounds", prefService.getDefaultNotificationAlertSound(yukonUser));
         model.addAttribute("alertFlash", prefService.getDefaultNotificationAlertFlash(yukonUser));
-
+        
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-cache, no-store");
-
+        
         return skin.getViewName();
     }
     
@@ -335,12 +339,12 @@ public class LayoutController {
         }
         return displayName;
     }
-
+    
     @ModelAttribute("yukonVersion")
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();
     }
-
+    
     @ModelAttribute("showNM")
     public boolean showNetworkManagerLink(ModelMap model, LiteYukonUser user) {
         boolean showNM = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_NM_ACCESS, user);
@@ -350,7 +354,7 @@ public class LayoutController {
         }
         return showNM;
     }
-
+    
     @ModelAttribute("buildInfo")
     public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
@@ -360,16 +364,16 @@ public class LayoutController {
         }
         return "undefined";
     }
-
+    
     private Module getModuleBase(String moduleName) {
         Module moduleBase = moduleBuilder.getModule(moduleName);
-
+        
         return moduleBase;
     }
-
+    
     private void removeDuplicates(List<String> list) {
         Set<String> set = new LinkedHashSet<String>();
-
+        
         for (String file : list) {
             // we want the order to reflect the position of the last reference to the file
             file = StringUtils.strip(file);
@@ -378,8 +382,9 @@ public class LayoutController {
                 set.add(file);
             }
         }
-
+        
         list.clear();
         list.addAll(set);
     }
+    
 }

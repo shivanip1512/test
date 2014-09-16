@@ -61,10 +61,9 @@ public class ReturnSerializer
         msg.setRouteOffset(entity.get_routeId());
         msg.setStatus(entity.get_status());
         msg.setUserMessageID(entity.get_userMessageId());
-        msg.setVector(helper.convertToMessageVector(entity.get_baseMessage().get_bag(), Message.class));
+        msg.setMessages(helper.convertToMessageList(entity.get_baseMessage().get_bag(), Message.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void
         populateThriftEntityFromMessage(ThriftMessageFactory msgFactory, Return msg,
@@ -84,6 +83,6 @@ public class ReturnSerializer
 
         // we have to populate the multi message as well (event if this hierarchy does not exist in java, it does on the
         // cpp side)
-        entity.get_baseMessage().set_bag(helper.convertToGenericList(msg.getVector()));
+        entity.get_baseMessage().set_bag(helper.convertToGenericList(msg.getMessages()));
     }
 }

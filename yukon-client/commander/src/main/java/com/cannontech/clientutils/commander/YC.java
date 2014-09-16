@@ -69,6 +69,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.database.db.command.CommandCategoryUtil;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
@@ -176,7 +177,7 @@ public class YC extends Observable implements MessageListener {
     private int loopType = NOLOOP;
     
     // Contains LiteDeviceTypeCommand for the deviceType selected.
-    private Vector<LiteDeviceTypeCommand> liteDeviceTypeCommandsVector = new Vector<>();
+    private List<LiteDeviceTypeCommand> liteDeviceTypeCommands = new ArrayList<>();
     
     // The device Type for the currently selected object in the tree model. Values found in DeviceTypes class.
     protected String deviceType;
@@ -391,7 +392,7 @@ public class YC extends Observable implements MessageListener {
         for (int i = 0; i < commandVec.size(); i++) {
             String command = getExecuteCmdsVector().get(i);
             if (liteYukonPao.getPaoType().isPlc() || liteYukonPao.getPaoType().isRepeater()) {
-                if (command.indexOf("noqueue") < 0) {
+                if (command.indexOf("noqueue") == -1) {
                     // Replace the old command with this one.
                     getExecuteCmdsVector().setElementAt(command + getQueueCommandString(), i);
                 }
@@ -692,9 +693,6 @@ public class YC extends Observable implements MessageListener {
         return false;
     }
     
-   /**
-    * Set the commandFileName based on the item instance.
-    */
     public void setDeviceType(LiteBase liteBase) {
         
         if (liteBase instanceof LiteYukonPAObject) {
@@ -710,13 +708,10 @@ public class YC extends Observable implements MessageListener {
         }
     }
     
-    /**
-     * Set the commandFileName based on the item instance.
-     */
     public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
         log.debug(" DEVICE TYPE for command lookup: " + this.deviceType);
-        setLiteDeviceTypeCommandsVector(commandDao.getAllDevTypeCommands(this.deviceType));
+        setLiteDeviceTypeCommands(commandDao.getAllDevTypeCommands(this.deviceType));
     }
     
     /**
@@ -811,16 +806,16 @@ public class YC extends Observable implements MessageListener {
         
         if (getCommandMode() == DEFAULT_MODE) {
             // Need to do all checks and setup for DEFAULT_MODE
-            if (getLiteDeviceTypeCommandsVector() != null) {
+            if (getLiteDeviceTypeCommands() != null) {
                 
                 String friendlyCommand = command.trim();
                 // Try to match the entered command string alias to a label in the database, return the actual command.
                 // OR
                 // Try to match the entered command string alias to the actual command in the database, return the actual command.
-                for (int i = 0; i < getLiteDeviceTypeCommandsVector().size(); i++) {
-                    LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand) getLiteDeviceTypeCommandsVector().get(i);
+                for (int i = 0; i < getLiteDeviceTypeCommands().size(); i++) {
+                    LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand) getLiteDeviceTypeCommands().get(i);
                     if (ldtc.isVisible()) {
-                        LiteCommand liteCommand = commandDao.getCommand(ldtc.getCommandID());
+                        LiteCommand liteCommand = commandDao.getCommand(ldtc.getCommandId());
                         if (liteCommand.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
                             liteCommand.getCommand().trim().equalsIgnoreCase(friendlyCommand)) {
                             return liteCommand.getCommand();
@@ -911,8 +906,10 @@ public class YC extends Observable implements MessageListener {
                 
                 if (!getRequestMessageIDs().contains(returnMsg.getUserMessageID())) {
                     
-                    log.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
-                    log.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
+                    log.debug("Unknown Message: "+ returnMsg.getUserMessageID() 
+                            + " Command [" + returnMsg.getCommandString()+"]");
+                    log.debug("Unknown Message: "+ returnMsg.getUserMessageID() 
+                            + " Result [" + returnMsg.getResultString()+"]");
                     return;
                     
                 } else {
@@ -944,7 +941,7 @@ public class YC extends Observable implements MessageListener {
                 }
                 
                 // Add all PointData.getStr() objects to the output.
-                for (Object o : returnMsg.getVector()) {
+                for (Object o : returnMsg.getMessages()) {
                     
                     if (o instanceof PointData) {
                         
@@ -999,7 +996,8 @@ public class YC extends Observable implements MessageListener {
 
                 if (returnMsg.getStatus() > 1) {
                     
-                    DeviceErrorDescription deviceErrorDesc = deviceErrorTranslatorDao.translateErrorCode(returnMsg.getStatus());
+                    DeviceErrorDescription deviceErrorDesc = 
+                            deviceErrorTranslatorDao.translateErrorCode(returnMsg.getStatus());
                     writeOutputMessage(OutputMessage.DEBUG_MESSAGE, 
                             "<B>" + deviceErrorDesc.getCategory() + "</B> -- " 
                             + deviceErrorDesc.getDescription(), messageType);
@@ -1104,19 +1102,15 @@ public class YC extends Observable implements MessageListener {
         return currentUserMessageID;
     }
     
-    public Vector<LiteDeviceTypeCommand> getLiteDeviceTypeCommandsVector () {
-        return liteDeviceTypeCommandsVector;
+    public List<LiteDeviceTypeCommand> getLiteDeviceTypeCommands() {
+        return liteDeviceTypeCommands;
     }
     
-    /**
-     * Vector of com.cannontech.database.data.lite.LiteDeviceTypeCommand values.
-     * @param vector
-     */
-    public void setLiteDeviceTypeCommandsVector (Vector<LiteDeviceTypeCommand> vector) {
-        liteDeviceTypeCommandsVector = vector;
-        Collections.sort(this.liteDeviceTypeCommandsVector, LiteComparators.liteDeviceTypeCommandComparator);
+    public void setLiteDeviceTypeCommands(List<LiteDeviceTypeCommand> commands) {
+        liteDeviceTypeCommands = commands;
+        Collections.sort(this.liteDeviceTypeCommands, LiteComparators.liteDeviceTypeCommandComparator);
     }
-
+    
     /**
      * Returns the currently selected object from the tree model's device type string.
      */
@@ -1215,31 +1209,31 @@ public class YC extends Observable implements MessageListener {
                         if (PaoType.getPaoTypeId(fileName) != PaoType.INVALID) {
                             category = fileName;
                         } else if (fileName.equalsIgnoreCase("alpha-base")) {
-                            category = CommandCategory.STRING_CMD_ALPHA_BASE;
+                            category = CommandCategory.ALPHA_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("cbc-base")) {
-                            category = CommandCategory.STRING_CMD_CBC_BASE;
+                            category = CommandCategory.CBC_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("ccu-base")) {
-                            category = CommandCategory.STRING_CMD_CCU_BASE;
+                            category = CommandCategory.CCU_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("iedbase")) {
-                            category = CommandCategory.STRING_CMD_IED_BASE;
+                            category = CommandCategory.IED_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("ion-base")) {
-                            category = CommandCategory.STRING_CMD_ION_BASE;
+                            category = CommandCategory.ION_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("lcu-base")) {
-                            category = CommandCategory.STRING_CMD_LCU_BASE;
+                            category = CommandCategory.LCU_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("lsbase")) {
-                            category = CommandCategory.STRING_CMD_LP_BASE;
+                            category = CommandCategory.LP_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("loadgroup-base")) {
-                            category = CommandCategory.STRING_CMD_LOAD_GROUP_BASE;
+                            category = CommandCategory.LOAD_GROUP_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("mct-base")) {
-                            category = CommandCategory.STRING_CMD_MCT_BASE;
+                            category = CommandCategory.MCT_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("rtu-base")) {
-                            category = CommandCategory.STRING_CMD_RTU_BASE;
+                            category = CommandCategory.RTU_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("repeater-base")) {
-                            category = CommandCategory.STRING_CMD_REPEATER_BASE;
+                            category = CommandCategory.REPEATER_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("tcu-base")) {
-                            category = CommandCategory.STRING_CMD_TCU_BASE;
+                            category = CommandCategory.TCU_BASE.getDbString();
                         } else if (fileName.equalsIgnoreCase("lcrserial")) {
-                            category = CommandCategory.STRING_CMD_SERIALNUMBER;
+                            category = CommandCategory.SERIALNUMBER.getDbString();
                         } else {
                             log.info("Unknown filename: " + fileName);
                         }
@@ -1323,9 +1317,10 @@ public class YC extends Observable implements MessageListener {
         
         int nextId = com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias());
         
-        if (CommandCategory.isCommandCategory(deviceType)) {
+        if (CommandCategoryUtil.isCommandCategory(deviceType)) {
             // The deviceType is actually a category, not a deviceType from YukonPaobject.paoType column
-            ArrayList<PaoType> paoTypes = CommandCategory.getAllTypesForCategory(deviceType);
+            CommandCategory category = CommandCategory.valueOf(deviceType);
+            List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(category);
             DeviceTypeCommand deviceTypeCommand = null;
             for (PaoType paoType : paoTypes) {
                 //Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know

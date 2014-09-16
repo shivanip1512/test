@@ -34,7 +34,7 @@
             </c:choose>
         </h3>
         <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
-            <cti:icon icon="icon-help" classes="cp" data-popup="#box-container-info-popup-${thisId}"/>
+            <cti:icon icon="icon-help" classes="cp" data-popup="#box-container-info-popup-${thisId}" data-popup-toggle=""/>
         </c:if>
         <c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
             <div class="controls" id="${thisId}_control">

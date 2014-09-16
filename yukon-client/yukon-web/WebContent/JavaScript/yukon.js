@@ -105,6 +105,13 @@ if (!String.prototype.contains) {
     };
 }
 
+/** String.trim */
+if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+        return this.replace(/^[\s\xA0]+|[\s\xA0]+$/g, '');
+    };
+}
+
 /** Yukon Module */
 var yukon = (function () {
     var mod;
@@ -1131,62 +1138,93 @@ yukon.ui = (function () {
     return mod;
 })();
 
-/** Add some helpful functionality to jQuery */
-$.fn.selectText = function () {
-    var text = this[0],
-        range,
-        selection;
-    if (document.body.createTextRange) {
-        range = document.body.createTextRange();
-        range.moveToElementText(text);
-        range.select();
-    } else if (window.getSelection) {
-        selection = window.getSelection();
-        range = document.createRange();
-        range.selectNodeContents(text);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }
-};
-
-$.fn.toggleDisabled = function () {
-    return this.each(function () {
-        if ($(this).is(':input')) {
-            this.disabled = !this.disabled;
+/** JQUERY PLUGINS */
+(function () {
+    /** Add some helpful functionality to jQuery */
+    $.fn.selectText = function () {
+        var text = this[0],
+            range,
+            selection;
+        if (document.body.createTextRange) {
+            range = document.body.createTextRange();
+            range.moveToElementText(text);
+            range.select();
+        } else if (window.getSelection) {
+            selection = window.getSelection();
+            range = document.createRange();
+            range.selectNodeContents(text);
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
-    });
-};
+    };
+    
+    /** Disable everything in the collection that is an html form input type. */
+    $.fn.toggleDisabled = function () {
+        return this.each(function () {
+            if ($(this).is(':input')) {
+                this.disabled = !this.disabled;
+            }
+        });
+    };
+    
+    /** Flash an element's background color over a duration. */
+    $.fn.flashColor = function (args) {
+        return this.each(function () {
+            var _self = $(this),
+                prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
+            _self.data('previous_color', prevColor);
 
-$.fn.flashColor = function (args) {
-    return this.each(function () {
-        var _self = $(this),
-            prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
-        _self.data('previous_color', prevColor);
-
-        if (typeof(args) === 'string') {
-            _self.stop(true);
-            _self.css({backgroundColor: args}).animate({backgroundColor: prevColor, duration: 1000});
-        } else if (typeof(args) === 'object' && typeof(args.color) === 'string') {
-            _self.stop(true);
-            _self.css({backgroundColor: args.color}).animate({backgroundColor: prevColor}, args);
-        }
-    });
-};
-
-$.fn.flashYellow = function (duration) {
-    return this.each(function () {
-        if (typeof(duration) != 'number') {
-            duration = 0.8;
-        }
-        $(this).flashColor({color: '#FF0', duration: duration * 1000});
-    });
-};
+            if (typeof(args) === 'string') {
+                _self.stop(true);
+                _self.css({backgroundColor: args}).animate({backgroundColor: prevColor, duration: 1000});
+            } else if (typeof(args) === 'object' && typeof(args.color) === 'string') {
+                _self.stop(true);
+                _self.css({backgroundColor: args.color}).animate({backgroundColor: prevColor}, args);
+            }
+        });
+    };
+    
+    /** Flash an element with a yellow background over .8 seconds. */
+    $.fn.flashYellow = function (duration) {
+        return this.each(function () {
+            if (typeof(duration) != 'number') {
+                duration = 0.8;
+            }
+            $(this).flashColor({color: '#FF0', duration: duration * 1000});
+        });
+    };
+    
+    /** Set visibility to visible */
+    $.fn.visible = function() {
+        return this.each(function () {
+            $(this).css('visibility', 'visible');
+        });
+    };
+    
+    /** Set visibility to hidden */
+    $.fn.invisible = function() {
+        return this.each(function () {
+            $(this).css('visibility', 'hidden');
+        });
+    };
+    
+    /** Toggle visibility */
+    $.fn.visibilityToggle = function() {
+        return this.each(function () {
+            $(this).css('visibility', function (i, visibility) {
+                return (visibility === 'visible') ? 'hidden' : 'visible';
+            });
+        });
+    };
+    
+})();
 
 /** Initialize the lib */
 $(function () {
+    
     yukon.ui.init();
     yukon.ui.initSitewideSearchAutocomplete();
-
+    
     //turn off ajax caching application-wide by default
     $.ajaxSetup({cache: false});
 });

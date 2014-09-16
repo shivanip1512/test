@@ -19,6 +19,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.PaoDao;
@@ -76,7 +77,6 @@ import com.cannontech.yukon.server.cache.ContactLoader;
 import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
 import com.cannontech.yukon.server.cache.DeviceCommPortLoader;
 import com.cannontech.yukon.server.cache.DeviceMeterGroupLoader;
-import com.cannontech.yukon.server.cache.DeviceTypeCommandLoader;
 import com.cannontech.yukon.server.cache.GearLoader;
 import com.cannontech.yukon.server.cache.GraphDefinitionLoader;
 import com.cannontech.yukon.server.cache.HolidayScheduleLoader;
@@ -99,6 +99,7 @@ import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
+import com.google.common.collect.Lists;
 
 /**
  * All the action is here!
@@ -114,11 +115,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
+    @Autowired private CommandDao commandDao;
 
     private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
     private List<LiteYukonPAObject> allYukonPAObjects = null;
-    // private ArrayList allPoints = null;
     private List<LitePoint> allSystemPoints = null;
     private List<LiteNotificationGroup> allNotificationGroups = null;
 
@@ -151,38 +152,35 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         null;
 
     // lists that are created by the joining/parsing of existing lists
-    private List<LiteYukonPAObject> allUnusedCCDevices = null; // PAO
-    private List<LiteYukonPAObject> allCapControlFeeders = null; // PAO
-    private List<LiteYukonPAObject> allCapControlSubBuses = null; // PAO
-    private List<LiteYukonPAObject> allCapControlSubStations = null; // PAO
-    private List<LiteYukonPAObject> allDevices = null; // PAO
-    private List<LiteYukonPAObject> allLMPrograms = null; // PAO
-    private List<LiteYukonPAObject> allLMControlAreas = null; // PAO
-    private List<LiteYukonPAObject> allLMGroups = null;// PAO
-    private List<LiteYukonPAObject> allLoadManagement = null; // PAO
-    private List<LiteYukonPAObject> allPorts = null; // PAO
-    private List<LiteYukonPAObject> allRoutes = null; // PAO
+    private List<LiteYukonPAObject> allUnusedCCDevices = null;
+    private List<LiteYukonPAObject> allCapControlFeeders = null;
+    private List<LiteYukonPAObject> allCapControlSubBuses = null;
+    private List<LiteYukonPAObject> allCapControlSubStations = null;
+    private List<LiteYukonPAObject> allDevices = null;
+    private List<LiteYukonPAObject> allLMPrograms = null;
+    private List<LiteYukonPAObject> allLMControlAreas = null;
+    private List<LiteYukonPAObject> allLMGroups = null;
+    private List<LiteYukonPAObject> allLoadManagement = null;
+    private List<LiteYukonPAObject> allPorts = null;
+    private List<LiteYukonPAObject> allRoutes = null;
 
     // Maps that are created by the joining/parsing of existing lists
     // private HashMap allPointidMultiplierHashMap = null;
     // private Map allPointIDOffsetHashMap = null;
     // private Map allPointsMap = null;
     private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
-    private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<Integer, LiteCustomer>(1000, .75f,
-        30);
-    private final Map<Integer, LiteContact> allContactsMap =
-        new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
+    private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<>(1000, .75f, 30);
+    private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<>(1000, .75f, 30);
 
     // derived from allYukonUsers,allYukonRoles,allYukonGroups
     // see type info in IDatabaseCache
-    private List<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
+    private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands = null;
     private List<LiteCommand> allCommands = null;
     private Map<Integer, LiteCommand> allCommandsMap = null;
     private Map<Integer, LiteStateGroup> allStateGroupMap = null;
     private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
 
-    private final Map<Integer, LiteContact> userContactMap =
-        new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
+    private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<>(1000, .75f, 30);
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
     private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
 
@@ -797,26 +795,36 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         return allYukonGroupRolePropertiesMap;
     }
-
+    
     @Override
-    public synchronized List<LiteDeviceTypeCommand> getAllDeviceTypeCommands() {
-
-        if (allDeviceTypeCommands != null) {
-            return allDeviceTypeCommands;
+    public synchronized Map<Integer, LiteDeviceTypeCommand> getAllDeviceTypeCommandsMap() {
+        
+        if (allDeviceTypeCommands == null) {
+            allDeviceTypeCommands = new ConcurrentHashMap<>(1000, .75f, 30);
+            for (LiteDeviceTypeCommand command : commandDao.getAllDeviceTypeCommands()) {
+                allDeviceTypeCommands.put(command.getDeviceCommandId(), command);
+            }
         }
-
-        allDeviceTypeCommands = new ArrayList<>();
-        DeviceTypeCommandLoader devTypeCmdLoader = new DeviceTypeCommandLoader(allDeviceTypeCommands, databaseAlias);
-        devTypeCmdLoader.run();
+        
         return allDeviceTypeCommands;
     }
-
+    
+    @Override
+    public synchronized List<LiteDeviceTypeCommand> getAllDeviceTypeCommands() {
+        return Lists.newArrayList(getAllDeviceTypeCommandsMap().values());
+    }
+    
+    @Override
+    public synchronized LiteDeviceTypeCommand getDeviceTypeCommand(int deviceCommandId) {
+        return getAllDeviceTypeCommandsMap().get(deviceCommandId);
+    }
+    
     public static synchronized IDatabaseCache getInstance() {
+        
         if (cache == null) {
             cache = new ServerDatabaseCache();
-            // cache.setDbChangeListener( new CacheDBChangeListener() );
         }
-
+        
         return cache;
     }
 
@@ -1260,53 +1268,33 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return lBase;
     }
 
-    private synchronized LiteBase handleDeviceTypeCommandChange(DbChangeType dbChangeType, int id) {
-        boolean alreadyAdded = false;
+    private synchronized LiteBase handleDeviceTypeCommandChange(DbChangeType change, int id) {
+        
         LiteBase lBase = null;
-
-        // if the storage is not already loaded, we must not care about it
-        if (allDeviceTypeCommands == null) {
-            return lBase;
-        }
-
-        switch (dbChangeType) {
-        case ADD:
-            for (int i = 0; i < allDeviceTypeCommands.size(); i++) {
-                if (allDeviceTypeCommands.get(i).getDeviceCommandID() == id) {
-                    alreadyAdded = true;
-                    lBase = allDeviceTypeCommands.get(i);
-                    break;
-                }
+        
+        Map<Integer, LiteDeviceTypeCommand> commands = getAllDeviceTypeCommandsMap();
+        
+        if (change == DbChangeType.ADD) {
+            LiteDeviceTypeCommand command = commands.get(id);
+            if (command != null) {
+                lBase = command;
+            } else {
+                command = commandDao.getDeviceTypeCommand(id);
+                commands.put(command.getDeviceCommandId(), command);
+                lBase = command;
             }
-            if (!alreadyAdded) {
-                LiteDeviceTypeCommand ldtc = new LiteDeviceTypeCommand(id);
-                ldtc.retrieve(databaseAlias);
-                allDeviceTypeCommands.add(ldtc);
-                lBase = ldtc;
-            }
-            break;
-        case UPDATE:
-            for (int i = 0; i < allDeviceTypeCommands.size(); i++) {
-                if (allDeviceTypeCommands.get(i).getDeviceCommandID() == id) {
-                    allDeviceTypeCommands.get(i).retrieve(databaseAlias);
-                    lBase = allDeviceTypeCommands.get(i);
-                    break;
-                }
-            }
-            break;
-        case DELETE:
-            for (int i = 0; i < allDeviceTypeCommands.size(); i++) {
-                if (allDeviceTypeCommands.get(i).getDeviceCommandID() == id) {
-                    lBase = allDeviceTypeCommands.remove(i);
-                    break;
-                }
-            }
-            break;
-        default:
+        } else if (change == DbChangeType.UPDATE) {
+            
+            LiteDeviceTypeCommand command = commandDao.getDeviceTypeCommand(id);
+            commands.put(command.getDeviceCommandId(), command);
+            lBase = command;
+            
+        } else if (change == DbChangeType.DELETE) {
+            lBase = commands.remove(id);
+        } else {
             releaseAllDeviceTypeCommands();
-            break;
         }
-
+        
         return lBase;
     }
 
@@ -1472,25 +1460,24 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         case ADD:
             lBase = allCommandsMap.get(new Integer(id));
             if (lBase == null) {
-                LiteCommand lc = new LiteCommand(id);
-                lc.retrieve(databaseAlias);
+                LiteCommand lc = commandDao.getCommand(id);
                 allCommands.add(lc);
-                allCommandsMap.put(new Integer(lc.getCommandID()), lc);
-
+                allCommandsMap.put(lc.getCommandId(), lc);
+                
                 lBase = lc;
             }
             break;
 
         case UPDATE:
-            LiteCommand lc = allCommandsMap.get(new Integer(id));
-            lc.retrieve(databaseAlias);
-
+            LiteCommand lc = commandDao.getCommand(id);
+            allCommandsMap.put(id, lc);
+            
             lBase = lc;
             break;
 
         case DELETE:
             for (int i = 0; i < allCommands.size(); i++) {
-                if (allCommands.get(i).getCommandID() == id) {
+                if (allCommands.get(i).getCommandId() == id) {
                     allCommandsMap.remove(new Integer(id));
                     lBase = allCommands.remove(i);
                     break;
@@ -1965,6 +1952,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
      */
     @Override
     public synchronized void releaseAllCache() {
+        
         allYukonPAObjects = null;
         allSystemPoints = null;
         allStateGroupMap = null;
@@ -1998,18 +1986,17 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allYukonGroupRolePropertiesMap = null;
 
         // lists that are created by the joining/parsing of existing lists
-        // allGraphTaggedPoints = null; //Points
-        allUnusedCCDevices = null; // PAO
-        allCapControlFeeders = null; // PAO
-        allCapControlSubBuses = null; // PAO
-        allCapControlSubStations = null; // PAO
-        allDevices = null; // PAO
-        allLMPrograms = null; // PAO
-        allLMControlAreas = null; // PAO
-        allLMGroups = null; // PAO
-        allLoadManagement = null; // PAO
-        allPorts = null; // PAO
-        allRoutes = null; // PAO
+        allUnusedCCDevices = null;
+        allCapControlFeeders = null;
+        allCapControlSubBuses = null;
+        allCapControlSubStations = null;
+        allDevices = null;
+        allLMPrograms = null;
+        allLMControlAreas = null;
+        allLMGroups = null;
+        allLoadManagement = null;
+        allPorts = null;
+        allRoutes = null;
 
         // Maps that are created by the joining/parsing of existing lists
         allPAOsMap = null;

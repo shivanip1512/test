@@ -153,7 +153,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     }
                     
                     // grab point data and give it to the callback
-                    Vector<?> resultVector = retMessage.getVector();
+                    List<?> resultVector = retMessage.getMessages();
                     for (Object aResult : resultVector) {
                         if (aResult instanceof PointData) {
                             PointData pData = (PointData) aResult;

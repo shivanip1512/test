@@ -308,7 +308,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             recentlyReceivedRequestIds.add(requestId);
             
             
-            if(returnMsg.getVector().size() != 0){
+            if (returnMsg.getMessages().size() != 0) {
                 receivedReturnsCount.put(requestId, receivedReturnsCount.get(requestId) + 1);
             }
             

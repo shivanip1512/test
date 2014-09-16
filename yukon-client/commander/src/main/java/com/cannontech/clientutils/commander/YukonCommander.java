@@ -2,6 +2,7 @@ package com.cannontech.clientutils.commander;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Frame;
@@ -229,6 +230,85 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         aboutDialog.setVisible(true);
     }
     
+    private String loadPromptValue(String valueString, Component parent ) {
+        
+        int promptIndex = valueString.indexOf(CommandDao.DEFAULT_VALUE_PROMPT);
+        while (promptIndex > -1) {
+            
+            // Clear all blanks at the beginning of the prompt text
+            String promptString = valueString.substring(promptIndex+1).trim();
+            
+            char charAt = promptString.charAt(0);
+            if (charAt == CommandDao.DEFAULT_VALUE_PROMPT) {
+                // Found a double '?', Remove one of the ?s and look for another prompt value
+                valueString = valueString.substring(0, promptIndex) + valueString.substring(promptIndex + 1);
+                
+                promptIndex = promptIndex + 1;
+                String substring = valueString.trim().substring(promptIndex);
+                int nextPromptIndex = substring.indexOf(CommandDao.DEFAULT_VALUE_PROMPT);
+                if (nextPromptIndex == -1) {
+                    promptIndex = nextPromptIndex;
+                } else {
+                    promptIndex += nextPromptIndex;
+                }
+                continue;
+            }
+            
+            int endIndex = -1;
+            String stringEnding = "";
+            if (charAt == '\'' || charAt == '\"') {
+                // Quoted prompt string
+                promptString = promptString.substring(1); // Remove quote from beginning of string
+                endIndex = promptString.indexOf('\''); // Locate ending quote
+                if (endIndex < 0) { 
+                    endIndex = promptString.indexOf('\"');
+                }
+            } else {
+                endIndex = promptString.indexOf(" ");    // Locate string end, space is separator
+                
+                if (promptString.indexOf('\'') > 0 && (promptString.indexOf('\'')< endIndex || endIndex < 0)) {
+                    endIndex = promptString.indexOf('\'');
+                } else if( promptString.indexOf('\"') > 0 && (promptString.indexOf('\"')< endIndex || endIndex < 0)) {
+                    endIndex = promptString.indexOf('\"');
+                }
+                
+                if (endIndex > 0) {
+                    // Add the char back to the beginning of the command.
+                    stringEnding +=promptString.charAt(endIndex);
+                }
+            }
+            
+            if (endIndex > 0) {
+                // Store the end of the command string.
+                stringEnding += promptString.substring(endIndex+1);
+                // Truncate the end of the string to get just the prompt value.
+                promptString = promptString.substring(0, endIndex);
+            }
+                    
+            String value = JOptionPane.showInputDialog(parent, 
+                                                       "Command: " + valueString + "\n\n" + promptString + ": ", 
+                                                       "Enter the parameter value", 
+                                                       JOptionPane.QUESTION_MESSAGE );
+            if ( value != null) {
+                valueString = (valueString.substring(0, promptIndex) + value + stringEnding).trim();
+                int nextIndex = promptIndex + value.length();
+                if(nextIndex < valueString.length()) {
+                    promptIndex = valueString.trim().substring(nextIndex).indexOf(CommandDao.DEFAULT_VALUE_PROMPT);    //look for another prompt value
+                    if(promptIndex != -1) {
+                        promptIndex += nextIndex;
+                    }
+                } else {
+                    promptIndex = -1;
+                }
+            } else {
+                // CANCEL
+                return null;
+            }
+        }
+        
+        return valueString;
+    }
+    
     public void actionPerformed(ActionEvent event) {
         
         Object source = event.getSource();
@@ -278,7 +358,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             
             if (getCommandPanel().getAvailableCommandsComboBox().getSelectedIndex() > 0) { // 0 is default "select"
                 String rawCommandString = getYC().getCommandFromLabel(getCommandPanel().getAvailableCommandsComboBox().getSelectedItem().toString());
-                String commandString = YukonSpringHook.getBean(CommandDao.class).loadPromptValue(rawCommandString.trim(), this);
+                String commandString = loadPromptValue(rawCommandString.trim(), this);
                 if (commandString != null) { // null is a cancel from prompt
                     getCommandPanel().getExecuteCommandComboBoxTextField().setText(commandString);
                     getCommandPanel().getExecuteButton().requestFocusInWindow();
@@ -1187,8 +1267,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                 || event.getKeyCode() == KeyEvent.VK_ENTER
                 && event.getSource() == getCommandPanel().getExecuteButton()) {
             
-            CommandDao commandDao = YukonSpringHook.getBean(CommandDao.class);
-            String commandString = commandDao.loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
+            String commandString = loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
             if (commandString != null) { // null is a cancel from prompt
                 try {
                     setCommand(commandString);
@@ -1569,26 +1648,26 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             getSerialRoutePanel().setSerialNumberText(getSerialNumber().toString());
             
             if (getModelType() == EditableExpresscomModel.class) {
-                getYC().setDeviceType(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
+                getYC().setDeviceType(CommandCategory.EXPRESSCOM_SERIAL.getDbString());
             } else if (getModelType() == EditableVersacomModel.class) {
-                getYC().setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+                getYC().setDeviceType(CommandCategory.VERSACOM_SERIAL.getDbString());
             } else if (getModelType() == EditableSA205Model.class) {
-                getYC().setDeviceType(CommandCategory.STRING_CMD_SA205_SERIAL);
+                getYC().setDeviceType(CommandCategory.SA205_SERIAL.getDbString());
             } else if (getModelType() == EditableSA305Model.class) {
-                getYC().setDeviceType(CommandCategory.STRING_CMD_SA305_SERIAL);
+                getYC().setDeviceType(CommandCategory.SA305_SERIAL.getDbString());
             } else {
-                getYC().setDeviceType(CommandCategory.STRING_CMD_SERIALNUMBER);
+                getYC().setDeviceType(CommandCategory.SERIALNUMBER.getDbString());
             }
             
-            if (getYC().getLiteDeviceTypeCommandsVector().isEmpty()) {
+            if (getYC().getLiteDeviceTypeCommands().isEmpty()) {
                 
                 getCommandLogPanel().addLogElement(" *** No commands were found for the device type: " 
                         + getYC().getDeviceType() 
                         + "  -  Trying a backup - " 
-                        + CommandCategory.STRING_CMD_VERSACOM_SERIAL + " ***");
+                        + CommandCategory.VERSACOM_SERIAL + " ***");
                 
                 //This is only temporary until all files have been changed from ALT_SERIALNUMBER_FILENAME to SERIALNUMBER_FILENAME.
-                getYC().setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+                getYC().setDeviceType(CommandCategory.VERSACOM_SERIAL.getDbString());
             }
 
             setTitle(displayTitle + " - " + getYC().getDeviceType() + " # " + getSerialNumber().toString());
@@ -1596,7 +1675,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         } else if (getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class) {
             
             DeviceGroup deviceGroup = (DeviceGroup) selectedItem;
-            getYC().setDeviceType(CommandCategory.STRING_CMD_DEVICE_GROUP);
+            getYC().setDeviceType(CommandCategory.DEVICE_GROUP.getDbString());
             setTitle(displayTitle + " : " + deviceGroup.getFullName());
             
         } else {
@@ -1604,7 +1683,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             getYC().setDeviceType("");
         }
         
-        if (getYC().getLiteDeviceTypeCommandsVector().isEmpty()) {
+        if (getYC().getLiteDeviceTypeCommands().isEmpty()) {
             
             getCommandLogPanel().addLogElement(" *** No commands were found for the device type: " 
                     + getYC().getDeviceType()+ " ***");
@@ -1653,10 +1732,10 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                 
         // Add the keys to the availableCommandsComboBox, first one is default ("Select A Command")
         getCommandPanel().getAvailableCommandsComboBox().addItem("<Select A Command>");
-        for (int i = 0; i < getYC().getLiteDeviceTypeCommandsVector().size(); i++) {
+        for (int i = 0; i < getYC().getLiteDeviceTypeCommands().size(); i++) {
             
-            LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getYC().getLiteDeviceTypeCommandsVector().get(i);
-            LiteCommand  lc = YukonSpringHook.getBean(CommandDao.class).getCommand(ldtc.getCommandID());
+            LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getYC().getLiteDeviceTypeCommands().get(i);
+            LiteCommand  lc = YukonSpringHook.getBean(CommandDao.class).getCommand(ldtc.getCommandId());
             if (ldtc.isVisible() && yc.isAllowCommand(lc.getCommand())) {
                 getCommandPanel().getAvailableCommandsComboBox().addItem(lc.getLabel());
             }

@@ -71,7 +71,6 @@ public class CommanderController {
         FilterBy categoryfilter = deviceSearchService.getFiltersForCategory(category);
         List<FilterBy> editableFilters = getQueryFilters(request, fields);
         
-
         List<FilterBy> searchFilters = new ArrayList<FilterBy>();
         searchFilters.add(categoryfilter);
         searchFilters.addAll(editableFilters);
@@ -145,16 +144,16 @@ public class CommanderController {
 
         ycBean.setLiteYukonPao(null);
         if("xcom".equals(serialType)) {
-            ycBean.setDeviceType(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
+            ycBean.setDeviceType(CommandCategory.EXPRESSCOM_SERIAL.getDbString());
             ycBean.setSerialNumber(ycBean.getDeviceType(), serialNumber);
         } else if("vcom".equals(serialType)) {
-            ycBean.setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+            ycBean.setDeviceType(CommandCategory.VERSACOM_SERIAL.getDbString());
             ycBean.setSerialNumber(ycBean.getDeviceType(), serialNumber);
         } else if("sa205".equals(serialType)) {
-            ycBean.setDeviceType(CommandCategory.STRING_CMD_SA205_SERIAL);
+            ycBean.setDeviceType(CommandCategory.SA205_SERIAL.getDbString());
             ycBean.setSerialNumber(ycBean.getDeviceType(), serialNumber);
         } else if("sa305".equals(serialType)) {
-            ycBean.setDeviceType(CommandCategory.STRING_CMD_SA305_SERIAL);
+            ycBean.setDeviceType(CommandCategory.SA305_SERIAL.getDbString());
             ycBean.setSerialNumber(ycBean.getDeviceType(), serialNumber);
         }
         
@@ -198,10 +197,10 @@ public class CommanderController {
         model.addAttribute("currentCommand", ycBean.getCommandString().replaceAll("noqueue", "").trim());
         model.addAttribute("resultText", ycBean.getResultText());
         model.addAttribute("deviceHistory", ycBean.getDeviceHistory());
-        model.addAttribute("sa205History", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_SA205_SERIAL));
-        model.addAttribute("sa305History", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_SA305_SERIAL));
-        model.addAttribute("xcomHistory", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL));
-        model.addAttribute("vcomHistory", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_VERSACOM_SERIAL));
+        model.addAttribute("sa205History", getSerialNumberHistory(ycBean, CommandCategory.SA205_SERIAL.getDbString()));
+        model.addAttribute("sa305History", getSerialNumberHistory(ycBean, CommandCategory.SA305_SERIAL.getDbString()));
+        model.addAttribute("xcomHistory", getSerialNumberHistory(ycBean, CommandCategory.EXPRESSCOM_SERIAL.getDbString()));
+        model.addAttribute("vcomHistory", getSerialNumberHistory(ycBean, CommandCategory.VERSACOM_SERIAL.getDbString()));
     }
 
     private String getDeviceName(YCBean ycBean, String serialType) {
@@ -225,9 +224,9 @@ public class CommanderController {
     private Map<String, String> getAvailableCommands(YCBean ycBean, Object commandObject, YukonUserContext userContext) {
         LinkedHashMap<String, String> commands = new LinkedHashMap<String, String>();
         
-        for(Object o : ycBean.getLiteDeviceTypeCommandsVector()) {
+        for(Object o : ycBean.getLiteDeviceTypeCommands()) {
             LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)o;
-            LiteCommand lc = commandDao.getCommand(ldtc.getCommandID());
+            LiteCommand lc = commandDao.getCommand(ldtc.getCommandId());
             String commandString = StringEscapeUtils.escapeHtml4(lc.getCommand());
             
             if(ldtc.isVisible() && ycBean.isAllowCommand(commandString, userContext.getYukonUser(), commandObject)) {

@@ -21,7 +21,7 @@ public class ReturnValidator extends AutoInitializedClassValidator<Return> {
         // We have to generate on to stay in sync (for the random generator) and we need to get the message Vector back
         Multi<Message> multiMsg = new Multi<>();
         getAutoValidatorFor(Multi.class).populateExpectedValue(multiMsg, generator);
-        ctrlObj.setVector(multiMsg.getVector());
+        ctrlObj.setMessages(multiMsg.getVector());
 
         ctrlObj.setDeviceID(generator.generateInt());
         ctrlObj.setCommandString(generator.generateString());

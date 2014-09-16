@@ -92,9 +92,6 @@
         <property name="synchronizeOnSession">
             <value type="boolean">true</value>
         </property>
-
-		<property name="paoDao" ref="paoDao" />
-		<property name="commandDao" ref="commandDao" />
     </bean>
         
     <bean id="AMRReportsController" class="com.cannontech.web.amr.reports.AMRReportsController">

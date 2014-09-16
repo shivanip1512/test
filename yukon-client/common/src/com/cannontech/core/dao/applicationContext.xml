@@ -18,10 +18,7 @@
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl"/>
   <bean id="capControlDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl"/>
   <bean class="com.cannontech.core.dao.impl.MACScheduleDaoImpl"/>
-  <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl">
-  	<property name="databaseCache" ref="databaseCache"/>
-  	<property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService"/>
-  </bean>
+  <bean class="com.cannontech.core.dao.impl.CommandDaoImpl"/>
   <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl"/>
   <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl"/>
   <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl"/>

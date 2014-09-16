@@ -15,7 +15,6 @@
 <%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node." %>
 
 <cti:includeScript link="JQUERY_COOKIE"/>
-<cti:includeScript link="JQUERY_SCROLLTO"/>
 <cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
     <cti:includeScript link="JQUERY_TREE"/>
 </cti:checkRolesAndProperties>
