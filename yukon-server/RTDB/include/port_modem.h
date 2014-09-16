@@ -12,6 +12,7 @@ public:
 
     typedef enum
     {
+        AS_NOERROR             =  0,
         ASGENERALERROR         = -1,
         ASINVPORT              = -2,
         ASINUSE                = -3,

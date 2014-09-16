@@ -23,13 +23,13 @@ using std::string;
 static int abortFunction( CtiPort *port )
 {
     // Can add code here to let certain long lived modem functions abort out of things.
-    return ClientErrors::None;
+    return CtiHayesModem::AS_NOERROR;
 }
 
 static int PortKillTime( CtiPort *port, int millisleep )
 {
     Sleep(millisleep);
-    return ClientErrors::None;
+    return CtiHayesModem::AS_NOERROR;
 }
 
 CtiHayesModem::CtiHayesModem() :
@@ -95,16 +95,12 @@ int CtiHayesModem::hm3(  char *s, int ctrl )  /* Tag: Modem private */
     int error_code;
 
     buf += CtiNumStr(ctrl);
+
     error_code = sendString( buf.c_str() );
 
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 /*
@@ -141,14 +137,10 @@ int CtiHayesModem::reset(  )  /* Tag: Modem public */
     int error_code;
 
     error_code = sendString( "ATZ" );
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 
@@ -193,14 +185,9 @@ int CtiHayesModem::setRegister(  int num, int val )  /* Tag: Modem public */
     str += CtiNumStr(num) + "=" + CtiNumStr(val);
     error_code = sendString( str.c_str() );
 
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 
@@ -837,14 +824,10 @@ int  CtiHayesModem::goOnline(  )  /* Tag: Modem public */
     int error_code;
 
     error_code = sendStringNoWait( "ATO", '\r' ) ;
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 
@@ -892,14 +875,9 @@ int  CtiHayesModem::dial(  char *s)  /* Tag: Modem public */
 
     error_code = sendStringNoWait( str.c_str(), '\r' );
 
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 
@@ -939,14 +917,10 @@ int  CtiHayesModem::repeatLastCommand(  )  /* Tag: Modem public */
     int error_code;
 
     error_code = sendStringNoWait( "A/", -1 );
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 /*
@@ -988,14 +962,9 @@ int  CtiHayesModem::dialInAnswerMode(  char *s )  /* Tag: Modem public */
     str += string( s ) + string( "R" );
     error_code = sendStringNoWait( str.c_str(), '\r' );
 
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 /*
@@ -1038,14 +1007,9 @@ int  CtiHayesModem::dialAndReturnToCommandMode(  char *s )  /* Tag: Modem public
     str += string( s ) + string( ";" );
     error_code = sendStringNoWait( str.c_str(), '\r' );
 
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 
@@ -1085,14 +1049,10 @@ int  CtiHayesModem::answer(  )  /* Tag: Modem public */
     int error_code;
 
     error_code = sendStringNoWait( "ATA", '\r' );
-    if( error_code >= ClientErrors::None )
-    {
-        return ClientErrors::None;
-    }
-    else
-    {
-        return( error_code );
-    }
+
+    return error_code < AS_NOERROR
+        ? error_code
+        : AS_NOERROR;
 }
 
 
@@ -1624,9 +1584,9 @@ int  CtiHayesModem::sendString( const char *str )  /* Tag: Modem public */
     char buffer[40];
 
     retvalue = sendStringNoWait( str, '\r' );
-    if( retvalue < ClientErrors::None )
+    if( retvalue < AS_NOERROR )
     {
-        return( retvalue );
+        return retvalue;
     }
 /*
  * If _delay_value is 0, we are going to let the calling program be
@@ -1716,8 +1676,10 @@ int  CtiHayesModem::sendStringNoWait(  const char *str, int termination_sequence
     int saved_status;
 
     length = writeString( str, termination_sequence );
-    if( _status < ClientErrors::None )
-        return( _status );
+    if( _status < AS_NOERROR )
+    {
+        return _status;
+    }
 
 /*
  * Unfortunately, I cannot count on this function always being
@@ -1731,7 +1693,7 @@ int  CtiHayesModem::sendStringNoWait(  const char *str, int termination_sequence
  */
 #if 0
     saved_status = _status;
-    while( SpaceUsedInTXBuffer( _port ) > ClientErrors::None )
+    while( SpaceUsedInTXBuffer( _port ) > AS_NOERROR )
         ;
     if( _status == ASNOTSUPPORTED )
         _status = saved_status;
@@ -1877,8 +1839,10 @@ long  CtiHayesModem::inputLine(  long millisec, char *buffer, int length )  /* T
     {
         return_status = abortFunction( _port );
 
-        if( return_status < ClientErrors::None )
+        if( return_status < AS_NOERROR )
+        {
             break;
+        }
         ULONG bytesRead = 0;
         c = 0;
         _port->readPort(&c, 1, 1, &bytesRead);
@@ -1900,9 +1864,13 @@ long  CtiHayesModem::inputLine(  long millisec, char *buffer, int length )  /* T
         {
             Sleep(250);             // FIX FIX FIX
             if( return_status < ClientErrors::None )
+            {
                 break;
+            }
             if( timeout <= GetTickCount() )
+            {
                 break;
+            }
         }
         else
         {
@@ -1912,11 +1880,15 @@ long  CtiHayesModem::inputLine(  long millisec, char *buffer, int length )  /* T
     }
     buffer[ i ] = '\0';
 
-    if( return_status < ClientErrors::None )
+    if( return_status < AS_NOERROR )
+    {
         return return_status;
+    }
     return_time = timeout - GetTickCount();
     if( return_time < 0 )
+    {
         return_time = 0;
+    }
     return return_time;
 }
 
@@ -1968,8 +1940,10 @@ int CtiHayesModem::writeString(  const char *str, char termination_sequence )
 
     _port->writePort((void *)str,  strlen( str ), INFINITE, &bcount);
 
-    if( _status < ClientErrors::None )
-        return( _status );
+    if( _status < AS_NOERROR )
+    {
+        return _status;
+    }
 
     if( termination_sequence >= 0 )
     {
