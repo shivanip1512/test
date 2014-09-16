@@ -11,9 +11,8 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.google.common.collect.SetMultimap;
 
-public class CustomerAccountDaoAdapter implements CustomerAccountDao{
+public class CustomerAccountDaoAdapter implements CustomerAccountDao {
 
     @Override
     public void add(CustomerAccount account) {
@@ -61,15 +60,8 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
     }
 
     @Override
-    public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(int ecId,
-                                                                            List<Integer> groupIds,
-                                                                            Date startDate,
-                                                                            Date stopDate) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
-    public CustomerAccountWithNames getAccountWithNamesByCustomerId(int customerId, int ecId) {
+    public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(int ecId, List<Integer> groupIds,
+            Date startDate, Date stopDate) {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -89,12 +81,14 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
     }
 
     @Override
-    public CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanyIds) {
+    public CustomerAccount getByAccountNumber(String accountNumber,
+            Iterable<? extends YukonEnergyCompany> energyCompanyIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public CustomerAccount findByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanyIds) {
+    public CustomerAccount findByAccountNumber(String accountNumber,
+            Iterable<? extends YukonEnergyCompany> energyCompanyIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -120,11 +114,6 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
 
     @Override
     public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
-    public SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 

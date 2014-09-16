@@ -48,11 +48,9 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.SetMultimap;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private final static Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
@@ -92,27 +90,28 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         };
 
     private SimpleTableAccessTemplate<CustomerAccount> customerAccountTemplate;
-    
-    private AdvancedFieldMapper<CustomerAccount> customerAccountFieldMapper = new AdvancedFieldMapper<CustomerAccount>() {
-        @Override
-        public void extractValues(SqlParameterChildSink p, CustomerAccount account) {
-            p.addValue("AccountSiteId", account.getAccountSiteId());
-            p.addValue("AccountNumber", account.getAccountNumber());
-            p.addValue("CustomerId", account.getCustomerId());
-            p.addValue("BillingAddressId", account.getBillingAddressId());
-            p.addValueSafe("AccountNotes", account.getAccountNotes());
-        }
-        
-        @Override
-        public Number getPrimaryKey(CustomerAccount account) {
-            return account.getAccountId();
-        }
-        
-        @Override
-        public void setPrimaryKey(CustomerAccount account, int newId) {
-            account.setAccountId(newId);
-        }
-    };
+
+    private AdvancedFieldMapper<CustomerAccount> customerAccountFieldMapper =
+        new AdvancedFieldMapper<CustomerAccount>() {
+            @Override
+            public void extractValues(SqlParameterChildSink p, CustomerAccount account) {
+                p.addValue("AccountSiteId", account.getAccountSiteId());
+                p.addValue("AccountNumber", account.getAccountNumber());
+                p.addValue("CustomerId", account.getCustomerId());
+                p.addValue("BillingAddressId", account.getBillingAddressId());
+                p.addValueSafe("AccountNotes", account.getAccountNotes());
+            }
+
+            @Override
+            public Number getPrimaryKey(CustomerAccount account) {
+                return account.getAccountId();
+            }
+
+            @Override
+            public void setPrimaryKey(CustomerAccount account, int newId) {
+                account.setAccountId(newId);
+            }
+        };
 
     @PostConstruct
     public void init() throws Exception {
@@ -127,19 +126,19 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     {
         selectSql.appendFragment(new CustomerAccountRowMapper().getBaseQuery());
     }
-    
-    private final SqlFragmentSource selectAccountContactInfoSql; 
+
+    private final SqlFragmentSource selectAccountContactInfoSql;
     {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CA.AccountId, CA.AccountNumber, CUST.AltTrackNum,");
-        sql.append(       "CONT.ContLastName, CONT.ContFirstName");
+        sql.append("CONT.ContLastName, CONT.ContFirstName");
         sql.append("FROM CustomerAccount CA");
         sql.append("JOIN Customer CUST ON CUST.CustomerId = CA.CustomerId");
         sql.append("JOIN Contact CONT ON CONT.ContactId = CUST.PrimaryContactId");
-        
+
         selectAccountContactInfoSql = sql;
     }
-    
+
     @Override
     public LiteYukonUser getYukonUserByAccountId(int accountId) {
         LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
@@ -151,7 +150,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     public void add(CustomerAccount account) {
         customerAccountTemplate.insert(account);
     }
-    
+
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final CustomerAccount account) {
@@ -163,20 +162,20 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         boolean result = (rowsAffected == 1);
         return result;
     }
-    
+
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void update(CustomerAccount account) {
         customerAccountTemplate.update(account);
     }
-    
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getById(final int accountId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectSql);
         sql.append("WHERE AccountId").eq(accountId);
-        
+
         CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
         return account;
     }
@@ -196,7 +195,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE ca.AccountID = ecta.AccountID");
         sql.append("  AND ca.AccountNumber").eq(accountNumber);
         sql.append("  AND ecta.EnergyCompanyId").eq_k(energyCompanyId);
-        
+
         CustomerAccount account = null;
         try {
             account = jdbcTemplate.queryForObject(sql, rowMapper);
@@ -207,7 +206,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
 
     @Override
-    public CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies) {
+    public CustomerAccount getByAccountNumber(String accountNumber,
+            Iterable<? extends YukonEnergyCompany> energyCompanies) {
         Iterable<Integer> energyCompanyIds = Iterables.transform(energyCompanies, EnergyCompanyDao.TO_ID_FUNCTION);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -216,18 +216,19 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE ca.AccountID = ecta.AccountID");
         sql.append("  AND ca.AccountNumber").eq(accountNumber);
         sql.append("  AND ecta.EnergyCompanyId").in(energyCompanyIds);
-        
+
         CustomerAccount account = null;
         try {
             account = jdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException e) {
-        	throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
+            throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
         }
         return account;
     }
 
     @Override
-    public CustomerAccount findByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies) {
+    public CustomerAccount findByAccountNumber(String accountNumber,
+            Iterable<? extends YukonEnergyCompany> energyCompanies) {
         try {
             return getByAccountNumber(accountNumber, energyCompanies);
         } catch (NotFoundException e) {
@@ -238,45 +239,45 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Override
     public List<CustomerAccount> getByUser(LiteYukonUser user) {
 
-    	// Load all based on user's Primary Contact
-    	List<CustomerAccount> primaryAccountList = getByPrimaryContactUser(user);
+        // Load all based on user's Primary Contact
+        List<CustomerAccount> primaryAccountList = getByPrimaryContactUser(user);
 
-    	// Load all based on user's Additional Contact
+        // Load all based on user's Additional Contact
         List<CustomerAccount> additionalAccountList = getAccountByAdditionalContactUser(user);
         List<CustomerAccount> result = Lists.newArrayList(Iterables.concat(primaryAccountList, additionalAccountList));
         return result;
     }
-    
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccount> getAll() {
         List<CustomerAccount> list = jdbcTemplate.query(selectSql, rowMapper);
         return list;
     }
-    
+
     @Override
     public CustomerAccount getAccountByInventoryId(int inventoryId) {
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ca.*");
         sql.append("FROM CustomerAccount ca, InventoryBase ib");
-        sql.append("WHERE ca.AccountId = ib.AccountId"); 
+        sql.append("WHERE ca.AccountId = ib.AccountId");
         sql.append("AND ib.InventoryId").eq(inventoryId);
-        
+
         CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
-        
+
         return account;
     }
-    
+
     @Override
     public Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds) {
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CA.*, IB.InventoryId");
         sql.append("FROM CustomerAccount CA");
         sql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
         sql.append("WHERE IB.InventoryId").in(inventoryIds);
-        
+
         final Map<Integer, CustomerAccount> inventoryIdToCustomerAccount = Maps.newHashMap();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
@@ -285,49 +286,28 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                 inventoryIdToCustomerAccount.put(rs.getInt("InventoryId"), customerAccount);
             }
         });
-        
+
         return inventoryIdToCustomerAccount;
     }
-    
-    @Override
-    public SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT CA.*, IB.InventoryId");
-        sql.append("FROM CustomerAccount CA");
-        sql.append("  JOIN InventoryBase IB ON IB.AccountId = CA.AccountId");
-        sql.append("WHERE IB.InventoryId").in(inventoryIds);
-        
-        final SetMultimap<CustomerAccount, Integer> accountToInventoryIds = HashMultimap.create();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                CustomerAccount customerAccount = rowMapper.mapRow(rs);
-                accountToInventoryIds.put(customerAccount, rs.getInt("InventoryId"));
-            }
-        });
-        
-        return accountToInventoryIds;
-    }
-    
+
     @Override
     public Map<Integer, Integer> getAccountIdsByInventoryIds(Iterable<Integer> inventoryIds) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         Function<Integer, Integer> identityFunction = Functions.identity();
-        
+
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
-              SqlStatementBuilder sql = new SqlStatementBuilder();
-              sql.append("SELECT ib.InventoryId, ca.AccountId");
-              sql.append("FROM CustomerAccount ca, InventoryBase ib");
-              sql.append("WHERE ca.AccountId = ib.AccountId"); 
-              sql.append("AND ib.InventoryId").in(subList);
-              return sql;
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ib.InventoryId, ca.AccountId");
+                sql.append("FROM CustomerAccount ca, InventoryBase ib");
+                sql.append("WHERE ca.AccountId = ib.AccountId");
+                sql.append("AND ib.InventoryId").in(subList);
+                return sql;
             }
         };
-        
+
         YukonRowMapper<Map.Entry<Integer, Integer>> rowMapper = new YukonRowMapper<Entry<Integer, Integer>>() {
             @Override
             public Entry<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
@@ -338,13 +318,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         };
         return template.mappedQuery(sqlFragmentGenerator, inventoryIds, rowMapper, identityFunction);
     }
-    
+
     @Override
     public Map<Integer, String> getAccountNumbersByAccountIds(Iterable<Integer> accountIds) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
-        
+
         Function<Integer, Integer> identityFunction = Functions.identity();
-        
+
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -355,7 +335,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                 return sql;
             }
         };
-        
+
         YukonRowMapper<Map.Entry<Integer, String>> rowMapper = new YukonRowMapper<Map.Entry<Integer, String>>() {
             @Override
             public Entry<Integer, String> mapRow(YukonResultSet rs) throws SQLException {
@@ -366,10 +346,10 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         };
         return template.mappedQuery(sqlFragmentGenerator, accountIds, rowMapper, identityFunction);
     }
-            
+
     @Override
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,
-                                                                             Date startDate, Date stopDate){
+            Date startDate, Date stopDate) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ca.AccountId, ca.AccountNumber, cust.AltTrackNum, cont.ContLastName, cont.ContFirstName ");
@@ -382,28 +362,14 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("  AND (LMHCG.GroupEnrollStart").lte(stopDate).append(")");
         sql.append("  AND ((LMHCG.GroupEnrollStop IS NULL) ");
         sql.append("    OR (LMHCG.GroupEnrollStop").gte(startDate).append("))");
-    
+
         List<CustomerAccountWithNames> list = jdbcTemplate.query(sql, specialAccountInfoRowMapper);
         return list;
     }
-    
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId, final int ecId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectAccountContactInfoSql);
-        sql.append("WHERE CA.AccountId").in(getAccountIdsByECSql(Collections.singletonList(ecId)));
-        sql.append("AND CUST.CustomerId").eq(customerId);
-        
-        List<CustomerAccountWithNames> rs = jdbcTemplate.query(sql, specialAccountInfoRowMapper);
-        return rs.get(0);
-    }
 
     @Override
-    public Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(
-            Iterable<Integer> accountIds) {
-        ChunkingMappedSqlTemplate template =
-            new ChunkingMappedSqlTemplate(jdbcTemplate);
+    public Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(Iterable<Integer> accountIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -416,14 +382,15 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         };
 
         Function<Integer, Integer> typeMapper = Functions.identity();
-        YukonRowMapper<Map.Entry<Integer, CustomerAccountWithNames>> rowMapper = new YukonRowMapper<Entry<Integer,CustomerAccountWithNames>>() {
-            @Override
-            public Entry<Integer, CustomerAccountWithNames> mapRow(YukonResultSet rs) throws SQLException {
-                CustomerAccountWithNames acctInfo = specialAccountInfoRowMapper.mapRow(rs);
-                Integer accountId = acctInfo.getAccountId();
-                return Maps.immutableEntry(accountId, acctInfo);
-            }
-        };
+        YukonRowMapper<Map.Entry<Integer, CustomerAccountWithNames>> rowMapper =
+            new YukonRowMapper<Entry<Integer, CustomerAccountWithNames>>() {
+                @Override
+                public Entry<Integer, CustomerAccountWithNames> mapRow(YukonResultSet rs) throws SQLException {
+                    CustomerAccountWithNames acctInfo = specialAccountInfoRowMapper.mapRow(rs);
+                    Integer accountId = acctInfo.getAccountId();
+                    return Maps.immutableEntry(accountId, acctInfo);
+                }
+            };
 
         Map<Integer, CustomerAccountWithNames> retVal =
             template.mappedQuery(sqlGenerator, accountIds, rowMapper, typeMapper);
@@ -432,26 +399,26 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public CustomerAccountWithNames getAcountWithNamesByAccountNumber(String accountNumber, 
-                                                                              final int ecId) {
+    public CustomerAccountWithNames getAcountWithNamesByAccountNumber(String accountNumber, final int ecId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectAccountContactInfoSql);
         sql.append("WHERE CA.AccountId").in(getAccountIdsByECSql(Collections.singletonList(ecId)));
         sql.append("AND CA.AccountNumber").eq(accountNumber);
-        
+
         CustomerAccountWithNames account = jdbcTemplate.queryForObject(sql, specialAccountInfoRowMapper);
         return account;
     }
-    
-	@Override
+
+    @Override
     public CustomerAccount getCustomerAccount(LiteYukonUser user) {
-    	List<CustomerAccount> accountList = getByUser(user);
+        List<CustomerAccount> accountList = getByUser(user);
 
         if (accountList.size() == 0) {
             throw new NotAuthorizedException("The supplied user's contact is not assigned to an account.");
         }
         if (accountList.size() > 1) {
-            logger.warn("Multiple accounts associated with user" + user.getUsername() + ", returning an arbitrary account.");
+            logger.warn("Multiple accounts associated with user" + user.getUsername()
+                + ", returning an arbitrary account.");
         }
         return accountList.get(0);
     }
@@ -461,13 +428,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         accountIdsByECSql.append("SELECT AccountId");
         accountIdsByECSql.append("FROM ECToAccountMapping");
         accountIdsByECSql.append("WHERE EnergyCompanyId").in(energyCompanyIds);
-        
+
         return accountIdsByECSql;
     }
 
     @Override
     public CustomerAccount getAccountByContactId(int contactId) {
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM CustomerAccount");
@@ -479,23 +446,23 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("        (SELECT CustomerId");
         sql.append("         FROM CustomerAdditionalContact");
         sql.append("         WHERE ContactId").eq(contactId).append("))");
-        
+
         CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
         return account;
     }
-    
+
     @Override
     public int getTotalNumberOfAccounts(final YukonEnergyCompany ec, List<Integer> assignedProgramIds) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(DISTINCT CA.AccountId)");
         sql.append("FROM CustomerAccount CA");
         sql.append("    JOIN ECToAccountMapping ECTAM ON CA.AccountId = ECTAM.AccountId");
-        
-        // If the assigned programs are supplied let's use the active enrollments of those programs to calculate the total number of accounts.
+
+        // If the assigned programs are supplied let's use the active enrollments of those programs to
+        // calculate the total number of accounts.
         if (!CollectionUtils.isEmpty(assignedProgramIds)) {
-            sql.append("  JOIN LMHardwareControlGroup LMHCG ON (CA.AccountId = LMHCG.AccountId  AND " +
-                                                                                                  " LMHCG.GroupEnrollStart IS NOT NULL AND " +
-                                                                                                  " LMHCG.GroupEnrollStop IS NULL)");
+            sql.append("  JOIN LMHardwareControlGroup LMHCG ON (CA.AccountId = LMHCG.AccountId  AND "
+                + " LMHCG.GroupEnrollStart IS NOT NULL AND " + " LMHCG.GroupEnrollStop IS NULL)");
         }
 
         sql.append("WHERE ECTAM.EnergyCompanyId").eq_k(ec.getEnergyCompanyId());
@@ -504,30 +471,30 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         }
 
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        
+
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 return new SqlStatementBuilder().append(sql).append("AND LMHCG.ProgramId").in(subList);
             };
         };
-        
+
         return template.queryForSum(sqlGenerator, assignedProgramIds);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     private List<CustomerAccount> getByPrimaryContactUser(final LiteYukonUser user) {
         Validate.notNull(user, "user parameter cannot be null.");
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes ");
         sql.append("FROM CustomerAccount,Customer,Contact,YukonUser ");
-        sql.append("WHERE CustomerAccount.CustomerId = Customer.CustomerId "); 
+        sql.append("WHERE CustomerAccount.CustomerId = Customer.CustomerId ");
         sql.append("AND Customer.PrimaryContactId = Contact.ContactId ");
         sql.append("AND YukonUser.UserId = Contact.LoginId ");
         sql.append("AND YukonUser.UserId").eq(user.getUserID());
         sql.append("ORDER BY CustomerAccount.AccountId");
-        
+
         List<CustomerAccount> list = jdbcTemplate.query(sql, rowMapper);
         return list;
     }

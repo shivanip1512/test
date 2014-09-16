@@ -1,7 +1,8 @@
 package com.cannontech.core.dao;
 
-import static com.cannontech.common.point.PointQuality.*;
-import static com.cannontech.database.data.point.PointType.*;
+import static com.cannontech.common.point.PointQuality.Normal;
+import static com.cannontech.database.data.point.PointType.DemandAccumulator;
+import static com.cannontech.database.data.point.PointType.PulseAccumulator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,16 +35,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 
 public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
     private static final DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(5, 0);
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(centralTimeZone);
-    
+
     private Map<Integer, Integer> inventoryToDeviceMap = Maps.newHashMap();
     Multimap<Integer, Integer> groupToInventoryMap = ArrayListMultimap.create();
     Map<Integer, Map<Attribute, Integer>> deviceToAttributeAndPointMap = Maps.newHashMap();
-    private Object[][] rawPointHistoryData = 
+    private Object[][] rawPointHistoryData =
         {
             // Usage Data
             {1, PulseAccumulator, Normal, 600.2, "07/12/2012 15:13:20"},
@@ -52,7 +52,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             {1, PulseAccumulator, Normal, 660.8, "07/15/2012 15:13:20"},
             {1, PulseAccumulator, Normal, 670.0, "07/16/2012 15:13:20"},
             {1, PulseAccumulator, Normal, 675.2, "07/17/2012 15:13:20"},
-            
+
             // Demand Data
             {2 ,DemandAccumulator, Normal, 20.0, "07/12/2012 15:13:20"},
             {2, DemandAccumulator, Normal, 20.2, "07/13/2012 15:13:20"},
@@ -60,7 +60,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             {2, DemandAccumulator, Normal, 15.2, "07/15/2012 15:13:20"},
             {2, DemandAccumulator, Normal, 10.2, "07/16/2012 15:13:20"},
             {2, DemandAccumulator, Normal, 5.2, "07/17/2012 15:13:20"},
-            
+
         };
 
     private static final Ordering<PointValueQualityHolder> ORDERING_BY_TIMESTAMP = new Ordering<PointValueQualityHolder>(){
@@ -76,7 +76,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             return Double.compare(left.getValue(), right.getValue());
         }
     };
-    
+
     private List<PointValueQualityHolder> pointValueQualityHolderData;
     private Map<Long, PointValueQualityHolder> pointValueQualityHolderDataByRPHId;
     private ListMultimap<Instant, PointValueQualityHolder> pointValueQualityHolderDataByDate;
@@ -88,7 +88,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         this.rawPointHistoryData = rawPointHistoryData;
         init();
     }
-    public MockRawPointHistoryDaoImpl(Object[][] rawPointHistoryData, Map<Integer, Integer> inventoryToDeviceMap, 
+    public MockRawPointHistoryDaoImpl(Object[][] rawPointHistoryData, Map<Integer, Integer> inventoryToDeviceMap,
                                       Multimap<Integer, Integer> groupToInventoryMap,
                                       Map<Integer, Map<Attribute, Integer>> deviceToAttributeAndPointMap) {
         if(rawPointHistoryData != null) {
@@ -99,8 +99,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         this.deviceToAttributeAndPointMap = deviceToAttributeAndPointMap;
         init();
     }
-    
-    @Override
+
     public void init() {
         // Converting the array data into point data.
         pointValueQualityHolderData =  new ArrayList<>();
@@ -111,10 +110,10 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             pvBuilder.withPointQuality((PointQuality) objectArray[2]);
             pvBuilder.withValue((Double)objectArray[3]);
             pvBuilder.withTimeStamp(dateTimeFormatter.parseDateTime((String) objectArray[4]).toDate());
-            
-            pointValueQualityHolderData.add(pvBuilder.build()); 
+
+            pointValueQualityHolderData.add(pvBuilder.build());
         }
-        
+
         // Building up the helper maps that are used for the mock dao method calls.
         pointValueQualityHolderDataByRPHId = new HashMap<>();
         pointValueQualityHolderDataByDate = ArrayListMultimap.create();
@@ -124,50 +123,22 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             pointValueQualityHolderDataByDate.put(new Instant(pvqHolder.getPointDataTimeStamp()), pvqHolder);
         }
     }
-    
+
     @Override
-    public Set<Integer> getCommunicatingInventoryByLoadGroups(Iterable<Integer> loadGroupIds, final ReadableRange<Instant> dateRange) {
-        Set<Integer> inventory = Sets.newHashSet();
-        for(Integer loadGroupId : loadGroupIds) {
-            Collection<Integer> inventoryInGroup = groupToInventoryMap.get(loadGroupId);
-            inventory.addAll(inventoryInGroup);
-        }
-        
-        List<PointValueQualityHolder> pointValueQualityHolders = intersectingPointValueQualityHoldersByDateRange(dateRange);
-        Set<Integer> communicatingInventory = Sets.newHashSet();
-        
-        for(Integer inventoryId : inventory) {
-            Integer deviceId = inventoryToDeviceMap.get(inventoryId);
-            Map<Attribute, Integer> attributePointMap = deviceToAttributeAndPointMap.get(deviceId);
-            if(attributePointMap != null) {
-                Collection<Integer> pointIds = attributePointMap.values();
-                for(PointValueQualityHolder pvqh : pointValueQualityHolders) {
-                    if(pointIds.contains(pvqh.getId())) {
-                        communicatingInventory.add(inventoryId);
-                        break;
-                    }
-                }
-            }
-        }
-        
-        return communicatingInventory;
-    }
-    
-    @Override
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> yukonPaos, 
-            Attribute attribute, 
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> yukonPaos,
+            Attribute attribute,
             ReadableRange<Instant> dateRange,
-            ReadableRange<Long> changeIdRange, 
-            int maxRows, 
-            boolean excludeDisabledPaos, 
-            Order order, 
-            OrderBy orderBy, 
+            ReadableRange<Long> changeIdRange,
+            int maxRows,
+            boolean excludeDisabledPaos,
+            Order order,
+            OrderBy orderBy,
             Set<PointQuality> excludeQualities) {
-        
+
         ListMultimap<PaoIdentifier, PointValueQualityHolder> results = ArrayListMultimap.create();
 
         for (YukonPao yukonPao : yukonPaos) {
-            
+
             List<PointValueQualityHolder> rphPointValueQualityHolders = intersectingPointValueQualityHoldersByRawPointHistoryIds(changeIdRange);
             List<PointValueQualityHolder> dateRangePointValueQualityHolders = intersectingPointValueQualityHoldersByDateRange(dateRange);
             List<PointValueQualityHolder> pointValueQualityHolders = ListUtils.intersection(rphPointValueQualityHolders, dateRangePointValueQualityHolders);
@@ -175,11 +146,11 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             List<PointValueQualityHolder> pvqHolders = getPointValueQualityHoldersForAttribute(attribute, pointValueQualityHolders);
             List<PointValueQualityHolder> orderedPVQHolders = orderPointValueData(pvqHolders, order, orderBy);
             results.putAll(yukonPao.getPaoIdentifier(), orderedPVQHolders.subList(0, maxRows));
-        } 
-        
+        }
+
         return results;
     }
-    
+
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
             Iterable<? extends YukonPao> yukonPaos, Attribute attribute, final ReadableRange<Instant> dateRange,
@@ -201,20 +172,20 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             }
             List<PointValueQualityHolder> orderedPVQHolders = orderPointValueData(pvqHolders, order);
             paoIdToPointValueQualityHolder.putAll(yukonPao.getPaoIdentifier(), orderedPVQHolders);
-        } 
-        
+        }
+
         return paoIdToPointValueQualityHolder;
     }
 
     /**
-     * Orders the point data supplied in the point value quality holders by timestamp. 
+     * Orders the point data supplied in the point value quality holders by timestamp.
      */
     private List<PointValueQualityHolder> orderPointValueData(List<PointValueQualityHolder> pvqHolders, Order order) {
         return orderPointValueData(pvqHolders, order, OrderBy.TIMESTAMP);
     }
 
     /**
-     * Orders the point data supplied in the point value quality holders by the supplied order by type.. 
+     * Orders the point data supplied in the point value quality holders by the supplied order by type..
      */
     private List<PointValueQualityHolder> orderPointValueData(List<PointValueQualityHolder> pvqHolders, Order order, OrderBy orderBy) {
         Set<PointValueQualityHolder> orderedPointValueQualityHolders = null;
@@ -224,14 +195,14 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
                 orderedPointValueQualityHolders = new TreeSet<>(ORDERING_BY_TIMESTAMP.reverse());
             }
         }
-        
+
         if (orderBy == OrderBy.VALUE) {
             orderedPointValueQualityHolders = new TreeSet<>(ORDERING_BY_VALUE);
             if (order == Order.REVERSE) {
                 orderedPointValueQualityHolders = new TreeSet<>(ORDERING_BY_VALUE.reverse());
             }
         }
-        
+
         orderedPointValueQualityHolders.addAll(pvqHolders);
         return Lists.newArrayList(orderedPointValueQualityHolders);
     }
@@ -252,7 +223,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
 
         return results;
     }
-    
+
     /**
      * Uses the deviceToAttributeAndPointMap to pick out point data that applies to the specified device & attribute.
      */
@@ -262,7 +233,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         if(attributeMap != null) {
             pointId = attributeMap.get(attribute);
         }
-        
+
         List<PointValueQualityHolder> returnValues = Lists.newArrayList();
         if(pointId != null) {
             for(PointValueQualityHolder pvqh: pointValueQualityHolders) {
@@ -274,7 +245,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         return returnValues;
     }
 
-    
+
     /**
      * Returns a list of pointValueQualityHolders that intersect with the changeIdRange supplied.  This method will return
      * all of the pointValueQualityHolders if they are supplied.
@@ -283,7 +254,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         if (changeIdRange == null) {
             return pointValueQualityHolderData;
         }
-        
+
         List<PointValueQualityHolder> results = new ArrayList<>();
         for(Entry<Long, PointValueQualityHolder> entry : pointValueQualityHolderDataByRPHId.entrySet()) {
             if (changeIdRange.intersects(entry.getKey())) {
@@ -292,7 +263,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         }
         return results;
     }
-    
+
     /**
      * Returns a list of pointValueQualityHolders that intersect with the dateRange supplied.  This method will return
      * all of the pointValueQualityHolders if they are supplied.
@@ -301,7 +272,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
         if (dateRange == null) {
             return pointValueQualityHolderData;
         }
-        
+
         List<PointValueQualityHolder> results = new ArrayList<>();
         if (dateRange != null) {
             for(Entry<Instant, Collection<PointValueQualityHolder>> entry : pointValueQualityHolderDataByDate.asMap().entrySet()) {

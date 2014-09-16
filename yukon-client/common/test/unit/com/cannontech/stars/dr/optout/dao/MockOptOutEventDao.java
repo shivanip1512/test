@@ -28,12 +28,12 @@ import com.google.common.collect.Sets;
 public class MockOptOutEventDao implements OptOutEventDao {
     private Multimap<Integer, Integer> loadGroupToInventoryMap = ArrayListMultimap.create();
     private Set<Integer> optedOutInventory = Sets.newHashSet();
-    
+
     public MockOptOutEventDao(Multimap<Integer, Integer> loadGroupToInventoryMap, Set<Integer> optedOutInventory) {
         this.loadGroupToInventoryMap = loadGroupToInventoryMap;
         this.optedOutInventory = optedOutInventory;
     }
-    
+
     @Override
     public Set<Integer> getOptedOutInventoryByLoadGroups(Iterable<Integer> loadGroupIds) {
         Set<Integer> inventoryIds = Sets.newHashSet();
@@ -48,11 +48,11 @@ public class MockOptOutEventDao implements OptOutEventDao {
         Set<Integer> inventoryToSearch = Sets.newHashSet(inventoryIds);
         return Sets.intersection(optedOutInventory, inventoryToSearch);
     }
-    
+
     /*
      * Unimplemented methods:
      */
-    
+
     @Override
     public OptOutEvent getOptOutEventById(int eventId) {
         throw new MethodNotImplementedException();
@@ -199,11 +199,6 @@ public class MockOptOutEventDao implements OptOutEventDao {
 
     @Override
     public List<OptOutEvent> getScheduledOptOutsToBeStarted() {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId) {
         throw new MethodNotImplementedException();
     }
 

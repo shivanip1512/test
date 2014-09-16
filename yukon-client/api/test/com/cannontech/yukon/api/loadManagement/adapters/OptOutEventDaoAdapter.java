@@ -163,11 +163,6 @@ public class OptOutEventDaoAdapter implements OptOutEventDao {
     }
 
     @Override
-    public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
     public Set<Integer> getOptedOutInventoryByLoadGroups(Iterable<Integer> loadGroupIds) {
         throw new UnsupportedOperationException("not implemented");
     }

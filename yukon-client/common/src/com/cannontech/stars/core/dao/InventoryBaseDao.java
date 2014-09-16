@@ -10,8 +10,8 @@ import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteMeterHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteMeterHardwareBase;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -20,7 +20,7 @@ public interface InventoryBaseDao {
 
 	/**
 	 * Finds Inventory by Inventory Id. Throws NotFoundException if the Inventory is not in the database.
-	 * 
+	 *
 	 * @param inventoryId
 	 * @return LiteInventoryBase
 	 * @throws NotFoundException
@@ -28,35 +28,21 @@ public interface InventoryBaseDao {
     public LiteInventoryBase getByInventoryId(int inventoryId) throws NotFoundException;
 
     public LiteLmHardwareBase getHardwareByInventoryId(int inventoryId);
-    
+
     public LiteLmHardwareBase getHardwareByDeviceId(int deviceId);
 
     /**
      * Finds Inventory by Device Id. Throws NotFoundException if the Inventory is not in the database.
-     * 
+     *
      * @param deviceId
      * @return LiteInventoryBase
      * @throws NotFoundException
      */
     public LiteInventoryBase getByDeviceId(int deviceId);
-    
+
     public List<LiteInventoryBase> getByIds(Collection<Integer> inventoryIds);
 
     public Map<Integer,LiteInventoryBase> getByIdsMap(Collection<Integer> inventoryIds);
-    
-    /**
-     * Method to get a list of all MCTs that have an account for a given list of energy companies
-     * @param energyCompanyList - Companies to get hardware for
-     * @return List of MCTs with assigned account
-     */
-    public List<LiteInventoryBase> getAllMCTsWithAccount(Collection<YukonEnergyCompany> yecList);
-
-    /**
-     * Method to get a list of all MCTs that do not have an account for a given list of energy companies
-     * @param energyCompanyList - Companies to get hardware for
-     * @return List of MCTs without assigned account
-     */
-    public List<LiteInventoryBase> getAllMCTsWithoutAccount(Collection<YukonEnergyCompany> yecList);
 
     /**
      * Method to get a list of all hardware for a given list of energy companies
@@ -71,31 +57,31 @@ public interface InventoryBaseDao {
      * @return
      */
     public List<LiteLmHardwareBase> getLMHardwareForIds(Collection<Integer> inventoryIds);
-    
+
     /**
      * Method to get a list of all hardware without a load group for a given list of energy companies
      * @param energyCompanyList - Companies to get hardware for
      * @return List of hardware
      */
     public List<LiteLmHardwareBase> getAllLMHardwareWithoutLoadGroups(Collection<YukonEnergyCompany> yecList);
-    
+
     /**
      * Updates the deviceId of the InventoryBase table with inventoryId.
      * @param inventoryId
      * @param deviceId
      */
     public void updateInventoryBaseDeviceId(int inventoryId, int deviceId);
-    
+
     /**
      * Saves a Inventory hardware device info on the customer account. Handles both insert/update records.
      */
-    public LiteInventoryBase saveInventoryBase(LiteInventoryBase liteInv, int energyCompanyId);    
-    
+    public LiteInventoryBase saveInventoryBase(LiteInventoryBase liteInv, int energyCompanyId);
+
     /**
      * Saves a LM hardware device info on the customer account. Handles both insert/update records.
      */
     public LiteLmHardwareBase saveLmHardware(LiteLmHardwareBase lmHw, int energyCompanyId);
-    
+
     /**
      * Removes a hardware device from the account.
      */
@@ -116,7 +102,7 @@ public interface InventoryBaseDao {
      * Returns a list of DisplayableLmHardware's of the specified LMHardwareClass on this account.
      */
     public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId,HardwareClass lmHardwareClass);
-    
+
     /**
      * Returns the meter id if this switch is assigned to a meter, null if it is not.
      * @return the meter id this switch is assigned to or null
@@ -139,7 +125,7 @@ public interface InventoryBaseDao {
     public List<Integer> getInventoryIdsByAccountId(int accountId);
 
     public void updateCurrentState(int inventoryId, int stateId);
-    
+
     public int getDeviceStatus(int inventoryId);
 
 }

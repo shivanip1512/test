@@ -25,13 +25,6 @@ public class YukonValidationUtils extends ValidationUtils {
     public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"
         + BASIC_URL_PATH_FRAGMENT + "\\Z";
 
-    public static boolean isBasicUrl(String input) {
-        if (input == null) {
-            return false;
-        }
-        return input.matches(BASIC_RESTFUL_URL_REGEX);
-    }
-
     public static boolean isUrlPath(String input) {
         if (input == null) {
             return false;
@@ -61,24 +54,24 @@ public class YukonValidationUtils extends ValidationUtils {
     /*
      * Convenience method to combine the above two common operations.
      */
-    public static void checkIsBlankOrExceedsMaxLength(Errors errors, String field, String fieldValue, 
+    public static void checkIsBlankOrExceedsMaxLength(Errors errors, String field, String fieldValue,
                                                       boolean fieldAllowsNull, int max) {
         checkIsBlank(errors, field, fieldValue, fieldAllowsNull);
         checkExceedsMaxLength(errors, field, fieldValue, max);
     }
-    
+
     public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
         if (fieldValue == null || fieldValue < 0) {
             errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
         }
     }
-    
+
     public static void checkIsPositiveDouble(Errors errors, String field, Double fieldValue) {
         if (checkIsValidDouble(errors, field, fieldValue) && fieldValue < 0) {
             errors.rejectValue(field, "yukon.web.error.isNotPositive");
         }
     }
-   
+
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
         if (fieldValue == null || Double.isNaN(fieldValue) || Double.isInfinite(fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.notValidNumber");
@@ -127,9 +120,9 @@ public class YukonValidationUtils extends ValidationUtils {
      * Thermostat schedules do not have a space for binding field errors.  Even though the UI does a good job
      * of validating/preventing error states on the schedules there are cases where errors might have existed
      * pre-update and we need to display that to the user.
-     * 
+     *
      * This is really the only reasonable case for including the FieldErrors in in the top level.
-     * 
+     *
      * @param bindingResult
      * @param includeFieldErrors    if set to true, all field errors will be returned in a flat list with the
      *                              global errors.

@@ -58,7 +58,7 @@ public final class StarsOperation {
     private StarsDeleteThermostatSchedule starsDeleteThermostatSchedule;
 
     public StarsOperation() {
-    
+
     }
 
     public StarsLogin getStarsLogin() {
@@ -250,7 +250,7 @@ public final class StarsOperation {
         this.starsProgramReenableResponse = starsProgramReenableResponse;
     }
 
-    
+
     public StarsGetLMControlHistory getStarsGetLMControlHistory() {
         return starsGetLMControlHistory;
     }
@@ -538,5 +538,5 @@ public final class StarsOperation {
             StarsDeleteThermostatSchedule starsDeleteThermostatSchedule) {
         this.starsDeleteThermostatSchedule = starsDeleteThermostatSchedule;
     }
-    
+
 }

@@ -76,7 +76,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Ordering;
 
-
 public class AttributeServiceImpl implements AttributeService {
     private static final Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
 
@@ -168,12 +167,6 @@ public class AttributeServiceImpl implements AttributeService {
         return getPaoMultiPointIdentifiersForAttributesHelper(devices, attributes, false);
     }
 
-    @Override
-    public PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributes(
-            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return getPaoMultiPointIdentifiersForAttributesHelper(devices, attributes, true);
-    }
-
     private PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributesHelper(
             Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException) {
 
@@ -256,17 +249,6 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         return pointService.pointExistsForPao(paoPointIdentifier);
-    }
-
-    @Override
-    public Set<SimpleDevice> getDevicesInGroupThatSupportAnyAttributes(DeviceGroup group,
-            Set<? extends Attribute> attributes) {
-        Set<SimpleDevice> allSupportedDevices = new HashSet<>();
-        for (Attribute attribute : attributes) {
-            List<SimpleDevice> supportedDevices = getDevicesInGroupThatSupportAttribute(group, attribute);
-            allSupportedDevices.addAll(supportedDevices);
-        }
-        return allSupportedDevices;
     }
 
     @Override

@@ -11,14 +11,12 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.InstantRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -33,63 +31,63 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.google.common.collect.Sets;
 
 public class EnrollmentDaoImpl implements EnrollmentDao {
-    
+
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private CustomerAccountDao customerAccountDao;
 
     /** These strings are to help with the row mapper.  If you use both of these
      *  strings you will have the right table connections and data returned.
      */
-    private final String enrollmentSQLHeader = 
+    private final String enrollmentSQLHeader =
         "SELECT AB.applianceCategoryId, AB.programId, LMHCG.lmGroupId, "+
         "       LMHCG.relay, LMHCG.inventoryId, AB.KWCapacity, AB.ApplianceId "+
         "FROM LMHardwareControlGroup LMHCG "+
         "INNER JOIN LMHardwareConfiguration LMHC ON LMHC.inventoryId = LMHCG.inventoryId "+
-        "INNER JOIN ApplianceBase AB ON LMHC.applianceId = AB.ApplianceId " + 
+        "INNER JOIN ApplianceBase AB ON LMHC.applianceId = AB.ApplianceId " +
         "                           AND LMHCG.programId = AB.programId " +
     	"							AND LMHCG.accountId = AB.accountId ";
 
 
     @Override
     public Set<Integer> getActiveEnrolledInventoryIdsForGroupIds(Collection<Integer> groupIds) {
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        
+
         sql.append("SELECT LMHCG.InventoryId");
         sql.append("FROM LMHardwareControlGroup LMHCG");
         sql.append("WHERE LMGroupId").in(groupIds);
         sql.append(  "AND NOT LMHCG.groupEnrollStart IS NULL");
         sql.append(  "AND LMHCG.groupEnrollStop IS NULL");
-        
+
         List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         Set<Integer> uniqueInventoryIds = Sets.newHashSet(inventoryIds);
-        
+
         return uniqueInventoryIds;
     }
-    
+
     /**
      * Gets all the programs the account is enrolled in
      */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<ProgramEnrollment> getActiveEnrollmentsByAccountId(int accountId) {
-        
+
         SqlStatementBuilder accountEnrollmentSQL = new SqlStatementBuilder();
         accountEnrollmentSQL.append(enrollmentSQLHeader);
         accountEnrollmentSQL.append("WHERE LMHCG.AccountId").eq(accountId);
         accountEnrollmentSQL.append("AND NOT LMHCG.groupEnrollStart IS NULL");
         accountEnrollmentSQL.append("AND LMHCG.groupEnrollStop IS NULL");
 
-        List<ProgramEnrollment> programEnrollments = 
-        	yukonJdbcTemplate.query(accountEnrollmentSQL, 
+        List<ProgramEnrollment> programEnrollments =
+        	yukonJdbcTemplate.query(accountEnrollmentSQL,
                                      enrollmentRowMapper);
-            
+
         for (ProgramEnrollment programEnrollment : programEnrollments) {
             programEnrollment.setEnroll(true);
         }
         return programEnrollments;
     }
-    
+
     @Override
     public boolean isAccountEnrolled(int accountId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -98,18 +96,18 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append("WHERE AccountId").eq(accountId);
         sql.append("  AND Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         sql.append("  AND GroupEnrollStop IS NULL");
-        
+
         int activeEnrollments = yukonJdbcTemplate.queryForInt(sql);
-        
+
         return activeEnrollments > 0;
     }
 
     @Override
     public List<ProgramEnrollment> getActiveEnrollmentsByInventory(int inventoryId) {
-        
+
         /** Will be 0 for devices not assigned to an account */
         int accountId = customerAccountDao.getAccountByInventoryId(inventoryId).getAccountId();
-        
+
         SqlStatementBuilder accountEnrollmentSQL = new SqlStatementBuilder();
         accountEnrollmentSQL.append(enrollmentSQLHeader);
         accountEnrollmentSQL.append("WHERE lmhcg.accountId").eq(accountId);
@@ -117,9 +115,9 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         accountEnrollmentSQL.append("AND lmhcg.groupEnrollStart IS NOT NULL");
         accountEnrollmentSQL.append("AND lmhcg.groupEnrollStop IS NULL");
 
-        List<ProgramEnrollment> programEnrollments = 
+        List<ProgramEnrollment> programEnrollments =
             yukonJdbcTemplate.query(accountEnrollmentSQL, enrollmentRowMapper);
-            
+
         for (ProgramEnrollment programEnrollment : programEnrollments) {
             programEnrollment.setEnroll(true);
         }
@@ -137,7 +135,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         accountEnrollmentSQL.append("AND (lmhcg.groupEnrollStop IS NULL");
         accountEnrollmentSQL.append(    "OR lmhcg.groupEnrollStop").gt(when).append(")");
 
-        List<ProgramEnrollment> programEnrollments = 
+        List<ProgramEnrollment> programEnrollments =
             yukonJdbcTemplate.query(accountEnrollmentSQL, enrollmentRowMapper);
 
         for (ProgramEnrollment programEnrollment : programEnrollments) {
@@ -145,7 +143,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         }
         return programEnrollments;
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<ProgramEnrollment> findConflictingEnrollments(int accountId,
@@ -172,7 +170,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 
 	@Override
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime) {
-		
+
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
 		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation, ypo.Type ");
@@ -183,32 +181,32 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.ProgramID = pwp.ProgramID");
 		sql.append("WHERE lmhcg.InventoryId").eq(inventoryId);
 		sql.append("AND lmhcg.Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
-		
+
 		if (startTime == null && stopTime == null) {
-			
+
 			Date now = new Date();
 			sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
 			sql.append("AND (lmhcg.GroupEnrollStop").gt(now).append("OR lmhcg.GroupEnrollStop IS NULL)");
-			
+
 		} else {
-			
+
 			if (startTime == null) {
 				startTime = new Date(0); //epoch
 			}
 			if (stopTime == null) {
 				stopTime = new Date(); // now
 			}
-			
+
 			sql.append("AND lmhcg.GroupEnrollStart").lte(stopTime);
 			sql.append("AND (lmhcg.GroupEnrollStop").gte(startTime).append("OR lmhcg.GroupEnrollStop IS NULL)");
 		}
-		
+
 		List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
-		
-		
+
+
 		return programList;
 	}
-	
+
 	@Override
 	public List<Integer> getOptedOutInventory(Program program, Date startDate, Date stopDate) {
 
@@ -227,41 +225,22 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 
 	@Override
 	public List<Integer> getCurrentlyOptedOutInventory() {
-		
+
 		Date now = new Date();
-		
+
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT DISTINCT lmhcg.InventoryId ");
 		sql.append("FROM LMHardwareControlGroup lmhcg");
 		sql.append("WHERE lmhcg.Type = ?");
 		sql.append("	AND lmhcg.OptOutStart <= ?");
 		sql.append("	AND lmhcg.OptOutStop IS NULL");
-		
-		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
+
+		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql.toString(), new IntegerRowMapper(),
 				LMHardwareControlGroup.OPT_OUT_ENTRY,
 				now);
 		return inventoryIds;
 	}
-	
-	@Override
-	public List<LMHardwareControlGroup> getOptOutHistoryByProgram(
-			Program program, Date startDate, Date stopDate) {
 
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT lmhcg.* ");
-		sql.append("FROM LMHardwareControlGroup lmhcg");
-		sql.append("WHERE lmhcg.ProgramId").eq(program.getProgramId());
-		sql.append("	AND lmhcg.Type").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
-		sql.append("	AND lmhcg.OptOutStart").lte(stopDate);
-		sql.append("	AND (lmhcg.OptOutStop IS NULL");
-		sql.append("         OR lmhcg.OptOutStop").gte(startDate).append(")");
-		
-		List<LMHardwareControlGroup> history = 
-			yukonJdbcTemplate.query(sql, new LMHardwareControlGroupRowMapper());
-
-		return history;
-	}
-	
 	@Override
 	public Map<Integer,Integer> getActiveEnrollmentExcludeOptOutCount(Date startDate, Date stopDate) {
 
@@ -280,10 +259,10 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("			AND (lmhcg2.OptOutStop IS NULL OR lmhcg2.OptOutStop >= ").appendArgument(startDate);
 		sql.append("		) )");
 		sql.append(" GROUP BY pdg.DeviceId");
-		
+
 		final Map<Integer, Integer> programIdCountMap = new HashMap<Integer, Integer>();
 		yukonJdbcTemplate.query(sql.toString(), sql.getArguments(), new RowCallbackHandler() {
-		
+
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 		        Integer inventoryCount = new Integer(rs.getInt(1));
@@ -293,28 +272,6 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		});
 		return programIdCountMap;
 	}
-    
-	@Override
-    public Instant findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
-	    
-	    Instant now = new Instant();
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT LMHCG.GroupEnrollStart ");
-        sql.append("FROM LMHardwareControlGroup LMHCG");
-        sql.append("WHERE LMHCG.InventoryId ").eq(inventoryId);
-        sql.append("AND LMHCG.LmGroupId ").eq(lmGroupId);
-        sql.append("AND LMHCG.GroupEnrollStart").lte(now);
-        sql.append("AND LMHCG.GroupEnrollStop IS NULL");
-
-        try {
-        	Instant startDate = 
-        	    yukonJdbcTemplate.queryForObject(sql, new InstantRowMapper());
-        	return startDate;
-        } catch (EmptyResultDataAccessException e){
-        	return null;
-        }
-    }
 
 	@Override
     public boolean isInService(int inventoryId) {
@@ -352,7 +309,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append(  "AND hcg.inventoryId").eq(inventoryId);
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
-	
+
     private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
         @Override
         public ProgramEnrollment mapRow(YukonResultSet rs) throws SQLException {
@@ -366,9 +323,9 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
             return programEnrollment;
         }};
 
-    private class LMHardwareControlGroupRowMapper 
+    private class LMHardwareControlGroupRowMapper
                         implements YukonRowMapper<LMHardwareControlGroup> {
-        
+
     	@Override
         public LMHardwareControlGroup mapRow(YukonResultSet rs) throws SQLException {
             LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
@@ -385,10 +342,10 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
             hardwareControlGroup.setUserIdFirstAction(rs.getInt("UserIdFirstAction"));
             hardwareControlGroup.setUserIdSecondAction(rs.getInt("UserIdSecondAction"));
             hardwareControlGroup.setProgramId(rs.getInt("ProgramId"));
-            
+
             return hardwareControlGroup;
         }
-    	
+
     }
 
 }

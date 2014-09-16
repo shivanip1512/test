@@ -19,15 +19,15 @@ public interface EnergyCompanyDao {
             return energyCompany.getEnergyCompanyId();
         }
     };
-    
+
     /**
      * Gets the ids of all energy companies that have inventory enrolled in the specified group.
      */
     List<Integer> getEnergyCompanyIdsByGroupEnrollment(int lmGroupId);
-    
+
     /**
      * Get energy company associated with this operator user.
-     * 
+     *
      * If this user is a residential customer, or no energy company is found throws
      * EnergyCompanyNotFoundException
      */
@@ -35,7 +35,7 @@ public interface EnergyCompanyDao {
 
     /**
      * Get energy company associated with this user.
-     * 
+     *
      * This user can be an operator or residential user.
      * If no energy company is found returns default energy company
      */
@@ -99,17 +99,17 @@ public interface EnergyCompanyDao {
      * Returns the energy company Id of the newly created energy company
      */
     int createEnergyCompany(String name, int contactId, LiteYukonUser user);
-    
+
     void updateCompanyName(String name, int ecId);
-    
+
     List<Integer> getOperatorUserIds(EnergyCompany energyCompany);
-    
+
     /**
      * Get the direct child energy companies underneath the energy company.
-     * 
+     *
      * It will not return any of the children of the child energy companies.  If you want that data you'll want
      * to use the getChildEnergyCompanies method above.
-     * 
+     *
      * @param energyCompanyId - The energyCompanyId supplied is not included in the resulting list.
      * @deprecated Use {@link #getEnergyCompany()}.getChildren()
      */

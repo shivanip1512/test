@@ -22,7 +22,7 @@ public interface StarsSearchDao {
 			String serialNumber,
 			YukonEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException;
-	
+
 	/**
      * Method to get an LMHardware by serial number within a given energy company id
      * @param serialNumber
@@ -30,7 +30,7 @@ public interface StarsSearchDao {
      * @return Hardware if found or null if not found
      * @throws ObjectInOtherEnergyCompanyException
      */
-    public LiteLmHardwareBase searchLmHardwareBySerialNumber(String serialNumber, int energyCompanyId) 
+    public LiteLmHardwareBase searchLmHardwareBySerialNumber(String serialNumber, int energyCompanyId)
     throws ObjectInOtherEnergyCompanyException;
 
 	/**
@@ -40,20 +40,6 @@ public interface StarsSearchDao {
 	 * @return List of hardware found
 	 */
 	public List<LiteInventoryBase> searchLMHardwareBySerialNumber(String serialNumber, Collection<? extends YukonEnergyCompany> yecList);
-	
-	/**
-	 * Method to search for a device by category and name
-	 * @param categoryID - Category of device to find
-	 * @param deviceName - Name of device to find (method adds wild card on end of name)
-	 * @param energyCompany - Energy company to get device for
-	 * @return Hardware if found or null if not found
-	 * @throws ObjectInOtherEnergyCompanyException - If hardware exists in another energy company
-	 */
-	public LiteInventoryBase searchForDevice(
-			int categoryID, 
-			String deviceName, 
-			YukonEnergyCompany energyCompany)
-			throws ObjectInOtherEnergyCompanyException;
 
 	/**
 	 * Method to search for a device by name within a given list of energy companies
@@ -62,18 +48,8 @@ public interface StarsSearchDao {
 	 * @return List of hardware found
 	 */
 	public List<LiteInventoryBase> searchInventoryByDeviceName(
-			String deviceName, 
+			String deviceName,
 			Collection<YukonEnergyCompany> yecList);
-	
-	/**
-	 * Method to find an Inventory by device id for a given energy company
-	 * @param deviceId - Id of device
-	 * @param energyCompany - Energy company to get device for
-	 * @return Hardware if found or null if not found
-	 * @throws ObjectInOtherEnergyCompanyException - If hardware exists in another energy company
-	 */
-	public LiteInventoryBase getByDeviceId(int deviceId, YukonEnergyCompany energyCompany) 
-			throws ObjectInOtherEnergyCompanyException;
 
 	/**
 	 * Method to find an Inventory by inventory id for a given energy company
@@ -82,9 +58,9 @@ public interface StarsSearchDao {
 	 * @return Hardware if found or null if not found
 	 * @throws ObjectInOtherEnergyCompanyException - If hardware exists in another energy company
 	 */
-	public LiteInventoryBase getById(int inventoryId, YukonEnergyCompany energyCompany) 
+	public LiteInventoryBase getById(int inventoryId, YukonEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException;
-	
+
 	/**
 	 * Method to find a device by Alternate tracking number within a given list of energy companies
 	 * @param altTrackNumber - Tracking number to find (exact match only)
@@ -92,19 +68,9 @@ public interface StarsSearchDao {
 	 * @return List of hardware found
 	 */
 	public List<LiteInventoryBase> searchInventoryByAltTrackNumber(
-			String altTrackNumber, 
+			String altTrackNumber,
 			Collection<YukonEnergyCompany> yecList);
 
-	/**
-	 * Method to find a device by installation company id within a given list of energy companies
-	 * @param installationCompanyId - Id of installation company
-	 * @param energyCompanyList - Energy companies to look for device in
-	 * @return List of hardware found
-	 */
-	public List<LiteInventoryBase> searchInventoryByInstallationCompany(
-			int installationCompanyId, 
-			Collection<YukonEnergyCompany> yecList);
-	
 	/**
 	 * Method to find all devices on a given route within a given list of energy companies
 	 * @param routeId - Id of route
@@ -112,11 +78,11 @@ public interface StarsSearchDao {
 	 * @return List of hardware found
 	 */
 	public List<LiteLmHardwareBase> searchLMHardwareByRoute(
-			int routeId, 
+			int routeId,
 			Collection<YukonEnergyCompany> yecList);
 
 	/**
-	 * Method to find all devices of a given type and in a given serial number range within a given 
+	 * Method to find all devices of a given type and in a given serial number range within a given
 	 * list of energy companies
 	 * @param startSerialNumber - Start of serial number range
 	 * @param endSerialNumber - End of serial number range
@@ -126,9 +92,9 @@ public interface StarsSearchDao {
 	 * @throws PersistenceException
 	 */
 	public List<LiteLmHardwareBase> searchLMHardwareBySerialNumberRange(
-			long startSerialNumber, 
-			long endSerialNumber, 
-			int deviceTypeDefinitionId, 
+			long startSerialNumber,
+			long endSerialNumber,
+			int deviceTypeDefinitionId,
 			Collection<YukonEnergyCompany> yecList) throws PersistenceException;
 
 }

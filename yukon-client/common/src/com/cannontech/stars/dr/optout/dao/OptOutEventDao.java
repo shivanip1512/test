@@ -24,7 +24,7 @@ import com.google.common.collect.Multimap;
 
 /**
  * Dao class for persisting Opt out events
- * 
+ *
  */
 public interface OptOutEventDao {
 
@@ -32,20 +32,20 @@ public interface OptOutEventDao {
 
 	/**
 	 * Method to save/update an Opt out event and log the action taken
-	 * 
+	 *
 	 * @param event - Event to save/update
 	 * @param action - Action taken on the opt out event
 	 * @param user - User requesting the action
 	 * @return The log entry saved to optOutEventLog.
 	 */
 	public OptOutLog save(OptOutEvent event, OptOutAction action, LiteYukonUser user);
-	
+
 	/**
-	 * Method to determine if there is a current active opt out for a given inventory/customer account 
+	 * Method to determine if there is a current active opt out for a given inventory/customer account
 	 * pair.
 	 */
 	public boolean isOptedOut(int inventoryId, int customerAccountId);
-	
+
 	/**
 	 * Method to get a list of opt out history for a given account for all inventory on that account
 	 * @param customerAccountId - Account to get history for
@@ -79,7 +79,7 @@ public interface OptOutEventDao {
     public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, ReadableInstant reportStartDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup);
 
     /**
-     * Method to get a list of opt out events by the assigning user of the opt out, time period, and login group. 
+     * Method to get a list of opt out events by the assigning user of the opt out, time period, and login group.
      */
     public List<OverrideHistory> getOptOutHistoryByLogUserId(int userId, ReadableInstant reportStartDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup);
 
@@ -97,20 +97,20 @@ public interface OptOutEventDao {
      * @return List of opt out history
      */
 	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, ReadableInstant reportStartDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup);
-	
+
 	/**
-	 * Method to get the last (or current) opt out event that actually happened (ignoring canceled 
+	 * Method to get the last (or current) opt out event that actually happened (ignoring canceled
 	 * scheduled events) for the given inventory
 	 * @return Last or current event or null if no events
 	 */
 	public OptOutEvent findLastEvent(int inventoryId);
-	
+
 	/**
 	 * Method to save an OptOutLog
 	 * @param optOutLog - Change to be saved
 	 */
 	public void saveOptOutLog(OptOutLog optOutLog);
-	
+
 	/**
 	 * Method to get the active (hasn't been canceled) scheduled opt out event if one exists
 	 * @param inventoryId - Inventory to get event for
@@ -118,7 +118,7 @@ public interface OptOutEventDao {
 	 * @return Event or null if none exists
 	 */
 	public OptOutEvent getScheduledOptOutEvent(int inventoryId, int customerAccountId);
-	
+
 	/**
 	 * Method to get a list of all currently scheduled opt out events for all accounts for the
 	 * energy company
@@ -126,14 +126,14 @@ public interface OptOutEventDao {
 	 * @return List of scheduled opt outs
 	 */
 	public List<OptOutEvent> getAllScheduledOptOutEvents(EnergyCompany energyCompany);
-	
+
 	/**
 	 * Method to get a list of all currently scheduled opt out events for the account
 	 * @param customerAccountId - Account to get opt outs for
 	 * @return List of scheduled opt outs
 	 */
 	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId);
-	
+
 	/**
 	 * Method to get a list of all currently active and scheduled opt outs for an account
 	 * @param customerAccountId - Account to get opt outs for
@@ -141,7 +141,7 @@ public interface OptOutEventDao {
 	 * @return List of events
 	 */
 	public List<OptOutEventDto> getCurrentOptOuts(int customerAccountId, int inventoryId);
-	
+
 	/**
 	 * Method to get a list of all currently active and scheduled opt outs for an account
 	 * @param customerAccountId - Account to get opt outs for
@@ -155,7 +155,7 @@ public interface OptOutEventDao {
 	 * @return List of Opt out events
 	 */
 	public List<OptOutEvent> getAllCurrentOptOuts(EnergyCompany energyCompany);
-	
+
 	/**
 	 * Method to get all current opt out events for a given energy company.
 	 * Limited to those opt outs that tie to inventory that is currently enrolled in a given program.
@@ -164,11 +164,11 @@ public interface OptOutEventDao {
 	 * @return
 	 */
 	public List<OptOutEvent> getAllCurrentOptOutsByProgramId(int programId, LiteStarsEnergyCompany energyCompany);
-	
+
 	/**
-	 * Method to get the total number of opt outs that have been used for a given inventory and 
+	 * Method to get the total number of opt outs that have been used for a given inventory and
 	 * account for a given time period
-	 * 
+	 *
 	 * @param inventoryId - Inventory to count opt outs for
 	 * @param customerAccountId - Account to count opt outs for
 	 * @param startDate - Start of time period to count opt outs
@@ -176,7 +176,7 @@ public interface OptOutEventDao {
 	 * @return Number of opt outs used in time period
 	 */
 	public Integer getNumberOfOptOutsUsed(int inventoryId, int customerAccountId, Instant startDate, Instant endDate);
-	
+
 	/**
 	 * Method to get a count of all currently active Opt Outs
 	 */
@@ -186,7 +186,7 @@ public interface OptOutEventDao {
 	 * Method to get a count of all scheduled Opt Outs
 	 */
 	public int getTotalNumberOfScheduledOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
-	
+
 	/**
 	 * Method to change the current count state of all active opt outs to the given value
 	 * @param energyCompany - Energy company to change state for
@@ -202,7 +202,7 @@ public interface OptOutEventDao {
 	 * @param webpublishingProgramId
 	 */
 	public void changeCurrentOptOutCountStateForProgramId(LiteStarsEnergyCompany energyCompany, OptOutCounts counts, int webpublishingProgramId);
-	
+
 	/**
 	 * Method to get the inventory ids of opt outed out inventory for an account in a given time period
 	 * @param accountId - Account to get count for
@@ -219,18 +219,10 @@ public interface OptOutEventDao {
 	public List<OptOutEvent> getScheduledOptOutsToBeStarted();
 
 	/**
-	 * Method to get a scheduled event that is over due to start (if one exists)
-	 * @param inventoryId - Inventory to get event for
-	 * @param customerAccountId - Account for inventory
-	 * @return Event if there is one
-	 */
-	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId);
-	
-	/**
 	 * @return A set of ids for all currently opted out inventory in the specified load groups.
 	 */
 	public Set<Integer> getOptedOutInventoryByLoadGroups(Iterable<Integer> loadGroupIds);
-	
+
 	/**
 	 * @return A set of ids for all currently opted out inventory in the specified list.
 	 */

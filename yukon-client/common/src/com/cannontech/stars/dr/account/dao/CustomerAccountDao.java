@@ -11,7 +11,6 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.google.common.collect.SetMultimap;
 
 public interface CustomerAccountDao {
     void add(CustomerAccount account);
@@ -25,6 +24,7 @@ public interface CustomerAccountDao {
     /**
      * Use {@link StarsDatabaseCache#getEnergyCompanyByUser(LiteYukonUser)} to get the Energy Company for the
      * user, then calls {@link #getByAccountNumberForDescendentsOfEnergyCompany(String, YukonEnergyCompany)}.
+     * 
      * @param user the user calling the method, only makes sense as an operator
      * @deprecated call getByAccountNumberForDescendentsOfEnergyCompany directly, get EC from
      *             EnergyCompanyDao
@@ -43,17 +43,10 @@ public interface CustomerAccountDao {
 
     /**
      * This is a performance method. It allows us to get a huge multimap of inventory ids to customer
-     * accounts.  It will cut down on the number of DAO hits, but will force the user to use a map call
+     * accounts. It will cut down on the number of DAO hits, but will force the user to use a map call
      * to get the inventoryIds for each customer account.
      */
     Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds);
-
-    /**
-     * This is is a performance method. It allows us to get a huge multimap of customer accounts to
-     * inventory ids.  It will cut down on the amount of DAO hits, but will force the user to use a map
-     * call to get the inventoryIds for each customer account.
-     */
-    SetMultimap<CustomerAccount, Integer> getAccountToInventoryIdsMap(Collection<Integer> inventoryIds);
 
     /**
      * Return a map of InventoryIds to AccountIds.
@@ -68,9 +61,7 @@ public interface CustomerAccountDao {
     CustomerAccount getAccountByContactId(int contactId);
 
     List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(int ecId, List<Integer> groupIds, Date startDate,
-        Date stopDate);
-
-    CustomerAccountWithNames getAccountWithNamesByCustomerId(int customerId, int ecId);
+            Date stopDate);
 
     Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(Iterable<Integer> accountIds);
 
@@ -100,6 +91,7 @@ public interface CustomerAccountDao {
     /**
      * Helper to return exactly one CustomerAccount for user.
      * A warning message is logged if more than one account is found for the user.
+     * 
      * @throws NotAuthorizedException if user is not associated with any accounts.
      */
     CustomerAccount getCustomerAccount(LiteYukonUser user) throws NotAuthorizedException;
