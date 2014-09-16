@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -38,6 +40,7 @@ import com.cannontech.util.ExpireLRUMap;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.google.common.collect.Sets;
 
 /**
  * Widget used to display basic device information
@@ -46,11 +49,12 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class MeterOutagesWidget extends WidgetControllerBase {
 
     private MeterDao meterDao;
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-    private AttributeService attributeService;
+    PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired DeviceAttributeReadService deviceAttributeReadService;
+    AttributeService attributeService;
 
     //Contains <DeviceID>,<PerishableOutageData>
-    private ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
+    private final ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
         new ExpireLRUMap<Integer,PerishableOutageData>(100);
     
     public class PerishableOutageData implements ExpireLRUMap.ReadDate{
@@ -133,7 +137,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         mav.addObject("data", data);
                              
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean readable = plcDeviceAttributeReadService.isReadable(meter, allExistingAttributes, user);
+        boolean readable = deviceAttributeReadService.isReadable(Sets.newHashSet(meter), allExistingAttributes, user);
         mav.addObject("readable", readable);
 
         return mav;
@@ -159,7 +163,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
 
         mav.addObject("result", result);
         
-        boolean readable = plcDeviceAttributeReadService.isReadable(meter, allExistingAttributes, userContext.getYukonUser());
+        boolean readable = deviceAttributeReadService.isReadable(Sets.newHashSet(meter), allExistingAttributes, userContext.getYukonUser());
         mav.addObject("readable", readable);
         
         return mav;

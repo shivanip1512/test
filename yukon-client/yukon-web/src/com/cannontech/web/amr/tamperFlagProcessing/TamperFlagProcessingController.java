@@ -154,7 +154,7 @@ public class TamperFlagProcessingController {
             }
         };
 	
-        String resultKey = deviceAttributeReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext);
+        String resultKey = deviceAttributeReadService.initiateRead(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
         monitorToRecentReadKeysCache.put(tamperFlagMonitorId, resultKey);
 		
 		

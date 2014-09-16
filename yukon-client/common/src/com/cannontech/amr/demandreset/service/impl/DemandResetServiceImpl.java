@@ -33,7 +33,6 @@ import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -96,7 +95,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                                                               DeviceRequestType.DEMAND_RESET_COMMAND,
                                                               devicesToSend.size(), user);
         result.setInitiatedExecution(initiatedExecution);
-        saveUnsupported(unsupportedDevices, initiatedExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
+        commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices, initiatedExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
 
         if (log.isDebugEnabled()) {
             log.debug("All Devices:" + allDevices);
@@ -118,7 +117,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                 log.debug("verificationExecution creId:" + verificationExecution.getId());
             }
             result.setVerificationExecution(verificationExecution);
-            saveUnsupported(unverifiableDevices,
+            commandRequestExecutionResultDao.saveUnsupported(unverifiableDevices,
                             verificationExecution.getId(),
                             CommandRequestUnsupportedType.UNSUPPORTED);
             CollectionCallback callback =
@@ -170,7 +169,7 @@ public class DemandResetServiceImpl implements DemandResetService {
             log.debug("initiatedExecution creId:" + initiatedExecution.getId());
         }
 
-        saveUnsupported(unsupportedDevices, initiatedExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
+        commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices, initiatedExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
 
         if (!devicesToSend.isEmpty()) {
             InitiationCallback initiationCallback =
@@ -217,7 +216,7 @@ public class DemandResetServiceImpl implements DemandResetService {
             log.debug("initiatedExecution creId:" + initiationExecution.getId());
         }
         
-        saveUnsupported(unsupportedDevices, initiationExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
+        commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices, initiationExecution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
            
         if (!devicesToSend.isEmpty()) {
             CommandRequestExecution verificationExecution =
@@ -229,7 +228,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                 log.debug("verificationExecution creId:" + verificationExecution.getId());
             }
 
-            saveUnsupported(unverifiableDevices,
+            commandRequestExecutionResultDao.saveUnsupported(unverifiableDevices,
                             verificationExecution.getId(),
                             CommandRequestUnsupportedType.UNSUPPORTED);
             VerificationCallback verificationCallback =
@@ -323,19 +322,6 @@ public class DemandResetServiceImpl implements DemandResetService {
         }
 
         return allValidDevices;
-    }
-
-    private void saveUnsupported(Set<? extends YukonPao> devices, int commandRequestExecutionId,
-                                 CommandRequestUnsupportedType type) {
-
-        for (YukonPao device : devices) {
-            CommandRequestUnsupported unsupported = new CommandRequestUnsupported();
-            unsupported.setCommandRequestExecId(commandRequestExecutionId);
-            unsupported.setDeviceId(device.getPaoIdentifier().getPaoId());
-            unsupported.setType(type);
-            commandRequestExecutionResultDao.saveUnsupported(unsupported);
-        }
-
     }
 
     private void completeCommandRequestExecution(CommandRequestExecution commandRequestExecution,
@@ -454,7 +440,7 @@ public class DemandResetServiceImpl implements DemandResetService {
                     log.debug("Command Canceled");
                     Set<SimpleDevice> canceled =
                         Sets.newHashSet(result.getCanceledCollection().getDeviceList());
-                    saveUnsupported(canceled,
+                    commandRequestExecutionResultDao.saveUnsupported(canceled,
                                     result.getVerificationExecution().getId(),
                                     CommandRequestUnsupportedType.CANCELED);
                     List<SimpleDevice> completed = new ArrayList<>();

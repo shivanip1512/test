@@ -2,19 +2,19 @@ package com.cannontech.web.updater.groupMeterRead;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class GroupMeterReadUpdateBackingService extends RecentResultUpdateBackingService {
 
-	private PlcDeviceAttributeReadService plcDeviceAttributeReadService; 
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {
 
-    	GroupMeterReadResult groupMeterReadResult = plcDeviceAttributeReadService.getResult(resultId);
+    	GroupMeterReadResult groupMeterReadResult = deviceAttributeReadService.getResult(resultId);
        
        if (groupMeterReadResult == null) {
            return "";
@@ -27,9 +27,5 @@ public class GroupMeterReadUpdateBackingService extends RecentResultUpdateBackin
     public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate, YukonUserContext userContext) {
     	return true;
     }
-    
-    @Autowired
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-	}
+
 }

@@ -18,16 +18,16 @@ import com.cannontech.core.dynamic.PointValueHolder;
 public class GroupCommandCompletionCallback implements
         CommandCompletionCallback<CommandRequestDevice>, Completable, CancelStatus, ExceptionStatus, MultipleDeviceResultHolder {
     
-    private Map<SimpleDevice,SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<SimpleDevice, SpecificDeviceErrorDescription>(100, .75f, 1);
-    private Map<SimpleDevice,String> resultStrings = new ConcurrentHashMap<SimpleDevice, String>(100, .75f, 1);
-    private Map<SimpleDevice, Object> allDevices = new ConcurrentHashMap<SimpleDevice, Object>(100, .75f, 1);
-    private Object PRESENT = new Object(); // used as the value for the allDevices map
-    private MapList<SimpleDevice,PointValueHolder> receivedValues = new MapList<SimpleDevice, PointValueHolder>();
+    private final Map<SimpleDevice,SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<SimpleDevice, SpecificDeviceErrorDescription>(100, .75f, 1);
+    private final Map<SimpleDevice,String> resultStrings = new ConcurrentHashMap<SimpleDevice, String>(100, .75f, 1);
+    private final Map<SimpleDevice, Object> allDevices = new ConcurrentHashMap<SimpleDevice, Object>(100, .75f, 1);
+    private final Object PRESENT = new Object(); // used as the value for the allDevices map
+    private final MapList<SimpleDevice,PointValueHolder> receivedValues = new MapList<SimpleDevice, PointValueHolder>();
     private boolean complete = false;
     private boolean canceled = false;
     private boolean processingErrorOccured = false;
     private String processingErrorReason = "";
-    private CommandRequestExecution execution;
+    protected CommandRequestExecution execution;
     
     @Override
     public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
@@ -102,9 +102,8 @@ public class GroupCommandCompletionCallback implements
     }
 
     @Override
-    final public void complete() {
+    public void complete() {
         complete = true;
-        doComplete();
     }
     
     @Override
@@ -128,9 +127,6 @@ public class GroupCommandCompletionCallback implements
         return canceled;
     };
 
-    protected void doComplete() {
-        // noop
-    }
     
     @Override
     public boolean isExceptionOccured() {

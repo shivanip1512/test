@@ -186,7 +186,7 @@ public class GroupMeterReadController {
                 
                 if (result.isExceptionOccured()) {
                 	
-                	int deviceCount = (int)result.getDeviceCollection().getDeviceCount();
+                	int deviceCount = result.getDeviceCollection().getDeviceCount();
                 	int notCompletedCount = deviceCount - completedCount;
                 	String exceptionReason = result.getExceptionReason();
                 	
@@ -207,11 +207,11 @@ public class GroupMeterReadController {
 		
         // read
         try {
-            String resultKey =  deviceAttributeReadService.readDeviceCollection(deviceCollection,
+            String resultKey =  deviceAttributeReadService.initiateRead(deviceCollection,
                                           selectedAttributes,
                                           DeviceRequestType.GROUP_ATTRIBUTE_READ,
                                           alertCallback,
-                                          userContext);
+                                          userContext.getYukonUser());
         	mav.addObject("resultKey", resultKey);
 		
         } catch (Exception e) {

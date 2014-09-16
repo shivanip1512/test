@@ -1,11 +1,13 @@
 package com.cannontech.common.device.commands.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 
 public interface CommandRequestExecutionResultDao {
 
@@ -35,4 +37,7 @@ public interface CommandRequestExecutionResultDao {
             CommandRequestExecutionResultsFilterType reportFilterType);
 
     public void saveUnsupported(CommandRequestUnsupported unsupportedCmd);
+
+    public void saveUnsupported(Set<? extends YukonPao> devices, int commandRequestExecutionId,
+                                CommandRequestUnsupportedType type);
 }

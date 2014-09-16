@@ -83,8 +83,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
         GroupCommandCompletionCallback commandCompletionCallback = new GroupCommandCompletionCallback() {
             @Override
-            public void doComplete() {
+            public void complete() {
                 try {
+                    super.complete();
                     callback.handle(groupCommandResult);
                 } catch (Exception e) {
                     log.warn("There was an error executing the callback", e);

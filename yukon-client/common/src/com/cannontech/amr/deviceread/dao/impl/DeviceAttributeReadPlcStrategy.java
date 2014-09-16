@@ -1,39 +1,62 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
+import com.cannontech.common.device.commands.CommandRequestType;
+import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.user.YukonUserContext;
 
 public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrategy {
+    
+    private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadPlcStrategy.class);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private MeterReadCommandGeneratorService meterReadCommandGeneratorService;
+    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     @Override
     public StrategyType getType() {
@@ -50,25 +73,28 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
     }
     
     @Override
-    public boolean isReadable(Iterable<PaoMultiPointIdentifier> points, LiteYukonUser user) {
-        return plcDeviceAttributeReadService.isReadable(points, user);
+    public boolean isReadable(Iterable<PaoMultiPointIdentifier> paoPointIdentifiers, LiteYukonUser user) {
+        return meterReadCommandGeneratorService.isReadable(paoPointIdentifiers);
     }
-
+   
     @Override
     public void initiateRead(final Iterable<PaoMultiPointIdentifier> points,
             GroupCommandCompletionCallback groupCallback,
-            DeviceRequestType type, YukonUserContext userContext) {
-        CommandRequestExecutionTemplate<CommandRequestDevice> template =
-                commandRequestDeviceExecutor.getExecutionTemplate(type, userContext.getYukonUser());
+            DeviceRequestType type, LiteYukonUser user) {    
         List<CommandRequestDevice> commands = meterReadCommandGeneratorService.getCommandRequests(points);
-        template.execute(commands, groupCallback, groupCallback.getExecution());
+        if (log.isDebugEnabled()) {
+            log.debug(getType() + " Strategy initiateRead");
+            log.debug("Points:" + points);
+            log.debug("Commands:" + commands);
+        }
+        commandRequestDeviceExecutor
+            .createTemplateAndExecute(groupCallback.getExecution(), groupCallback, commands, user);
     }
-
-       
+ 
     @Override
     public void initiateRead(final Iterable<PaoMultiPointIdentifier> points,
             final DeviceAttributeReadStrategyCallback delegateCallback,
-            DeviceRequestType type, LiteYukonUser user) {
+            DeviceRequestType type, CommandRequestExecution execution, LiteYukonUser user) {
         CommandCompletionCallback<CommandRequestDevice> groupCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
 
             @Override
@@ -101,14 +127,76 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                 delegateCallback.receivedException(exception);
             }
         };
-        plcDeviceAttributeReadService.backgroundReadDeviceCollection(points, type, groupCallback, user, RetryParameters.none());
+                
+        List<CommandRequestDevice> commands = meterReadCommandGeneratorService.getCommandRequests(points);
+        if (log.isDebugEnabled()) {
+            log.debug(getType() + " Strategy initiateRead");
+            log.debug("Points:" + points);
+            log.debug("Commands:" + commands);
+        }
+        commandRequestDeviceExecutor.createTemplateAndExecute(execution, groupCallback, commands, user);
     }
     
-
     @Override
     public int getRequestCount(Collection<PaoMultiPointIdentifier> devicesForThisStrategy) {
         List<CommandRequestDevice> commandRequests =
                 meterReadCommandGeneratorService.getCommandRequests(devicesForThisStrategy);
         return commandRequests.size();
+    }
+    
+    @Override
+    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
+                                                                                        Set<? extends Attribute> attributes,
+                                                                                        DeviceRequestType type,
+                                                                                        CommandCompletionCallback<CommandRequestDevice> callback,
+                                                                                        LiteYukonUser user,
+                                                                                        RetryParameters retryParameters) {
+
+        CommandRequestExecution execution =
+            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE, type, 0, user);
+
+        PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
+            attributeService.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes);
+
+        Set<YukonPao> unsupportedDevices = new HashSet<>();
+
+        // MCTs that support the attributes
+        List<PaoMultiPointIdentifier> supportedDevices = new ArrayList<>();
+
+        unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
+
+        log.debug("Attributes are not supported:" + attributes + " for  " + unsupportedDevices);
+
+        for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getDevicesAndPoints()) {
+            if (identifier.getPao().getPaoType().isMct()) {
+                supportedDevices.add(identifier);
+            } else {
+                unsupportedDevices.add(identifier.getPao());
+            }
+        }
+        
+        commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices,
+                                                         execution.getId(),
+                                                         CommandRequestUnsupportedType.UNSUPPORTED);
+
+        CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = null;
+        if (!supportedDevices.isEmpty()) {
+            List<CommandRequestDevice> commandRequests =
+                meterReadCommandGeneratorService.getCommandRequests(supportedDevices);
+            execution.setRequestCount(commandRequests.size());
+            CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor =
+                new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, retryParameters);
+            executionObjects = retryExecutor.execute(commandRequests, callback, execution, user);
+        } else {
+            execution.setStopTime(new Date());
+            execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
+            commandRequestExecutionDao.saveOrUpdate(execution);
+            CommandRequestExecutionContextId commandRequestExecutionContextId =
+                new CommandRequestExecutionContextId(execution.getContextId());
+            executionObjects =
+                new CommandRequestExecutionObjects<CommandRequestDevice>(null, null, commandRequestExecutionContextId);
+        }
+
+        return executionObjects;
     }
 }

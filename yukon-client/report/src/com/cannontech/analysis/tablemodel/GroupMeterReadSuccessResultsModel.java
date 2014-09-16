@@ -10,7 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -29,13 +29,13 @@ import com.google.common.collect.Iterables;
 
 public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<GroupMeterReadSuccessResultsModel.ModelRow> implements ReportModelMetaInfo {
     
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static String title;
     private PaoDao paoDao;
     private PointDao pointDao;
     private String resultKey;
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    private final List<ModelRow> data = new ArrayList<ModelRow>();
     private Set<? extends Attribute> attributes;
     @Autowired private ObjectFormattingService objectFormattingService;
 
@@ -51,7 +51,7 @@ public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<Group
     @Override
     public void doLoadData() {
         
-        GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
+        GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
         
         // attributes
         this.attributes = result.getAttributes();
@@ -117,7 +117,7 @@ public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<Group
         };
         
         if (attributes == null && StringUtils.isNotBlank(resultKey)) {
-            GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
+            GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
             // attributes
             this.attributes = result.getAttributes();
             String prettyText = StringUtils.join(Iterables.transform(attributes, attrDesc).iterator(), ", ");
@@ -154,11 +154,6 @@ public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<Group
     
     public String getResultKey() {
         return resultKey;
-    }
-    
-    @Autowired
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
     
     @Autowired

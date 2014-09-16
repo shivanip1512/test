@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
@@ -56,7 +55,6 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
-    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
 
     @Override
@@ -115,13 +113,13 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             } else if (getAttributes() != null) {
                 //Devices that are not MCTs will be marked as unsupported
                 DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
-                executionObjects =
-                    plcDeviceAttributeReadService.backgroundReadDeviceCollection(deviceCollection,
-                                                                                 attributes,
-                                                                                 getCommandRequestExecutionType(),
-                                                                                 dummyCallback,
-                                                                                 user,
-                                                                                 getRetryParameters());
+                
+                executionObjects = deviceAttributeReadService.initiateRead(deviceCollection,
+                                                                           attributes,
+                                                                           getCommandRequestExecutionType(),
+                                                                           dummyCallback,
+                                                                           user,
+                                                                           getRetryParameters());
                 currentExecutor = executionObjects.getCommandRequestExecutor();
                 currentCallback = executionObjects.getCallback();
             } else {

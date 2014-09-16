@@ -1,6 +1,7 @@
 package com.cannontech.common.device.commands.dao.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -15,6 +16,7 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsF
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.RowAndFieldMapper;
@@ -149,6 +151,19 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         unsupportedTemplate.save(unsupportedCmd);
     }
 
+    @Override
+    public void saveUnsupported(Set<? extends YukonPao> devices, int commandRequestExecutionId,
+                                 CommandRequestUnsupportedType type) {
+
+        for (YukonPao device : devices) {
+            CommandRequestUnsupported unsupported = new CommandRequestUnsupported();
+            unsupported.setCommandRequestExecId(commandRequestExecutionId);
+            unsupported.setDeviceId(device.getPaoIdentifier().getPaoId());
+            unsupported.setType(type);
+            saveUnsupported(unsupported);
+        }
+    }
+    
     @Override
     public int getUnsupportedCountByExecutionId(int commandRequestExecutionId, CommandRequestUnsupportedType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

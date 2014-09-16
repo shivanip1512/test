@@ -1,15 +1,22 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.Collection;
+import java.util.Set;
 
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.user.YukonUserContext;
 
 public interface DeviceAttributeReadStrategy {
     
@@ -48,16 +55,28 @@ public interface DeviceAttributeReadStrategy {
      * @param points an Iterable of PaoMultiPointIdentifiers
      * @param callback
      * @param type
+     * @param execution
      * @param user passed in logging purposes, no authorization checks are expected
      */
     
     public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
                              DeviceAttributeReadStrategyCallback delegateCallback, DeviceRequestType type,
+                             CommandRequestExecution execution,
                              LiteYukonUser user);
 
     public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
                              GroupCommandCompletionCallback groupCallback, DeviceRequestType type,
-                             YukonUserContext userContext);
+                             LiteYukonUser user);
+    
+    /**
+     * This method works only on PLC devices and supports retries.
+     */
+    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
+                                                                             Set<? extends Attribute> attributes,
+                                                                             DeviceRequestType type,
+                                                                             CommandCompletionCallback<CommandRequestDevice> callback,
+                                                                             LiteYukonUser user,
+                                                                             RetryParameters retryParameters);
 
     public int getRequestCount(Collection<PaoMultiPointIdentifier> devicesForThisStrategy);
 

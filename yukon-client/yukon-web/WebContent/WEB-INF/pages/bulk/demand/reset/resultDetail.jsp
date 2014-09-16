@@ -6,7 +6,7 @@
 
 <cti:standardPage module="tools" page="bulk.demandReset.results">
     <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
-    <cti:url var="recentResultsUrl" value="/bulk/demand-reset/recent-results"/>
+    <cti:url var="recentResultsUrl" value="/group/groupMeterRead/resultsList"/>
     <cti:list var="arguments">
         <cti:item value="${recentResultsUrl}" />
     </cti:list>

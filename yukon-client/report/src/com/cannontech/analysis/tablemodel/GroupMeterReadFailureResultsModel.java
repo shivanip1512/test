@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -18,7 +18,7 @@ import com.google.common.collect.Iterables;
 
 public class GroupMeterReadFailureResultsModel extends GroupFailureResultsModelBase {
     
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static String title;
     private Set<? extends Attribute> attributes;
@@ -26,7 +26,7 @@ public class GroupMeterReadFailureResultsModel extends GroupFailureResultsModelB
 
     @Override
     public void doLoadData() {
-        GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
+        GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
         this.attributes = result.getAttributes();
         doLoadData(result);
     }
@@ -43,7 +43,7 @@ public class GroupMeterReadFailureResultsModel extends GroupFailureResultsModelB
         };
         
         if (attributes == null && StringUtils.isNotBlank(resultKey)) {
-            GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
+            GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
             // attributes
             this.attributes = result.getAttributes();
             String prettyText = StringUtils.join(Iterables.transform(attributes, attrDesc).iterator(), ", ");
@@ -57,11 +57,6 @@ public class GroupMeterReadFailureResultsModel extends GroupFailureResultsModelB
     @Override
     public String getTitle() {
         return title;
-    }
-    
-    @Autowired
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
     
     @Autowired

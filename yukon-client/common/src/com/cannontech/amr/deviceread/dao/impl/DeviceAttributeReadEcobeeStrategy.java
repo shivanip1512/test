@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -15,19 +16,24 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
+import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -39,7 +45,6 @@ import com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Iterables;
 
 public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStrategy {
@@ -50,6 +55,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Autowired private EcobeePointUpdateServiceImpl ecobeePointUpdateServiceImpl;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
 
     @Override
     public StrategyType getType() {
@@ -69,7 +75,8 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
 
     @Override
     public void initiateRead(Iterable<PaoMultiPointIdentifier> devices,
-            final DeviceAttributeReadStrategyCallback delegateCallback, DeviceRequestType type, LiteYukonUser user) {
+                             final DeviceAttributeReadStrategyCallback delegateCallback, DeviceRequestType type,
+                             CommandRequestExecution execution, LiteYukonUser user) {
         Map<String, PaoIdentifier> ecobeeDevices = new HashMap<>();
 
         for (PaoMultiPointIdentifier paoMultiPointIdentifier : devices) {
@@ -118,9 +125,8 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Override
     public void initiateRead(Iterable<PaoMultiPointIdentifier> points,
             final GroupCommandCompletionCallback groupCallback, DeviceRequestType type,
-            final YukonUserContext userContext) {
+            LiteYukonUser user) {
         initiateRead(points, new DeviceAttributeReadStrategyCallback() {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
             @Override
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
@@ -144,7 +150,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
             public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
                 CommandRequestDevice command = new CommandRequestDevice();
                 command.setDevice(new SimpleDevice(pao));
-                SpecificDeviceErrorDescription errorDescription = getErrorDescription(error);
+                SpecificDeviceErrorDescription errorDescription = getError(error.getType().getErrorCode());
                 groupCallback.receivedLastError(command, errorDescription);
                 saveCommandRequestExecutionResult(groupCallback.getExecution(), pao.getPaoId(),
                     error.getType().getErrorCode());
@@ -152,7 +158,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
 
             @Override
             public void receivedException(DeviceAttributeReadError error) {
-                SpecificDeviceErrorDescription errorDescription = getErrorDescription(error);
+                SpecificDeviceErrorDescription errorDescription = getError(error.getType().getErrorCode());
                 CommandRequestDevice command = new CommandRequestDevice();
                 groupCallback.receivedLastError(command, errorDescription);
             }
@@ -161,22 +167,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
             public void complete() {
                 groupCallback.complete();
             }
-
-            private SpecificDeviceErrorDescription getErrorDescription(DeviceAttributeReadError error) {
-                String summary = "";
-                String detail = "";
-                if (error.getSummary() != null) {
-                    summary = messageSourceAccessor.getMessage(error.getSummary());
-                }
-                if (error.getDetail() != null) {
-                    detail = messageSourceAccessor.getMessage(error.getDetail());
-                }
-                DeviceErrorDescription desc =
-                    new DeviceErrorDescription(error.getType().getErrorCode(), "", "", summary, detail);
-                SpecificDeviceErrorDescription errorDescription = new SpecificDeviceErrorDescription(desc, detail);
-                return errorDescription;
-            }
-        }, type, userContext.getYukonUser());
+        }, type, groupCallback.getExecution(), user);
     }
 
     private void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode) {
@@ -187,5 +178,23 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
         result.setDeviceId(deviceId);
         result.setErrorCode(errorCode);
         commandRequestExecutionResultDao.saveOrUpdate(result);
+    }
+
+    @Override
+    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
+                                                                                        Set<? extends Attribute> attributes,
+                                                                                        DeviceRequestType type,
+                                                                                        CommandCompletionCallback<CommandRequestDevice> callback,
+                                                                                        LiteYukonUser user,
+                                                                                        RetryParameters retryParameters) {
+        throw new UnsupportedOperationException(getType() + " Strategy does not support read with retries");
+    }
+    
+    private SpecificDeviceErrorDescription getError(Integer errorCode) {
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorCode);
+        SpecificDeviceErrorDescription deviceErrorDescription =
+            new SpecificDeviceErrorDescription(errorDescription, null);
+
+        return deviceErrorDescription;
     }
 }

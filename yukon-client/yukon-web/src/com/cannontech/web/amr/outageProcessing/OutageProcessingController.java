@@ -56,7 +56,7 @@ public class OutageProcessingController extends MultiActionController {
 	@Autowired private DeviceGroupService deviceGroupService;
 	@Autowired private DeviceAttributeReadService deviceAttributeReadService;
 	
-	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
+	private final ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	
 	// PROCESS
 	public ModelAndView process(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -122,7 +122,7 @@ public class OutageProcessingController extends MultiActionController {
                 resolvableTemplate.addData("outageMonitorName", outageMonitor.getOutageMonitorName());
                 resolvableTemplate.addData("outageMonitorId", outageMonitor.getOutageMonitorId());
                 int successCount = result.getResultHolder().getResultStrings().size();
-                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
+                int total = result.getOriginalDeviceCollectionCopy().getDeviceCount();
                 float percentSuccess = 100.0f;
                 if (total > 0) {
                     percentSuccess = ((float) successCount * 100) / total;
@@ -136,7 +136,7 @@ public class OutageProcessingController extends MultiActionController {
             }
         };
 	
-        String resultKey = deviceAttributeReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext);
+        String resultKey = deviceAttributeReadService.initiateRead(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
         monitorToRecentReadKeysCache.put(outageMonitorId, resultKey);
 		
 		mav.addObject("outageMonitorId", outageMonitorId);

@@ -7,12 +7,16 @@
 <cti:standardPage title="${pageTitle}" module="amr">
 <cti:msgScope paths="yukon.common.device.groupMeterRead.resultDetail">
 
+    <cti:url var="recentResultsUrl" value="/group/groupMeterRead/resultsList"/>
+    <cti:list var="arguments">
+        <cti:item value="${recentResultsUrl}" />
+    </cti:list>
+    
     <c:set var="resultKey" value="${resultWrapper.result.key}"/>
 
     <cti:msg2 var="pageTitle" key=".pageTitle"/>
     <cti:msg2 var="recentResultsTitle" key=".recentResultsTitle"/>
     <cti:msg2 var="noteLabel" key=".noteLabel"/>
-    <cti:msg2 var="noteText" key=".noteText"/>
     <cti:msg2 var="successSectionTitle" key=".section.success"/>
     <cti:msg2 var="failedSectionTitle" key=".section.failed"/>
     <cti:msg2 var="unsupportedSectionTitle" key=".section.unsupported"/>
@@ -65,7 +69,7 @@ $(function() {
         <table class="stacked">
             <tr>
                 <td class="strong-label-small">${noteLabel}</td>
-                <td class="detail">${noteText}</td>
+                <td class="detail"><i:inline key=".noteText" arguments="${arguments}" /></td>
             </tr>
         </table>
 

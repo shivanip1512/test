@@ -4,13 +4,16 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
+import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.user.YukonUserContext;
 
 /**
  * This is the preferred Service for "reading" PAOs. This service, unlike the ones
@@ -20,12 +23,6 @@ import com.cannontech.user.YukonUserContext;
  */
 public interface DeviceAttributeReadService {
     
-    public void initiateRead(Iterable<? extends YukonPao> devices,
-            Set<? extends Attribute> attributes, 
-            DeviceAttributeReadCallback callback,
-            DeviceRequestType type, 
-            LiteYukonUser user);
-
     /**
      * This method will return true if at least one attribute of at least one
      * of the meters could be read in the absence of communication problems.
@@ -33,22 +30,39 @@ public interface DeviceAttributeReadService {
      * This will return false if either the devices or attributes collection is empty.
      */
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, LiteYukonUser user);
-        
+       
+    public void initiateRead(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
+                             DeviceAttributeReadCallback callback,
+                             DeviceRequestType type,
+                             LiteYukonUser user);
+
+    /*
+     * This method will attempt to read device collection
+     */
+
+    public String initiateRead(DeviceCollection deviceCollection,
+                               Set<? extends Attribute> attributes,
+                               DeviceRequestType type,
+                               final SimpleCallback<GroupMeterReadResult> callback,
+                               LiteYukonUser user);
+
+    /*
+     * This method will attempt to read device collection and retry if needed. This method supports
+     * PLC devices only, all other devices will be marked as unsupported.
+     */
+    CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
+                                                                      Set<? extends Attribute> attributes,
+                                                                      DeviceRequestType type,
+                                                                      CommandCompletionCallback<CommandRequestDevice> callback,
+                                                                      LiteYukonUser user,
+                                                                      RetryParameters retryParameters);
+    
     
     // The methods below this line represent a distinct part of this service.
     // The String returned by the first method can be used to look up the 
     // result object that is stored in memory.
     
-    /*
-     * This method will attempt to read device collection
-     */
-       
-    public String readDeviceCollection(DeviceCollection deviceCollection, 
-                                       Set<? extends Attribute> attributes, 
-                                       DeviceRequestType type, 
-                                       final SimpleCallback<GroupMeterReadResult> callback, 
-                                       YukonUserContext userContext);
-
+   
     public List<GroupMeterReadResult> getCompleted();
     public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type);
 
@@ -56,4 +70,5 @@ public interface DeviceAttributeReadService {
     public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type);
 
     public GroupMeterReadResult getResult(String id);
+
 }

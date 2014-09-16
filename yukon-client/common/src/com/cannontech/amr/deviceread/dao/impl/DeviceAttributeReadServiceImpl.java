@@ -3,10 +3,8 @@ package com.cannontech.amr.deviceread.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,17 +12,20 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
+import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
@@ -32,33 +33,25 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
-import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
+import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadService {
 
@@ -71,346 +64,427 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private NextValueHelper nextValueHelper;
-    /*plcDeviceAttributeReadService should be deleted by YUK-12715 and replaced by DeviceAttributeReadService*/
-    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-
-    private ImmutableMap<StrategyType, DeviceAttributeReadStrategy> strategies = ImmutableMap.of();
+    @Autowired private List<DeviceAttributeReadStrategy> strategies;
+    @Autowired private DeviceAttributeReadPlcStrategy plcStrategy;
+    
+    private final RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<>();
     
     @Override
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
                               LiteYukonUser user) {
 
-        log.debug(String.format("isReadable called for %.3s and %s", devices, attributes));
-
-        ImmutableMultimap<PaoType, ? extends YukonPao> paoTypes = PaoUtils.mapPaoTypes(devices);
-
-        // loop through each PaoType and strategy
-        for (PaoType paoType : paoTypes.keySet()) {
-            for (StrategyType strategy : strategies.keySet()) {
-                DeviceAttributeReadStrategy impl = strategies.get(strategy);
-                if (impl.canRead(paoType)) {
-                    ImmutableCollection<? extends YukonPao> immutableCollection = paoTypes.get(paoType);
-                    PaoMultiPointIdentifierWithUnsupported devicesWithUnsupported = attributeService.findPaoMultiPointIdentifiersForAttributes(immutableCollection, attributes);
-                    boolean readable = impl.isReadable(devicesWithUnsupported.getDevicesAndPoints(), user);
-                    if (readable) {
-                        return true;
-                    }
-                }
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("isReadable Attributes:" + attributes + " Devices:" + devices);
         }
-        return false;
+
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy =
+                getValidPointsForStrategy(devices, attributes);
+        
+        return !pointsForStrategy.isEmpty();
     }
 
     @Override
     public void initiateRead(Iterable<? extends YukonPao> devices,
                              Set<? extends Attribute> attributes, 
-                             final DeviceAttributeReadCallback delegateCallback, 
+                             DeviceAttributeReadCallback delegateCallback, 
                              DeviceRequestType type, 
                              LiteYukonUser user) {
         
-        log.debug(String.format("initiateRead of %s called for %.3s and %s", type, devices, attributes));
+        PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers = 
+                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes);
         
-        // this will represent the "plan" for how all of the input devices will be read
-        Map<StrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
-            Maps.newEnumMap(StrategyType.class);
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy =
+                getValidPointsForStrategy(devices, attributes);
         
-        // we need to resolve the attributes first to figure out which physical devices we'll be reading
-        final List<PaoMultiPointIdentifier> devicesAndPoints =
-                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes).getDevicesAndPoints();
-
-        Multimap<PaoType, PaoMultiPointIdentifier> byPhysicalPaoType = ArrayListMultimap.create(1, devicesAndPoints.size());
-        for (PaoMultiPointIdentifier multiPoints : devicesAndPoints) {
-            byPhysicalPaoType.put(multiPoints.getPao().getPaoType(), multiPoints);
-        }
-        
-        // loop through each PaoType and strategy, add applicable PaoIdentifiers to the plan
-        for (PaoType paoType : byPhysicalPaoType.keySet()) {
-            StrategyType foundStrategy = null;
-            for (StrategyType strategy : strategies.keySet()) {
-                DeviceAttributeReadStrategy impl = strategies.get(strategy);
-                if (impl.canRead(paoType)) {
-                    foundStrategy = strategy;
-                    break;
-                }
-            }
-            Collection<PaoMultiPointIdentifier> paoPointIdentifiersForType = byPhysicalPaoType.get(paoType);
-            if (foundStrategy == null) {
-                log.debug(String.format("no strategy found for %s devices: %.7s", paoType, paoPointIdentifiersForType));
-                for (PaoMultiPointIdentifier paoMultiPoints : paoPointIdentifiersForType) {
-                    MessageSourceResolvable summary = 
-                        YukonMessageSourceResolvable.createDefaultWithoutCode("no strategy for " + paoType);
-                    DeviceAttributeReadError strategyError = 
-                        new DeviceAttributeReadError(DeviceAttributeReadErrorType.NO_STRATEGY, summary);
-                    delegateCallback.receivedError(paoMultiPoints.getPao(), strategyError);
-                }
-            } else {
-                log.debug(String.format("strategy found for %d %s devices", paoPointIdentifiersForType.size(), paoType));
-                thePlan.put(foundStrategy, paoPointIdentifiersForType);
-            }
-        }
-        
-        int expectedCallbacks = thePlan.keySet().size();
-        if (expectedCallbacks == 0) {
-            delegateCallback.complete();
-            return;
-        }
-        final AtomicInteger completionCounter = new AtomicInteger(expectedCallbacks);
-        
-        DeviceAttributeReadStrategyCallback strategyCallback = new DeviceAttributeReadStrategyCallback() {
-            @Override
-            public void complete() {
-                int count = completionCounter.decrementAndGet();
-                log.debug(String.format("one strategy for read is complete, %d remaining", count));
-                if (count == 0) {
-                    delegateCallback.complete();
-                }
-            }
-            
-            @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
-                delegateCallback.receivedError(pao, error);
-            }
-            
-            @Override
-            public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
-                delegateCallback.receivedValue(pao, value);
-            }
-            
-            @Override
-            public void receivedLastValue(PaoIdentifier pao) {
-                delegateCallback.receivedLastValue(pao);
-            }
-            
-            @Override
-            public void receivedException(DeviceAttributeReadError exception) {
-                delegateCallback.receivedException(exception);
-            }
-            
-        };
-        
-        for (StrategyType strategy : thePlan.keySet()) {
-            DeviceAttributeReadStrategy impl = strategies.get(strategy);
-            Collection<PaoMultiPointIdentifier> devicesForThisStrategy = thePlan.get(strategy);
-            
-            impl.initiateRead(devicesForThisStrategy, strategyCallback, type, user);
-        }
-    }
-    
-    private int initiateRead(Iterable<? extends YukonPao> devices,
-                             Set<? extends Attribute> attributes, 
-                             GroupCommandCompletionCallback completionCallback, 
-                             DeviceRequestType type, 
-                             YukonUserContext userContext) {
-                        
-        log.debug(String.format("initiateRead of %s called for %.3s and %s", type, devices, attributes));
-        
-        // this will represent the "plan" for how all of the input devices will be read
-        Map<StrategyType, Collection<PaoMultiPointIdentifier>> thePlan = 
-            Maps.newEnumMap(StrategyType.class);
-        
-        // we need to resolve the attributes first to figure out which physical devices we'll be reading
-        final List<PaoMultiPointIdentifier> devicesAndPoints =
-                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes).getDevicesAndPoints();
-
-        Multimap<PaoType, PaoMultiPointIdentifier> byPhysicalPaoType = ArrayListMultimap.create(1, devicesAndPoints.size());
-        for (PaoMultiPointIdentifier multiPoints : devicesAndPoints) {
-            byPhysicalPaoType.put(multiPoints.getPao().getPaoType(), multiPoints);
-        }
-        
-        int requestCount = 0;
-        for (StrategyType strategy : strategies.keySet()) {
-            DeviceAttributeReadStrategy impl = strategies.get(strategy);
-            Collection<PaoMultiPointIdentifier> devicesForThisStrategy = thePlan.get(strategy);
-            if(devicesForThisStrategy == null){
-                devicesForThisStrategy = new ArrayList<>();
-            }
-            for (PaoType paoType : byPhysicalPaoType.keySet()) {
-                if (impl.canRead(paoType)) {
-                    devicesForThisStrategy.addAll(byPhysicalPaoType.get(paoType));
-                }
-            }
-            if(!devicesForThisStrategy.isEmpty()){
-                thePlan.put(strategy, devicesForThisStrategy);
-                requestCount += impl.getRequestCount(devicesForThisStrategy);
-            }
-            log.debug(String.format("%s strategy will be used to read %.3s", strategy, devicesForThisStrategy));
-        }
-             
+        int requestCount = getRequestCount(pointsForStrategy);
         CommandRequestExecution execution =
-            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
-                                                              type,
-                                                              requestCount,
-                                                              userContext.getYukonUser());
-        completionCallback.setExecution(execution);
+                commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                                  type,
+                                                                  requestCount,
+                                                                  user);
+
+        Set<YukonPao> unreadableDevices = getUnreadableDevices(devices);
+        Set<YukonPao> unsupportedDevices = new HashSet<>();
+        unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
         
-        if (thePlan.isEmpty()) {
-            completionCallback.complete();
+        if (log.isDebugEnabled()) {
+            log.debug("initiateRead  Type:" + type + " Attributes:" + attributes + " Devices:" + devices);
+            if(!unsupportedDevices.isEmpty()){
+                log.debug(attributes +" not supported for  " + unsupportedDevices);
+            }
+            if(!unreadableDevices.isEmpty()){
+                log.debug("There is no strategy found for  " + unreadableDevices);
+            }
+            log.debug("creId  " + execution.getId());
+        }
+               
+        DeviceAttributeReadStrategyCallback strategyCallback =
+            new ReadCallback(delegateCallback, pointsForStrategy.keySet().size(), execution);
+
+        for (YukonPao unreadableDevice : unreadableDevices) {
+            MessageSourceResolvable summary =
+                YukonMessageSourceResolvable.createDefaultWithoutCode("no strategy for "
+                                                                      + unreadableDevice.getPaoIdentifier()
+                                                                          .getPaoType());
+            DeviceAttributeReadError strategyError =
+                new DeviceAttributeReadError(DeviceAttributeReadErrorType.NO_STRATEGY, summary);
+            strategyCallback.receivedError(unreadableDevice.getPaoIdentifier(), strategyError);
+        }
+
+        for (YukonPao unsupportedDevice : unsupportedDevices) {
+            if (!unreadableDevices.contains(unsupportedDevice)) {
+
+                MessageSourceResolvable summary =
+                    YukonMessageSourceResolvable.createDefaultWithoutCode(attributes + " not supported for "
+                                                                          + unsupportedDevice.getPaoIdentifier()
+                                                                              .getPaoType());
+                DeviceAttributeReadError strategyError =
+                    new DeviceAttributeReadError(DeviceAttributeReadErrorType.NO_ATTRIBUTE, summary);
+                strategyCallback.receivedError(unsupportedDevice.getPaoIdentifier(), strategyError);
+            }
+     
+        }
+        
+        if (pointsForStrategy.isEmpty()) {
+            strategyCallback.complete();
         } else {
-            for (StrategyType strategy : thePlan.keySet()) {
-                DeviceAttributeReadStrategy impl = strategies.get(strategy);
-                Collection<PaoMultiPointIdentifier> devicesForThisStrategy = thePlan.get(strategy);
-                impl.initiateRead(devicesForThisStrategy, completionCallback, type, userContext);
+            for (DeviceAttributeReadStrategy strategy : pointsForStrategy.keySet()) {
+                strategy.initiateRead(pointsForStrategy.get(strategy), strategyCallback, type, execution, user);
             }
         }
         
-        return execution.getId();
+        unsupportedDevices.addAll(unreadableDevices);
+        commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices,
+                                                         execution.getId(),
+                                                         CommandRequestUnsupportedType.UNSUPPORTED);
     }
     
+          
     @Override
-    public String readDeviceCollection(DeviceCollection deviceCollection, 
+    public String initiateRead(DeviceCollection deviceCollection, 
                                         Set<? extends Attribute> attributes, 
                                         DeviceRequestType type, 
-                                        final SimpleCallback<GroupMeterReadResult> callback, 
-                                        YukonUserContext userContext) {
+                                        SimpleCallback<GroupMeterReadResult> callback, 
+                                        LiteYukonUser user) {
+
+        /*
+         * To be removed...
+         * 
+         * Probably the easiest way to test if command request execution entries are correct for Ecobee strategy:
+         * 
+         * uncomment this line:
+         * initiateRead(deviceCollection.getDeviceList(), attributes, new CollectingDeviceAttributeReadCallback(),DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
+         * 
+         * Using collection action select devices and do a read.
+         * 
+         * go to http://localhost:8080/yukon/common/commandRequestExecutionResults/list
+         * 
+         * You will see the entries 2 entries, "Group Attribute Read" is from this method call
+         * and "Meter Readings Widget Attribute Read" from the method call on line 176
+         * 
+         * Group Attribute Read                    09/16/2014 10:58    09/16/2014 10:59    8   8   7   16  Completed   ats
+         * Meter Readings Widget Attribute Read    09/16/2014 10:57    09/16/2014 10:59    8   8   7   16  Completed   ats
+         * 
+         * The entries and detail should be identical.
+         */
         
-        log.debug("readDeviceCollection");
-        log.debug("Type:"+ type + " Attributes:" + attributes +" Devices:" + deviceCollection.getDeviceList());
+       
         PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers = 
             attributeService.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes);
-        Map<YukonPao, Set<Attribute>> unsupportedDevices =
-            paoPointIdentifiers.getUnsupportedDevices();
-        log.debug("Attributes are not supported:" + attributes + " for  " + unsupportedDevices.keySet());
-        Map<YukonPao, Set<Attribute>> unreadableDevices =
-            getUnreadableDevices(deviceCollection.getDeviceList(), Sets.newHashSet(attributes));
-        log.debug("There is no strategy found for  " + unreadableDevices.keySet());
-        unsupportedDevices.putAll(unreadableDevices);
-   
-        // result 
-        final GroupMeterReadResult groupMeterReadResult = new GroupMeterReadResult();
-
-        // success/fail temporary groups
-        final StoredDeviceGroup originalDeviceCollectionCopyGroup = temporaryDeviceGroupService.createTempGroup();
+        
+        Set<YukonPao> unsupportedDevices = new HashSet<>();
+        unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
+        
+        Set<YukonPao> unreadableDevices = getUnreadableDevices(deviceCollection.getDeviceList());
+                
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy =
+            getValidPointsForStrategy(deviceCollection.getDeviceList(), attributes);
+        
+        int requestCount = getRequestCount(pointsForStrategy);
+        CommandRequestExecution execution =
+                commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
+                                                                  type,
+                                                                  requestCount,
+                                                                  user);
+        CommandRequestExecutionIdentifier identifier = new CommandRequestExecutionIdentifier(execution.getId());
+              
+        if (log.isDebugEnabled()) {
+            log.debug("initiateRead  Type:" + type + " Attributes:" + attributes + " Devices:"
+                      + deviceCollection.getDeviceList());
+            if (!unsupportedDevices.isEmpty()) {
+                log.debug(attributes + " not supported for  " + unsupportedDevices);
+            }
+            if (!unreadableDevices.isEmpty()) {
+                log.debug("There is no strategy found for  " + unreadableDevices);
+            }
+            log.debug("creId  " + execution.getId());
+        }
+        
+        StoredDeviceGroup originalDeviceCollectionCopyGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(originalDeviceCollectionCopyGroup, deviceCollection.getDeviceList());
-        final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
-        final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
-        final StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
-        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices.keySet());
-
-        // command completion callback
-        GroupCommandCompletionCallback commandCompletionCallback =
-            new GroupCommandCompletionCallback() {
-
-                @Override
-                public void doComplete() {
-                    try {
-                        CommandRequestExecution execution = getExecution();
-                        if (execution != null) {
-                            execution.setStopTime(new Date());
-                            commandRequestExecutionDao.saveOrUpdate(execution);
-                        }
-                        callback.handle(groupMeterReadResult);
-                    } catch (Exception e) {
-                        log.debug("There was an error executing the callback", e);
-                    }
-                }
-
-                @Override
-                public void handleSuccess(SimpleDevice device) {
-                    deviceGroupMemberEditorDao.addDevices(successGroup, device);
-                }
-
-                @Override
-                public void handleFailure(SimpleDevice device) {
-                    deviceGroupMemberEditorDao.addDevices(failureGroup, device);
-                }
-
-            };
-
-        groupMeterReadResult.setAttributes(attributes);
-        groupMeterReadResult.setCommandRequestExecutionType(type);
-        groupMeterReadResult.setResultHolder(commandCompletionCallback);
-        groupMeterReadResult.setDeviceCollection(deviceCollection);
-        groupMeterReadResult.setCallback(commandCompletionCallback);
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
+        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
         
         DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
-        groupMeterReadResult.setSuccessCollection(successCollection);
-
         DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
-        groupMeterReadResult.setFailureCollection(failureCollection);
-
         DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
-        groupMeterReadResult.setUnsupportedCollection(unsupportedCollection);
-        
         DeviceCollection originalDeviceCollectionCopy = deviceGroupCollectionHelper.buildDeviceCollection(originalDeviceCollectionCopyGroup);
-        groupMeterReadResult.setOriginalDeviceCollectionCopy(originalDeviceCollectionCopy);
-        groupMeterReadResult.setStartTime(new Date());
+                
+        GroupMeterReadResult result = new GroupMeterReadResult();
+        GroupCallback groupCallback =
+            new GroupCallback(callback, execution, successGroup, failureGroup, result, pointsForStrategy.keySet()
+                .size());
+        result.setResultHolder(groupCallback);
+        result.setCallback(groupCallback);
+        result.setCommandRequestExecutionIdentifier(identifier);
+        result.setAttributes(attributes);
+        result.setCommandRequestExecutionType(type);
+        result.setDeviceCollection(deviceCollection);
+        result.setSuccessCollection(successCollection);
+        result.setFailureCollection(failureCollection);
+        result.setUnsupportedCollection(unsupportedCollection);
+        result.setOriginalDeviceCollectionCopy(originalDeviceCollectionCopy);
+        result.setStartTime(new Date());
 
-        /*Add to cache. The cache should be moved to this impl by YUK-12715*/
-        String key = plcDeviceAttributeReadService.addResult(groupMeterReadResult);
-        groupMeterReadResult.setKey(key);
-        int id = initiateRead(deviceCollection.getDeviceList(), attributes, commandCompletionCallback, DeviceRequestType.GROUP_ATTRIBUTE_READ, userContext);
-        CommandRequestExecutionIdentifier identifier = new CommandRequestExecutionIdentifier(id);
-
-        groupMeterReadResult.setCommandRequestExecutionIdentifier(identifier);
-        for (YukonPao pao : unsupportedDevices.keySet()) {
-            CommandRequestUnsupported unsupportedCmd = new CommandRequestUnsupported();
-            unsupportedCmd.setCommandRequestExecId(identifier.getCommandRequestExecutionId());
-            unsupportedCmd.setDeviceId(pao.getPaoIdentifier().getPaoId());
-            unsupportedCmd.setType(CommandRequestUnsupportedType.UNSUPPORTED);
-
-            commandRequestExecutionResultDao.saveUnsupported(unsupportedCmd);
+        String key = resultsCache.addResult(result);
+        result.setKey(key);
+                
+        if (pointsForStrategy.isEmpty()) {
+            groupCallback.complete();
+        } else {
+            for (DeviceAttributeReadStrategy strategy : pointsForStrategy.keySet()) {
+                strategy.initiateRead(pointsForStrategy.get(strategy), groupCallback, type, user);
+            }
         }
+        
+        unsupportedDevices.addAll(unreadableDevices);
+        commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices,
+                                                         execution.getId(),
+                                                         CommandRequestUnsupportedType.UNSUPPORTED);
         return key;
     }
     
     @Override
+    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
+                                                                                        Set<? extends Attribute> attributes,
+                                                                                        DeviceRequestType type,
+                                                                                        CommandCompletionCallback<CommandRequestDevice> callback,
+                                                                                        LiteYukonUser user,
+                                                                                        RetryParameters retryParameters) {
+        return plcStrategy.initiateRead(deviceCollection, attributes, type, callback, user, retryParameters);
+
+    }
+    
+    private class GroupCallback extends GroupCommandCompletionCallback {
+
+        AtomicInteger completionCounter;
+        StoredDeviceGroup successGroup;
+        StoredDeviceGroup failureGroup;
+        SimpleCallback<GroupMeterReadResult> callback;
+        GroupMeterReadResult result;
+
+        GroupCallback(SimpleCallback<GroupMeterReadResult> callback, CommandRequestExecution execution,
+                      StoredDeviceGroup successGroup, StoredDeviceGroup failureGroup, GroupMeterReadResult result, int strategyCount) {
+            super.setExecution(execution);
+            this.successGroup = successGroup;
+            this.failureGroup = failureGroup;
+            this.callback = callback;
+            this.result = result;
+            completionCounter = new AtomicInteger(strategyCount);
+        }
+
+        @Override
+        public void complete() {
+            try {
+                if(log.isDebugEnabled()){
+                    log.debug("Remaining strategies:"+completionCounter.get());
+                }
+                int count = completionCounter.decrementAndGet();
+                if (count <= 0) {
+                    super.complete();
+                    if (execution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED) {
+                        log.debug("All startegies complete");
+                        execution.setStopTime(new Date());
+                        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
+                        commandRequestExecutionDao.saveOrUpdate(execution);
+                    }
+                    callback.handle(result);
+                }
+
+            } catch (Exception e) {
+                log.debug("There was an error executing the callback", e);
+            }
+        }
+
+        @Override
+        public void handleSuccess(SimpleDevice device) {
+            deviceGroupMemberEditorDao.addDevices(successGroup, device);
+        }
+
+        @Override
+        public void handleFailure(SimpleDevice device) {
+            deviceGroupMemberEditorDao.addDevices(failureGroup, device);
+        }
+    }
+      
+    private class ReadCallback implements DeviceAttributeReadStrategyCallback {
+
+        AtomicInteger completionCounter;
+        DeviceAttributeReadCallback delegateCallback;
+        CommandRequestExecution execution;
+
+        ReadCallback(DeviceAttributeReadCallback delegateCallback, int strategyCount, CommandRequestExecution execution) {
+            completionCounter = new AtomicInteger(strategyCount);
+            this.delegateCallback = delegateCallback;
+            this.execution = execution;
+        }
+
+        @Override
+        public void complete() {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Remaining strategies:" + completionCounter.get());
+                }
+                int count = completionCounter.decrementAndGet();
+                if (count <= 0) {
+                    if (execution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED) {
+                        log.debug("All startegies complete");
+                        execution.setStopTime(new Date());
+                        execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
+                        commandRequestExecutionDao.saveOrUpdate(execution);
+                    }
+                    delegateCallback.complete();
+                }
+
+            } catch (Exception e) {
+                log.debug("There was an error executing the callback", e);
+            }
+        }
+
+        @Override
+        public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            delegateCallback.receivedError(pao, error);
+        }
+
+        @Override
+        public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+            delegateCallback.receivedValue(pao, value);
+        }
+
+        @Override
+        public void receivedLastValue(PaoIdentifier pao) {
+            delegateCallback.receivedLastValue(pao);
+        }
+
+        @Override
+        public void receivedException(DeviceAttributeReadError exception) {
+            delegateCallback.receivedException(exception);
+        }
+
+    };
+    
+    @Override
     public List<GroupMeterReadResult> getCompleted() {
-        return plcDeviceAttributeReadService.getCompleted();
+        return resultsCache.getCompleted();
     }
 
     @Override
     public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type) {
-        return plcDeviceAttributeReadService.getCompletedByType(type);
+        List<GroupMeterReadResult> completed = getCompleted();
+        return filterByType(completed, type);
     }
 
     @Override
     public List<GroupMeterReadResult> getPending() {
-        return plcDeviceAttributeReadService.getPending();
+        return resultsCache.getPending();
     }
 
     @Override
     public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type) {
-        return plcDeviceAttributeReadService.getPendingByType(type);
+        List<GroupMeterReadResult> pending = getPending();
+        return filterByType(pending, type);
     }
 
     @Override
     public GroupMeterReadResult getResult(String id) {
-        return plcDeviceAttributeReadService.getResult(id);
+        return resultsCache.getResult(id);
     }
 
-
-    @Autowired
-    public void setStrategies(List<DeviceAttributeReadStrategy> strategyList) {
-        Builder<StrategyType, DeviceAttributeReadStrategy> builder = ImmutableMap.builder();
-        for (DeviceAttributeReadStrategy strategy : strategyList) {
-            builder.put(strategy.getType(), strategy);
+    private List<GroupMeterReadResult> filterByType(List<GroupMeterReadResult> pending, DeviceRequestType type) {
+        List<GroupMeterReadResult> pendingOfType = new ArrayList<>();
+        for (GroupMeterReadResult result : pending) {
+            if (result.getCommandRequestExecutionType().equals(type)) {
+                pendingOfType.add(result);
+            }
         }
-        strategies = builder.build();
-        log.debug(String.format("supported strategies: %s", strategies.keySet()));
-    }
-    
+        return pendingOfType;
+    } 
 
     /**
      * This method returns a list of devices that do not have a strategy.
      */
-    private Map<YukonPao, Set<Attribute>> getUnreadableDevices(Iterable<? extends YukonPao> devices,
-                                                                      Set<Attribute> attributes) {        
-        Map<YukonPao, Set<Attribute>> unreadableDevices = new HashMap<>();
-        Iterator<? extends YukonPao> iterator = devices.iterator();
-        while (iterator.hasNext()) {
-            YukonPao pao = iterator.next();
-            pao.getPaoIdentifier().getPaoType();
-            boolean isReadable = false;
-            for (StrategyType strategy : strategies.keySet()) {
-                DeviceAttributeReadStrategy impl = strategies.get(strategy);
-                if (impl.canRead(pao.getPaoIdentifier().getPaoType())) {
-                    isReadable = true;
+    private Set<YukonPao> getUnreadableDevices(Iterable<? extends YukonPao> devices) {
+        
+        Set<YukonPao> unreadableDevices = new HashSet<>();
+        for (YukonPao pao : devices) {
+            boolean canRead = false;
+            for (DeviceAttributeReadStrategy strategy : strategies) {
+                if (strategy.canRead(pao.getPaoIdentifier().getPaoType())) {
+                    canRead = true;
+                    break;
                 }
             }
-            if (!isReadable) {
-                unreadableDevices.put(pao, attributes);
+            if(!canRead){
+                unreadableDevices.add(pao);
             }
         }
+
         return unreadableDevices;
+    }
+    
+    /**
+     * Returns the request count that would be send to a device 
+     */
+    
+    private int getRequestCount(Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy){
+        int requestCount = 0;
+        if (!pointsForStrategy.isEmpty()) {
+            for (DeviceAttributeReadStrategy strategy : pointsForStrategy.keySet()) {
+                requestCount += strategy.getRequestCount(pointsForStrategy.get(strategy));
+            }
+        }
+        return requestCount;
+    }
+
+    private Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> getValidPointsForStrategy(Iterable<? extends YukonPao> devices,
+                                                                                                            Set<? extends Attribute> attributes) {
+
+        List<PaoMultiPointIdentifier> devicesAndPoints =
+            attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes)
+                .getDevicesAndPoints();
+
+        Multimap<PaoType, PaoMultiPointIdentifier> pointsByPaoType =
+            ArrayListMultimap.create(1, devicesAndPoints.size());
+        for (PaoMultiPointIdentifier multiPoints : devicesAndPoints) {
+            pointsByPaoType.put(multiPoints.getPao().getPaoType(), multiPoints);
+        }
+
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> validMetersForStrategy =
+            ArrayListMultimap.create();
+        for (YukonPao pao : devices) {
+            for (DeviceAttributeReadStrategy strategy : strategies) {
+                if (strategy.canRead(pao.getPaoIdentifier().getPaoType())) {
+                    Collection<PaoMultiPointIdentifier> points =
+                        pointsByPaoType.get(pao.getPaoIdentifier().getPaoType());
+                    for (PaoMultiPointIdentifier point : points) {
+                        validMetersForStrategy.put(strategy, point);
+                    }
+                }
+            }
+        }
+
+        return validMetersForStrategy;
     }
 }
