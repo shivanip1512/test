@@ -5,7 +5,6 @@ import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
-import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.google.common.base.Function;
@@ -44,11 +43,6 @@ public class PaoUtils {
             }
         };
 
-    @SuppressWarnings("unchecked")
-    public final static <T extends YukonPao> Function<T, PaoIdentifier> paoIdentifierFunction() {
-        return (Function<T, PaoIdentifier>) yukonPaoToPaoIdentifierFunction;
-    }
-
     private final static Function<PaoDefinition, PaoType> paoDefinitionToPaoTypeFunction =
         new Function<PaoDefinition, PaoType>() {
             @Override
@@ -71,14 +65,6 @@ public class PaoUtils {
             return from.getName();
         }
     };
-
-    public static YukonDevice asYukonDevice(YukonPao pao) {
-        if (pao instanceof YukonDevice) {
-            YukonDevice device = (YukonDevice) pao;
-            return device;
-        }
-        return new SimpleDevice(pao);
-    }
 
     public static ImmutableList<SimpleDevice> asSimpleDeviceListFromPaos(Iterable<? extends YukonPao> paos) {
         return asSimpleDeviceList(asPaoIdentifiers(paos));
@@ -133,13 +119,9 @@ public class PaoUtils {
         Iterable<String> transformedList = Iterables.transform(paos, paoToNameFunction);
         return ImmutableList.copyOf(transformedList);
     }
-    
+
     public static <T extends YukonPao> ImmutableMap<PaoIdentifier, T> indexYukonPaos(Iterable<T> paos) {
         return Maps.uniqueIndex(paos, yukonPaoToPaoIdentifierFunction);
-    }
-
-    public static <T extends YukonPao> ImmutableMap<Integer, T> indexYukonPaosByPaoId(Iterable<T> paos) {
-        return Maps.uniqueIndex(paos, yukonPaoToPaoIdFunction);
     }
 
     public static void validateDeviceType(YukonPao pao) {
@@ -151,40 +133,18 @@ public class PaoUtils {
         Validate.isTrue(paoType.getPaoCategory() == PaoCategory.DEVICE);
     }
 
-    public static Function<YukonPao, PaoType> getPaoTypeFunction() {
-        return yukonPaoToPaoTypeFunction;
-    }
-
     public static Function<PaoIdentifier, Integer> getPaoIdFunction() {
         return paoIdentifierToPaoIdFunction;
-    }
-
-    public static Function<PaoDefinition, PaoType> getPaoDefinitionToPaoTypeFunction() {
-        return paoDefinitionToPaoTypeFunction;
     }
 
     public static Function<YukonPao, Integer> getYukonPaoToPaoIdFunction() {
         return yukonPaoToPaoIdFunction;
     }
 
-    public static Function<YukonPao, PaoIdentifier> getYukonPaoToPaoIdentifierFunction() {
-        return yukonPaoToPaoIdentifierFunction;
-    }
-
-    public static Iterable<PaoIdentifier> convertPaoMultisToPaoIdentifiers(
-            Iterable<PaoMultiPointIdentifier> paoMultiPoints) {
-        return Iterables.transform(paoMultiPoints, new Function<PaoMultiPointIdentifier, PaoIdentifier>() {
-            @Override
-            public PaoIdentifier apply(PaoMultiPointIdentifier from) {
-                return from.getPao();
-            }
-        });
-    }
-
     public static boolean isValidPaoName(String name) {
         return StringUtils.containsNone(name, ILLEGAL_NAME_CHARS);
     }
-    
+
     /**
      * Creates a YukonPao with the specified id and type. This is useful for testing and should probably never be used
      * for "real" code.

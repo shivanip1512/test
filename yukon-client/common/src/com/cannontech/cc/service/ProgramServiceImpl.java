@@ -40,20 +40,20 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private BaseEventDao baseEventDao;
     @Autowired private ProgramNotificationGroupDao programNotificationGroupDao;
     @Autowired private EnergyCompanyDao ecDao;
-   
+
     public ProgramServiceImpl() {
         super();
     }
 
-    
+
     @Override
     @Transactional
     public List<Program> getProgramList(LiteYukonUser yukonUser) {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonUser);
-        
-        List<Program> programs = 
+
+        List<Program> programs =
             programDao.getProgramsForEnergyCompany(energyCompany.getId());
-        
+
         Comparator<Program> comp = new Comparator<Program>() {
             @Override
             public int compare(Program o1, Program o2) {
@@ -66,17 +66,17 @@ public class ProgramServiceImpl implements ProgramService {
         Collections.sort(programs, comp);
         return programs;
     }
-    
+
     @Override
     @Transactional
     public List<ProgramType> getProgramTypeList(LiteYukonUser yukonUser) {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(yukonUser);
-        List<ProgramType> programTypes = 
+        List<ProgramType> programTypes =
             programTypeDao.getAllProgramTypes(energyCompany.getId());
-        
+
         return programTypes;
     }
-    
+
     @Override
     public Set<Group> getUnassignedGroups(Program program) {
         Set<Group> selectedGroups = new HashSet<Group>();
@@ -94,7 +94,7 @@ public class ProgramServiceImpl implements ProgramService {
         }
         return unassignedGroups;
     }
-    
+
     public Set<Group> getAllGroups(Integer energyCompanyId) {
         return new TreeSet<Group>(groupDao.getGroupsForEnergyCompany(energyCompanyId));
     }
@@ -103,7 +103,7 @@ public class ProgramServiceImpl implements ProgramService {
     public Program getProgram(Integer programId) {
         return programDao.getForId(programId);
     }
-    
+
     public ProgramTypeDao getProgramTypeDao() {
         return programTypeDao;
     }
@@ -111,7 +111,7 @@ public class ProgramServiceImpl implements ProgramService {
     public void setProgramTypeDao(ProgramTypeDao programTypeDao) {
         this.programTypeDao = programTypeDao;
     }
-    
+
     @Override
     public boolean isEventsExistForProgram(Program program) {
         List<BaseEvent> allForProgram = baseEventDao.getAllForProgram(program);
@@ -121,8 +121,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     @Transactional
-    public void saveProgram(Program program, 
-                            Collection<ProgramParameter> programParameters, 
+    public void saveProgram(Program program,
+                            Collection<ProgramParameter> programParameters,
                             List<Group> assignedGroups,
                             Set<LiteNotificationGroup> assignedNotificationGroups) {
         programDao.save(program);
@@ -130,9 +130,9 @@ public class ProgramServiceImpl implements ProgramService {
             programParameterDao.save(parameter);
         }
         ArrayList<Group> requiredGroups = new ArrayList<Group>(assignedGroups);
-        List<AvailableProgramGroup> existingGroups = 
+        List<AvailableProgramGroup> existingGroups =
             availableProgramGroupDao.getAllForProgram(program);
-        
+
         // check for ones that are already in the database
         for (AvailableProgramGroup apg : existingGroups) {
             if (requiredGroups.contains(apg.getGroup())) {
@@ -143,7 +143,7 @@ public class ProgramServiceImpl implements ProgramService {
                 availableProgramGroupDao.delete(apg);
             }
         }
-        
+
         // now add the remaining
         for (Group group : requiredGroups) {
             AvailableProgramGroup apg = new AvailableProgramGroup();
@@ -151,7 +151,7 @@ public class ProgramServiceImpl implements ProgramService {
             apg.setProgram(program);
             availableProgramGroupDao.save(apg);
         }
-        
+
         // save notification groups
         programNotificationGroupDao.setNotificationGroupsForProgram(program, assignedNotificationGroups);
     }
@@ -159,16 +159,16 @@ public class ProgramServiceImpl implements ProgramService {
     public Program createNewProgram(LiteYukonUser user) {
         EnergyCompany energyCompany = ecDao.getEnergyCompany(user);
         Program newProgram = new Program();
-        List<ProgramType> programTypes = 
+        List<ProgramType> programTypes =
             programTypeDao.getAllProgramTypes(energyCompany.getId());
         // the new program must have some program type assigned
         // for now, default to the first one in the DB
         newProgram.setProgramType(programTypes.get(0));
-        
+
         //newProgram.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
         return newProgram;
     }
-    
+
     public void addProgramAndGroup(Program program, Group group) {
         AvailableProgramGroup apg = new AvailableProgramGroup();
         apg.setGroup(group);
@@ -188,12 +188,6 @@ public class ProgramServiceImpl implements ProgramService {
 
     public void setGroupDao(GroupDao groupDao) {
         this.groupDao = groupDao;
-    }
-
-    @Override
-    @Transactional
-    public void deleteProgramGroup(AvailableProgramGroup toDelete) {
-        availableProgramGroupDao.delete(toDelete);
     }
 
     public AvailableProgramGroupDao getAvailableProgramGroupDao() {

@@ -14,15 +14,13 @@ import com.google.common.collect.ListMultimap;
 public interface ProgramEnrollmentService {
 
     public void removeNonEnrolledPrograms(List<Program> programs, ListMultimap<Integer,ControlHistory> controlHistoryMap);
-    
-    public boolean isProgramEnrolled(int customerAccountId, int inventoryId, int programId);
-    
-    public ProgramEnrollmentResultEnum applyEnrollmentRequests(CustomerAccount customerAccount, 
-                                                               List<ProgramEnrollment> programEnrollments, 
+
+    public ProgramEnrollmentResultEnum applyEnrollmentRequests(CustomerAccount customerAccount,
+                                                               List<ProgramEnrollment> programEnrollments,
                                                                LiteYukonUser user);
-    
-    public List<LiteLmHardwareBase> applyEnrollmentRequests(CustomerAccount customerAccount, 
+
+    public List<LiteLmHardwareBase> applyEnrollmentRequests(CustomerAccount customerAccount,
             List<ProgramEnrollment> programEnrollments, LiteInventoryBase liteInv, LiteYukonUser user);
 
-    
+
 }

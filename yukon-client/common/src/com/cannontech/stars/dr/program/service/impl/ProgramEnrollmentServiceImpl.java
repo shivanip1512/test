@@ -118,46 +118,46 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
         synchronized (accountIdMutex.get(accountId)) {
             EnergyCompany ec = ecDao.getEnergyCompanyByAccountId(accountId);
-    
+
             boolean trackAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ec.getId());
             boolean autoConfig = ecSettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
-    
+
             LiteAccountInfo liteAccount = starsCustAccountInformationDao.getByAccountId(accountId);
             List<LiteStarsLMProgram> previouslyEnrolledPrograms = liteAccount.getPrograms();
-    
+
             try {
                 StarsOperation operation = createStarsOperation(account, requests, ec, trackAddressing);
                 StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
                 Instant now  = new Instant();
-    
+
                 // Clean up any opt outs that are active or scheduled.
                 for (ProgramEnrollment programEnrollment : requests) {
                     if (programEnrollment.isEnroll() == false) {
-                        
-                        List<LMHardwareControlGroup> lmHardwareControlGroups = 
-                            lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndType(programEnrollment.getInventoryId(), 
-                                                                                        programEnrollment.getLmGroupId(), 
+
+                        List<LMHardwareControlGroup> lmHardwareControlGroups =
+                            lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndType(programEnrollment.getInventoryId(),
+                                                                                        programEnrollment.getLmGroupId(),
                                                                                         LMHardwareControlGroup.OPT_OUT_ENTRY);
-                        
+
                         for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
-                            lmHardwareControlGroupDao.stopOptOut(lmHardwareControlGroup.getInventoryId(), 
-                                                                 lmHardwareControlGroup.getProgramId(), 
-                                                                 user, 
+                            lmHardwareControlGroupDao.stopOptOut(lmHardwareControlGroup.getInventoryId(),
+                                                                 lmHardwareControlGroup.getProgramId(),
+                                                                 user,
                                                                  now);
                         }
                     }
                 }
-                
+
                 // Process Enrollments
                 List<LiteLmHardwareBase> hwsToConfig = updateProgramEnrollment(programSignUp, liteAccount, null, ec, user);
-    
+
                 // Send out the config/disable command
                 for (final LiteLmHardwareBase liteHw : hwsToConfig) {
-                    
+
                     boolean toConfig = HardwareAction.isToConfig(liteHw, liteAccount);
                     YukonListEntry typeEntry = listDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
                     HardwareType hardwareType = HardwareType.valueOf(typeEntry.getYukonDefID());
-    
+
                     if (toConfig) {
                         // Send the re-enable command if hardware status is unavailable.
                         // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION energy
@@ -168,7 +168,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 command.setDevice(liteHw);
                                 command.setType(LmHardwareCommandType.CONFIG);
                                 command.setUser(user);
-                                
+
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
                         } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
@@ -177,7 +177,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             command.setDevice(liteHw);
                             command.setType(LmHardwareCommandType.IN_SERVICE);
                             command.setUser(user);
-                            
+
                             lmHardwareCommandService.sendInServiceCommand(command);
                         }
                     } else {
@@ -185,7 +185,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);
-                        
+
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
                     }
                 }
@@ -196,11 +196,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 log.error(e2);
                 return ProgramEnrollmentResultEnum.FAILURE;
             }
-    
+
             // Log activity
             String progEnrBefore = toProgramNameString(previouslyEnrolledPrograms, "(None)");
             String progEnrNow = toProgramNameString(liteAccount.getPrograms(), "(Not Enrolled)");
-    
+
             final StringBuilder sb = new StringBuilder();
             sb.append("Program Enrolled Before: ");
             sb.append(progEnrBefore);
@@ -231,30 +231,30 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
         programSignUp.setStarsSULMPrograms(starsSULMPrograms);
 
-        /*Going to need to do some guesswork since consumers aren't allowed  to choose load groups. 
+        /*Going to need to do some guesswork since consumers aren't allowed  to choose load groups.
          * --If the program has more than one group, we will take the first one in the list.  Could be
          * A DANGEROUS ASSUMPTION.  TODO: Track groups better.
-         * --At this point, we will need to require that the switch or stat has been configured or enrolled 
+         * --At this point, we will need to require that the switch or stat has been configured or enrolled
          * previously from the operator side.  If it has not, there may not be a groupID set.
          */
         for (int j = 0; j < programSignUp.getStarsSULMPrograms().getSULMProgramCount(); j++) {
             SULMProgram sulmProgram = programSignUp.getStarsSULMPrograms().getSULMProgram(j);
             int groupId = sulmProgram.getAddressingGroupID();
             if (groupId == SULMProgram.ADDRESSING_GROUP_NOT_FOUND) {
-                
+
                 AssignedProgram assignedProgram = assignedProgramDao.getById(sulmProgram.getProgramID());
                 LoadGroup defaultLoadGroup = getDefaultLoadGroupForProgram(assignedProgram);
                 int loadGroupId =  0;
                 if (defaultLoadGroup != null) {
                     loadGroupId = defaultLoadGroup.getLoadGroupId();
                 }
-                
-                // Checking to see if there are any active enrollments that we can get the load 
+
+                // Checking to see if there are any active enrollments that we can get the load
                 // group id from.  If we can use that load group id.
                 if (!useHardwareAddressing) {
                     List<ProgramEnrollment> activeProgramEnrollments = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
                     for (ProgramEnrollment programEnrollment : activeProgramEnrollments) {
-                        if (programEnrollment.getAssignedProgramId() == assignedProgram.getProgramId() && 
+                        if (programEnrollment.getAssignedProgramId() == assignedProgram.getProgramId() &&
                                 programEnrollment.getApplianceCategoryId() == assignedProgram.getApplianceCategoryId()) {
                             loadGroupId = programEnrollment.getLmGroupId();
                         }
@@ -270,12 +270,12 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         StarsOperation operation = new StarsOperation();
         operation.setStarsProgramSignUp(programSignUp);
         return operation;
-        
+
     }
-    
+
     /**
      *  This method gets the first load group that is associated with the program.
-     *  If there are no load groups attached to this assigned program or if the assigned program is a 
+     *  If there are no load groups attached to this assigned program or if the assigned program is a
      *  virtual program this method will return null.
      */
     private LoadGroup getDefaultLoadGroupForProgram(AssignedProgram assignedProgram) {
@@ -287,9 +287,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
         return null;
     }
-    
+
     @Override
-    public List<LiteLmHardwareBase> applyEnrollmentRequests(CustomerAccount customerAccount, 
+    public List<LiteLmHardwareBase> applyEnrollmentRequests(CustomerAccount customerAccount,
                                                              List<ProgramEnrollment> programEnrollmentList,
                                                              LiteInventoryBase liteInv, LiteYukonUser user) {
         int customerAccountId = customerAccount.getAccountId();
@@ -305,18 +305,18 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         synchronized (accountIdMutex.get(liteCustomerAccount.getAccountID())) {
             boolean trackHardwareAddressingEnabled =
                     ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ec.getId());
-    
+
             StarsOperation operation = createStarsOperation(customerAccount, programEnrollmentList, ec,
                 trackHardwareAddressingEnabled);
             StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
 
-            List<LiteLmHardwareBase> hwsToConfig = 
+            List<LiteLmHardwareBase> hwsToConfig =
                 updateProgramEnrollment(programSignUp, liteCustomerAccount, liteInv, ec, user);
 
             return hwsToConfig;
         }
-    }    
-    
+    }
+
     private String toProgramNameString(List<LiteStarsLMProgram> programs, String defaultValue) {
         if (programs == null || programs.isEmpty()) {
             return defaultValue;
@@ -349,7 +349,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
         programs.removeAll(removeList);
     }
-    
+
     /**
      * This is a transplant from the ProgramSignUpAction class which has now been deleted:
      */
@@ -408,7 +408,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     LiteStarsAppliance liteApp = it.next();
 
                     if (liteApp.getInventoryID() > 0 &&
-                        (liteApp.getProgramID() == program.getProgramID() || 
+                        (liteApp.getProgramID() == program.getProgramID() ||
                          liteApp.getApplianceCategory().getApplianceCategoryId()== program.getApplianceCategoryID())) {
                         if (!program.hasInventoryID()) {
                             if (!program.hasAddressingGroupID()&& liteApp.getProgramID()== program.getProgramID()) {
@@ -457,7 +457,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     }
                 }
             }
-            
+
             // Try to find the appliance controlled by this program and complete the request
             for (int j = 0; j < appList.size(); j++) {
                 LiteStarsAppliance liteApp = appList.get(j);
@@ -539,7 +539,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             SULMProgram program = processedPrograms.getSULMProgram(i);
 
             LiteLMProgramWebPublishing liteProg = lsec.getProgram(program.getProgramID());
-            StarsEnrLMProgram starsProg = 
+            StarsEnrLMProgram starsProg =
                 ServletUtils.getEnrollmentProgram(lsec.getStarsEnrollmentPrograms(), program.getProgramID());
 
             // Add the program to the new program list
@@ -583,7 +583,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             }
             liteStarsProg.setGroupID(groupID );
 
-            LiteStarsAppliance liteApp = 
+            LiteStarsAppliance liteApp =
                     progHwAppMap.get(program.getProgramID()).get(program.getInventoryID());
 
             if (liteApp == null) {
@@ -694,7 +694,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         app = (ApplianceBase) StarsLiteFactory.createDBPersistent(liteApp);
                         dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
 
-                        // Checks to see if there are any hardware that are enrolled in this program already and updated their 
+                        // Checks to see if there are any hardware that are enrolled in this program already and updated their
                         // addressing group to the new supplied address group.
                         if (liteInv != null && !hardwareAddressingEnabled) {
                             for (int j = 0; j < appList.size(); j++) {
@@ -752,11 +752,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 newAppList.add(liteApp);
             }
         }
-        
+
         // Update appliances saved earlier
         for (int i = 0; i < appsToUpdate.size(); i++) {
             LiteStarsAppliance liteApp = appsToUpdate.get(i);
- 
+
             ApplianceBase app = (ApplianceBase) StarsLiteFactory.createDBPersistent(liteApp);
             dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
         }
@@ -840,23 +840,23 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         for (HardwareEnrollmentInfo enrollmentInfo : hwInfoToUnenroll) {
             boolean success = lmHardwareControlInformationService.stopEnrollment(enrollmentInfo, currentUser);
             if (!success) {
-                CTILogger.error("Enrollment STOP occurred for InventoryId: " + enrollmentInfo.getInventoryId() + 
-                                 " LMGroupId: " + enrollmentInfo.getLoadGroupId() + 
+                CTILogger.error("Enrollment STOP occurred for InventoryId: " + enrollmentInfo.getInventoryId() +
+                                 " LMGroupId: " + enrollmentInfo.getLoadGroupId() +
                                  " on relay " + enrollmentInfo.getRelayNumber() +
-                                 " AccountId: " + enrollmentInfo.getAccountId() + " done by user: " + 
+                                 " AccountId: " + enrollmentInfo.getAccountId() + " done by user: " +
                                  currentUser.getUsername()+ " but could NOT be logged to LMHardwareControlGroup table.");
             }
         }
 
         //enroll
         for (HardwareEnrollmentInfo enrollmentInfo : hwInfoToEnroll) {
-            boolean success = 
+            boolean success =
                 lmHardwareControlInformationService.startEnrollment(enrollmentInfo, currentUser, hardwareAddressingEnabled);
             if (!success) {
-                CTILogger.error("Enrollment START occurred for InventoryId: " + enrollmentInfo.getInventoryId() + 
-                                 " LMGroupId: " + enrollmentInfo.getLoadGroupId() + 
+                CTILogger.error("Enrollment START occurred for InventoryId: " + enrollmentInfo.getInventoryId() +
+                                 " LMGroupId: " + enrollmentInfo.getLoadGroupId() +
                                  " on relay " + enrollmentInfo.getRelayNumber() +
-                                 " AccountId: " + enrollmentInfo.getAccountId() + " done by user: " + 
+                                 " AccountId: " + enrollmentInfo.getAccountId() + " done by user: " +
                                  currentUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
             }
         }
@@ -874,21 +874,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 return program;
             }
         }
-        
+
         return null;
     }
 
-    @Override
-    public boolean isProgramEnrolled(final int customerAccountId, final int inventoryId, final int programId) {
-        final LMHardwareControlGroup currentEnrollments = 
-                    lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId,
-                                                                                                         programId,
-                                                                                                         customerAccountId);
-
-        if (currentEnrollments != null) {
-            return currentEnrollments.isActiveEnrollment();
-        }
-        return false;
-    }
-    
 }

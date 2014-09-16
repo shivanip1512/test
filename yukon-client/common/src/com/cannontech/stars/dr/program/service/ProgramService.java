@@ -8,10 +8,8 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface ProgramService {
-    
-    public boolean hasProgramAccess(CustomerAccount customerAccount, Program program);
 
     public boolean hasProgramAccess(CustomerAccount customerAccount, List<Appliance> appliances, Program program);
-    
-    public Program getByProgramName(String programName, YukonEnergyCompany yukonEnergyCompany) ;    
+
+    public Program getByProgramName(String programName, YukonEnergyCompany yukonEnergyCompany) ;
 }

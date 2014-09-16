@@ -37,9 +37,6 @@ public interface ProgramService {
     @Transactional
     public void deleteProgram(Program program);
 
-    @Transactional
-    public void deleteProgramGroup(AvailableProgramGroup toDelete);
-
     public List<Program> getProgramList(ProgramType programType);
 
     public List<AvailableProgramGroup> getAvailableProgramGroups(Program program);
