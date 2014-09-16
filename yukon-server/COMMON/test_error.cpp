@@ -1,5 +1,7 @@
 #include <dsm2err.h>
 
+#include "yukon.h"
+
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
 
@@ -227,6 +229,11 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Unknown Error")
     ("The device has no points attached.")
     .repeat(53, "Unknown Error");
+
+BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
+{
+    BOOST_REQUIRE_EQUAL(ClientErrors::None, 0);
+}
 
 BOOST_AUTO_TEST_CASE(test_GetErrorString)
 {
