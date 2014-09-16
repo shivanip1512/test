@@ -3,7 +3,7 @@ package com.cannontech.tools.msg;
 /**
  * Insert the type's description here.
  * Creation date: (6/13/00 10:50:34 AM)
- * @author: 
+ * @author:
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -18,7 +18,7 @@ public class DBChangeGenerator {
  * This method was created in VisualAge.
  * @param args java.lang.String[]
  */
-public static void main(String[] args) 
+public static void main(String[] args)
 {
 	if( args.length < 3 )
 	{
@@ -30,29 +30,23 @@ public static void main(String[] args)
 	int numChanges = (Integer.decode(args[0])).intValue();
 	int delay = (Integer.decode(args[1])).intValue();
 	int pointCount = (Integer.decode(args[2])).intValue();
-	
+
 	int[] id = new int[ pointCount ];
 
-	for( int i = 0; i < id.length; i++ )
-		id[i] = (Integer.decode( args[3+i] )).intValue();
+	for( int i = 0; i < id.length; i++ ) {
+        id[i] = (Integer.decode( args[3+i] )).intValue();
+    }
 
 	boolean forever = false;
 
-	if( numChanges == -1 )
-	 	forever = true;
-	
+	if( numChanges == -1 ) {
+        forever = true;
+    }
+
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
 
-	try
-	{
-		conn.connect();
-	}
-	catch( java.io.IOException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		System.exit(0);
-	}
+	conn.connect();
 
 	//First do a registration
 	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
@@ -74,14 +68,14 @@ public static void main(String[] args)
 	//Expect the message back
 	Object response = conn.read();
 	com.cannontech.clientutils.CTILogger.info("Received loopback:  " + response );
-	
+
 	//Send changes
 	int numSent = 0;
 
 	while( forever || numSent < numChanges )
 	{
 		for( int j = 0; j < id.length; j++ )
-		{				
+		{
 			DBChangeMsg msg = new DBChangeMsg(
 					id[j],
 					DBChangeMsg.CHANGE_PAO_DB,
@@ -90,12 +84,12 @@ public static void main(String[] args)
 					DbChangeType.UPDATE );
 
 			msg.setTimeStamp( new java.util.Date() );
-			
+
 			conn.write( msg );  // write the signal
 		}
 
 		numSent++;
-			
+
 		com.cannontech.clientutils.CTILogger.info((new java.util.Date()).toString() + " - Sent change #" + numSent);
 		try
 		{

@@ -16,15 +16,7 @@ public static void main(String[] args) {
 
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
-	try
-	{
-		conn.connect();
-	}
-	catch( java.io.IOException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		System.exit(0);
-	}
+	conn.connect();
 
 	//First do a registration
 	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
@@ -45,7 +37,7 @@ public static void main(String[] args) {
 	//Expect the message back
 	Object response = conn.read();
 	com.cannontech.clientutils.CTILogger.info("Received loopback:  " + response );
-	
+
 	//com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg();
 	//dbChange.setDatabase(com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_ALL_DB);
 	//dbChange.setDBType(com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD);
@@ -56,7 +48,7 @@ public static void main(String[] args) {
 	com.cannontech.message.dispatch.message.PointRegistration pReg = new com.cannontech.message.dispatch.message.PointRegistration();
 	pReg.setRegFlags( com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_PTS_MASK);
 	conn.write( pReg );
-	
+
 	//Wait for point change messages - single or multi
 	com.cannontech.clientutils.CTILogger.info("Waiting for incoming messages....");
 	for( ; ; )
@@ -76,9 +68,9 @@ public static void main(String[] args) {
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-		
-		
-			com.cannontech.clientutils.CTILogger.info( in.toString() );		
+
+
+			com.cannontech.clientutils.CTILogger.info( in.toString() );
 	}
 }
 }

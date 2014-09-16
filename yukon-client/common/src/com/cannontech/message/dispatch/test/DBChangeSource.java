@@ -26,20 +26,13 @@ public static void main(String[] args) {
 
 	boolean forever = false;
 
-	if( numChanges == -1 )
-	 	forever = true;
-	
+	if( numChanges == -1 ) {
+        forever = true;
+    }
+
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
-	try
-	{
-		conn.connect();
-	}
-	catch( java.io.IOException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-		System.exit(0);
-	}
+	conn.connect();
 
 	//First do a registration
 	CTILogger.info("Registering client with vangogh");
@@ -53,7 +46,7 @@ public static void main(String[] args) {
 
 	//Send changes
 	int numSent = 0;
-	
+
 	while( forever || numSent < numChanges )
 	{
 		//com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg();

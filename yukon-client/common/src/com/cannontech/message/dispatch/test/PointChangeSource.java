@@ -30,24 +30,17 @@ public static void main(String[] args) {
 	{
 		id[i] = (Integer.decode( args[2+i] )).intValue();
 	}
-	
+
 	boolean forever = false;
 
-	if( numChanges == -1 )
-	 	forever = true;
-	
+	if( numChanges == -1 ) {
+        forever = true;
+    }
+
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 
 
-	try
-	{
-		conn.connect();
-	}
-	catch( java.io.IOException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		System.exit(0);
-	}
+	conn.connect();
 
 	//First do a registration
 	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
@@ -76,10 +69,10 @@ public static void main(String[] args) {
 	{
 
 		com.cannontech.message.dispatch.message.Multi outMsg = new com.cannontech.message.dispatch.message.Multi();
-		
+
 		for( int j = 0; j < id.length; j++ )
-		{				
-			com.cannontech.message.dispatch.message.PointData pData = new com.cannontech.message.dispatch.message.PointData();	
+		{
+			com.cannontech.message.dispatch.message.PointData pData = new com.cannontech.message.dispatch.message.PointData();
 			com.cannontech.message.dispatch.message.Signal signal = new com.cannontech.message.dispatch.message.Signal();
 
 			//pData.setSig(signal);
@@ -89,20 +82,20 @@ public static void main(String[] args) {
 			pData.setStr("Test Point Change");
 			pData.setValue( Math.random() * 100.0 );
 			pData.setTime( new java.util.Date() );
-			
+
 			signal.setCategoryID(6);
 			//signal.setFlag(0);
 			signal.setDescription("Test Signal");
-			
+
 			pData.setId( id[j] );
 			signal.setPointID( id[j] );
 
-			outMsg.getVector().addElement( pData ); 
+			outMsg.getVector().addElement( pData );
 		}
-			
+
 		conn.write( outMsg );
 		numSent++;
-		
+
 		com.cannontech.clientutils.CTILogger.info((new java.util.Date()).toString() + " - Sent change #" + numSent);
 		try
 		{

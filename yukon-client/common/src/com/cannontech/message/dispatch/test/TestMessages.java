@@ -16,7 +16,7 @@ public static void main(String[] args) {
 
 	DispatchClientConnection conn = ClientConnectionFactory.getInstance().createDispatchConn();
 	com.cannontech.message.dispatch.message.Multi multiReg = new com.cannontech.message.dispatch.message.Multi();
-	
+
 	//First do a registration
 	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
@@ -25,8 +25,8 @@ public static void main(String[] args) {
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 1000000 );
 	multiReg.getVector().addElement(reg);
-	
-	//Register for DBChangeMsg	
+
+	//Register for DBChangeMsg
 	com.cannontech.clientutils.CTILogger.info("Registering for database changes");
 	//com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg();
 	//dbChange.setDatabase(com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_ALL_DB);
@@ -40,16 +40,8 @@ public static void main(String[] args) {
 	multiReg.getVector().addElement(pReg);
 
 	conn.setRegistrationMsg(multiReg);
-	
-	try
-	{
-		conn.connect();
-	}
-	catch( java.io.IOException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		System.exit(0);
-	}	
+
+	conn.connect();
 
 	//Do a loopback
 	com.cannontech.clientutils.CTILogger.info("Attempting a loopback command");
@@ -60,8 +52,8 @@ public static void main(String[] args) {
 	//Expect the message back
 	Object response = conn.read();
 	com.cannontech.clientutils.CTILogger.info("Received loopback:  " + response );
-	
-	
+
+
 	//Wait for point change messages - single or multi
 	com.cannontech.clientutils.CTILogger.info("Waiting for incoming messages....");
 	for( ; ; )
@@ -81,9 +73,9 @@ public static void main(String[] args) {
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-		
-		
-			com.cannontech.clientutils.CTILogger.info( in.toString() );		
+
+
+			com.cannontech.clientutils.CTILogger.info( in.toString() );
 	}
 }
 }
