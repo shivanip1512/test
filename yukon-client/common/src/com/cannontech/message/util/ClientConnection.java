@@ -36,17 +36,16 @@ public abstract class ClientConnection extends Observable implements IServerConn
     private ConnectionFactory connectionFactory;
 
     // Keep track of all of this connections MessageListeners
-    private List<MessageListener> messageListeners = new CopyOnWriteArrayList<MessageListener>();
+    private List<MessageListener> messageListeners = new CopyOnWriteArrayList<>();
     private final int EXCEPTIONS_BEFORE_LOG_SNOOZE = 20;
     private final int LOG_SNOOZE_MINUTES = 5;
-    private LoadingCache<MessageListener, Integer> listenerExceptions = CacheBuilder.newBuilder()
-            .expireAfterWrite(LOG_SNOOZE_MINUTES, TimeUnit.MINUTES).build(
-                new CacheLoader<MessageListener, Integer>() {
-                    @Override
-                    public Integer load(MessageListener key) throws Exception {
-                        return 0;
-                    }
-                });
+    private LoadingCache<MessageListener, Integer> listenerExceptions = CacheBuilder.newBuilder().expireAfterWrite(
+        LOG_SNOOZE_MINUTES, TimeUnit.MINUTES).build(new CacheLoader<MessageListener, Integer>() {
+        @Override
+        public Integer load(MessageListener key) throws Exception {
+            return 0;
+        }
+    });
     private final String connectionName;
     private AtomicLong totalSentMessages = new AtomicLong();
     private AtomicLong totalReceivedMessages = new AtomicLong();
@@ -57,9 +56,8 @@ public abstract class ClientConnection extends Observable implements IServerConn
     // This message will be sent automatically on connecting
     private Message registrationMsg = null;
 
-    private Queue<Message> inQueue = new LinkedList<Message>();
-    private PriorityBlockingQueue<Message> outQueue =
-        new PriorityBlockingQueue<Message>(100, new MessagePriorityComparable());
+    private Queue<Message> inQueue = new LinkedList<>();
+    private PriorityBlockingQueue<Message> outQueue = new PriorityBlockingQueue<>(100, new MessagePriorityComparable());
 
     private boolean isValid = false;
     private boolean autoReconnect = false;
@@ -68,7 +66,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     protected ClientConnection(String connectionName) {
         super();
-        this.connectionName = connectionName;       
+        this.connectionName = connectionName;
         autoReconnect = true;
     }
 
@@ -91,13 +89,12 @@ public abstract class ClientConnection extends Observable implements IServerConn
             if (connection != null) {
                 connection.close();
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
         }
     }
 
-    public final void connect() throws java.io.IOException {
+    public final void connect() {
         // wait a long time to timeout
         // for the freaks out there: 106,751,991,167 days (292,471,208 years)
         connect(Long.MAX_VALUE);
@@ -109,8 +106,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
                 connectWithoutWait();
                 wait(millis);
             }
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             // CTILogger.error( e.getMessage(), e );
             logger.info("Interruped while waiting for connection on " + this, e);
         }
@@ -137,6 +133,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     /**
      * read blocks until an object is available in the in queue and then returns a reference to it.
+     *
      * @return java.lang.Object
      */
     public final Message read() {
@@ -144,8 +141,10 @@ public abstract class ClientConnection extends Observable implements IServerConn
     }
 
     /**
-     * read blocks until an object is available in the in queue or at least millis milliseconds have elapsed then
+     * read blocks until an object is available in the in queue or at least millis milliseconds have elapsed
+     * then
      * returns a reference to it.
+     *
      * @return java.lang.Object
      */
     public final Message read(long millis) {
@@ -160,14 +159,16 @@ public abstract class ClientConnection extends Observable implements IServerConn
                     in = readInQueue();
                 }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Read was iterrupted.", e);
         }
-        catch (InterruptedException e) {}
 
         return in;
     }
 
     /**
      * Don't call this unless you are synchronized on inQueue Creation date: (2/27/2002 6:22:43 PM)
+     *
      * @return java.lang.Object
      */
     private final Message readInQueue() {
@@ -176,6 +177,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     /**
      * Send a MessageEvent to all of this connections MessageListeners
+     *
      * @param msg
      */
     protected void fireMessageEvent(Message msg) {
@@ -206,10 +208,9 @@ public abstract class ClientConnection extends Observable implements IServerConn
                     messageListener.messageReceived(messageEvent);
                 } catch (Throwable t) {
                     String errorString = "Error while firing a message event to " + messageListener + ". ";
-                    if(msg != null) {
+                    if (msg != null) {
                         errorString += "Msg type '" + msg.getClass() + "' content :\n" + msg;
-                    }
-                    else {
+                    } else {
                         errorString += "Msg is null";
                     }
 
@@ -217,14 +218,13 @@ public abstract class ClientConnection extends Observable implements IServerConn
                     if (errorCount < EXCEPTIONS_BEFORE_LOG_SNOOZE) {
                         errorCount++;
                         if (errorCount == EXCEPTIONS_BEFORE_LOG_SNOOZE) {
-                            logger.error("Temporarily muting stack traces for " + messageListener + " because of " 
-                                + EXCEPTIONS_BEFORE_LOG_SNOOZE + " exceptions within "
-                                + LOG_SNOOZE_MINUTES + " minutes of each other");
-                        } 
+                            logger.error("Temporarily muting stack traces for " + messageListener + " because of "
+                                + EXCEPTIONS_BEFORE_LOG_SNOOZE + " exceptions within " + LOG_SNOOZE_MINUTES
+                                + " minutes of each other");
+                        }
                         listenerExceptions.put(messageListener, errorCount);
                         logger.error(errorString, t);
-                    }
-                    else {
+                    } else {
                         logger.error(errorString + "\n" + t);
                     }
                 }
@@ -234,9 +234,12 @@ public abstract class ClientConnection extends Observable implements IServerConn
     }
 
     /**
-     * Tries to send all queued messages through the {@linkplain #connection} object. We must not simply forward
-     * messages to this object because the connection may queue them itself and that will break message priority
-     * queuing. To prevent this form happening, this method ensures the connection is established before trying to send
+     * Tries to send all queued messages through the {@linkplain #connection} object. We must not simply
+     * forward
+     * messages to this object because the connection may queue them itself and that will break message
+     * priority
+     * queuing. To prevent this form happening, this method ensures the connection is established before
+     * trying to send
      * messages currently in the {@link #outQueue}
      */
     private synchronized void trySendMessages() {
@@ -306,14 +309,16 @@ public abstract class ClientConnection extends Observable implements IServerConn
      * BasicServerConnection interface implementation *
      **************************************************************************/
     /**
-     * Writes an object to the output queue. If the connection is invalid, an exception will be thrown (if you want the
+     * Writes an object to the output queue. If the connection is invalid, an exception will be thrown (if you
+     * want the
      * old behavior of queuing the message, use the queue(Object) method).
+     *
      * @param o The message to write
      * @throws ConnectionException if the connection is not valid
      */
     @Override
     public final void write(Message o) {
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug("writing msg: " + o);
         }
         Message msg = o;
@@ -325,7 +330,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     /**
      * Writes an object to the output queue.
-     * @param o java.lang.Object
+     *
      */
     @Override
     public final void queue(Message o) {
@@ -344,6 +349,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     /**
      * Add a message listener to this connection
+     *
      * @param l
      */
     @Override
@@ -353,6 +359,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     /**
      * Remove a message listener from this connection
+     *
      * @param l
      */
     @Override
@@ -382,8 +389,10 @@ public abstract class ClientConnection extends Observable implements IServerConn
     }
 
     /**
-     * Use this method to determine if this connection has been told to connect() or connectWithoutWait(). If, for
-     * example, the user wanted 1 instance of this ClientConnection() active and did not want another monitorThread to
+     * Use this method to determine if this connection has been told to connect() or connectWithoutWait(). If,
+     * for
+     * example, the user wanted 1 instance of this ClientConnection() active and did not want another
+     * monitorThread to
      * be created if either connection methods were called. -- RWN
      */
     @Override
@@ -422,6 +431,7 @@ public abstract class ClientConnection extends Observable implements IServerConn
 
     /**
      * Set this to false if you don't want the connection to queue up received messages.
+     *
      * @param b
      */
     @Override
@@ -524,13 +534,11 @@ public abstract class ClientConnection extends Observable implements IServerConn
             try {
                 // protect against missbehaved listeners
                 conn.fireMessageEvent(msg);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 if (msg != null) {
-                    conn.logger.error("Error while firing a message event. Msg type '" + msg.getClass() +
-                                      "' content :\n" + msg, t);
-                }
-                else {
+                    conn.logger.error("Error while firing a message event. Msg type '" + msg.getClass()
+                        + "' content :\n" + msg, t);
+                } else {
                     conn.logger.error("Error while firing a message event. Msg is null'");
                 }
             }
