@@ -105,7 +105,7 @@ YukonError_t CtiDevicePagingReceiver::ExecuteRequest(CtiRequestMsg *pReq, CtiCom
 YukonError_t CtiDevicePagingReceiver::recvCommRequest(OUTMESS *OutMessage)
 {
     _command = Normal;
-    return ClientErrors::None;//could do something with this someday.
+    return ClientErrors::None;
 }
 
 void CtiDevicePagingReceiver::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
