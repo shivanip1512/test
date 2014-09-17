@@ -43,11 +43,11 @@ yukon.da.ivvc = (function () {
                     newRow.find('.description').text(event.description);
                     newRow.find('.formattedTime').text(event.formattedTime);
                     body.prepend(newRow);
-                    flashYellow(newRow);
+                    newRow.flashYellow();
                 }
-
+                
                 $('#mostRecentDateTime').val(timeStamp);
-
+                
                 // Keep table size <= 20 rows
                 $('#recentEventsTable tbody tr:gt(20)').each(function (index, tr) {
                     tr.remove();

@@ -132,7 +132,7 @@ $(function() {
 <script type="text/javascript">
 <c:forEach var="pointTypeOffset" items="${preselectedPointIdentifiers}">
     $("[name$='${pointTypeOffset}']").attr("checked","checked");
-    flashYellow($("[name$='${pointTypeOffset}']").closest('td'));
+    $("[name$='${pointTypeOffset}']").closest('td').flashYellow();
 </c:forEach>
 </script>
 </c:if>

@@ -519,15 +519,6 @@ yukon.tag.scheduledFileExportInputs = (function () {
 }());
 $(function () { yukon.tag.scheduledFileExportInputs.init(); });
 
-/**
- * Flashes the background of an element 'Yukon yellow'
- * @param {DOM node} element - We want to give a temporary splash of yellow
- * @param {float} [duration] - How long the effect should last in seconds.
- */
-function flashYellow(element, duration) {
-    $(element).flashYellow(duration);
-}
-
 /** Section containers with show/hide behavior */
 $(function() {
     $(document).on('click', '.toggle-title', function (event) {

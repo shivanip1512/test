@@ -488,20 +488,18 @@ yukon.dr.formula = (function() {
             } else {
                 formulaId = selectedFormula[0].formulaId;
             }
-
+            
             $.ajax("assignFormulaToAppCat", {
                 data : {
                     'appCatId' : appCatId,
                     'formulaId' : formulaId,
                     'unassign' : unassign
                 }
-            }).done(
-                    function(data) {
-                        $("#formulaPickerRowAppCat_" + appCatId).html(data)
-                                .flashYellow(.75);
-                    });
+            }).done(function(data) {
+                $("#formulaPickerRowAppCat_" + appCatId).html(data).flashYellow(.75);
+            });
         },
-
+        
         /** This is called when formula picker for gears is closed.
          *  It sends ajax request to set selected formula for a gear.
          *  @param {Object} selectedFormula - Formula selected in picker.
@@ -524,24 +522,21 @@ yukon.dr.formula = (function() {
                     'formulaId' : formulaId,
                     'unassign' : unassign
                 }
-            }).done(
-                    function(data) {
-                        $("#formulaPickerRowGear_" + gearId).html(data)
-                                .flashYellow(.75);
-                    });
+            }).done(function(data) {
+                $("#formulaPickerRowGear_" + gearId).html(data).flashYellow(.75);
+            });
         }
     };
     return mod;
 }());
 
 $(function() {
+    
     yukon.dr.formula.init();
-
-    $("#assignments").on("mouseenter", ".js-drFormula-show-on-hover-target",
-            function() {
-                $(this).find(".js-drFormula-show-on-hover").show();
-            }).on("mouseleave", ".js-drFormula-show-on-hover-target",
-            function() {
-                $(this).find(".js-drFormula-show-on-hover").hide();
-            });
+    
+    $("#assignments").on("mouseenter", ".js-drFormula-show-on-hover-target", function() { 
+        $(this).find(".js-drFormula-show-on-hover").show();
+    }).on("mouseleave", ".js-drFormula-show-on-hover-target", function() {
+        $(this).find(".js-drFormula-show-on-hover").hide();
+    });
 });

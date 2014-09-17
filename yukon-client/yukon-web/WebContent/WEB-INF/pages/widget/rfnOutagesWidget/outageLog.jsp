@@ -3,10 +3,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<script type="text/javascript">
-$(document).ready(flashYellow($('#reloadedAt')[0], 2));
-</script>
-
 <cti:msgScope paths="widgets.rfnOutagesWidget">
 
 <tags:sectionContainer2 nameKey="outageLog">
@@ -15,7 +11,7 @@ $(document).ready(flashYellow($('#reloadedAt')[0], 2));
             <c:when test="${empty logs}"><i><i:inline key=".noLogs"/></i></c:when>
             <c:otherwise>
                 <table class="compact-results-table row-highlighting">
-                	<thead>
+                    <thead>
                         <tr>
                             <th><i:inline key=".start"/></th>
                             <th><i:inline key=".end"/></th>
@@ -27,16 +23,16 @@ $(document).ready(flashYellow($('#reloadedAt')[0], 2));
                         <c:forEach items="${logs}" var="log">
                             <tr>
                                 <c:choose>
-        	                        <c:when test="${!log.invalid}">
-        		                        <td><cti:formatDate value="${log.start}" type="BOTH"/></td>
-        		                        <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
-        		                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
-        	                        </c:when>
-        	                        <c:otherwise>
+                                    <c:when test="${!log.invalid}">
+                                        <td><cti:formatDate value="${log.start}" type="BOTH"/></td>
+                                        <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
+                                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
+                                    </c:when>
+                                    <c:otherwise>
                                         <td><i:inline key=".unknown"/></td>
                                         <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
                                         <td><i:inline key=".unknown"/></td>
-        	                        </c:otherwise>
+                                    </c:otherwise>
                                 </c:choose>
                             </tr>
                         </c:forEach>
