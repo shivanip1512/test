@@ -6,6 +6,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.RandomGenerator;
 import com.cannontech.messaging.serialization.util.ConverterHelper;
+import com.google.common.collect.Lists;
 
 public class ReturnValidator extends AutoInitializedClassValidator<Return> {
     private static long DEFAULT_SEED = 11;
@@ -21,7 +22,7 @@ public class ReturnValidator extends AutoInitializedClassValidator<Return> {
         // We have to generate on to stay in sync (for the random generator) and we need to get the message Vector back
         Multi<Message> multiMsg = new Multi<>();
         getAutoValidatorFor(Multi.class).populateExpectedValue(multiMsg, generator);
-        ctrlObj.setMessages(multiMsg.getVector());
+        ctrlObj.setMessages(Lists.newArrayList(multiMsg.getVector()));
 
         ctrlObj.setDeviceID(generator.generateInt());
         ctrlObj.setCommandString(generator.generateString());
