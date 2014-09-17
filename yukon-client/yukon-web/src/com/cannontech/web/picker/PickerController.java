@@ -29,6 +29,7 @@ import com.google.common.collect.Maps;
 
 @Controller
 public class PickerController {
+    
     @Autowired private PickerFactory pickerFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ObjectFormattingService objectFormattingService;

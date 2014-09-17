@@ -12,12 +12,17 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
 </script>
 
 <cti:msg var="dialogTitle" key="${title}"/>
-<div title="${dialogTitle}" id="${id}" class="dn pickerDialog" role="dialog">
+<div title="${dialogTitle}" id="${id}" class="dn js-picker-dialog" role="dialog">
     <div class="clearfix">
         <div class="fl">
             <div class="stacked">
-                <label class="wsnw"><i:inline key=".query"/><input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/></label>
-                <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})" style="margin-left: 3px;"><i:inline key=".showAll"/></a>
+                <label class="wsnw">
+                    <i:inline key=".query"/>
+                    <input class="js-picker-search" type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;">
+                </label>
+                <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})" style="margin-left: 3px;">
+                    <i:inline key=".showAll"/>
+                </a>
             </div>
         </div>
         <div class="fr paging-area">
@@ -27,8 +32,8 @@ ${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
     
     <div id="picker_${id}_nothingSelected" style="display:none;" class="error"><i:inline key=".nothingSelected"/></div>
     <div class="js-block-this">
-        <div id="picker_${id}_results" class="pickerResults"></div>
-        <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
+        <div id="picker_${id}_results"></div>
+        <div id="picker_${id}_noResults" style="display: none"><i:inline key=".noResults"/></div>
     </div>
 
     <c:if test="${multiSelectMode}">

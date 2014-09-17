@@ -21,9 +21,10 @@
     SCROLLING
     CATEGORIES AND SETTINGS
     MISC
-    DATE/TIME PICKER
+    YUKON PICKER
     COLOR PICKER
     IMAGE PICKER
+    DATE/TIME PICKER
     DROPDOWN MENUS
     MODAL/BLOCKING GLASS
     CONNECTION WARNING
@@ -954,6 +955,22 @@ hr.dashed,
     color: inherit;
     padding: 1px 2px;
 }
+
+/* YUKON PICKER */
+.picker-results-table tbody tr {
+    &:focus, &:hover {
+        outline: none;
+        .focus-indicator { background-color: #ccc; }
+    }
+    &:hover {
+        cursor: pointer;
+    }
+    .focus-indicator {
+        width: 4px;
+        padding: 0;
+    }
+}
+
 /* COLOR PICKER */
 .color-picker {
     &.sp-container, &.sp-replacer {

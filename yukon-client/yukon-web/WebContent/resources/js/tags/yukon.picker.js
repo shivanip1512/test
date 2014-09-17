@@ -202,8 +202,8 @@ yukon.protoPicker = function (okText,
     renderTableResults = function (json) {
         
         var hitList = json.hits.resultList,
-            resultArea = document.createElement('div'),
-            resultAreaFixed = document.createElement('div'),
+            resultArea = $('<div>').attr('id', this.resultAreaId),
+            resultAreaFixed = $('<div>').attr('id', this.resultAreaFixedId),
             pickerThis = this,
             createItemLink = function (hit, link) {
                 if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) !== -1) {
@@ -230,9 +230,7 @@ yukon.protoPicker = function (okText,
             },
             resultTable;
             
-        resultArea.id = this.resultAreaId;
-        resultAreaFixed.id = this.resultAreaFixedId;
-        resultArea.appendChild(resultAreaFixed);
+        resultArea.append(resultAreaFixed);
         this.allLinks = [];
         if (hitList && hitList.length && hitList.length > 0) {
             $(this.noResultsDiv).hide();
@@ -251,9 +249,14 @@ yukon.protoPicker = function (okText,
                  createItemLink = null;
              });
             
-            resultTable = yukon.ui.util.createHtmlTableFromJson(hitList, outputColumns, processRowForRender);
-            resultTable.className = 'compact-results-table pickerResultTable';
-            resultAreaFixed.appendChild(resultTable);
+            resultTable = yukon.ui.util.createTable({
+                data: hitList, 
+                columns: outputColumns, 
+                callback: processRowForRender
+            });
+            
+            resultTable.addClass('compact-results-table picker-results-table');
+            resultAreaFixed.append(resultTable);
         } else {
             $(this.noResultsDiv).show();
             $(this.resultsDiv).hide();
@@ -297,24 +300,15 @@ yukon.protoPicker = function (okText,
         
         var json = JSON.parse(xhr.responseText),
             newResultArea = renderTableResults.call(this, json),
-            oldResultArea,
-            resultHolder,
-            oldError,
+            resultHolder = $(this.resultsDiv),
             ss;
         
         updatePagingArea.call(this, json);
         this.selectAllPagesMsg = json.selectAllPages;
         this.allPagesSelectedMsg = json.allPagesSelected;
-        oldResultArea = document.getElementById(this.resultAreaId);
-        resultHolder = this.resultsDiv;
-        if (oldResultArea) {
-            resultHolder.removeChild(oldResultArea);
-        }
-        oldError = document.getElementById(this.errorHolderId);
-        if (oldError) {
-            resultHolder.removeChild(oldError);
-        }
-        resultHolder.appendChild(newResultArea);
+        $('#' + this.resultAreaId).remove();
+        $('#' + this.errorHolderId).remove();
+        resultHolder.append(newResultArea);
         updateSelectAllCheckbox.call(this);
         
         ss = this.ssInput.value;
@@ -377,7 +371,7 @@ yukon.protoPicker = function (okText,
                 onComplete(xhr);
             } catch(callbackEx) {
                 debug.log('Error executing the onComplete callback.');
-                debub.log(callbackEx);
+                debug.log(callbackEx);
             }
             
             if (endCallback) endCallback();
@@ -886,7 +880,7 @@ yukon.protoPicker = function (okText,
         
         resultTable = yukon.ui.util.createHtmlTableFromJson(this.selectedItems, outputColumns);
         $(resultTable).addClass('compact-results-table');
-        $(resultTable).addClass('pickerResultTable');
+        $(resultTable).addClass('picker-results-table');
         $(resultTable).addClass('row-highlighting');
         this.selectedItemsDisplayArea.innerHTML = '';
         this.selectedItemsDisplayArea.appendChild(resultTable);
@@ -947,8 +941,57 @@ function Picker (okText, cancelText, noneSelectedText, pickerType, destinationFi
 yukon.inheritPrototype(Picker, yukon.protoPicker);
 
 /** Add keyboard binding for up, down left right and enter */ 
-$(function() {
-    $(document).on('keypress', '.pickerResultTable', function (ev) {
-        console.log(ev.which);
+$(function () {
+    $(document).on('keyup', '.js-picker-dialog', function (ev) {
+        
+        var keys = { up: 38, down: 40, left: 37, right: 39, enter: 13 },
+            key = ev.which,
+            dialog = $(this),
+            table = dialog.find('.picker-results-table tbody'),
+            next = dialog.find('.next-page'),
+            prev = dialog.find('.previous-page'),
+            focus = $(':focus'),
+            searching = focus.is('.js-picker-search');
+        
+        if (yukon.values(keys).indexOf(key) != -1) {
+            
+            ev.stopPropagation();
+            ev.preventDefault();
+            
+            if (key == keys.down) {
+                if (searching) {
+                    table.find('tr:first-child').focus();
+                } else if (focus.is('tr')) {
+                    if (focus.is(':last-child')) {
+                        dialog.find('.js-picker-search').focus();
+                    } else {
+                        focus.next().focus();
+                    }
+                }
+            } else if (key == keys.up) {
+                if (searching) {
+                    table.find('tr:last-child').focus();
+                } else if (focus.is('tr')) {
+                    if (focus.is(':first-child')) {
+                        dialog.find('.js-picker-search').focus();
+                    } else {
+                        focus.prev().focus();
+                    }
+                }
+            } else if (key == keys.right) {
+                if (next.css('visibility') !== 'hidden') next[0].click();
+            } else if (key == keys.left) {
+                if (prev.css('visibility') !== 'hidden') prev[0].click();
+            } else if (key == keys.enter) {
+                if (focus.is('tr')) {
+                    focus.find('a').trigger('click');
+                } else if (searching) {
+                    if (table.find('tr').length === 1) {
+                        table.find('a').trigger('click');
+                    }
+                }
+            }
+        }
+        
     });
 });

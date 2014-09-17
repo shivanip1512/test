@@ -140,6 +140,17 @@ var yukon = (function () {
         
         percent: function (count, total, decimals) {
             return (parseFloat(count / total, 10) * 100).toFixed(decimals) + '%';
+        },
+        
+        /** 
+         * Returns and array of the values in an object.  It only returns the objects own 
+         * values, not those from the prototype chain.
+         */
+        values: function (obj) {
+            var values = Object.keys(obj || {}).map(function (key) {
+                return obj[key];
+            });
+            return values;
         }
         
     };

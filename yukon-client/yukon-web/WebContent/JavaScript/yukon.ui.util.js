@@ -151,7 +151,7 @@ yukon.ui.util = (function () {
 
             // save button text for restore on error
             var orgCancelButtonText = $('#cancelButton' + ccid).val(),
-                args;
+                args = {};
 
             // swap to wait img, disable button
             $('#waitImg' + ccid).show();
@@ -159,7 +159,6 @@ yukon.ui.util = (function () {
             $('#cancelButton' + ccid).val(cancelingText);
 
             // run cancel    
-            var args = {};
             args.resultId = resultId;
             // setup callbacks
             $.ajax({
@@ -230,16 +229,34 @@ yukon.ui.util = (function () {
             });
         },
         
-        createHtmlTableFromJson: function (dataArray, outputCols, rowCallback) {
-            var resultTable = document.createElement("table"),
-                resultTableHead = document.createElement("thead"),
-                resultTableBody,
-                headRow,
+        /**
+         * Creates an html table element filled with the provided data and optionally fire
+         * a callback function for each row.
+         * @param {object} options            - The options argument containing the data array, the column headers array 
+         *                                      and an optional row callback.
+         * @param {Array} options.data        - The data for the table cells.
+         * @param {Array} options.columns     - The data for the table headers.
+         * @param {Array} [options.callback]  - Optional callback function to fire for each row.
+         */
+        createTable: function (options) {
+            
+            var args = {
+                callback: yukon.nothing,
+                tabindex: true,
+                focusIndicator: true
+            };
+            
+            $.extend(args, options);
+            
+            var table = $('<table>'),
+                thead = $('<thead>'),
+                body,
+                headers,
                 col,
-                headCell,
+                header,
                 i,
-                tableRow,
-                tableCell,
+                row,
+                cell,
                 node,
                 link,
                 linkFuncGenerate,
@@ -248,56 +265,69 @@ yukon.ui.util = (function () {
                 displayDataString,
                 maxLen,
                 text;
-                
-            resultTable.appendChild(resultTableHead);
-            headRow = document.createElement("tr");
-            resultTableHead.appendChild(headRow);
-            for (col = 0; col < outputCols.length; col++) {
-                headCell = document.createElement("th");
-                headCell.appendChild(document.createTextNode(outputCols[col].title));
-                headRow.appendChild(headCell);
+            
+            /** Builder Header */
+            table.append(thead);
+            headers = $('<tr>');
+            thead.append(headers);
+            for (col = 0; col < args.columns.length; col++) {
+                header = $('<th>');
+                if (args.focusIndicator && col == 0) {
+                    header.attr('colspan', 2);
+                }
+                header.append(document.createTextNode(args.columns[col].title));
+                headers.append(header);
             }
-            resultTableBody = document.createElement("tbody");
-            resultTable.appendChild(resultTableBody);
-            for (i = 0; i < dataArray.length; i++) {
-                tableRow = document.createElement("tr");
-                (rowCallback || yukon.nothing)(tableRow, dataArray[i]);
-                resultTableBody.appendChild(tableRow);
-                for (col = 0; col < outputCols.length; col++) {
-                    tableCell = document.createElement("td");
-                    node = tableCell;
-                    tableRow.appendChild(tableCell);
-                    if (outputCols[col].link) {
-                        link = document.createElement("a");
+            
+            /** Build Body */
+            body = $('<tbody>');
+            table.append(body);
+            for (i = 0; i < args.data.length; i++) {
+                row = $('<tr>');
+                
+                if (args.tabindex) row.attr('tabindex', i);
+                
+                if (args.focusIndicator) {
+                    row.append($('<td>&nbsp;</td>').addClass('focus-indicator'));
+                }
+                
+                args.callback(row, args.data[i]);
+                body.append(row);
+                for (col = 0; col < args.columns.length; col++) {
+                    cell = $('<td>');
+                    node = cell;
+                    row.append(cell);
+                    if (args.columns[col].link) {
+                        link = $('<a>');
                         node = link;
-                        tableCell.appendChild(link);
-                        linkFuncGenerate = outputCols[col].link;
-                        linkFunc = linkFuncGenerate(dataArray[i], link);
-        
+                        cell.append(link);
+                        linkFuncGenerate = args.columns[col].link;
+                        linkFunc = linkFuncGenerate(args.data[i], link);
+                        
                         if (linkFunc !== null) {
-                            link.setAttribute("href", "javascript:void(0)");
+                            link.attr('href', 'javascript:void(0);');
                             $(link).on('click', linkFunc);
                         }
                     }
-        
-                    dataString = dataArray[i][outputCols[col].field];
+                    
+                    dataString = args.data[i][args.columns[col].field];
                     if (dataString === undefined) {
-                        dataString = outputCols[col].field;
+                        dataString = args.columns[col].field;
                     }
                     displayDataString = dataString;
-                    maxLen = outputCols[col].maxLen;
+                    maxLen = args.columns[col].maxLen;
                     if (maxLen && dataString.length > maxLen) {
                         displayDataString = dataString.truncate(maxLen, '...');
-                        tableCell.setAttribute("title", dataString);
+                        cell.setAttribute('title', dataString);
                     }
-        
+                    
                     //in case we want to display static text but maintain a value
                     text = document.createTextNode(displayDataString);
-                    node.appendChild(text);
+                    node.append(text);
                 }
             }
             
-            return resultTable;
+            return table;
         },
         
         generateMessageCode : function (prefix, input) {
