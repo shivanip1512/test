@@ -28,24 +28,24 @@ public class RemoveAccountsRequestEndpoint {
     private AccountEventLogService accountEventLogService;
     private AccountService accountService;
     private Namespace ns = YukonXml.getYukonNamespace();
-    
+
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="removeAccountsRequest")
     public Element invoke(Element removeAccountsRequest, LiteYukonUser user) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(removeAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(removeAccountsRequest);
-        
-        List<String> accountNumbers = requestTemplate.evaluate("//y:accountsList/y:accountNumber", 
-                              new NodeToElementMapperWrapper<String>(new RemoveAccountsRequestMapper()));
-        
+
+        List<String> accountNumbers = requestTemplate.evaluate("//y:accountsList/y:accountNumber",
+                              new NodeToElementMapperWrapper<>(new RemoveAccountsRequestMapper()));
+
         Element removeAccountsResponse = new Element("removeAccountsResponse", ns);
         XmlVersionUtils.addVersionAttribute(removeAccountsResponse, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
+
         Element removeAccountsResultList = new Element("accountResultList", ns);
         removeAccountsResponse.addContent(removeAccountsResultList);
-        
+
         for (String accountNumber : accountNumbers) {
             accountEventLogService.accountDeletionAttempted(user, accountNumber, EventSource.API);
-            
+
             Element removeAccountResult = addAccountResponse(ns, removeAccountsResultList, accountNumber);
             try {
                 accountService.deleteAccount(accountNumber, user);
@@ -54,27 +54,27 @@ public class RemoveAccountsRequestEndpoint {
                 removeAccountResult.addContent(fe);
                 continue;
             }
-    
+
             removeAccountResult.addContent(new Element("success", ns));
         }
-        
+
         return removeAccountsResponse;
-        
+
     }
-    
+
     private Element addAccountResponse(Namespace ns, Element removeAccountsResultList, String accountNumber){
         Element customerAccountResult = new Element("accountResult", ns);
         removeAccountsResultList.addContent(customerAccountResult);
         customerAccountResult.addContent(XmlUtils.createStringElement("accountNumber", ns, accountNumber));
         return customerAccountResult;
     }
-    
+
 	private class RemoveAccountsRequestMapper implements ObjectMapper<Element, String> {
-	
+
 	    @Override
 	    public String map(Element removeAccountsRequestElement) throws ObjectMappingException {
 	        SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(removeAccountsRequestElement);
-	        
+
 	        String accountNumber = template.evaluateAsString("//y:accountNumber");
 	        return accountNumber;
 	    }
