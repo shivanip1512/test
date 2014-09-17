@@ -36,11 +36,11 @@ public:
    YukonError_t decode  (CtiXfer &xfer, YukonError_t commReturnValue);
    YukonError_t generate(CtiXfer  &xfer);
 
-   YukonError_t recvCommRequest( OUTMESS *OutMessage );
+   YukonError_t recvCommRequest( OUTMESS *OutMessage ) override;
 
    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
-   virtual YukonError_t sendCommResult(INMESS &InMessage);
+   YukonError_t sendCommResult(INMESS &InMessage) override;
 
    bool isTransactionComplete();
 

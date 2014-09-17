@@ -46,7 +46,7 @@ public:
    virtual void buildCommanderTableRequest(BYTE *ptr, UINT flags) = 0;
    virtual void buildSingleTableRequest(BYTE *ptr, UINT tableId = 0);
 
-   YukonError_t sendCommResult( INMESS &InMessage);
+   YukonError_t sendCommResult( INMESS &InMessage) override;
 
    struct WANTS_HEADER
    {

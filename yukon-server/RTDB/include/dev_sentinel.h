@@ -39,7 +39,7 @@ public:
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
    void buildScannerTableRequest  (BYTE *ptr, UINT flags) override;
    void buildCommanderTableRequest(BYTE *ptr, UINT flags) override;
-   YukonError_t sendCommResult( INMESS &InMessage);
+   YukonError_t sendCommResult( INMESS &InMessage) override;
 
    struct WANTS_HEADER
    {

@@ -38,7 +38,7 @@ public:
    void processDispatchReturnMessage( std::list< CtiReturnMsg* >  &retList, UINT archiveFlag );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
-   YukonError_t sendCommResult( INMESS &InMessage);
+   YukonError_t sendCommResult( INMESS &InMessage) override;
 
    struct WANTS_HEADER
    {

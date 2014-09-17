@@ -36,7 +36,7 @@ public:
    YukonError_t decode  (CtiXfer &xfer, YukonError_t commReturnValue);
    YukonError_t generate(CtiXfer  &xfer);
 
-   YukonError_t recvCommRequest( OUTMESS *OutMessage );
+   YukonError_t recvCommRequest( OUTMESS *OutMessage ) override;
 
    virtual std::string getSQLCoreStatement() const;
 
@@ -51,7 +51,7 @@ public:
    bool isTransactionComplete();
 
    void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
-   YukonError_t sendCommResult(INMESS &InMessage);
+   YukonError_t sendCommResult(INMESS &InMessage) override;
 
    enum CommandState
    {

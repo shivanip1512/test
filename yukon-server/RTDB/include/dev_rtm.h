@@ -61,8 +61,8 @@ public:
     YukonError_t ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     YukonError_t ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList);
 
-    YukonError_t recvCommRequest(OUTMESS *OutMessage);
-    YukonError_t sendCommResult(INMESS &InMessage);
+    YukonError_t recvCommRequest(OUTMESS *OutMessage) override;
+    YukonError_t sendCommResult (INMESS &InMessage)   override;
 
     YukonError_t generate(CtiXfer &xfer);
     YukonError_t decode  (CtiXfer &xfer, YukonError_t status);

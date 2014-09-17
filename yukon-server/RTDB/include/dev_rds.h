@@ -23,7 +23,7 @@ public:
 
     RDSTransmitter();
 
-    YukonError_t recvCommRequest( OUTMESS *OutMessage );
+    YukonError_t recvCommRequest( OUTMESS *OutMessage ) override;
 
     virtual YukonError_t generate(CtiXfer &xfer);
     virtual YukonError_t decode  (CtiXfer &xfer, YukonError_t status);
@@ -111,7 +111,7 @@ protected:
 
     void printAcknowledgmentError   (unsigned char error);
 
-    virtual YukonError_t sendCommResult      (INMESS &InMessage);
+    YukonError_t sendCommResult(INMESS &InMessage) override;
 
     bool isTwoWay();
     bool isOdaConfigSendNeeded();

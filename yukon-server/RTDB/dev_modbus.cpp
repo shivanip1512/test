@@ -211,18 +211,18 @@ int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList
 {
     int retVal = ClientErrors::None;
 
-    //  write the outmess_header
-    outmess_header *om_buf = reinterpret_cast<outmess_header *>(OutMessage->Buffer.OutMessage);
-    om_buf->command     = _pil_info.protocol_command;
-    om_buf->parameter   = _pil_info.protocol_parameter;
-    om_buf->pseudo_info = _pil_info.pseudo_info;
-
-    char *buf = reinterpret_cast<char *>(OutMessage->Buffer.OutMessage) + sizeof(outmess_header);
-    strncpy(buf, _pil_info.user.data(), 127);
-    buf[127] = 0;  //  max of 128, just because i feel like it
-
     if( OutMessage )
     {
+        //  write the outmess_header
+        outmess_header *om_buf = reinterpret_cast<outmess_header *>(OutMessage->Buffer.OutMessage);
+        om_buf->command     = _pil_info.protocol_command;
+        om_buf->parameter   = _pil_info.protocol_parameter;
+        om_buf->pseudo_info = _pil_info.pseudo_info;
+
+        char *buf = reinterpret_cast<char *>(OutMessage->Buffer.OutMessage) + sizeof(outmess_header);
+        strncpy(buf, _pil_info.user.data(), 127);
+        buf[127] = 0;  //  max of 128, just because i feel like it
+
         //  assign all of the standard OM bits
         OutMessage->OutLength    = sizeof(om_buf) + strlen(buf) + 1;  //  plus null
         OutMessage->Destination  = _modbus_address.getSlaveAddress();

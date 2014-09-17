@@ -44,12 +44,12 @@ public:
 
     static std::vector<const char*> initCommandVector();
     CtiDevicePagingReceiver();
-    YukonError_t recvCommRequest(OUTMESS *OutMessage);
+    YukonError_t recvCommRequest(OUTMESS *OutMessage) override;
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
     YukonError_t GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, INT ScanPriority = MAXPRIORITY - 4) override;
     YukonError_t ResultDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
-    virtual YukonError_t sendCommResult(INMESS &InMessage);
+    YukonError_t sendCommResult(INMESS &InMessage) override;
     bool isTransactionComplete();
 
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;

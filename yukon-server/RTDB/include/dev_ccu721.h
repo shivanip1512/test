@@ -101,8 +101,8 @@ public:
 
     bool buildCommand(CtiOutMessage *&OutMessage, Commands command);
 
-    virtual YukonError_t recvCommRequest(OUTMESS *OutMessage);
-    virtual YukonError_t sendCommResult (INMESS  &InMessage);
+    YukonError_t recvCommRequest(OUTMESS *OutMessage) override;
+    YukonError_t sendCommResult (INMESS  &InMessage)  override;
 
     void getQueuedResults(std::vector<queued_result_t> &results);
 

@@ -81,7 +81,7 @@ public:
    YukonError_t decodeResultScan( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, std::vector<CtiTransdataData *> transVector );
 
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
-   YukonError_t sendCommResult( INMESS &InMessage );
+   YukonError_t sendCommResult( INMESS &InMessage ) override;
    int checkQuality( int yyMap, int lpValue );
    void CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec, int yyMap, int &value, int &quality );
    int getChannelOffset( int index );
