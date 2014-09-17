@@ -70,8 +70,7 @@ public class PoolManager {
 	private enum DatabaseVendor { 
 	    ORACLE_DATABASE(":"), 
 	    ORACLE12_DATABASE("/"),
-	    MSSQL_DATABASE(""),
-	    MYSQL(""),        //MS SQL Server doesn't use this URL style in the JDBC string.
+	    MSSQL_DATABASE(""),        //MS SQL Server doesn't use this URL style in the JDBC string.
 	    ;
 	    
 	    String urlCharacter;
