@@ -30,7 +30,7 @@ unsigned DeviceCommand::getValueFromBits_bEndian(const Bytes &data, const unsign
 {
     if( start_offset + length > data.size() * 8 )
     {
-        throw CommandException(ClientErrors::Abnormal, "Payload too small");
+        throw CommandException(ClientErrors::InvalidData, "Payload too small");
     }
 
     unsigned value = 0;
@@ -63,7 +63,7 @@ unsigned DeviceCommand::getValueFromBits_lEndian(const Bytes &data, const unsign
 
     if( end_offset > data.size() * 8 )
     {
-        throw CommandException(ClientErrors::Abnormal, "Payload too small");
+        throw CommandException(ClientErrors::InvalidData, "Payload too small");
     }
 
     unsigned value = 0;
