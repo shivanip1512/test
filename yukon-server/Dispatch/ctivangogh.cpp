@@ -662,9 +662,8 @@ void CtiVanGogh::VGConnectionHandlerThread()
 }
 
 
-int CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistrationMsg &aReg)
+void CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistrationMsg &aReg)
 {
-    int nRet = ClientErrors::None;
     CtiTime     NowTime;
 
     CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)pCM.get();
@@ -763,8 +762,6 @@ int CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistration
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    return nRet;
 }
 
 // Assumes lock on _server_exclusion has been obtained.
@@ -1407,12 +1404,10 @@ void CtiVanGogh::clientShutdown(CtiServer::ptr_type CM)
 /*
  *  Posts the Database change to each connected client.
  */
-int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
+void CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 {
-    int                     nRet = ClientErrors::None;
-    ptr_type                Mgr;
-    CHAR                    temp[80];
-
+    ptr_type Mgr;
+    CHAR     temp[80];
 
     try
     {
@@ -1493,8 +1488,6 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    return nRet;
 }
 
 
@@ -1933,10 +1926,8 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 }
 
 
-INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
+void CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
 {
-    INT status = ClientErrors::None;
-
     try
     {
         for(int i = 0; i < pMulti->getData().size(); i++)
@@ -1973,8 +1964,6 @@ INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
             dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-
-    return status;
 }
 
 
@@ -1982,10 +1971,8 @@ INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
  * This guy looks at and absorbs any information that Dispatch needs
  * from the message, following this, the message is posted to clients
  *--------------------------------------------------------------------*/
-INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
+void CtiVanGogh::processMessageData( CtiMessage *pMsg )
 {
-    INT status = ClientErrors::None;
-
     try
     {
         switch( pMsg->isA() )
@@ -2080,8 +2067,6 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
             dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-
-    return status;
 }
 
 /******************************************************************************
@@ -2089,10 +2074,9 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
  * clients...
  *
  ******************************************************************************/
-INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
+void CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
 {
     INT i;
-    INT status = ClientErrors::None;
 
     CtiMultiMsg  *pMulti;
 
@@ -2166,8 +2150,6 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    return status;
 }
 
 

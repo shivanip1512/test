@@ -258,11 +258,11 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
 
 INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead)
 {
-    ULONG    bytesAvailable  = 0;
-    LONG    bytesReceived  = 0;
-    INT      retVal             = ClientErrors::None;
-    CHAR     *bPtr           = aBuffer;
-    ULONG    totalByteCnt    = 0;
+    ULONG  bytesAvailable = 0;
+    LONG   bytesReceived  = 0;
+    INT    retVal         = ClientErrors::None;
+    CHAR  *bPtr           = aBuffer;
+    ULONG  totalByteCnt   = 0;
 
     try
     {

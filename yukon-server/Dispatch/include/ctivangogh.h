@@ -173,11 +173,11 @@ public:
     virtual int   commandMsgHandler(CtiCommandMsg *Cmd);
 
     virtual void  shutdown();
-    int   postDBChange(const CtiDBChangeMsg &Msg);
+    void  postDBChange(const CtiDBChangeMsg &Msg);
 
     void  shutdownAllClients();
 
-    int   registration(CtiServer::ptr_type, const CtiPointRegistrationMsg &aReg);
+    void  registration(CtiServer::ptr_type, const CtiPointRegistrationMsg &aReg);
 
     int   execute();
     void  VGMainThread();
@@ -197,9 +197,9 @@ public:
     CtiMessage* messageToConnectionViaGlobalList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
     CtiMessage* messageToConnectionViaPointList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
 
-    INT postMessageToClients(CtiMessage *pMsg);
-    INT processMessageData(CtiMessage *pMsg);
-    INT processMultiMessage(CtiMultiMsg *pMulti);
+    void postMessageToClients(CtiMessage *pMsg);
+    void processMessageData(CtiMessage *pMsg);
+    void processMultiMessage(CtiMultiMsg *pMulti);
 
     CtiMultiMsg* generateMultiMessageForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
 

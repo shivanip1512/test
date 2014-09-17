@@ -125,7 +125,7 @@ int CtiFDR_STEC::decodeFile ()
 {
     int fileHandle;
     FILE *controlFile;
-    int retVal = ClientErrors::None;
+    int retVal = 0;
     FLOAT totalSystem=0.0, stecOnly=0.0;
 
     CHAR buffer[300];
@@ -147,7 +147,7 @@ int CtiFDR_STEC::decodeFile ()
             desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
 
-            retVal = ClientErrors::Abnormal;
+            retVal = 1;
         }
         else
         {
@@ -157,7 +157,7 @@ int CtiFDR_STEC::decodeFile ()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " STEC file failed to open after download " << endl;
-                retVal = ClientErrors::Abnormal;
+                retVal = 1;
             }
             else
             {
@@ -253,11 +253,11 @@ int CtiFDR_STEC::decodeFile ()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " STEC file failed to open after download " << endl;
-        retVal = ClientErrors::Abnormal;
+        retVal = 1;
     }
 
 
-    return ClientErrors::None;
+    return 0;
 }
 
 

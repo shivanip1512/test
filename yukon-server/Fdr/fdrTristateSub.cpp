@@ -291,7 +291,7 @@ int FDRTriStateSub::decodeFile()
         }
 
 
-        return ClientErrors::None;
+        return 0;
     }else
         return 1; //fail() is called if we return bad
 }

@@ -122,7 +122,7 @@ int CtiFDR_Tristate::decodeFile ()
 {
     int fileHandle;
     FILE *controlFile;
-    int retVal = ClientErrors::None;
+    int retVal = 0;
     FLOAT current = 0.0, average = 0.0;
 
     CHAR buffer[300];
@@ -143,7 +143,7 @@ int CtiFDR_Tristate::decodeFile ()
             desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
 
-            retVal = ClientErrors::Abnormal;
+            retVal = 1;
         }
         else
         {
@@ -153,7 +153,7 @@ int CtiFDR_Tristate::decodeFile ()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Tristate file failed to open after download " << endl;
-                retVal = ClientErrors::Abnormal;
+                retVal = 1;
             }
             else
             {
@@ -235,11 +235,11 @@ int CtiFDR_Tristate::decodeFile ()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Tristate file failed to open after download " << endl;
-        retVal = ClientErrors::Abnormal;
+        retVal = 1;
     }
 
 
-    return ClientErrors::None;
+    return 0;
 }
 
 
