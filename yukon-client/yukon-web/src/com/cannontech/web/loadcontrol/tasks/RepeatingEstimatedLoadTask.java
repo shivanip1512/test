@@ -76,9 +76,7 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     }
 
     private void populatePointData(List<PaoIdentifier> lmPaos) {
-        boolean toArchive = false;
         for (PaoIdentifier paoIdent : lmPaos) {
-            toArchive = false;
             EstimatedLoadResult estimatedLoadResult = null;
             EstimatedLoadAmount amount = null;
             if (paoIdent.getPaoType().isLmProgram()) {
@@ -90,16 +88,14 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
             }
             if (estimatedLoadResult != null && estimatedLoadResult instanceof EstimatedLoadAmount) {
                 amount = (EstimatedLoadAmount) estimatedLoadResult;
-                toArchive = true;
             } else if (estimatedLoadResult != null && estimatedLoadResult instanceof EstimatedLoadSummary) {
                 EstimatedLoadSummary summary = (EstimatedLoadSummary) estimatedLoadResult;
                 if (summary.getContributing() > 0 || summary.getCalculating() > 0) {
                     amount = summary.getSummaryAmount();
-                    toArchive = true;
                 } 
             }
             
-            if (toArchive) {
+            if (amount != null) {
                 LitePoint diversifiedPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent,
                         new PointIdentifier(PointType.Analog, 1)));
                 
