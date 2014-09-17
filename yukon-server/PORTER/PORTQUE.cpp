@@ -1985,7 +1985,7 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
             InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
             InMessage.Time          = LongTime();
             InMessage.MilliTime     = 0;
-            InMessage.ErrorCode         = ClientErrors::CcuQueueFlushed;                 // Indicates the result of the request.. The CCU queue was blown away!
+            InMessage.ErrorCode     = ClientErrors::CcuQueueFlushed;         // Indicates the result of the request.. The CCU queue was blown away!
         }
         catch(...)
         {

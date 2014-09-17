@@ -1532,7 +1532,7 @@ static bool isBreakStatus( int status )
         case ClientErrors::NoMethod:
         case ClientErrors::InvalidSSPEC:
         case ClientErrors::VerifySSPEC:
-        case ClientErrors::IdNotFound: // IDNF means not in the database
+        case ClientErrors::IdNotFound:
         case ClientErrors::CommandAlreadyInProgress:
             return false;
 
