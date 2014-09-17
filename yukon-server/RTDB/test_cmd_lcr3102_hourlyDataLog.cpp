@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
         }
         catch(DlcCommand::CommandException &ex)
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::Abnormal);
+            BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::InvalidData);
             BOOST_CHECK_EQUAL(ex.error_description, "Payload too small");
         }
     }
