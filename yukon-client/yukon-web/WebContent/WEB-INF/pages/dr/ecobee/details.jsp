@@ -24,9 +24,6 @@
 </style>
 
 <dt:pickerIncludes/>
-<cti:includeScript link="/JavaScript/yukon.picker.js"/>
-<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-<cti:includeScript link="/JavaScript/yukon.tables.js"/>
 <cti:includeScript link="YUKON_TIME_FORMATTER"/>
 <cti:includeScript link="/JavaScript/yukon.dr.ecobee.js"/>
 

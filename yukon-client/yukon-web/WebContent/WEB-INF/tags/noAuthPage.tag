@@ -43,7 +43,6 @@
 <cti:includeScript link="JQUERY_TIPSY" force="true"/>
 <script src="<cti:url value="/JavaScript/yukon.ui.util.js"/>"></script>
 <script src="<cti:url value="/JavaScript/yukon.cookies.js"/>"></script>
-<script src="<cti:url value="/JavaScript/yukon.dialog.js"/>"></script>
 
 <cti:css key="yukon.web.login.loginStyles"/>
 </head>

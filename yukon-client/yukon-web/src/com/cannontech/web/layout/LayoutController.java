@@ -100,7 +100,7 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_CHOSEN.getPath());
         builder.add(JsLibrary.JQUERY_SCROLLTO.getPath());
         
-        // add the other standard libs
+        // Add Yukon common libraries
         builder.add(JsLibrary.YUKON.getPath());
         builder.add(JsLibrary.YUKON_ALERTS.getPath());
         builder.add(JsLibrary.YUKON_CONFIRM.getPath());
@@ -108,9 +108,10 @@ public class LayoutController {
         builder.add("/JavaScript/yukon.data.updater.js");
         builder.add("/JavaScript/yukon.dropdown.js");
         builder.add("/JavaScript/yukon.cookies.js");
-        builder.add("/JavaScript/yukon.dialog.js");
         builder.add("/JavaScript/yukon.analytics.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
+        builder.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath());
+        builder.add(JsLibrary.YUKON_PICKER.getPath());
         builder.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath());
         
         layoutScriptFiles = builder.build();

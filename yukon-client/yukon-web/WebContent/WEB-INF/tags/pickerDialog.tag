@@ -32,10 +32,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/yukon.picker.js"/>
-<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-<cti:includeScript link="/JavaScript/yukon.tables.js"/>
-
 <c:set var="containerArg" value="null"/>
 <c:if test="${!empty  pageScope.container}">
     <c:set var="containerArg" value="$('#${pageScope.container}')"/>

@@ -101,18 +101,18 @@ function setupRefreshStuff(url, refreshPeriod) {
 
         // FANCY HIGHLIGHTING
         if (json.importDataCount !== parseInt($('#prevImportDataCount').val()), 10) {
-            flashYellow($('#importDataCount')[0], 2);
+            $('#importDataCount').flashYellow(2);
         }
         $('#prevImportDataCount').val(json.importDataCount);
         
         if (json.failureCount > failed_table.rows.length - 1) {
-            flashYellow($('#failureCount')[0], 2);
+            $('#failureCount').flashYellow(2);
         }
         if (json.pendingCommsCount > pendingComm_table.rows.length - 1) {
-            flashYellow($('#pendingCommsCount')[0], 2);
+            $('#pendingCommsCount').flashYellow(2);
         }
         if (json.failedCommsCount > failedComm_table.rows.length - 1) {
-            flashYellow($('#failedCommsCount')[0], 2);
+            $('#failedCommsCount').flashYellow(2);
         }
 
         // rebuild failures table

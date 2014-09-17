@@ -11,6 +11,7 @@ yukon.namespace('yukon.ui.util');
 yukon.ui.util = (function () {
     var mod;
     mod = {
+            
         yukonGeneral_moveOptionPositionInSelect : function (selectElement, direction) {
             //this contains all the selected indexes
             var index = [],
@@ -111,6 +112,7 @@ yukon.ui.util = (function () {
 
             return true;
         },
+        
         yukonGeneral_addOptionToTopOfSelect : function (selectObj,optValue,optText) {
             var newOpt,
                 firstOptGroup,
@@ -179,12 +181,14 @@ yukon.ui.util = (function () {
                 $('#cancelButton' + ccid).prop('disabled', false);
             });
         },
+        
         showCancelResult : function (ccid, msg) {
 
             $('#waitImg' + ccid).hide();
             $('#cancelArea' + ccid).html(msg);
             $('#cancelArea' + ccid).show();
         },
+        
         // pass table css selectors
         // columns in each table will be made to have the same width as the widest element in that column across all tables
         alignTableColumnsByTable : function () {
@@ -225,10 +229,82 @@ yukon.ui.util = (function () {
                 });
             });
         },
+        
+        createHtmlTableFromJson: function (dataArray, outputCols, rowCallback) {
+            var resultTable = document.createElement("table"),
+                resultTableHead = document.createElement("thead"),
+                resultTableBody,
+                headRow,
+                col,
+                headCell,
+                i,
+                tableRow,
+                tableCell,
+                node,
+                link,
+                linkFuncGenerate,
+                linkFunc,
+                dataString,
+                displayDataString,
+                maxLen,
+                text;
+                
+            resultTable.appendChild(resultTableHead);
+            headRow = document.createElement("tr");
+            resultTableHead.appendChild(headRow);
+            for (col = 0; col < outputCols.length; col++) {
+                headCell = document.createElement("th");
+                headCell.appendChild(document.createTextNode(outputCols[col].title));
+                headRow.appendChild(headCell);
+            }
+            resultTableBody = document.createElement("tbody");
+            resultTable.appendChild(resultTableBody);
+            for (i = 0; i < dataArray.length; i++) {
+                tableRow = document.createElement("tr");
+                (rowCallback || yukon.nothing)(tableRow, dataArray[i]);
+                resultTableBody.appendChild(tableRow);
+                for (col = 0; col < outputCols.length; col++) {
+                    tableCell = document.createElement("td");
+                    node = tableCell;
+                    tableRow.appendChild(tableCell);
+                    if (outputCols[col].link) {
+                        link = document.createElement("a");
+                        node = link;
+                        tableCell.appendChild(link);
+                        linkFuncGenerate = outputCols[col].link;
+                        linkFunc = linkFuncGenerate(dataArray[i], link);
+        
+                        if (linkFunc !== null) {
+                            link.setAttribute("href", "javascript:void(0)");
+                            $(link).on('click', linkFunc);
+                        }
+                    }
+        
+                    dataString = dataArray[i][outputCols[col].field];
+                    if (dataString === undefined) {
+                        dataString = outputCols[col].field;
+                    }
+                    displayDataString = dataString;
+                    maxLen = outputCols[col].maxLen;
+                    if (maxLen && dataString.length > maxLen) {
+                        displayDataString = dataString.truncate(maxLen, '...');
+                        tableCell.setAttribute("title", dataString);
+                    }
+        
+                    //in case we want to display static text but maintain a value
+                    text = document.createTextNode(displayDataString);
+                    node.appendChild(text);
+                }
+            }
+            
+            return resultTable;
+        },
+        
         generateMessageCode : function (prefix, input) {
             // This regular expression must match the one in MessageCodeGenerator.java.
             return prefix + input.replace(/\W+/g, '');
         },
+        
         /**
          * This function takes in an inputElement and an inputType and changes the
          * current node over to the desired type.
@@ -245,6 +321,7 @@ yukon.ui.util = (function () {
             input2.type = inputType;
             input.parentNode.replaceChild(input2,input);
         },
+        
         getHeaderJSON : function (xhr) {
             var json;
             try { json = xhr.getResponseHeader('X-Json'); }
@@ -276,6 +353,7 @@ yukon.ui.util = (function () {
          * (which happens after the window has loaded completely).
          */
         loadComplete : false,
+        
         /**
          * Use this method to call a function after a page has been completely loaded.  If this method
          * is called after the window has already been loaded, the method is called immediately.
@@ -443,8 +521,8 @@ $(function () { yukon.tag.scheduledFileExportInputs.init(); });
 
 /**
  * Flashes the background of an element 'Yukon yellow'
- * @param element    [DOM node] we want to give a temporary splash of yellow
- * @param duration  [float] how long the effect should last in seconds
+ * @param {DOM node} element - We want to give a temporary splash of yellow
+ * @param {float} [duration] - How long the effect should last in seconds.
  */
 function flashYellow(element, duration) {
     $(element).flashYellow(duration);

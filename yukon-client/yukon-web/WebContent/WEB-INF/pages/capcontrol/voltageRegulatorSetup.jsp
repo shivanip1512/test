@@ -1,13 +1,9 @@
-<%@ page import="com.cannontech.web.editor.CapControlForm"%>
-<%@ page import="com.cannontech.web.util.JSFParamUtil"%>
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-
-<cti:includeScript link="/JavaScript/yukon.picker.js"/>
-<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-<cti:includeScript link="/JavaScript/yukon.tables.js"/>
+<%@ page import="com.cannontech.web.editor.CapControlForm" %>
+<%@ page import="com.cannontech.web.util.JSFParamUtil" %>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <f:subview id="regulatorView" rendered="#{capControlForm.visibleTabs['Regulator']}">
     <x:htmlTag value="fieldSet" styleClass="fieldSet">

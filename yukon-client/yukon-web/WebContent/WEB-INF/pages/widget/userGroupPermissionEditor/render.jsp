@@ -2,8 +2,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/yukon.tables.js" />
-
 <c:set var="pickerId" value="${widgetParameters.widgetId}_${widgetParameters.pickerType}" scope="page"/>
 <c:set var="addPao" value="addPao_${pageScope.pickerId}" scope="page"/>
 <c:set var="addPaoSpanId" value="addPaoSpan_${pageScope.pickerId}" scope="page"/>

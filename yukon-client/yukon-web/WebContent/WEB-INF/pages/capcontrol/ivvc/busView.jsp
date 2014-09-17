@@ -9,9 +9,6 @@
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
     
-    <cti:includeScript link="/JavaScript/yukon.tables.js" />
-    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-    <cti:includeScript link="/JavaScript/yukon.picker.js" />
     <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
     
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>

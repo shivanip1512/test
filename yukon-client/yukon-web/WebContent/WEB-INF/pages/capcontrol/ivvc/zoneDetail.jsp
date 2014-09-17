@@ -11,10 +11,7 @@
 
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
-    <cti:includeScript link="/JavaScript/yukon.tables.js" />
-    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
     <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
-    <cti:includeScript link="/JavaScript/yukon.picker.js" />
     <cti:includeScript link="/JavaScript/yukon.da.ivvc.js" />
 
     <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>

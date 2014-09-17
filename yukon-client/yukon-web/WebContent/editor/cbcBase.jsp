@@ -18,7 +18,6 @@
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
-<cti:includeScript link="/JavaScript/yukon.tables.js"/>
 <cti:includeScript link="/JavaScript/yukon.da.js"/>
 <cti:includeScript link="/resources/js/lib/tomahawk.hacks/popcalendar.js"/>
 

@@ -9,10 +9,7 @@
 <cti:standardPage module="capcontrol" page="scheduleAssignments">
     <%@include file="/capcontrol/capcontrolHeader.jspf" %>
 
-    <cti:includeScript link="/JavaScript/yukon.da.schedules.js" />
-    <cti:includeScript link="/JavaScript/yukon.tables.js" />
-    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-    <cti:includeScript link="/JavaScript/yukon.picker.js" />
+    <cti:includeScript link="/JavaScript/yukon.da.schedules.js"/>
     
     <cti:url value="/capcontrol/schedule/startMultiScheduleAssignmentPopup" var="startAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />

@@ -17,7 +17,6 @@
 </cti:isPropertyFalse>
 
 <!-- Included JavaScript -->
-<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 <cti:includeScript link="/JavaScript/yukon.da.js"/>
 <cti:includeScript link="/JavaScript/yukon.da.command.js"/>
 <cti:includeScript link="/JavaScript/yukon.da.updaters.js"/>

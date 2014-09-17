@@ -12,7 +12,6 @@
 <%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
 <%@ attribute name="container" description="container type: 'box' or 'section'. Default:'box'" %>
 
-<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 <cti:includeScript link="/JavaScript/yukon.widget.js"/>
 <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
 

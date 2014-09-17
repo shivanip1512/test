@@ -8,8 +8,6 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-    <cti:includeScript link="/JavaScript/yukon.tables.js" />
-
     <table class="results-table drivingDirections">
         <thead>
             <tr id="header">

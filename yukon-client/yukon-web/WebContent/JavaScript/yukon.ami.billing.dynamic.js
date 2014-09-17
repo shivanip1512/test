@@ -201,7 +201,7 @@ function saveButton () {
         //check if it's less than 2 sec = 2000 ms
         if ( currTime - errorHighlight >= 2000) {
             //do highlighting and set new date 
-            flashYellow(err, 2); // TODO FIXME
+            err.flashYellow(2);
             errorHighlight = new Date();
         }
     }
@@ -465,7 +465,7 @@ function updatePreview () {
         //do nothing
     } else {
         //do highlighting and set new date 
-        flashYellow(theDiv);
+        theDiv.flashYellow();
         prevHighlight = new Date();
     }
 

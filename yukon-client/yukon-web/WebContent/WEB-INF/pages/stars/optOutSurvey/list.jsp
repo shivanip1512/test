@@ -9,9 +9,6 @@
 <cti:standardPage module="operator" page="surveyList">
 
 <dt:pickerIncludes/>
-<cti:includeScript link="/JavaScript/yukon.picker.js"/>
-<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-<cti:includeScript link="/JavaScript/yukon.tables.js"/>
 <cti:includeScript link="/JavaScript/yukon.surveys.optOut.js"/>
 
 <cti:msg2 var="addTitle" key=".addSurveyTitle"/>

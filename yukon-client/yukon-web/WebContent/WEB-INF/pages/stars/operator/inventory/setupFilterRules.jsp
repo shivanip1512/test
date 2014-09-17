@@ -9,10 +9,6 @@
 
 <cti:standardPage module="operator" page="filterSelection">
 
-    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
-    <cti:includeScript link="/JavaScript/yukon.tables.js" />
-    <cti:includeScript link="/JavaScript/yukon.picker.js" />
-
     <cti:msg key="yukon.common.calendarcontrol.months" var="months" />
     <cti:msg key="yukon.common.calendarcontrol.days" var="days" />
     <cti:msg key="yukon.common.calendarcontrol.clear" var="clear" />
