@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE( test_getValueVectorFromBits_bEndian_throw )
     }
     catch(Test_DeviceCommand::CommandException &ex)
     {
-        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::Abnormal);
+        BOOST_CHECK_EQUAL(ex.error_code,        ClientErrors::InvalidData);
         BOOST_CHECK_EQUAL(ex.error_description, "Payload too small");
     }
 }
