@@ -19,7 +19,7 @@ public interface LoadControlProgramDao {
      * @throws NotFoundException if no program exists for given programName.
      */
     public int getProgramIdByProgramName(String programName) throws NotFoundException;
-    
+
     /**
      * Return id of scenario for given scenarioName. Throws IllegalArgumentException if no scenario
      * exists for given scenarioName.
@@ -28,13 +28,13 @@ public interface LoadControlProgramDao {
      * @throws NotFoundException if no scenario exists for given scenarioName.
      */
     public int getScenarioIdForScenarioName(String scenarioName) throws NotFoundException;
-    
+
     /**
      * Returns list of a program ids.
      * @return
      */
     public List<Integer> getAllProgramIds();
-    
+
     /**
      * Find all program id linked to given scenario. Returns empty list if no programs are linked to scenario.
      * @param scenarioName
@@ -43,21 +43,13 @@ public interface LoadControlProgramDao {
     public List<Integer> getProgramIdsByScenarioId(int scenarioId);
 
     /**
-     * Find all program id linked to given scenario. Returns empty list if no programs are linked to scenario.
-     * @param scenarioName
-     * @return
-     * @throws NotFoundException if no scenario exists for given scenarioName.
-     */
-    public List<Integer> getProgramIdsByScenarioName(String scenarioName) throws NotFoundException;
-    
-    /**
      * Get starting gear number for given program and scenario id.
      * @param programId
      * @param scenarioId
      * @return
      */
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId);
-    
+
     /**
      * Get a list of ProgramStartingGear for given scenario id.
      * Each ProgramStartingGear contains the program name, and the name and number of it's starting gear.
@@ -65,7 +57,7 @@ public interface LoadControlProgramDao {
      * @return
      */
     public List<ProgramStartingGear> getProgramStartingGearsForScenarioId(int scenarioId);
-    
+
     /**
      * Get a list of ProgramControlHistory.
      * Each ProgramControlHistory contains information about the program start/stop.
@@ -74,7 +66,7 @@ public interface LoadControlProgramDao {
      * @return
      */
     public List<ProgramControlHistory> getAllProgramControlHistory(Date startDateTime, Date stopDateTime);
-    
+
     /**
      * Get a list of ProgramControlHistory for a given program id.
      * Each ProgramControlHistory contains information about the program start/stop.
@@ -99,5 +91,5 @@ public interface LoadControlProgramDao {
      * @throws NotFoundException
      */
     public int getGearNumberForGearName(int programId, String gearName) throws NotFoundException;
-    
+
 }

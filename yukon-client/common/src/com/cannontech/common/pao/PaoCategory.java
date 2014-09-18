@@ -17,7 +17,7 @@ public enum PaoCategory implements DatabaseRepresentationSource {
     CAPCONTROL(PAOGroups.STRING_CAT_CAPCONTROL, PAOGroups.CAT_CAPCONTROL),
     LOADMANAGEMENT(PAOGroups.STRING_CAT_LOADMANAGEMENT, PAOGroups.CAT_LOADCONTROL),
     SCHEDULE("Schedule", 6); // not real
-   	
+
     private final int categoryId;
     private final String dbString;
 
@@ -45,20 +45,20 @@ public enum PaoCategory implements DatabaseRepresentationSource {
         this.dbString = dbString;
         this.categoryId = categoryId;
     }
-    
+
     public String getDbString() {
         return dbString;
     }
-    
+
     public int getPaoCategoryId() {
         return categoryId;
     }
-    
+
     @Override
     public Object getDatabaseRepresentation() {
         return dbString;
     }
-    
+
     /**
      * Looks up the the PaoCategory based on the string that is stored in the
      * PAObject table.
@@ -74,31 +74,7 @@ public enum PaoCategory implements DatabaseRepresentationSource {
         Validate.notNull(paoCategory, dbString);
         return paoCategory;
     }
-    
-    /**
-     * Returns integer Id of specified PaoCategory string.
-     * @param strCategory
-     * @return If strCategory does not match a PaoCategory string, an IllegalArgumentException
-     * will be thrown by getForDbString().
-     */
-    public static int getPaoCategory(String strCategory) {
-        PaoCategory foundCategory = getForDbString(strCategory);
-        return foundCategory.getPaoCategoryId();
-    }
-    
-    /**
-     * Looks up the PaoCategory based on the integer id that is stored in the
-     * PAObject table.
-     * @param categoryId - 
-     * @return
-     * @throws IllegalArgumentException - if no match
-     */
-    public static PaoCategory getForId(int categoryId) throws IllegalArgumentException {
-        PaoCategory paoCategory = lookupById.get(categoryId);
-        Validate.notNull(paoCategory, Integer.toString(categoryId));
-        return paoCategory;
-    }
-    
+
     /**
      * Returns PaoCategory string of specified integer Id.
      * @param categoryId
@@ -109,7 +85,7 @@ public enum PaoCategory implements DatabaseRepresentationSource {
         PaoCategory foundCategory = lookupById.get(categoryId);
         return foundCategory.getDbString();
     }
-    
+
     public static String[] convertPaoCategories(Integer[] paoCategories) {
         int arrayLength = paoCategories.length;
         String[] str = new String[arrayLength];

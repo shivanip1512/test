@@ -43,7 +43,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
@@ -204,25 +203,6 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public List<LiteYukonPAObject> getLiteYukonPAObjectBy(Integer[] paoType, Integer[] paoCategory, Integer[] paoClass,
-        Integer[] pointTypes, Integer[] uOfMId) {
-
-        StringBuilder sql = new StringBuilder(litePaoSql);
-        sql.append("left outer join point p on y.paobjectid=p.paobjectid "
-            + "left outer join pointunit pu on p.pointid=pu.pointid ");
-
-        String[] pointTypesStr = PointTypes.convertPointTypes(pointTypes);
-        SqlUtil.buildInClause("where", "y", "type", paoType, sql);
-        SqlUtil.buildInClause("and", "y", "category", paoCategory, sql);
-        SqlUtil.buildInClause("and", "y", "paoclass", paoClass, sql);
-        SqlUtil.buildInClause("and", "p", "pointtype", pointTypesStr, sql);
-        SqlUtil.buildInClause("and", "pu", "uomid", uOfMId, sql);
-
-        List<LiteYukonPAObject> paos = jdbcTemplate.query(sql.toString(), litePaoRowMapper);
-        return paos;
-    }
-
-    @Override
     public List<LiteYukonPAObject> getAllCapControlSubBuses() {
         synchronized (databaseCache) {
             List<LiteYukonPAObject> allCapControlSubBuses = databaseCache.getAllCapControlSubBuses();
@@ -245,7 +225,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public String getYukonPAOName(int paoId) {        
+    public String getYukonPAOName(int paoId) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select PAOName");
@@ -461,11 +441,11 @@ public final class PaoDaoImpl implements PaoDao {
 
     @Override
     public List<LiteYukonPAObject> searchByName(final String name, final PaoClass paoClass) {
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
         sql.append("where YPO.PAOClass").eq_k(paoClass);
         sql.append("and upper(PointName) like").appendArgument("%" + name.toUpperCase() + "%");
-        
+
         List<LiteYukonPAObject> paoList = jdbcTemplate.query(sql, litePaoRowMapper);
         return paoList;
     }

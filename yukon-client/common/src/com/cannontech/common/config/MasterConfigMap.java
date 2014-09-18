@@ -14,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
-import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.ReadableDuration;
 import org.joda.time.ReadablePeriod;
@@ -25,7 +24,7 @@ import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.MasterConfigCryptoUtils;
 
 public class MasterConfigMap implements ConfigurationSource {
-    private final Map<String, String> configMap = new HashMap<String, String>();
+    private final Map<String, String> configMap = new HashMap<>();
     private File masterCfgFile;
     private final Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
 
@@ -47,7 +46,7 @@ public class MasterConfigMap implements ConfigurationSource {
         Pattern keyCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)\\s*(#.*)*");
         Pattern extCharPattern = Pattern.compile("[^\\p{Print}\n\t\r]");
         Pattern spacePattern = Pattern.compile("\\p{Zs}");
-        
+
         InputStream inputStream = FileUtils.openInputStream(masterCfgFile);
         // Don't specify an encoding - read using the default system encoding.
         BufferedReader masterCfgReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -60,7 +59,7 @@ public class MasterConfigMap implements ConfigurationSource {
         String line = null;
         int lineNum = 0;
 
-        while ((line = masterCfgReader.readLine()) != null) { 
+        while ((line = masterCfgReader.readLine()) != null) {
             lineNum++;
             Matcher extCharMatcher = extCharPattern.matcher(line);
 
@@ -82,7 +81,7 @@ public class MasterConfigMap implements ConfigurationSource {
                     tempWriter.append("#(DEPRECATED) ").append(line);
                     log.warn("Line " + lineNum + ": Deprecated key found while reading Master Config file: " + key + ". Marking as disabled in master.cfg");
                 } else {
-                    if (MasterConfigStringKeysEnum.isEncryptedKey(key) 
+                    if (MasterConfigStringKeysEnum.isEncryptedKey(key)
                             && !MasterConfigCryptoUtils.isEncrypted(value)) {
                         // Found a value that needs to be encrypted
                         updateFile = true;
@@ -118,7 +117,7 @@ public class MasterConfigMap implements ConfigurationSource {
     public String getRequiredString(MasterConfigStringKeysEnum key) throws UnknownKeyException {
         return getRequiredString(key.name());
     }
-    
+
     @Override
     public String getRequiredString(String key) throws UnknownKeyException {
         verifyKey(key);
@@ -194,7 +193,7 @@ public class MasterConfigMap implements ConfigurationSource {
 
         return Boolean.parseBoolean(configMap.get(key));
     }
-    
+
     @Override
     public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue) {
     	String string = getString(key.name());
@@ -220,32 +219,22 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public Period getPeriod(String key, ReadablePeriod defaultValue, DurationFieldType duationFieldType) {
-        String string = getString(key);
-        if (StringUtils.isBlank(string)) {
-            return defaultValue.toPeriod();
-        }
-        Period result = SimplePeriodFormat.getConfigPeriodFormatterWithFallback(duationFieldType).parsePeriod(string);
-        return result;
-    }
-
-    @Override
     public Duration getDuration(String key, ReadableDuration defaultValue) {
         return getPeriod(key, defaultValue.toPeriod()).toStandardDuration();
     }
 
     /**
      * Returns the value from the configuration map.
-     * 
-     * If the value isn't found will return null. If the value is encrypted will attempt to 
+     *
+     * If the value isn't found will return null. If the value is encrypted will attempt to
      * decrypt it and return the plaintext value.
-     * 
+     *
      * @param key
      * @return value if found. Null if not found
      */
     private String getValueFromMap(String key) {
         String value = configMap.get(key);
-        if (MasterConfigStringKeysEnum.isEncryptedKey(key) && 
+        if (MasterConfigStringKeysEnum.isEncryptedKey(key) &&
                 MasterConfigCryptoUtils.isEncrypted(value)) {
             // Found an encrypted value
             value = MasterConfigCryptoUtils.decryptValue(value);
@@ -256,7 +245,7 @@ public class MasterConfigMap implements ConfigurationSource {
 
         return value;
     }
-    
+
     /**
      * Throws IllegalArgumentException if key is a deprecated master config setting.
      */

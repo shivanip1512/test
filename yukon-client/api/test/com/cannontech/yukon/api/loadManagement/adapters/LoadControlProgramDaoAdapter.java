@@ -33,11 +33,6 @@ public class LoadControlProgramDaoAdapter implements LoadControlProgramDao {
     }
 
     @Override
-    public List<Integer> getProgramIdsByScenarioName(String scenarioName) throws NotFoundException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {
         throw new UnsupportedOperationException("Not Implemented");
     }

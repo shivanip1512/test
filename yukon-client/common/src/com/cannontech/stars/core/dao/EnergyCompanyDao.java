@@ -21,11 +21,6 @@ public interface EnergyCompanyDao {
     };
 
     /**
-     * Gets the ids of all energy companies that have inventory enrolled in the specified group.
-     */
-    List<Integer> getEnergyCompanyIdsByGroupEnrollment(int lmGroupId);
-
-    /**
      * Get energy company associated with this operator user.
      *
      * If this user is a residential customer, or no energy company is found throws

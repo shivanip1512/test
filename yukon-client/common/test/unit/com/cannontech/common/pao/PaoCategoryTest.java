@@ -15,7 +15,7 @@ import com.google.common.collect.Sets;
 public class PaoCategoryTest {
 
     private Set<PaoCategory> allCategories;
-    
+
     @Before
     public void setup() {
         allCategories = EnumSet.allOf(PaoCategory.class);
@@ -27,7 +27,7 @@ public class PaoCategoryTest {
         Set<PaoCategory> illegalTypes = Sets.newHashSet();
         PaoCategory nextElement = null;
         Integer deviceId = null;
-        
+
         while (deviceIter.hasNext()) {
             nextElement = deviceIter.next();
             deviceId = nextElement.getPaoCategoryId();
@@ -40,25 +40,4 @@ public class PaoCategoryTest {
                  " does not match PaoCategory Strings.");
         }
     }
-
-    @Test
-    public void testGetPaoCategoryString() {
-        Iterator<PaoCategory> deviceIter = allCategories.iterator();
-        Set<PaoCategory> illegalTypes = Sets.newHashSet();
-        PaoCategory nextElement = null;
-        String deviceString = null;
-        
-        while (deviceIter.hasNext()) {
-            nextElement = deviceIter.next();
-            deviceString = nextElement.getDbString();
-            if (nextElement.getPaoCategoryId() != PaoCategory.getPaoCategory(deviceString)) {
-                illegalTypes.add(nextElement);
-            }
-        }
-        if (!illegalTypes.isEmpty()) {
-            fail("PaoCategory: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) +
-                 " does not match PaoCategory IDs.");
-        }
-    }
-
 }

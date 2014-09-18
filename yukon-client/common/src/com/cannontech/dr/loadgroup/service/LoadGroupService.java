@@ -16,7 +16,7 @@ public interface LoadGroupService {
 
     public DisplayablePao getLoadGroup(int loadGroupId);
     public LMDirectGroupBase getGroupForPao(YukonPao from);
-    
+
     public DatedObject<? extends LMGroupBase> findDatedGroup(int loadGroupId);
 
     public List<DisplayablePao> findLoadGroupsForMacroLoadGroup(
@@ -29,6 +29,4 @@ public interface LoadGroupService {
     public void sendShed(int loadGroupId, int durationInSeconds);
     public void sendRestore(int loadGroupId);
     public void setEnabled(int loadGroupId, boolean isEnabled);
-    
-    public boolean isEnabled(int loadGroupId);
 }

@@ -13,14 +13,12 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
  */
 public interface YukonListDao {
 
-    public boolean areSameInYukon(int entryID1, int entryID2);
-
     public YukonListEntry getYukonListEntry(YukonSelectionList list, String entryText);
-    
+
     public YukonListEntry getYukonListEntry(int listEntryID);
 
     public YukonSelectionList getYukonSelectionList(int listID);
-    
+
     /**
      * This method returns all the YukonSelectionList objects for a given energy company.
      */

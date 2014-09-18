@@ -36,11 +36,11 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Autowired private LoadControlClientConnection loadControlClientConnection = null;
     @Autowired private FilterDao filterDao;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
-    
+
     @Override
     public LMDirectGroupBase getGroupForPao(YukonPao from) {
         LMDirectGroupBase group = null;
-        DatedObject<LMGroupBase> datedGroup = 
+        DatedObject<LMGroupBase> datedGroup =
             loadControlClientConnection.getDatedGroup(from.getPaoIdentifier().getPaoId());
         if (datedGroup != null && datedGroup.getObject() instanceof LMDirectGroupBase) {
             group = (LMDirectGroupBase) datedGroup.getObject();
@@ -68,7 +68,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     public DisplayablePao getLoadGroup(int loadGroupId) {
         return loadGroupDao.getById(loadGroupId);
     }
-    
+
     @Override
     public SearchResults<DisplayablePao> filterGroups(
             UiFilter<DisplayablePao> filter, Comparator<DisplayablePao> sorter,
@@ -77,7 +77,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
         SearchResults<DisplayablePao> searchResult =
             filterDao.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
-    }    
+    }
 
     @Override
     public void sendShed(int loadGroupId, int durationInSeconds) {
@@ -85,9 +85,9 @@ public class LoadGroupServiceImpl implements LoadGroupService {
         Message msg = new LMCommand(LMCommand.SHED_GROUP, loadGroupId,
                                     durationInSeconds, 0.0);
         loadControlClientConnection.write(msg);
-        
+
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
-        demandResponseEventLogService.loadGroupShed(loadGroup.getName(), 
+        demandResponseEventLogService.loadGroupShed(loadGroup.getName(),
                                                     durationInSeconds);
     }
 
@@ -109,7 +109,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                 : LMCommand.DISABLE_GROUP;
         Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);
         loadControlClientConnection.write(msg);
-        
+
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
         String name = loadGroup.getName();
         if(isEnabled) {
@@ -118,13 +118,6 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             demandResponseEventLogService.loadGroupDisabled(name);
         }
     }
-    
-    @Override
-    public boolean isEnabled(int loadGroupId) {
-        LMGroupBase group = this.loadControlClientConnection.getGroup(loadGroupId);
-        Boolean disableFlag = group.getDisableFlag();
-        return !disableFlag;
-    }
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -132,7 +125,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             @Override
             public SqlFragmentSource getBaseQuery() {
                 SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append("SELECT paObjectId, paoName, type FROM yukonPAObject"); 
+                retVal.append("SELECT paObjectId, paoName, type FROM yukonPAObject");
                 retVal.append("WHERE category = 'DEVICE' AND paoClass = 'GROUP'");
                 return retVal;
             }

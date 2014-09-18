@@ -1,6 +1,6 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -201,7 +201,6 @@ import com.cannontech.core.users.model.PreferenceShowHide;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.DateRowMapper;
-import com.cannontech.database.InstantRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.LongRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate.CascadeMode;
@@ -247,7 +246,6 @@ import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.database.dbchange.ChangeSequenceStrategyEnum;
 import com.cannontech.dr.ThermostatRampRateValues;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
-import com.cannontech.dr.assetavailability.DeviceRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCount;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
@@ -301,7 +299,7 @@ import com.google.common.base.Joiner;
 
 /**
  * Tests objects that we claim are immutable to assert they remain immutable.
- * 
+ *
  * This only tests a few qualities of classes to determine if they are immutable. Although, we cannot
  * comprehensively determine if the objects are immutable (maybe its possible, but not trivial) which means if
  * an object passes this test it's possible the object is still mutable.
@@ -420,7 +418,7 @@ public class SimpleImmutabilityTest {
         );
          // @formatter:on
     }
-    
+
     @Test
     public void test_database() {
          // @formatter:off
@@ -442,7 +440,6 @@ public class SimpleImmutabilityTest {
             Disconnect410State.class,
             EncodingType.class,
             GraphRenderers.class,
-            InstantRowMapper.class,
             IntegerRowMapper.class,
             LiteFactory.class,
             LiteTypes.class,
@@ -475,7 +472,7 @@ public class SimpleImmutabilityTest {
         );
          // @formatter:on
     }
-    
+
     @Test
     public void test_dr() {
         // @formatter:off
@@ -486,7 +483,6 @@ public class SimpleImmutabilityTest {
             CreateSetRequest.class,
             DemandResponseRef.class,
             DeviceDataResponse.class,
-            DeviceRelayCommunicationTimes.class,
             DrRestoreRequest.class,
             EcobeeDeviceReading.class,
             EcobeeDeviceReadings.class,

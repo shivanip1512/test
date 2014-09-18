@@ -29,7 +29,7 @@ public class EnergyCompanyDaoAdapter implements EnergyCompanyDao {
     public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
         throw new UnsupportedOperationException("not implemented");
     }
-    
+
     @Override
     public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
         throw new UnsupportedOperationException("not implemented");
@@ -122,11 +122,6 @@ public class EnergyCompanyDaoAdapter implements EnergyCompanyDao {
 
     @Override
     public List<Integer> getOperatorUserIds(EnergyCompany energyCompany) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
-    public List<Integer> getEnergyCompanyIdsByGroupEnrollment(int lmGroupId) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

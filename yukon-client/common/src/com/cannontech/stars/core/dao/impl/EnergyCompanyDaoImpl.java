@@ -98,19 +98,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             }
         });
     }
-    
-    @Override
-    public List<Integer> getEnergyCompanyIdsByGroupEnrollment(int lmGroupId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT EnergyCompanyId");
-        sql.append("FROM EcToInventoryMapping ecm");
-        sql.append("JOIN LmHardwareConfiguration lmhc ON ecm.InventoryId = lmhc.InventoryId");
-        sql.append("WHERE lmhc.AddressingGroupId").eq(lmGroupId);
-        List<Integer> energyCompanyIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
 
-        return energyCompanyIds;
-    }
-    
     @Override
     public EnergyCompany getEnergyCompanyByAccountId(int accountId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
@@ -132,7 +120,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
         }
     }
-    
+
     @Override
     public EnergyCompany getEnergyCompany(LiteYukonUser user) {
         try {
@@ -158,7 +146,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     @Override
     public EnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForInventoryId(inventoryId);
-        EnergyCompany energyCompany = getEnergyCompany(energyCompanyId); 
+        EnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
         return energyCompany;
     }
 
@@ -180,7 +168,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("FROM ECToGenericMapping");
         sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
         sql.append(  "AND EnergyCompanyId").eq(energyCompanyId);
-        
+
         return jdbcTemplate.query(sql, RowMapper.INTEGER);
     }
 
@@ -195,7 +183,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
         return jdbcTemplate.queryForInt(sql);
     }
-    
+
     @Deprecated
     @Override
     public Integer findParentEnergyCompany(int energyCompanyId) {
@@ -204,7 +192,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         } catch (IncorrectResultSizeDataAccessException e) {
             // find
         }
-        
+
         return null;
     }
 
@@ -214,7 +202,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("SELECT COUNT(EnergyCompanyId)");
         sql.append("FROM EnergyCompany");
         sql.append("WHERE UserId").eq(operatorLoginId);
-        
+
         int count = jdbcTemplate.queryForInt(sql);
         return count > 0;
     }
@@ -273,7 +261,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     public List<LiteYukonPAObject> getAllRoutes(EnergyCompany energyCompany) {
         if (ecSettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getId())) {
             List<LiteYukonPAObject> result = IterableUtils.safeList(paoDao.getAllLiteRoutes());
-            return result; 
+            return result;
         }
 
         List<LiteYukonPAObject> inheritedRoutes = ImmutableList.of();
@@ -338,13 +326,13 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("UPDATE EnergyCompany");
         sql.append("SET Name").eq(name);
         sql.append("WHERE EnergyCompanyId").eq_k(ecId);
-        
+
         jdbcTemplate.update(sql);
-        
+
         dbChangeManager.processDbChange(ecId, DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,  DBChangeMsg.CAT_ENERGY_COMPANY,
                                         DBChangeMsg.CAT_ENERGY_COMPANY, DbChangeType.UPDATE);
     }
-    
+
     @Override
     public List<Integer> getOperatorUserIds(EnergyCompany energyCompany) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -354,7 +342,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         List<Integer> list = jdbcTemplate.query(sql, RowMapper.INTEGER);
         return list;
     }
-    
+
     private List<LiteYukonPAObject> getRoutes(EnergyCompany energyCompany) {
         List<Integer> routeIDs = getRouteIds(energyCompany.getId());
         List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());
@@ -365,7 +353,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
         return Collections.unmodifiableList(routeList);
     }
-    
+
     /**
      * Return energy company id for customer account or default energy company's id
      */
@@ -403,7 +391,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
         return DEFAULT_ENERGY_COMPANY_ID;
     }
-    
+
     private synchronized Map<Integer, EnergyCompany> getEnergyCompanies() {
         if (energyCompanies == null) {
             SqlStatementBuilder sql = new SqlStatementBuilder();

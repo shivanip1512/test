@@ -64,18 +64,6 @@ public enum PaoClass implements DatabaseRepresentationSource {
     }
 
     /**
-     * Returns PaoClass string of specified int ID.
-     * @param classId
-     * @return If classId does not match an integer ID, an IllegalArgumentException
-     * will be thrown by getForId().
-     */
-    public static String getPaoClass(int classId) {
-        PaoClass foundClass = getForId(classId);
-        return foundClass.getDbString();
-    }
-
-
-    /**
      * Looks up the the PaoClass based on the string that is stored in the
      * PAObject table.
      * @param dbString - type name to lookup
@@ -89,18 +77,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
         Validate.notNull(paoClass, dbString);
         return paoClass;
     }
-    
-    /**
-     * Return integer ID of specified PaoClass string.
-     * @param stringId
-     * @return If stringId does not match a PaoClass string, an IllegalArgumentException
-     * will be thrown by getForDbString(). 
-     */
-    public static int getPaoClass(String stringId) {
-        PaoClass foundClass = getForDbString(stringId);
-        return foundClass.getPaoClassId();
-    }
-    
+
     public int getPaoClassId() {
         return paoClassId;
     }
@@ -108,7 +85,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
     public String getDbString() {
         return dbString;
     }
-    
+
     @Override
     public Object getDatabaseRepresentation() {
         return dbString;
