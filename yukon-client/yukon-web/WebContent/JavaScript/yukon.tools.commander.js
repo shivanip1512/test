@@ -39,6 +39,14 @@ yukon.tools.commander = (function () {
     
     _initialized = false,
     
+    /** Update the common commands dropdown with for the selected pao. */
+    _updateCommandsForPao = function (paoId) {
+        $.getJSON('commander/commands?' + $.param({ paoId: paoId }))
+        .done(function (commands) {
+            _updateCommonCommands(commands);
+        });
+    },
+    
     /**
      * Replace the options on the common commands select with the supplied commands.
      * @param {Object[]} commands - An array of command objects used to build html option elements.
@@ -141,7 +149,7 @@ yukon.tools.commander = (function () {
                 contentType: 'application/json',
                 data: JSON.stringify(Object.keys(_pending)),
                 dataType: 'json'
-            }).done(function (requests, textStatus, jqXHR) {
+            }).done(function (requests, status, xhr) {
                 
                 var req, resp, i = 0, j = 0;
                 
@@ -195,18 +203,20 @@ yukon.tools.commander = (function () {
         // Do some validation before we fire a request
         if (!params.command) {
             valid = false;
-            field.addClass('animated flash error')
-            .one(yg.events.animationend, function() { $(this).removeClass('animated flash error'); });
+            field.addClass('animated shake-subtle error')
+            .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
         }
         if (!params.paoId && (type === 'DEVICE' || type === 'LOAD_GROUP')) {
             valid = false;
             picker = type === 'DEVICE' ? $('.js-device-picker') : $('.js-lm-group-picker');
-            picker.addClass('animated flash error')
-            .one(yg.events.animationend, function() { $(this).removeClass('animated flash error'); });
+            picker.addClass('animated shake-subtle')
+            .one(yg.events.animationend, function() { 
+                $(this).removeClass('animated shake-subtle error').find('.b-label').removeClass('error'); 
+            }).find('.b-label').addClass('error');
         } else if ((type === 'EXPRESSCOM' || type === 'VERSACOM') && !params.serialNumber) {
             valid = false;
-            $('#serial-number').addClass('animated flash error')
-            .one(yg.events.animationend, function() { $(this).removeClass('animated flash error'); });
+            $('#serial-number').addClass('animated shake-subtle error')
+            .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
         }
         
         if (valid) {
@@ -217,14 +227,14 @@ yukon.tools.commander = (function () {
                 url: 'commander/execute',
                 data: params,
                 dataType: 'json'
-            }).done(function (result, textStatus, jqXHR) {
+            }).done(function (result, status, xhr) {
                 for (var i in result.requests) {
                     _logRequest(result.requests[i].request, result.requests[i].requestText);
                 }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
+            }).fail(function (xhr, status, errorThrown) {
                 var 
-                requests = jqXHR.responseJSON.requests,
-                reason = jqXHR.responseJSON.reason;
+                requests = xhr.responseJSON.requests,
+                reason = xhr.responseJSON.reason;
                 
                 for (var i in requests) {
                     _logRequest(requests[i].request, requests[i].requestText);
@@ -260,10 +270,10 @@ yukon.tools.commander = (function () {
             
             /** User clicked the device target buttons, update the common commands. */
             $('#target-device-btn').click(function (ev) {
-                var input = $('#device-row input[type="hidden"]').first();
-                if (input.val() !== '') {
+                var paoId = $('#device-row input[type="hidden"]').first().val();
+                if (paoId) {
                     // We have picked a device previously.
-                    mod.updateCommandsForPao([{ paoId: input.val() }]);
+                    _updateCommandsForPao(paoId);
                 } else {
                     // No device selected yet, just nuke any commands in there.
                     $('#common-commands option:first-child').siblings().remove();
@@ -273,10 +283,10 @@ yukon.tools.commander = (function () {
             
             /** User clicked the lm group target buttons, update the common commands. */
             $('#target-lm-group-btn').click(function (ev) {
-                var input = $('#load-group-row input[type="hidden"]').first();
-                if (input.val() !== '') {
-                    // We have picked a device previously.
-                    mod.updateCommandsForPao([{ paoId: input.val() }]);
+                var paoId = $('#load-group-row input[type="hidden"]').first().val();
+                if (paoId) {
+                    // We have picked an lm group previously.
+                    _updateCommandsForPao(paoId);
                 } else {
                     // No device selected yet, just nuke any commands in there.
                     $('#common-commands option:first-child').siblings().remove();
@@ -306,22 +316,52 @@ yukon.tools.commander = (function () {
                 $('#commander-results').selectText();
             });
             
+            /** User clicked the change route button, get the popup. */
+            $('#change-route-btn').click(function (ev) {
+                var routeId = $('.js-on-route').data('routeId');
+                $.ajax({url: 'commander/route/' + routeId + '/change'})
+                .done(function(view, status, xhr) {
+                    yukon.ui.dialog($('#change-route-dialog').html(view));
+                });
+            });
+            
+            /** User chose a new route for the device.  Updated the pao. */
+            $(document).on('yukon.tools.commander.routeChange', function (ev) {
+                var paoId = $('#pao-id').val(),
+                    routeId = $('#new-route').val();
+                $.ajax({
+                    url: 'commander/' + paoId + '/route/' + routeId,
+                    type: 'post'
+                }).done(function (route, status, xhr) {
+                    $('.js-on-route').data('routeId', route.liteID).find('.value').text(route.paoName);
+                    $('#change-route-dialog').dialog('close');
+                }).fail(function () {
+                    $('#change-route-dialog').dialog('close');
+                });
+            });
+            
             setTimeout(_update, 200);
             
             _initialized = true;
         },
         
-        /** Update the common commands dropdown with for the selected pao. */
-        updateCommandsForPao: function (paos) {
-            $.getJSON('commander/commands?' + $.param({ paoId: paos[0].paoId }))
-            .done(function (commands) {
-                _updateCommonCommands(commands);
+        /** A device was chosen from the lm group picker, update the commands. */
+        lmGroupChosen: function (paos) { _updateCommandsForPao(paos[0].paoId); },
+        
+        /** A device was chosen from the device picker, update the commands and set the route if need be. */
+        deviceChosen: function (paos) {
+            var paoId = paos[0].paoId;
+            _updateCommandsForPao(paoId);
+            
+            $.ajax({ url: 'commander/route/' + paoId, dataType: 'json' })
+            .done(function (route, status, xhr) {
+                $('.js-on-route').data('routeId', route.liteID).show().find('.value').text(route.paoName);
+            }).fail(function () {
+                $('.js-on-route').hide();
             });
         },
         
-        getPending: function () {
-            return _pending;
-        }
+        getPending: function () { return _pending; }
     
     };
     

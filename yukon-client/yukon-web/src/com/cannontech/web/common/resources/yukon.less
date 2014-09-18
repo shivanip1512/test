@@ -29,6 +29,7 @@
     MODAL/BLOCKING GLASS
     CONNECTION WARNING
     FAVORITES
+    ANIMATIONS
     JUNK TO FIX
 */
 
@@ -877,65 +878,6 @@ hr.dashed,
 
 .front { z-index: 9999; }
 
-@-webkit-keyframes pulse-opacity {
-    from { opacity: 0.3; } to { opacity: 1.0; }
-}
-@keyframes pulse-opacity {
-    from { opacity: 0.3; } to { opacity: 1.0; }
-}
-.pulse-opacity {
-    -webkit-animation-name: pulse-opacity;
-            animation-name: pulse-opacity;
-            
-    -webkit-animation-duration: 1s;
-            animation-duration: 1s;
-            
-   -webkit-animation-iteration-count: infinite;
-           animation-iteration-count: infinite;
-           
-    -webkit-animation-timing-function: ease-in-out;
-            animation-timing-function: ease-in-out;
-            
-    -webkit-animation-direction: alternate;
-            animation-direction: alternate;
-}
-@-webkit-keyframes blink-shadow {
-    0% { box-shadow: 0 0 15px @red; }
-    25% { box-shadow: 0 0 15px transparent; }
-    50% { box-shadow: 0 0 15px @red; }
-    75% { box-shadow: 0 0 15px transparent; }
-    100% { box-shadow: 0 0 15px @red; }
-}
-@keyframes blink-shadow {
-    0% { box-shadow: 0 0 15px @red; }
-    25% { box-shadow: 0 0 15px transparent; }
-    50% { box-shadow: 0 0 15px @red; }
-    75% { box-shadow: 0 0 15px transparent; }
-    100% { box-shadow: 0 0 15px @red; }
-}
-.blink-shadow {
-    box-shadow: 0 0 15px @red;
-    
-    -webkit-animation-name: blink-shadow;
-            animation-name: blink-shadow;
-            
-    -webkit-animation-duration: 1s;
-            animation-duration: 1s;
-    
-    -webkit-animation-direction: alternate;
-            animation-direction: alternate;
-    
-    -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
-    
-    -webkit-animation-iteration-count: infinite; 
-            animation-iteration-count: infinite; 
-}
-.md-no-cssanimations .pulse-opacity, 
-.md-no-cssanimations .blink-shadow {
-    border: 2px solid @red;
-}
-
 .button-group-toggle .button:focus { outline: none; }
 .button-group-toggle .yes.on .b-label, 
 .button-group-toggle .yes.on:hover .b-label { 
@@ -1177,6 +1119,105 @@ li:hover .show-on-hover {
 .favorites .favorite .b-favorite, .monitor .b-subscribe {visibility: hidden;}
 .favorites .favorite:hover .b-favorite, .monitor:hover .b-subscribe {visibility: visible;}
 .page-title-bar .b-favorite {margin-top: 3px !important;}
+
+/* ANIMATIONS */
+@-webkit-keyframes pulse-opacity {
+    from { opacity: 0.3; } to { opacity: 1.0; }
+}
+@keyframes pulse-opacity {
+    from { opacity: 0.3; } to { opacity: 1.0; }
+}
+.pulse-opacity {
+    -webkit-animation-name: pulse-opacity;
+            animation-name: pulse-opacity;
+            
+    -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+            
+   -webkit-animation-iteration-count: infinite;
+           animation-iteration-count: infinite;
+           
+    -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+            
+    -webkit-animation-direction: alternate;
+            animation-direction: alternate;
+}
+@-webkit-keyframes blink-shadow {
+    0% { box-shadow: 0 0 15px @red; }
+    25% { box-shadow: 0 0 15px transparent; }
+    50% { box-shadow: 0 0 15px @red; }
+    75% { box-shadow: 0 0 15px transparent; }
+    100% { box-shadow: 0 0 15px @red; }
+}
+@keyframes blink-shadow {
+    0% { box-shadow: 0 0 15px @red; }
+    25% { box-shadow: 0 0 15px transparent; }
+    50% { box-shadow: 0 0 15px @red; }
+    75% { box-shadow: 0 0 15px transparent; }
+    100% { box-shadow: 0 0 15px @red; }
+}
+.blink-shadow {
+    box-shadow: 0 0 15px @red;
+    
+    -webkit-animation-name: blink-shadow;
+            animation-name: blink-shadow;
+            
+    -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+    
+    -webkit-animation-direction: alternate;
+            animation-direction: alternate;
+    
+    -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+    
+    -webkit-animation-iteration-count: infinite; 
+            animation-iteration-count: infinite; 
+}
+.md-no-cssanimations .pulse-opacity, 
+.md-no-cssanimations .blink-shadow {
+    border: 2px solid @red;
+}
+
+@-webkit-keyframes shake-subtle {
+    0%, 100% {
+        -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        -webkit-transform: translate3d(-2px, 0, 0);
+                transform: translate3d(-2px, 0, 0);
+    }
+
+    20%, 40%, 60%, 80% {
+        -webkit-transform: translate3d(2px, 0, 0);
+                transform: translate3d(2px, 0, 0);
+    }
+}
+
+@keyframes shake-subtle {
+    0%, 100% {
+        -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        -webkit-transform: translate3d(-2px, 0, 0);
+                transform: translate3d(-2px, 0, 0);
+    }
+
+    20%, 40%, 60%, 80% {
+        -webkit-transform: translate3d(2px, 0, 0);
+                transform: translate3d(2px, 0, 0);
+    }
+}
+
+.shake-subtle {
+    -webkit-animation-name: shake-subtle;
+            animation-name: shake-subtle;
+}
 
 /* JUNK TO FIX */
 .CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE, .CONTROLAREA_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE, .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE, .LOADGROUP_STATE_ACTIVE {color: @green;}

@@ -41,8 +41,8 @@ yukon.alerts = (function () {
         },
         
         /** Updates the alert count and animates the alert button accordingly.
-		*   @param {number} count - alert count.
-		*/
+        *   @param {number} count - alert count.
+        */
         _updateCount = function (count) {
             var button = $('#yukon-alert-button');
             button.children('.b-label').html(count);
@@ -51,17 +51,15 @@ yukon.alerts = (function () {
                 button.show();
                 if (_countInitialized && _oldCount < count) {
                     if($('[data-alert-flash]').attr('data-alert-flash') === 'true') {
-                        button.addClass('animated flash');
-                        setTimeout(function(){ 
-                                button.removeClass('flash animated'); 
-                            }, 1000);
+                        button.addClass('animated shake')
+                        .one(yg.events.animationend, function() { $(this).removeClass('animated shake'); });
                     }
                     if ($('[data-alert-sound]').attr('data-alert-sound') === 'true') {
                         $('#alert-audio')[0].play();
                     }
                 }
             } else {
-                button.removeClass('red flash animated');
+                button.removeClass('red shake animated');
                 button.hide();
             }
             _oldCount = count;
@@ -77,6 +75,7 @@ yukon.alerts = (function () {
     mod = {
         
         init: function() {
+            
             if (_initialized) {
                 return;
             }

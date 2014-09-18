@@ -119,7 +119,10 @@ public interface IDatabaseCache {
     List<LiteYukonPAObject> getAllPorts();
 
     List<LiteYukonPAObject> getAllRoutes();
-
+    
+    /** Retuns a map of route id to route. */
+    Map<Integer, LiteYukonPAObject> getAllRoutesMap();
+    
     /**
      * @return Map if stateGroupID to LiteStateGroup
      */

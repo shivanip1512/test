@@ -1,5 +1,7 @@
 package com.cannontech.common.pao;
 
+import java.util.Comparator;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -7,6 +9,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -157,4 +160,11 @@ public class PaoUtils {
             }
         };
     }
+    
+    public static final Comparator<LiteYukonPAObject> NAME_COMPARE = new Comparator<LiteYukonPAObject>() {
+        @Override
+        public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2) {
+            return o1.getPaoName().compareTo(o2.getPaoName());
+        }
+    };
 }

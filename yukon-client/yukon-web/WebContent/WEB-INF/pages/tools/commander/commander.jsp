@@ -55,7 +55,14 @@
             selectionProperty="paoName"
             destinationFieldId="pao-id"
             immediateSelectMode="true"
-            endAction="yukon.tools.commander.updateCommandsForPao"/>
+            endAction="yukon.tools.commander.deviceChosen"/>
+        <span class="js-on-route dn">
+            <span class="name"><i:inline key=".onRoute"/></span>
+            <span class="value"></span>
+            <cti:button id="change-route-btn" nameKey="change" icon="icon-pencil" classes="fn vat"/>
+            <div data-dialog id="change-route-dialog" title="<cti:msg2 key=".changeRoute"/>" data-width="500" 
+                    data-event="yukon.tools.commander.routeChange" class="dn"></div>
+        </span>
     </tags:nameValue2>
     
     <tags:nameValue2 nameKey=".serialNumber" rowId="serial-number-row" rowClass="dn">
@@ -78,7 +85,7 @@
             selectionProperty="paoName"
             destinationFieldId="lm-group-id"
             immediateSelectMode="true"
-            endAction="yukon.tools.commander.updateCommandsForPao"/>
+            endAction="yukon.tools.commander.lmGroupChosen"/>
     </tags:nameValue2>
     
     <tags:nameValue2 nameKey=".availableCommands">

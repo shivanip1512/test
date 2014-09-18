@@ -2,7 +2,7 @@
 package com.cannontech.common.pao;
 
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Set;
 
@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public enum PaoType implements DatabaseRepresentationSource {
+    
     CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU711(DeviceTypes.CCU711, "CCU-711", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU721(DeviceTypes.CCU721, "CCU-721", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -266,6 +267,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> tcuTypes;
     private final static ImmutableSet<PaoType> lcuTypes;
     private final static ImmutableSet<PaoType> repeaterTypes;
+    private final static ImmutableSet<PaoType> routableTypes;
     
     public final static int INVALID = -1;
 
@@ -519,8 +521,15 @@ public enum PaoType implements DatabaseRepresentationSource {
             }
         }
         capControlTypes = capControlTypeBuilder.build();
+        
+        Builder<PaoType> b = ImmutableSet.builder();
+        b.add(LCR3102);
+        b.add(MCTBROADCAST);
+        b.addAll(mctTypes);
+        b.addAll(repeaterTypes);
+        routableTypes = b.build();
     }
-
+    
     /**
      * Looks up the PaoType based on its Java constant ID.
      * 
@@ -667,7 +676,11 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isLoadGroup() {
         return this.paoCategory == PaoCategory.DEVICE && this.paoClass == PaoClass.GROUP;
     }
-
+    
+    public boolean isRoutable() {
+        return routableTypes.contains(this);
+    }
+    
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;
         this.dbString = dbString;
@@ -731,9 +744,13 @@ public enum PaoType implements DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getIonTypes() {
         return ionTypes;
     }
-
+    
     public static ImmutableSet<PaoType> getRfLcrTypes() {
         return rfLcrTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getRoutableTypes() {
+        return routableTypes;
     }
     
     /**

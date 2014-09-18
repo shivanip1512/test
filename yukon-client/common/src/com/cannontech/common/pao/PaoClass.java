@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PaoClass implements DatabaseRepresentationSource {
+    
     TRANSMITTER(DeviceClasses.TRANSMITTER, DeviceClasses.STRING_CLASS_TRANSMITTER),
     RTU(DeviceClasses.RTU, DeviceClasses.STRING_CLASS_RTU),
     IED(DeviceClasses.IED, DeviceClasses.STRING_CLASS_IED),
@@ -77,7 +78,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
         Validate.notNull(paoClass, dbString);
         return paoClass;
     }
-
+    
     public int getPaoClassId() {
         return paoClassId;
     }
@@ -85,7 +86,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
     public String getDbString() {
         return dbString;
     }
-
+    
     @Override
     public Object getDatabaseRepresentation() {
         return dbString;

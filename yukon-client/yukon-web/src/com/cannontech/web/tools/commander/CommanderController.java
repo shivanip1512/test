@@ -1,18 +1,21 @@
 package com.cannontech.web.tools.commander;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,16 +24,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.device.search.service.DeviceSearchService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.commander.model.CommandParams;
@@ -39,13 +47,17 @@ import com.cannontech.web.tools.commander.model.CommandRequestException;
 import com.cannontech.web.tools.commander.model.CommandRequestExceptionType;
 import com.cannontech.web.tools.commander.model.CommandType;
 import com.cannontech.web.tools.commander.service.CommanderService;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER)
 public class CommanderController {
     
+    @Autowired private ServerDatabaseCache cache;
     @Autowired private PaoDao paoDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private CommandDao commandDao;
     @Autowired private CommanderService commanderService;
     @Autowired private DeviceSearchService deviceSearchService;
@@ -61,6 +73,75 @@ public class CommanderController {
         model.addAttribute("routes", routes);
         
         return "commander/commander.jsp";
+    }
+    
+    /** Get the route for the device */
+    @RequestMapping("/commander/route/{paoId}")
+    public @ResponseBody LiteYukonPAObject route(LiteYukonUser user, HttpServletResponse resp, @PathVariable int paoId) {
+        
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+        PaoType type = pao.getPaoType();
+        if (type.isRoutable()) {
+            LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
+            return route;
+        } else {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+    }
+    
+    /** Change route popup */
+    @RequestMapping("/commander/route/{routeId}/change")
+    public String changeRoute(ModelMap model, @PathVariable int routeId) {
+        
+        Map<Integer, LiteYukonPAObject> all = cache.getAllRoutesMap();
+        LiteYukonPAObject route = all.get(routeId);
+        List<LiteYukonPAObject> potentials = new ArrayList<>(all.values());
+        potentials.remove(route);
+        Collections.sort(potentials, PaoUtils.NAME_COMPARE);
+        Iterable<LiteYukonPAObject> filtered = Iterables.filter(potentials, new Predicate<LiteYukonPAObject>() {
+            @Override
+            public boolean apply(LiteYukonPAObject input) {
+                return input.getPaoType() == PaoType.ROUTE_MACRO || input.getPaoType() == PaoType.ROUTE_CCU;
+            }
+        });
+        model.addAttribute("route", route);
+        model.addAttribute("routes", filtered.iterator());
+        
+        return "commander/changeRoute.jsp";
+    }
+    
+    /** Change route */
+    @RequestMapping(value="/commander/{paoId}/route/{routeId}", method=RequestMethod.POST)
+    public @ResponseBody LiteYukonPAObject changeRoute(HttpServletResponse resp, ModelMap model, LiteYukonUser user,
+            @PathVariable int paoId, @PathVariable int routeId) {
+        
+        LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+        Map<Integer, LiteYukonPAObject> routes = cache.getAllRoutesMap();
+        LiteYukonPAObject oldRoute = routes.get(pao.getRouteID());
+        LiteYukonPAObject newRoute = routes.get(routeId);
+        
+        Log.debug("User: " + user.getUsername() + " attemting to change route on " + pao.getPaoName() + " from " 
+                + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
+        
+        try {
+            if (!pao.getPaoType().isRoutable()) {
+                throw new IllegalArgumentException("Device does not support routes: " + pao);
+            }
+            if (newRoute.getPaoType() != PaoType.ROUTE_CCU && newRoute.getPaoType() != PaoType.ROUTE_MACRO) {
+                throw new IllegalArgumentException("Route type: " + newRoute.getPaoType() + " not supported on "
+                        + pao);
+            }
+            CarrierBase db = (CarrierBase) dbPersistentDao.retrieveDBPersistent(pao);
+            db.getDeviceRoutes().setRouteID(routeId);
+            dbPersistentDao.performDBChange(db, TransactionType.UPDATE);
+            Log.debug("User: " + user.getUsername() + " change route on " + pao.getPaoName() + " from " 
+                    + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
+        } catch (RuntimeException e) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        }
+        
+        return newRoute;
     }
     
     /** Clear all commands from our cache for the user. */

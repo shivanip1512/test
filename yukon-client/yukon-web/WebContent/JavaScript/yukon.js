@@ -1199,9 +1199,9 @@ yukon.ui = (function () {
     $.fn.flashYellow = function (duration) {
         return this.each(function () {
             if (typeof(duration) != 'number') {
-                duration = 0.8;
+                duration = 1;
             }
-            $(this).flashColor({color: '#FF0', duration: duration * 1000});
+            $(this).flashColor({color: '#FFF288', duration: duration * 1000});
         });
     };
     

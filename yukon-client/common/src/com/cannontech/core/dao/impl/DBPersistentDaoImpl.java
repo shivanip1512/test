@@ -21,6 +21,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.DbPersistentBeanFactory;
 
 public class DBPersistentDaoImpl implements DBPersistentDao {
+    
     private final Logger log = YukonLogManager.getLogger(DBPersistentDaoImpl.class);
     
     @Autowired private DbPersistentBeanFactory dbPersistentBeanFactory;

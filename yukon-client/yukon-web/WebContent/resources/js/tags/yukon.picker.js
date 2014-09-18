@@ -949,7 +949,8 @@ yukon.inheritPrototype(Picker, yukon.protoPicker);
  * right - Goto to next page.
  */ 
 $(function () {
-    $(document).on('keyup', '.js-picker-dialog', function (ev) {
+    
+    $(document).on('keydown', '.js-picker-dialog', function (ev) {
         
         var keys = { up: 38, down: 40, left: 37, right: 39, enter: 13 },
             key = ev.which,

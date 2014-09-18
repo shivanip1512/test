@@ -162,8 +162,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private List<LiteYukonPAObject> allLMGroups = null;
     private List<LiteYukonPAObject> allLoadManagement = null;
     private List<LiteYukonPAObject> allPorts = null;
-    private List<LiteYukonPAObject> allRoutes = null;
-
+    
     // Maps that are created by the joining/parsing of existing lists
     // private HashMap allPointidMultiplierHashMap = null;
     // private Map allPointIDOffsetHashMap = null;
@@ -175,6 +174,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     // derived from allYukonUsers,allYukonRoles,allYukonGroups
     // see type info in IDatabaseCache
     private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands = null;
+    private Map<Integer, LiteYukonPAObject> allRoutes = null;
     private List<LiteCommand> allCommands = null;
     private Map<Integer, LiteCommand> allCommandsMap = null;
     private Map<Integer, LiteStateGroup> allStateGroupMap = null;
@@ -642,22 +642,28 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         return allPorts;
     }
-
+    
     @Override
     public synchronized List<LiteYukonPAObject> getAllRoutes() {
+        return new ArrayList<>(getAllRoutesMap().values());
+    }
+    
+    @Override
+    public synchronized Map<Integer, LiteYukonPAObject> getAllRoutesMap() {
         if (allRoutes == null) {
-            allRoutes = new ArrayList<>();
-
-            for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.ROUTE) {
-                    allRoutes.add(getAllYukonPAObjects().get(i));
+            allRoutes = new ConcurrentHashMap<>();
+            
+            for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
+                PaoCategory category = pao.getPaoType().getPaoCategory();
+                if (category == PaoCategory.ROUTE) {
+                    allRoutes.put(pao.getPaoIdentifier().getPaoId(), pao);
                 }
             }
         }
-
+        
         return allRoutes;
     }
-
+    
     @Override
     public synchronized Map<Integer, LiteStateGroup> getAllStateGroupMap() {
         if (allStateGroupMap == null) {
