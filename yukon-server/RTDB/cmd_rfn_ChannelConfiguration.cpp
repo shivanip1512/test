@@ -443,6 +443,15 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
 }
 
 
+bool isValidRecordingMetric( const unsigned metricId )
+{
+    //  Metric ID 0 is a the catch-all "unrecognized" metric ID.
+    //  Metric IDs 256, 1256, 2256, 3256, and 4256 are time metrics that are not actual recording channels.
+    //    They are being mistakenly returned due to firmware bug RFNFIVE-353.
+    return metricId && ((metricId % 1000) != 256);
+}
+
+
 void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response, RfnCommandResult &result )
 {
     validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
@@ -464,7 +473,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         return;
     }
 
-    std::set<unsigned> metricsIdsCoincidentReceived;
+    std::set<unsigned> coincidentMetricIdsReceived;
 
     unsigned coincidentValue = -1; // start with -1 in case the first metric has a non-zero coincident value
 
@@ -487,8 +496,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         if( metricQFields.coincidentValue == 0 )
         {
-            //  Metric ID 0 is a the catch-all "unrecognized" metric ID, so don't insert it
-            if( metricId )
+            if( isValidRecordingMetric(metricId) )
             {
                 //  Duplicates are allowed - it's possible to receive multiple voltage
                 //    metrics with different qualifiers, for example.
@@ -498,7 +506,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
             }
 
             coincidentValue = 0;
-            metricsIdsCoincidentReceived.clear();
+            coincidentMetricIdsReceived.clear();
         }
         else
         {
@@ -509,7 +517,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
                     << metricDescription << " (" << metricId << ")" );
 
             //  Duplicates are allowed - it's possible to receive multiple unrecognized (0) metrics
-            metricsIdsCoincidentReceived.insert(metricId);
+            coincidentMetricIdsReceived.insert(metricId);
         }
 
         result.description += metricQFields.resolve() + "\n";

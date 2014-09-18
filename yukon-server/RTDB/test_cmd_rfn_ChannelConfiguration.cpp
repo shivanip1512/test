@@ -1,10 +1,12 @@
-#include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
+#include "cmd_rfn_ChannelConfiguration.h"
 
 #include "ctidate.h"
 #include "std_helper.h"
 #include "boost_test_helpers.h"
-#include "cmd_rfn_ChannelConfiguration.h"
+
+#include <boost/test/unit_test.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string/join.hpp>
 
 using boost::assign::list_of;
 
@@ -53,7 +55,7 @@ namespace { // anonymous
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
 // NOTE: metrics are split up in list of 80 metrics or less
-const std::vector<RfnChannelConfigurationCommand::MetricIds> metricsAll = list_of
+const std::vector<RfnChannelConfigurationCommand::MetricIds> allMetrics = list_of
         (list_of(    1 )(    2 )(    3 )(    4 )(    5 )(    6 )(    7 )(    8 )(    9 )(   10 )(   11 )(   12 )(   21 )(   22 )(   23 )(   24 )
                 (   25 )(   26 )(   27 )(   28 )(   29 )(   30 )(   31 )(   32 )(   33 )(   34 )(   35 )(   36 )(   37 )(   41 )(   42 )(   43 )
                 (   44 )(   45 )(   46 )(   47 )(   48 )(   49 )(   50 )(   51 )(   52 )(   61 )(   62 )(   63 )(   64 )(   65 )(   66 )(   67 )
@@ -91,8 +93,46 @@ const std::vector<RfnChannelConfigurationCommand::MetricIds> metricsAll = list_o
                 ( 4151 )( 4152 )( 4153 )( 4154 )( 4155 )( 4156 )( 4157 )( 4158 )( 4159 )( 4160 )( 4161 )( 4162 )( 4163 )( 4164 )( 4256 ))
         ;
 
+const std::vector<RfnChannelConfigurationCommand::MetricIds> allRecordingMetrics = list_of
+        (list_of(    1 )(    2 )(    3 )(    4 )(    5 )(    6 )(    7 )(    8 )(    9 )(   10 )(   11 )(   12 )(   21 )(   22 )(   23 )(   24 )
+                (   25 )(   26 )(   27 )(   28 )(   29 )(   30 )(   31 )(   32 )(   33 )(   34 )(   35 )(   36 )(   37 )(   41 )(   42 )(   43 )
+                (   44 )(   45 )(   46 )(   47 )(   48 )(   49 )(   50 )(   51 )(   52 )(   61 )(   62 )(   63 )(   64 )(   65 )(   66 )(   67 )
+                (   68 )(   69 )(   70 )(   81 )(   82 )(   83 )(  100 )(  101 )(  102 )(  103 )(  104 )(  105 )(  106 )(  107 )(  108 )(  109 )
+                (  110 )(  111 )(  112 )(  113 )(  114 )(  115 )(  116 )(  117 )(  118 )(  119 )(  120 )(  121 )(  122 )(  123 )(  124 )(  150 ))
+
+        (list_of(  151 )(  152 )(  153 )(  154 )(  155 )(  156 )(  157 )(  158 )(  159 )(  160 )(  161 )(  162 )(  163 )(  164 )/*(  256 )*/(  257 )
+                ( 1001 )( 1002 )( 1003 )( 1004 )( 1005 )( 1006 )( 1007 )( 1008 )( 1009 )( 1010 )( 1011 )( 1012 )( 1021 )( 1022 )( 1023 )( 1024 )
+                ( 1025 )( 1026 )( 1027 )( 1028 )( 1029 )( 1030 )( 1031 )( 1032 )( 1033 )( 1034 )( 1035 )( 1036 )( 1037 )( 1041 )( 1042 )( 1043 )
+                ( 1044 )( 1045 )( 1046 )( 1047 )( 1048 )( 1049 )( 1050 )( 1051 )( 1052 )( 1061 )( 1062 )( 1063 )( 1064 )( 1065 )( 1066 )( 1067 )
+                ( 1068 )( 1069 )( 1070 )( 1081 )( 1082 )( 1083 )( 1100 )( 1101 )( 1102 )( 1103 )( 1104 )( 1105 )( 1106 )( 1107 )( 1108 )( 1109 ))
+
+        (list_of( 1110 )( 1111 )( 1112 )( 1113 )( 1114 )( 1115 )( 1116 )( 1117 )( 1118 )( 1119 )( 1120 )( 1121 )( 1122 )( 1123 )( 1124 )( 1150 )
+                ( 1151 )( 1152 )( 1153 )( 1154 )( 1155 )( 1156 )( 1157 )( 1158 )( 1159 )( 1160 )( 1161 )( 1162 )( 1163 )( 1164 )/*( 1256 )*/
+                ( 2001 )( 2002 )( 2003 )( 2004 )( 2005 )( 2006 )( 2007 )( 2008 )( 2009 )( 2010 )( 2011 )( 2012 )( 2021 )( 2022 )( 2023 )( 2024 )
+                ( 2025 )( 2026 )( 2027 )( 2028 )( 2029 )( 2030 )( 2031 )( 2032 )( 2033 )( 2034 )( 2035 )( 2036 )( 2037 )( 2041 )( 2042 )( 2043 )
+                ( 2044 )( 2045 )( 2046 )( 2047 )( 2048 )( 2049 )( 2050 )( 2051 )( 2052 )( 2061 )( 2062 )( 2063 )( 2064 )( 2065 )( 2066 )( 2067 ))
+
+        (list_of( 2068 )( 2069 )( 2070 )( 2081 )( 2082 )( 2083 )( 2100 )( 2101 )( 2102 )( 2103 )( 2104 )( 2105 )( 2106 )( 2107 )( 2108 )( 2109 )
+                ( 2110 )( 2111 )( 2112 )( 2113 )( 2114 )( 2115 )( 2116 )( 2117 )( 2118 )( 2119 )( 2120 )( 2121 )( 2122 )( 2123 )( 2124 )( 2150 )
+                ( 2151 )( 2152 )( 2153 )( 2154 )( 2155 )( 2156 )( 2157 )( 2158 )( 2159 )( 2160 )( 2161 )( 2162 )( 2163 )( 2164 )/*( 2256 )*/
+                ( 3001 )( 3002 )( 3003 )( 3004 )( 3005 )( 3006 )( 3007 )( 3008 )( 3009 )( 3010 )( 3011 )( 3012 )( 3021 )( 3022 )( 3023 )( 3024 )
+                ( 3025 )( 3026 )( 3027 )( 3028 )( 3029 )( 3030 )( 3031 )( 3032 )( 3033 )( 3034 )( 3035 )( 3036 )( 3037 )( 3041 )( 3042 )( 3043 ))
+
+        (list_of( 3044 )( 3045 )( 3046 )( 3047 )( 3048 )( 3049 )( 3050 )( 3051 )( 3052 )( 3061 )( 3062 )( 3063 )( 3064 )( 3065 )( 3066 )( 3067 )
+                ( 3068 )( 3069 )( 3070 )( 3081 )( 3082 )( 3083 )( 3100 )( 3101 )( 3102 )( 3103 )( 3104 )( 3105 )( 3106 )( 3107 )( 3108 )( 3109 )
+                ( 3110 )( 3111 )( 3112 )( 3113 )( 3114 )( 3115 )( 3116 )( 3117 )( 3118 )( 3119 )( 3120 )( 3121 )( 3122 )( 3123 )( 3124 )( 3150 )
+                ( 3151 )( 3152 )( 3153 )( 3154 )( 3155 )( 3156 )( 3157 )( 3158 )( 3159 )( 3160 )( 3161 )( 3162 )( 3163 )( 3164 )/*( 3256 )*/
+                ( 4001 )( 4002 )( 4003 )( 4004 )( 4005 )( 4006 )( 4007 )( 4008 )( 4009 )( 4010 )( 4011 )( 4012 )( 4021 )( 4022 )( 4023 )( 4024 ))
+
+        (list_of( 4025 )( 4026 )( 4027 )( 4028 )( 4029 )( 4030 )( 4031 )( 4032 )( 4033 )( 4034 )( 4035 )( 4036 )( 4037 )( 4041 )( 4042 )( 4043 )
+                ( 4044 )( 4045 )( 4046 )( 4047 )( 4048 )( 4049 )( 4050 )( 4051 )( 4052 )( 4061 )( 4062 )( 4063 )( 4064 )( 4065 )( 4066 )( 4067 )
+                ( 4068 )( 4069 )( 4070 )( 4081 )( 4082 )( 4083 )( 4100 )( 4101 )( 4102 )( 4103 )( 4104 )( 4105 )( 4106 )( 4107 )( 4108 )( 4109 )
+                ( 4110 )( 4111 )( 4112 )( 4113 )( 4114 )( 4115 )( 4116 )( 4117 )( 4118 )( 4119 )( 4120 )( 4121 )( 4122 )( 4123 )( 4124 )( 4150 )
+                ( 4151 )( 4152 )( 4153 )( 4154 )( 4155 )( 4156 )( 4157 )( 4158 )( 4159 )( 4160 )( 4161 )( 4162 )( 4163 )( 4164 )/*( 4256 )*/)
+        ;
+
 // NOTE: descriptions follow metrics defined above
-const std::vector< std::vector< std::string > > descriptionsAll = list_of<std::vector< std::string >>
+const std::vector< std::vector< std::string > > allDescriptions = list_of<std::vector< std::string >>
         (list_of("Watt hour delivered (1)")
                 ("Watt hour received (2)")
                 ("Watt hour total/sum (3)")
@@ -692,7 +732,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
     {
         std::vector< RfnCommand::RfnRequestPayload > execute_rcv, execute_exp;
 
-        for each( const RfnChannelConfigurationCommand::MetricIds& metrics in metricsAll )
+        for each( const RfnChannelConfigurationCommand::MetricIds& metrics in allMetrics )
         {
             // actual
             {
@@ -722,10 +762,10 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
         std::vector< std::string > descriptions_rcv, descriptions_exp;
         std::vector< RfnChannelConfigurationCommand::MetricIds > metrics_rcv, metrics_exp;
 
-        BOOST_REQUIRE( metricsAll.size() == descriptionsAll.size() );
+        BOOST_REQUIRE( allMetrics.size() == allDescriptions.size() );
 
         unsigned descNbr = 0;
-        for each( const RfnChannelConfigurationCommand::MetricIds& metrics in metricsAll )
+        for each( const RfnChannelConfigurationCommand::MetricIds& metrics in allMetrics )
         {
             // actual
             {
@@ -748,20 +788,18 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
 
             // expected
             {
-                const std::vector<std::string> descriptions = descriptionsAll[descNbr++];
-
                 std::string desc_exp =
                         "Status: Success (0)\n"
                         "Channel Registration Full Description:\n"
                         "Metric(s) descriptors:\n";
 
-                for each( const std::string & desc in descriptions )
-                {
-                    desc_exp += desc + ": Scaling Factor: 1\n";
-                }
+                desc_exp += boost::join(allDescriptions[descNbr], ": Scaling Factor: 1\n");
+                desc_exp += ": Scaling Factor: 1\n";
 
                 descriptions_exp.push_back( desc_exp );
-                metrics_exp.push_back( metrics );
+                metrics_exp.push_back( allRecordingMetrics[descNbr] );
+
+                descNbr++;
             }
         }
 
@@ -796,10 +834,10 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand )
         std::vector< std::string > descriptions_rcv, descriptions_exp;
         std::vector< RfnChannelConfigurationCommand::MetricIds > metrics_rcv, metrics_exp;
 
-        BOOST_REQUIRE( metricsAll.size() == descriptionsAll.size() );
+        BOOST_REQUIRE( allMetrics.size() == allDescriptions.size() );
 
         unsigned descNbr = 0;
-        for each( const RfnChannelConfigurationCommand::MetricIds& metrics in metricsAll )
+        for each( const RfnChannelConfigurationCommand::MetricIds& metrics in allMetrics )
         {
             // actual
             {
@@ -822,20 +860,18 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand )
 
             // expected
             {
-                const std::vector<std::string> descriptions = descriptionsAll[descNbr++];
-
                 std::string desc_exp =
                         "Status: Success (0)\n"
                         "Channel Selection Configuration:\n"
                         "Metric(s) list:\n";
 
-                for each( const std::string & desc in descriptions )
-                {
-                    desc_exp += desc + "\n";
-                }
+                desc_exp += boost::join(allDescriptions[descNbr], "\n");
+                desc_exp += "\n";
 
                 descriptions_exp.push_back( desc_exp );
                 metrics_exp.push_back( RfnChannelConfigurationCommand::MetricIds() );  //  empty
+
+                descNbr++;
             }
         }
 
