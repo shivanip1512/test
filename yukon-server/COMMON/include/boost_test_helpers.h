@@ -8,6 +8,12 @@
 
 namespace Cti {
 
+#define BOOST_CHECK_EQUAL_RANGES(x, y) \
+BOOST_CHECK_EQUAL_COLLECTIONS((x).begin(), (x).end(), (y).begin(), (y).end())
+
+#define BOOST_REQUIRE_EQUAL_RANGES(x, y) \
+BOOST_REQUIRE_EQUAL_COLLECTIONS((x).begin(), (x).end(), (y).begin(), (y).end())
+
 struct byte_buffer
 {
     typedef std::vector<unsigned char> vec;
