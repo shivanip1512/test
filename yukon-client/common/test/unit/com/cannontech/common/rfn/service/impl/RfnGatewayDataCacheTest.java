@@ -2,7 +2,6 @@ package com.cannontech.common.rfn.service.impl;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -10,9 +9,10 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.mock.FakeRequestReplyTemplate;
+import com.cannontech.common.mock.FakeRfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.Authentication;
@@ -27,13 +27,8 @@ import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.message.gateway.RadioType;
 import com.cannontech.common.rfn.message.gateway.SequenceBlock;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
-import com.cannontech.common.util.MethodNotImplementedException;
-import com.cannontech.common.util.jms.JmsReplyHandler;
-import com.cannontech.common.util.jms.RequestReplyTemplate;
-import com.cannontech.core.dao.NotFoundException;
 
 public class RfnGatewayDataCacheTest {
     
@@ -60,7 +55,7 @@ public class RfnGatewayDataCacheTest {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao);
-        FakeRequestReplyTemplate fakeTemplate = new FakeRequestReplyTemplate();
+        FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         
         //retrieve uncached data
@@ -82,7 +77,7 @@ public class RfnGatewayDataCacheTest {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao);
-        FakeRequestReplyTemplate fakeTemplate = new FakeRequestReplyTemplate();
+        FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         
         //attempt to get uncached value, causing jms exception
@@ -96,7 +91,7 @@ public class RfnGatewayDataCacheTest {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao);
-        FakeRequestReplyTemplate fakeTemplate = new FakeRequestReplyTemplate();
+        FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         
         //attempt to get uncached value, causing jms timeout
@@ -169,80 +164,13 @@ public class RfnGatewayDataCacheTest {
         return builder.build();
     }
     
-    private static class FakeRequestReplyTemplate implements RequestReplyTemplate<GatewayDataResponse> {
-        private static enum Mode {
-            REPLY,
-            EXCEPTION,
-            TIMEOUT;
-        }
-        
-        private Mode mode = Mode.REPLY;
-        private int sendCount = 0;
-        
-        public void setMode(Mode mode) {
-            this.mode = mode;
-        }
-        
-        public int getSendCount() {
-            return sendCount;
-        }
+    private static class FakeGatewayRequestReplyTemplate extends FakeRequestReplyTemplate<GatewayDataResponse> {
         
         @Override
-        public <Q extends Serializable> void send(Q requestPayload, JmsReplyHandler<GatewayDataResponse> callback) {
-            sendCount++;
-            
-            switch (mode) {
-                case REPLY:
-                    GatewayDataResponse response = new GatewayDataResponse();
-                    response.setRfnIdentifier(new RfnIdentifier("10000", "CPS", "RFN_GATEWAY"));
-                    callback.handleReply(response);
-                    callback.complete();
-                    break;
-                case EXCEPTION:
-                    callback.handleException(new Exception("Exception thrown for testing purposes"));
-                    callback.complete();
-                    break;
-                case TIMEOUT:
-                default:
-                    callback.handleTimeout();
-                    callback.complete();
-                    break;
-            }
-        }
-    }
-    
-    private static class FakeRfnDeviceDao implements RfnDeviceDao {
-        @Override
-        public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier)
-                throws NotFoundException {
-            throw new MethodNotImplementedException();
-        }
-
-        @Override
-        public RfnDevice getDevice(YukonPao pao) {
-            throw new MethodNotImplementedException();
-        }
-
-        @Override
-        public <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos) {
-            throw new MethodNotImplementedException();
-        }
-
-        @Override
-        public RfnDevice getDeviceForId(int deviceId) throws NotFoundException {
-            YukonPao pao = new YukonPao() {
-                @Override
-                public PaoIdentifier getPaoIdentifier() {
-                    return new PaoIdentifier(1, PaoType.RFN_GATEWAY);
-                }
-            };
-            RfnIdentifier rfnId = new RfnIdentifier("10000", "CPS", "RF_GATEWAY");
-            return new RfnDevice(pao, rfnId);
-        }
-
-        @Override
-        public void updateDevice(RfnDevice device) throws NotFoundException {
-            throw new MethodNotImplementedException();
+        protected <Q extends Serializable> GatewayDataResponse buildResponse(Q request) {
+            GatewayDataResponse response = new GatewayDataResponse();
+            response.setRfnIdentifier(new RfnIdentifier("10000", "CPS", "RFN_GATEWAY"));
+            return response;
         }
     }
 }

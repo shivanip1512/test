@@ -1,18 +1,20 @@
 package com.cannontech.common.rfn.service;
 
+import java.io.Serializable;
 import java.util.concurrent.ExecutionException;
 
-import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 
-/**
- * Gateway data reply handler that blocks for completion.
- */
-public class RfnGatewayDataReplyHandler implements JmsReplyHandler<GatewayDataResponse> {
-    private GatewayDataResponse reply;
+public class BlockingJmsReplyHandler<T extends Serializable> implements JmsReplyHandler<T> {
+    private T reply;
     private boolean timeoutExceeded;
     private Exception exception;
     private boolean isComplete;
+    private final Class<T> clazz;
+    
+    public BlockingJmsReplyHandler(Class<T> clazz) {
+        this.clazz = clazz;
+    }
     
     @Override
     public synchronized void complete() {
@@ -32,20 +34,20 @@ public class RfnGatewayDataReplyHandler implements JmsReplyHandler<GatewayDataRe
     }
     
     @Override
-    public void handleReply(GatewayDataResponse reply) {
+    public void handleReply(T reply) {
         this.reply = reply;
     }
     
     @Override
-    public Class<GatewayDataResponse> getExpectedType() {
-        return GatewayDataResponse.class;
+    public Class<T> getExpectedType() {
+        return clazz;
     }
     
     /**
      * A blocking request for response data.
      * @throws ExecutionException if the request timed out, or if an error occurred.
      */
-    public synchronized GatewayDataResponse waitForCompletion() throws ExecutionException {
+    public synchronized T waitForCompletion() throws ExecutionException {
         //wait for completion
         while (!isComplete) {
             try {
@@ -60,19 +62,16 @@ public class RfnGatewayDataReplyHandler implements JmsReplyHandler<GatewayDataRe
         } else if (exception != null) {
             throw new ExecutionException(exception);
         } else if (timeoutExceeded) {
-            throw new GatewayDataResponseException("Timed out waiting for GatewayDataResponse.");
+            throw new TimeoutExecutionException();
         }
         
         //shouldn't be able to get here
         return null;
     }
     
-    /**
-     * Subclass of ExecutionException that lets us set the message.
-     */
-    private class GatewayDataResponseException extends ExecutionException {
-        public GatewayDataResponseException(String message) {
-            super(message);
+    private static class TimeoutExecutionException extends ExecutionException {
+        public TimeoutExecutionException() {
+            super("Timed out waiting for GatewayDataResponse.");
         }
     }
 }

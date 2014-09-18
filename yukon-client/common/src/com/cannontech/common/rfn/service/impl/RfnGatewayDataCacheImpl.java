@@ -18,8 +18,8 @@ import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
-import com.cannontech.common.rfn.service.RfnGatewayDataReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.google.common.cache.AbstractLoadingCache;
@@ -98,7 +98,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             request.setRfnIdentifier(rfnIdentifier);
             
             //Send the request and wait for the response
-            RfnGatewayDataReplyHandler replyHandler = new RfnGatewayDataReplyHandler();
+            BlockingJmsReplyHandler<GatewayDataResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayDataResponse.class);
             requestTemplate.send(request, replyHandler);
             GatewayDataResponse response = replyHandler.waitForCompletion();
             data = new RfnGatewayData(response);
