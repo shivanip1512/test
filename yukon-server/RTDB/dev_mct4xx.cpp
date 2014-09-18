@@ -14,6 +14,7 @@
 
 #include "ctidate.h"
 #include "date_utility.h"
+#include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -1875,6 +1876,32 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
     return ret;
 }
 
+Mct4xxDevice::PutConfigMapping Mct4xxDevice::initPutConfigLookup()
+{
+    return boost::assign::map_list_of
+        (PutConfigPart_addressing,              &Self::executePutConfigInstallAddressing)
+        (PutConfigPart_configbyte,              &Self::executePutConfigConfigurationByte)
+        (PutConfigPart_demand_lp,               &Self::executePutConfigDemandLP)
+        (PutConfigPart_disconnect,              &Self::executePutConfigInstallDisconnect)
+        (PutConfigPart_display,                 &Self::executePutConfigDisplay)
+        (PutConfigPart_dst,                     &Self::executePutConfigInstallDST)
+        (PutConfigPart_freeze_day,              &Self::executePutConfigInstallFreezeDay)
+        (PutConfigPart_lpchannel,               &Self::executePutConfigLoadProfileChannel)
+        (PutConfigPart_meter_parameters,        &Self::executePutConfigMeterParameters)
+        (PutConfigPart_phaseloss,               &Self::executePutConfigInstallPhaseLoss)
+        (PutConfigPart_precanned_table,         &Self::executePutConfigPrecannedTable)
+        (PutConfigPart_relays,                  &Self::executePutConfigRelays)
+        (PutConfidPart_spid,                    &Self::executePutConfigSpid)
+        (PutConfigPart_time_adjust_tolerance,   &Self::executePutConfigTimeAdjustTolerance)
+        (PutConfigPart_timezone,                &Self::executePutConfigTimezone)
+        (PutConfigPart_tou,                     &Self::executePutConfigTOU)
+            ;
+}
+
+
+const Mct4xxDevice::PutConfigMapping Mct4xxDevice::_putConfigMethods = Mct4xxDevice::initPutConfigLookup();
+
+
 int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
                                          CtiCommandParser &parse,
                                          OUTMESS *&OutMessage,
@@ -1891,69 +1918,10 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
     string installValue = parse.getsValue("installvalue");
 
     int nRet = ClientErrors::None;
-    if (installValue == PutConfigPart_tou )
+
+    if( const boost::optional<PutConfigMethod> putConfigMethod = mapFind(_putConfigMethods, installValue) )
     {
-        nRet = executePutConfigTOU(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_timezone)
-    {
-        nRet = executePutConfigTimezone(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_demand_lp)
-    {
-        nRet = executePutConfigDemandLP(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_lpchannel)
-    {
-        nRet = executePutConfigLoadProfileChannel(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_configbyte)
-    {
-        nRet = executePutConfigConfigurationByte(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_precanned_table)
-    {
-        nRet = executePutConfigPrecannedTable(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfidPart_spid)
-    {
-        nRet = executePutConfigSpid(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_relays)
-    {
-        nRet = executePutConfigRelays(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_time_adjust_tolerance)
-    {
-        nRet = executePutConfigTimeAdjustTolerance(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_display)
-    {
-        nRet = executePutConfigDisplay(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_phaseloss)
-    {
-        nRet = executePutConfigInstallPhaseLoss(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_addressing)
-    {
-        nRet = executePutConfigInstallAddressing(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_dst)
-    {
-        nRet = executePutConfigInstallDST(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_meter_parameters)
-    {
-        nRet = executePutConfigMeterParameters(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_disconnect)
-    {
-        nRet = executePutConfigInstallDisconnect(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
-    }
-    else if (installValue == PutConfigPart_freeze_day)
-    {
-        nRet = executePutConfigInstallFreezeDay(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
+        nRet = (this->**putConfigMethod)(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
     }
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
@@ -2500,7 +2468,7 @@ YukonError_t Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pR
             if(!getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = ClientErrors::NoConfigData;
             }
             else if ( ! timeAdjustTolerance )

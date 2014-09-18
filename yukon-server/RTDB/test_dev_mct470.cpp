@@ -1689,7 +1689,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
 
-            const unsigned char expected_message[] = { 0x7f, 0x05, 0x14, 0x0b };
+            const unsigned char expected_message[] = { 0x7f, 0x05, 0x00, 0x0b };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 om->Buffer.BSt.Message,

@@ -3483,12 +3483,9 @@ YukonError_t Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,Ct
                         OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
                         OutMessage->Buffer.BSt.Message[0] = *spid;
                         OutMessage->Buffer.BSt.Message[1] = *tableReadInterval;
-
-                        if( isMct470(getType()) )
-                        {
-                            OutMessage->Buffer.BSt.Message[2] = *meterNumber;  //  otherwise leave it 0
-                        }
-
+                        OutMessage->Buffer.BSt.Message[2] = isMct470(getType())
+                                                                ? *meterNumber
+                                                                : 0;  //  0 for MCT-430s
                         OutMessage->Buffer.BSt.Message[3] = *tableType;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
