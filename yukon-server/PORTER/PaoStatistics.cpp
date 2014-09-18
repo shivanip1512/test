@@ -172,14 +172,6 @@ void PaoStatistics::incrementCompletion(const CtiTime completion_time, YukonErro
         _daily   ->incrementCompletions();
         _monthly ->incrementCompletions();
         _lifetime->incrementCompletions();
-
-        if( _daily->getRequests() < _daily->getCompletions() )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PaoStatistics::incrementCompletion - daily requests < daily completions ";
-            dout << "(" << _daily->getRequests() << " < " << _daily->getCompletions() << ") ";
-            dout << "for ID " << _pao_id << "\n";
-        }
     }
 }
 
@@ -212,6 +204,14 @@ unsigned PaoStatistics::writeRecords(Database::DatabaseWriter &writer)
     if( _daily && _daily->isDirty() && _daily->writeRecord(writer) )
     {
         rows_written++;
+
+        if( _daily->getRequests() < _daily->getCompletions() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " PaoStatistics::writeRecords - daily requests < daily completions ";
+            dout << "(" << _daily->getRequests() << " < " << _daily->getCompletions() << ") ";
+            dout << "for ID " << _pao_id << "\n";
+        }
     }
 
     if( _hourly && _hourly->isDirty() && _hourly->writeRecord(writer) )
