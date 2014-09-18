@@ -172,7 +172,9 @@ yukon.tools.commander = (function () {
      * Send the command request to the server.
      */
     _execute = function () {
-        var 
+        var
+        picker,
+        valid = true,
         type = _commandTypes[$('#target-row .on').attr('id')],
         params = { 
             type: type,
@@ -190,29 +192,49 @@ yukon.tools.commander = (function () {
             params.routeId = $('#route-id').val();
         }
         
-        yukon.ui.busy(btn);
-        field.prop('disabled', true);
-        $.ajax({
-            url: 'commander/execute',
-            data: params,
-            dataType: 'json'
-        }).done(function (result, textStatus, jqXHR) {
-            for (var i in result.requests) {
-                _logRequest(result.requests[i].request, result.requests[i].requestText);
-            }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            var 
-            requests = jqXHR.responseJSON.requests,
-            reason = jqXHR.responseJSON.reason;
+        // Do some validation before we fire a request
+        if (!params.command) {
+            valid = false;
+            field.addClass('animated flash error')
+            .one(yg.events.animationend, function() { $(this).removeClass('animated flash error'); });
+        }
+        if (!params.paoId && (type === 'DEVICE' || type === 'LOAD_GROUP')) {
+            valid = false;
+            picker = type === 'DEVICE' ? $('.js-device-picker') : $('.js-lm-group-picker');
+            picker.addClass('animated flash error')
+            .one(yg.events.animationend, function() { $(this).removeClass('animated flash error'); });
+        } else if ((type === 'EXPRESSCOM' || type === 'VERSACOM') && !params.serialNumber) {
+            valid = false;
+            $('#serial-number').addClass('animated flash error')
+            .one(yg.events.animationend, function() { $(this).removeClass('animated flash error'); });
+        }
+        
+        if (valid) {
             
-            for (var i in requests) {
-                _logRequest(requests[i].request, requests[i].requestText);
-                _logError(requests[i].request.id, reason);
-            }
-        }).always(function () {
-            yukon.ui.unbusy(btn);
-            field.prop('disabled', false);
-        });
+            yukon.ui.busy(btn);
+            field.prop('disabled', true);
+            $.ajax({
+                url: 'commander/execute',
+                data: params,
+                dataType: 'json'
+            }).done(function (result, textStatus, jqXHR) {
+                for (var i in result.requests) {
+                    _logRequest(result.requests[i].request, result.requests[i].requestText);
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                var 
+                requests = jqXHR.responseJSON.requests,
+                reason = jqXHR.responseJSON.reason;
+                
+                for (var i in requests) {
+                    _logRequest(requests[i].request, requests[i].requestText);
+                    _logError(requests[i].request.id, reason);
+                }
+            }).always(function () {
+                yukon.ui.unbusy(btn);
+                field.prop('disabled', false);
+            });
+        }
     };
     
     mod = {

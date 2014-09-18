@@ -50,6 +50,7 @@
     <tags:nameValue2 nameKey=".device" rowId="device-row">
         <input id="pao-id" type="hidden" name="paoId">
         <tags:pickerDialog type="commanderDevicePicker" id="commanderDevicePicker"
+            buttonStyleClass="js-device-picker"
             linkType="selection"
             selectionProperty="paoName"
             destinationFieldId="pao-id"
@@ -72,6 +73,7 @@
     <tags:nameValue2 nameKey=".loadGroup" rowId="load-group-row" rowClass="dn">
         <input id="lm-group-id" type="hidden" name="lmGroupId">
         <tags:pickerDialog type="lmGroupPaoPermissionCheckingPicker" id="lmGroupPicker"
+            buttonStyleClass="js-lm-group-picker"
             linkType="selection"
             selectionProperty="paoName"
             destinationFieldId="lm-group-id"

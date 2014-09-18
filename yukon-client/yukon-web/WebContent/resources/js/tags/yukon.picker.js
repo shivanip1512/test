@@ -836,7 +836,7 @@ yukon.protoPicker = function (okText,
             }
         }
         if (this.selectionProperty) {
-            this.selectionLabel = $('span', $(document.getElementById('picker_' + this.pickerId + '_label')))[0];
+            this.selectionLabel = $('span', $(document.getElementById('picker_' + this.pickerId + '_btn')))[0];
             this.originalSelectionLabel = this.selectionLabel.innerHTML;
         }
         

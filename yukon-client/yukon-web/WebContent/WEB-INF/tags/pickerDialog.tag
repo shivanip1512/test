@@ -137,8 +137,12 @@
                     <c:if test="${not empty pageScope.buttonRenderMode}">
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
                     </c:if>
-                    <cti:button nameKey="${pageScope.nameKey}" onclick="${id}.show.call(${id})" renderMode="${pageScope.renderMode}" 
-                        classes="${pageScope.buttonStyleClass}" icon="${pageScope.icon}" />
+                    <cti:button id="picker_${id}_btn"
+                                nameKey="${pageScope.nameKey}" 
+                                onclick="${id}.show.call(${id})" 
+                                renderMode="${pageScope.renderMode}" 
+                                classes="${pageScope.buttonStyleClass}" 
+                                icon="${pageScope.icon}"/>
                 </c:when>
                 <c:when test="${pageScope.linkType == 'selection'}">
                     <c:if test="${empty pageScope.selectionProperty}">
@@ -148,10 +152,17 @@
                     <c:if test="${empty pageScope.nameKey}">
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
-                    <cti:button id="picker_${id}_label"  nameKey="${pageScope.nameKey}" classes="noSelectionPickerLabel" renderMode="labeledImage" icon="icon-database-add"
-                        onclick="${id}.show.call(${id})" />
+                    <cti:button id="picker_${id}_btn" 
+                                nameKey="${pageScope.nameKey}" 
+                                classes="noSelectionPickerLabel ${pageScope.buttonStyleClass}" 
+                                renderMode="labeledImage" 
+                                icon="icon-database-add"
+                                onclick="${id}.show.call(${id})"/>
                     <c:if test="${pageScope.multiSelectMode}">
-                        <cti:icon id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected.call(${id})" nameKey="zoom" icon="icon-magnifier"/>
+                        <cti:icon id="picker_${id}_showSelectedImg" 
+                                  href="javascript:${id}.showSelected.call(${id})" 
+                                  nameKey="zoom" 
+                                  icon="icon-magnifier"/>
                     </c:if>
                 </c:when>
                 <c:otherwise>

@@ -11,6 +11,7 @@
 </c:if>
 <script type="text/javascript">
 var yg = {
+        
     phone: {
         formats: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
@@ -26,12 +27,16 @@ var yg = {
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>'
     },
     dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true',
-
+    
     highcharts_options: {
         global: {
             useUTC: false,
             timezoneOffset : new Date().getTimezoneOffset()
         }
+    },
+    
+    events: {
+        animationend: 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
     }
 };
 </script>
