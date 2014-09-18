@@ -26,8 +26,9 @@
 }
 .cmd-req-resp { margin: 10px 0; }
 .cmd-req { color: #222; }
-.cmd-resp-success { color: #1F4CFF; }
-.cmd-resp-fail { color: #D14836; }
+.cmd-resp-success { color: #1f4cff; }
+.cmd-resp-fail { color: #d14836; }
+.cmd-resp-warn { color: #fb8521; }
 .cmd-pending { margin-top: 4px; }
 </style>
 

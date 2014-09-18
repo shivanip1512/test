@@ -1,7 +1,7 @@
 package com.cannontech.web.tools.commander.model;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.util.Completable;
 
@@ -11,7 +11,7 @@ public class CommandRequest implements Completable {
     private int id;
     private long timestamp;
     private CommandParams params;
-    private Map<Integer, CommandResponse> responses = new ConcurrentHashMap<>();
+    private List<CommandResponse> responses = new ArrayList<>();
     
     public long getId() {
         return id;
@@ -37,11 +37,11 @@ public class CommandRequest implements Completable {
         this.params = params;
     }
     
-    public Map<Integer, CommandResponse> getResponses() {
+    public List<CommandResponse> getResponses() {
         return responses;
     }
     
-    public void setResponses(Map<Integer, CommandResponse> responses) {
+    public void setResponses(List<CommandResponse> responses) {
         this.responses = responses;
     }
     

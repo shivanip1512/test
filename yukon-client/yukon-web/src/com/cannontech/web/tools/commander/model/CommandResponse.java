@@ -13,13 +13,15 @@ import com.cannontech.message.util.Message;
 public final class CommandResponse {
     
     private final int id;
+    private final long timestamp;
     private final MessageType type;
     private final int status;  // error-code.xml code number
     private final List<String> results;
     private final int expectMore;
     
-    private CommandResponse(int id, MessageType type, int status, List<String> results, int expectMore) {
+    private CommandResponse(int id, long timestamp, MessageType type, int status, List<String> results, int expectMore) {
         this.id = id;
+        this.timestamp = timestamp;
         this.type = type;
         this.status = status;
         this.results = results;
@@ -28,6 +30,10 @@ public final class CommandResponse {
     
     public int getId() {
         return id;
+    }
+    
+    public long getTimestamp() {
+        return timestamp;
     }
     
     public MessageType getType() {
@@ -46,11 +52,8 @@ public final class CommandResponse {
         return expectMore;
     }
     
-    public static CommandResponse of(int id, MessageType type, int status, List<String> result, int expectMore) {
-        return new CommandResponse(id, type, status, result, expectMore);
-    }
-    
     public static CommandResponse of(int id, Return rtn) {
+        
         MessageType type = MessageType.getMessageType(rtn.getStatus());
         List<String> messages = new ArrayList<>();
         // Add any point data
@@ -70,7 +73,9 @@ public final class CommandResponse {
             for(String line : lines) messages.add(line);
         }
         
-        CommandResponse resp = new CommandResponse(id, type, rtn.getStatus(), messages, rtn.getExpectMore());
+        CommandResponse resp = new CommandResponse(id, rtn.getTimeStamp().getTime(), type, rtn.getStatus(), messages, 
+                rtn.getExpectMore());
+        
         return resp;
     }
     
@@ -79,9 +84,10 @@ public final class CommandResponse {
         final int prime = 31;
         int result = 1;
         result = prime * result + expectMore;
-        result = prime * result + (int) (id ^ (id >>> 32));
-        result = prime * result + ((this.results == null) ? 0 : this.results.hashCode());
+        result = prime * result + id;
+        result = prime * result + ((results == null) ? 0 : results.hashCode());
         result = prime * result + status;
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -106,6 +112,8 @@ public final class CommandResponse {
             return false;
         if (status != other.status)
             return false;
+        if (timestamp != other.timestamp)
+            return false;
         if (type != other.type)
             return false;
         return true;
@@ -113,7 +121,8 @@ public final class CommandResponse {
     
     @Override
     public String toString() {
-        return String.format("CommandResponse [id=%s, type=%s, status=%s, result=%s, expectMore=%s]", id, type, status, results, expectMore);
+        return String.format("CommandResponse [id=%s, timestamp=%s, type=%s, status=%s, results=%s, expectMore=%s]", 
+                id, timestamp, type, status, results, expectMore);
     }
     
 }

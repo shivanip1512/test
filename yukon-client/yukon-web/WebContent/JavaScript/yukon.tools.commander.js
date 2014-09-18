@@ -21,6 +21,13 @@ yukon.tools.commander = (function () {
         'target-versacom-btn': 'VERSACOM'
     },
     
+    /** {object} - A map of MessageType enum entries to response css class names. */
+    _responseTypes = {
+        'ERROR': 'cmd-resp-fail', 
+        'SUCCESS': 'cmd-resp-success', 
+        'INHIBITED': 'cmd-resp-warn'
+    },
+    
     /** {String} - The IANA timezone name. */
     _tz = jstz.determine().name(),
     
@@ -82,14 +89,12 @@ yukon.tools.commander = (function () {
      */
     _logResponse = function (req, resp) {
         
-        var 
+        var
+        clazz = _responseTypes[resp.type],
         results = $('#commander-results'),
         result = results.find('[data-request-id="' + req.id + '"]'),
-        success = resp.type === 'SUCCESS',
         throbber = result.find('.cmd-pending'),
-        response = $('<div>')
-                   .addClass(success ? 'cmd-resp-success' : 'cmd-resp-fail')
-                   .data('responseId', resp.id);
+        response = $('<div>').addClass(clazz).data('responseId', resp.id);
         
         for (var i in resp.results) {
             response.append($('<div>').text(resp.results[i]));
@@ -138,13 +143,12 @@ yukon.tools.commander = (function () {
                 dataType: 'json'
             }).done(function (requests, textStatus, jqXHR) {
                 
-                var req, resp, responses, i = 0, j = 0;
+                var req, resp, i = 0, j = 0;
                 
                 for (i in requests) {
                     req = requests[i];
-                    responses = Object.keys(req.responses);
-                    for (j in responses) {
-                        resp = req.responses[responses[j]];
+                    for (j in req.responses) {
+                        resp = req.responses[j];
                         if (_pending[req.id].indexOf(resp.id) === -1) {
                             _pending[req.id].push(resp.id);
                             _logResponse(req, resp);

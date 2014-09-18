@@ -151,7 +151,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
                 log.debug("Storing response from porter: " + rtn);
                 
                 CommandRequest req = reqsByUser.get(requestId);
-                req.getResponses().put(id, resp);
+                req.getResponses().add(resp);
                 if (resp.getExpectMore() == 0) {
                     req.setComplete(true);
                 }

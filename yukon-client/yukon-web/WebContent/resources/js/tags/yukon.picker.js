@@ -940,7 +940,14 @@ function Picker (okText, cancelText, noneSelectedText, pickerType, destinationFi
  */
 yukon.inheritPrototype(Picker, yukon.protoPicker);
 
-/** Add keyboard binding for up, down left right and enter */ 
+/** 
+ * Add keyboard binding for up, down left right and enter.
+ * up - Move focus up.
+ * down - Move focus down.
+ * enter - Select the focused row or select the only row if there is only one.
+ * left - Goto to previous page.
+ * right - Goto to next page.
+ */ 
 $(function () {
     $(document).on('keyup', '.js-picker-dialog', function (ev) {
         
