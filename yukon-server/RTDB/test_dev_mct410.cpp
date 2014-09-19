@@ -2666,7 +2666,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
     }
-    BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect)
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_demand_threshold)
     {
         test_Mct410IconDevice mct410;
         mct410.setDisconnectAddress(1234567);
@@ -2744,6 +2744,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Message[6] = 0x34;
 
             BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) );
+            BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode) );
 
             BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, CtiTime(), vgList, retList, outList) );
 
@@ -2752,6 +2753,143 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold, threshold) );
 
             BOOST_CHECK_CLOSE( threshold, 5.64 * 12, 0.001 );
+
+            std::string mode;
+
+            BOOST_CHECK( ! mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, mode) );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_cycling)
+    {
+        test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(1234567);
+
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+        config.insertValue("disconnectMode", "CYCLING");
+        config.insertValue("disconnectDemandThreshold", "2.71");
+        config.insertValue("disconnectLoadLimitConnectDelay", "4");
+        config.insertValue("disconnectMinutes", "7");
+        config.insertValue("connectMinutes", "17");
+        config.insertValue("reconnectParam", "ARM");
+
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        int writeMsgPriority,
+            readMsgPriority;        // Capture message priorities to validate ordering
+
+        INMESS im;
+
+        // Disconnect messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
+
+            const std::vector<unsigned> expected = boost::assign::list_of
+                (0x12)(0xd6)(0x87)(0x00)(0x00)(0x04)(0x07)(0x11)(0x40);
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            readMsgPriority = om->Priority;
+            OutEchoToIN(*om, im);
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        {
+            im.Return.ProtocolInfo.Emetcon.Function = 0xfe;
+            im.Return.ProtocolInfo.Emetcon.IO = 3;
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Message[9]  = 7;
+            im.Buffer.DSt.Message[10] = 17;
+
+            BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) );
+            BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode) );
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, CtiTime(), vgList, retList, outList) );
+
+            double threshold = 0.0;
+
+            BOOST_CHECK( mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold, threshold) );
+
+            BOOST_CHECK_EQUAL( threshold, 0.0f );
+
+            std::string mode;
+
+            BOOST_CHECK( ! mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, mode) );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_on_demand)
+    {
+        test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(1234567);
+
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+        config.insertValue("disconnectMode", "ON_DEMAND");
+        config.insertValue("disconnectDemandThreshold", "2.71");
+        config.insertValue("disconnectLoadLimitConnectDelay", "4");
+        config.insertValue("disconnectMinutes", "7");
+        config.insertValue("connectMinutes", "17");
+        config.insertValue("reconnectParam", "ARM");
+
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( outList.empty() );
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+
+        {
+            const CtiMessage *msg = *retList_itr++;
+
+            const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(msg);
+
+            BOOST_REQUIRE(ret);
+
+            BOOST_CHECK_EQUAL( ret->DeviceId(),
+                                    123456 );
+            BOOST_CHECK_EQUAL( ret->Status(),
+                                    ClientErrors::BadParameter );
+            BOOST_CHECK_EQUAL( ret->ResultString(),
+                                    "Test MCT-410iL / Invalid number of disconnect minutes (0), must be 5-60" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume)
