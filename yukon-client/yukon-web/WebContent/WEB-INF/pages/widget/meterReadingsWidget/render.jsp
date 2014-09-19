@@ -86,7 +86,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
     elem.html(totalUsage.toFixed(3));
     //only makes sense to draw attention to the updated value if it actually changed
     if(previousVal && !$(elem).hasClass('untouched') && totalUsage != previousTotalUsage){
-        $(elem).flashYellow(3.5);
+        $(elem).flash(3.5);
     }
     $(elem).removeClass('untouched');
 }

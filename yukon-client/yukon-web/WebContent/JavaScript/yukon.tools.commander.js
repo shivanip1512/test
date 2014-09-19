@@ -333,7 +333,7 @@ yukon.tools.commander = (function () {
                     url: 'commander/' + paoId + '/route/' + routeId,
                     type: 'post'
                 }).done(function (route, status, xhr) {
-                    $('.js-on-route').data('routeId', route.liteID).find('.value').text(route.paoName);
+                    $('.js-on-route').data('routeId', route.liteID).find('.value').text(route.paoName).flash();
                     $('#change-route-dialog').dialog('close');
                 }).fail(function () {
                     $('#change-route-dialog').dialog('close');

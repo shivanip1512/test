@@ -496,7 +496,7 @@ yukon.dr.formula = (function() {
                     'unassign' : unassign
                 }
             }).done(function(data) {
-                $("#formulaPickerRowAppCat_" + appCatId).html(data).flashYellow(.75);
+                $("#formulaPickerRowAppCat_" + appCatId).html(data).flash();
             });
         },
         
@@ -523,7 +523,7 @@ yukon.dr.formula = (function() {
                     'unassign' : unassign
                 }
             }).done(function(data) {
-                $("#formulaPickerRowGear_" + gearId).html(data).flashYellow(.75);
+                $("#formulaPickerRowGear_" + gearId).html(data).flash();
             });
         }
     };

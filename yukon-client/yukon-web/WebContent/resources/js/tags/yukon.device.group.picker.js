@@ -161,7 +161,7 @@ yukon.deviceGroupPicker = (function () {
                 // Too bad we can't add data to the close event :(
                 dialog.addClass('js-selection-made');
                 dialog.dialog('close');
-                picker.flashYellow();
+                picker.flash();
                 
             });
             

@@ -23,13 +23,13 @@ yukon.dr.estimatedLoad = (function() {
                     row.find('.icon-error').show();
                     
                     if (connected.length > 0 && connected.text() != data.value) {
-                        connected.text(data.value).flashYellow(1.5);
+                        connected.text(data.value).flash();
                     }
                     if (diversified.length > 0 && diversified.text() != data.value) {
-                        diversified.text(data.value).flashYellow(1.5);
+                        diversified.text(data.value).flash();
                     }
                     if (kwSavings.length > 0 && kwSavings.text() != data.value) {
-                        kwSavings.text(data.value).flashYellow(1.5);
+                        kwSavings.text(data.value).flash();
                     }
                 } else if (status == 'success') {
                     row.removeAttr("title");
@@ -38,19 +38,19 @@ yukon.dr.estimatedLoad = (function() {
                     if (connected.length > 0 && connected.text() != data.connected) {
                         connected.text(data.connected);
                         if (flash) {
-                            connected.flashYellow(1.5);
+                            connected.flash();
                         }
                     }
                     if (diversified.length > 0 && diversified.text() != data.diversified) {
                         diversified.text(data.diversified);
                         if (flash) {
-                            diversified.flashYellow(1.5);
+                            diversified.flash();
                         }
                     }
                     if (kwSavings.length > 0 && kwSavings.text() != data.kwSavings) {
                         kwSavings.text(data.kwSavings);
                         if (flash) {
-                            kwSavings.flashYellow(1.5);
+                            kwSavings.flash();
                         }
                     }
                 }
@@ -84,19 +84,19 @@ yukon.dr.estimatedLoad = (function() {
                     if (connected.length > 0 && connected.text() != data.connected) {
                         connected.text(data.connected);
                         if (flash) {
-                            connected.flashYellow(1.5);
+                            connected.flash();
                         }
                     }
                     if (diversified.length > 0 && diversified.text() != data.diversified) {
                         diversified.text(data.diversified);
                         if (flash) {
-                            diversified.flashYellow(1.5);
+                            diversified.flash();
                         }
                     }
                     if (kwSavings.length > 0 && kwSavings.text() != data.kwSavings) {
                         kwSavings.text(data.kwSavings);
                         if (flash) {
-                            kwSavings.flashYellow(1.5);
+                            kwSavings.flash();
                         }
                     }
                 }

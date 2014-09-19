@@ -1195,13 +1195,14 @@ yukon.ui = (function () {
         });
     };
     
-    /** Flash an element with a yellow background over .8 seconds. */
-    $.fn.flashYellow = function (duration) {
+    /** Flash an element with a yellow background.
+     * @param {number} [duration=1.5] - The duration in seconds the animation will last. */
+    $.fn.flash = function (duration) {
         return this.each(function () {
             if (typeof(duration) != 'number') {
-                duration = 1;
+                duration = 1.5;
             }
-            $(this).flashColor({color: '#FFF288', duration: duration * 1000});
+            $(this).flashColor({ color: '#FFF288', duration: duration * 1000 });
         });
     };
     

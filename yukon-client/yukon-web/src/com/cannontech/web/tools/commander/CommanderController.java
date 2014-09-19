@@ -136,7 +136,7 @@ public class CommanderController {
             db.getDeviceRoutes().setRouteID(routeId);
             dbPersistentDao.performDBChange(db, TransactionType.UPDATE);
             Log.debug("User: " + user.getUsername() + " change route on " + pao.getPaoName() + " from " 
-                    + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
+                + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
         } catch (RuntimeException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
         }

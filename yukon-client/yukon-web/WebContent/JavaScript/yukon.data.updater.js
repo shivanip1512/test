@@ -62,7 +62,7 @@ yukon.dataUpdater = (function () {
                         elem.html(newData);
                         someValueHasUpdated = true;
                         if (!_disableHighlight) {
-                            elem.flashYellow(3.5);
+                            elem.flash(3.5);
                         }
                     }
                 }

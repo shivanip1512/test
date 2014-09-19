@@ -54,7 +54,7 @@ yukon.da.comments = (function () {
             $('#newRow').show();
             $('#newCommentInput').prop('disabled', false);
             $('#newCommentInput').focus();
-            $('#newRow').flashYellow();
+            $('#newRow').flash();
         },
 
         addOrCancel : function (event) {

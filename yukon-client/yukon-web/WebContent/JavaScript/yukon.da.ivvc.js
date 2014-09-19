@@ -43,7 +43,7 @@ yukon.da.ivvc = (function () {
                     newRow.find('.description').text(event.description);
                     newRow.find('.formattedTime').text(event.formattedTime);
                     body.prepend(newRow);
-                    newRow.flashYellow();
+                    newRow.flash();
                 }
                 
                 $('#mostRecentDateTime').val(timeStamp);

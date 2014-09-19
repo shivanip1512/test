@@ -7,7 +7,7 @@ function setLastTransmission() {
             var jsonData = yukon.ui.util.getHeaderJSON(jqXHR),
                 lastTransmitData = jsonData['nowStr'];
             $('#lastTransmitted').html(lastTransmitData);
-            $('#lastTransmitted').flashYellow(3.5);
+            $('#lastTransmitted').flash(3.5);
         });
     };
 };
