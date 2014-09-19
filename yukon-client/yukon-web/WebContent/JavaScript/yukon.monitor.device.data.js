@@ -110,26 +110,23 @@ yukon.DeviceDataMonitor = (function () {
             var opts = {width: 500, height: "auto"};
             $(_supported_count_details).dialog(opts);
         },
-
+        
         _get_supported_counts = function (params) {
             if(--_waiting_to_finish_N_before_doing_counts > 0)
                 return;
             _hide_counts_and_show_loading();
-
+            
             if (typeof params === 'undefined' || typeof params.initial_load === 'undefined' || !params.initial_load) {
-                $('.js-supported_devices_count').closest('td').flashColor({
-                    color    : "#DAE2FF",
-                    duration : 3000
-                });
+                $('.js-supported_devices_count').closest('td').flash({ color: '#dae2ff', duration: 3000 });
             }
-
+            
             $(_supported_count).attr(_count_status, _count_status_loading);
-
+            
             // check to see if we have a pending request that we need to cancel
             if (_supported_counts_xhr && _supported_counts_xhr !== 'undefined') {
                 _supported_counts_xhr.abort();
             }
-
+            
             var data;
             var url;
             var doValidate = false;
@@ -457,11 +454,8 @@ yukon.DeviceDataMonitor = (function () {
             var DOM_feedback = $("#canonicalCalculatingSpan").clone();
             DOM_feedback.removeAttr('id');
             $(DOM_stategroups.closest('td')).append(DOM_feedback);
-            DOM_feedback.show().flashColor({
-                color : "#DAE2FF",
-                duration : 3000
-            });
-
+            DOM_feedback.show().flash({ color: '#dae2ff', duration: 3000 });
+            
             var row_id	= _get_proc_row_id_from_elem_name(row.find('select.js-attribute'));
             if (_supported_counts_xhr && _supported_counts_xhr[row_id] && _supported_counts_xhr[row_id] !== 'undefined') {
                 _supported_counts_xhr[row_id].abort();

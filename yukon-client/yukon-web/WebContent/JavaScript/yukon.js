@@ -1178,31 +1178,24 @@ yukon.ui = (function () {
         });
     };
     
-    /** Flash an element's background color over a duration. */
-    $.fn.flashColor = function (args) {
+    /** 
+     * Flash an element's background with a color for a duration.
+     * @param {object} [options] - Options hash containing color and duration.
+     * @param {number} [duration=1500] - The duration in milliseconds the animation will last. Default 1500. 
+     * @param {string} [color=#fff288] - The color to flash the background. Default #fff288 (yellowish).
+     */
+    $.fn.flash = function (options) {
         return this.each(function () {
-            var _self = $(this),
-                prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
-            _self.data('previous_color', prevColor);
-
-            if (typeof(args) === 'string') {
-                _self.stop(true);
-                _self.css({backgroundColor: args}).animate({backgroundColor: prevColor, duration: 1000});
-            } else if (typeof(args) === 'object' && typeof(args.color) === 'string') {
-                _self.stop(true);
-                _self.css({backgroundColor: args.color}).animate({backgroundColor: prevColor}, args);
-            }
-        });
-    };
-    
-    /** Flash an element with a yellow background.
-     * @param {number} [duration=1.5] - The duration in seconds the animation will last. */
-    $.fn.flash = function (duration) {
-        return this.each(function () {
-            if (typeof(duration) != 'number') {
-                duration = 1.5;
-            }
-            $(this).flashColor({ color: '#FFF288', duration: duration * 1000 });
+            
+            options = $.extend({ color: '#fff288', duration: 1500 }, options || {});
+            
+            var me = $(this),
+                prev = me.data('previousColor') ? me.data('previousColor') : me.css('background-color');
+                me.data('previousColor', prev);
+                
+            me.stop(true)
+            .css({ backgroundColor: options.color })
+            .animate({ backgroundColor: prev }, options.duration);
         });
     };
     

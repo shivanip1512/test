@@ -27,10 +27,7 @@ $(function() {
                     fileLength = fileSize;
                     $('#lastMod').html(lastModified);
                     $('#fileLength').html(response.readableFileSize);
-                    $("#lastMod, #fileLength").flashColor({
-                        color : "#FF8",
-                        duration : 1000
-                    });
+                    $("#lastMod, #fileLength").flash();
                 }
 
                 // This part of the function updates the log contents shown on the screen
