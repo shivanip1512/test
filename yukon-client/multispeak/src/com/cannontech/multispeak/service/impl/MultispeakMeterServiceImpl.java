@@ -1110,7 +1110,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 throw new MspErrorObjectException(errorObject);
             }
         } catch (DeviceCreationException | BadConfigurationException e) {
-            log.error(e);// TODO create errorObject out of e
+            log.error(e);
             ErrorObject errorObject = mspObjectDao.getErrorObject(mspMeterToAdd.getObjectID(),
                                                                   "Error: " + e.getMessage(),
                                                                   "Meter",
@@ -1292,7 +1292,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             } catch (ProcessingException e) {
                 ErrorObject errorObject = mspObjectDao.getErrorObject(existingMeter.getMeterNumber(), "Error: " + e.getMessage(),
                                                                       "Meter", "ChangeDeviceType", mspVendor.getCompanyName());
-                log.error(e);
                 // return errorObject; couldn't save the change type
                 throw new MspErrorObjectException(errorObject);
             }
@@ -1431,7 +1430,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
             if (routes.isEmpty()) {
                 multispeakEventLogService.routeNotFound(substationName, ((PlcMeter)meterToUpdate).getRoute(), meterNumber, mspMethod, mspVendor.getCompanyName());
-                systemLog(mspMethod, "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from exisiting device.", mspVendor);
+                systemLog(mspMethod, "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from existing device.", mspVendor);
             } else { // routes exist
 
                 // initally set route to first sub mapping
@@ -1592,7 +1591,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                             } else {
                                 multispeakEventLogService.objectNotFoundByVendor(mspServiceLocation.getObjectID(), "getMeterByServLoc", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
-                                                                              paoAlias.getDisplayName() + "ServiceLocation(" + mspServiceLocation.getObjectID() + ") - No meters returned from vendor for location.",
+                                                                              paoAlias.getDisplayName() + " ServiceLocation(" + mspServiceLocation.getObjectID() + ") - No meters returned from vendor for location.",
                                                                               "ServiceLocation", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                                 errorObjects.add(err);
                                 multispeakEventLogService.errorObject(err.getErrorString(), SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
@@ -1943,6 +1942,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 addToGroup(meter, systemGroup, mspMethod, mspVendor);
             } catch (NotFoundException e) {
+                multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.toString());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
                                                                       "MeterNumber",
                                                                       "Meter",
@@ -1968,6 +1968,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 removeFromGroup(meter, systemGroup, mspMethod, mspVendor);
             } catch (NotFoundException e) {
+                multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.toString());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
                                                                       "MeterNumber",
                                                                       "Meter",
@@ -2129,7 +2130,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         } catch (NotFoundException e) {
             // template not found...now what? ERROR?
             ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getObjectID(),
-                                                          "Error: Meter (" + mspMeter.getMeterNo() + ") - does not contain a valid template meter. Template[" + templateName + "] " + "MeterAddNotification could not be completed, returning ErrorObject to calling vendor for processing.",
+                                                          "Error: Meter (" + mspMeter.getMeterNo() + ") - does not contain a valid template meter: Template[" + templateName + "]. Processing could not be completed, returning ErrorObject to calling vendor for processing.",
                                                           "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
             log.error(e);
             throw new MspErrorObjectException(err);
