@@ -1,110 +1,126 @@
-$(function() {
-    var fileLength = 0;
+yukon.namespace('yukon.support.logs');
 
-    var update = function() {
+/**
+ * Handles the behavior for the log tail page.
+ * @module yukon.support.logs
+ * @requires JQUERY
+ * @requires JQUERYUI
+ * @requires yukon
+ */
+yukon.support.logs = (function () {
+
+    'use strict';
+    
+    var
+    _initialized = false,
+    _repeatingTaskId = 0,
+    _fileLength = 0,
+    
+    _setNumberOfLines = function (num) {
+        $('#numLines').val((isNaN(num) || num <= 10) ? 10 : num);
+        _removeExtraLines(true);
+    },
+    
+    _removeExtraLines = function (reload) {
+        
+        var numLogsCurrent = $('.logLine').size(),
+            numLinesNew = $('#numLines').val(),
+            linesToSlice = numLogsCurrent - numLinesNew;
+        
+        if (linesToSlice > 0) {
+            $('.logLine').slice(0, linesToSlice).slideUp(200, function () { $(this).remove(); });
+        } else if (linesToSlice < 0 && reload) {
+            // we requested more lines than we currently have, reload page to obtain
+            window.location.href = '?file=' + $('#file').val() + '&numLines=' + numLinesNew;
+        }
+    },
+    
+    _update = function () {
+        
         var requestData = {
-            fileLength : fileLength,
+            fileLength : _fileLength,
             numLines : $('#numLines').val(),
             file : $('#file').val()
         };
 
-        var request = $.ajax({
+        $.ajax({
             url : $('#updateUrl').val(),
-            type : "POST",
+            type : 'POST',
             data : JSON.stringify(requestData),
             contentType : 'application/json',
             dataType : 'json'
-        });
+        }).done(function (response) {
+            
+            var logLines = response.logLines,
+                lastModified = response.lastModified,
+                fileSize = response.fileSize;
 
-        request.done(function(response) {
-            var logLines = response.logLines;
-            var lastModified = response.lastModified;
-            var fileSize = response.fileSize;
-
-            if (logLines != null && logLines != "") {
+            if (logLines != null && logLines != '') {
                 // This part of the function updates the log last modified field shown on the screen
-                if (fileLength !== fileSize) {
-                    fileLength = fileSize;
+                if (_fileLength !== fileSize) {
+                    _fileLength = fileSize;
                     $('#lastMod').html(lastModified);
                     $('#fileLength').html(response.readableFileSize);
-                    $("#lastMod, #fileLength").flash();
+                    $('#lastMod, #fileLength').flash();
                 }
 
                 // This part of the function updates the log contents shown on the screen
-                $(logLines).each(function(index, newLogLine) {
-                    var newDiv = $("<div class='logLine'>" + newLogLine +"\n</div>");
-                    $("#logOutput").append(newDiv);
-                    //This animation sets overflow:hidden at the end. This prevents us from scrolling left-right.
-                    //newDiv.slideDown(200);
+                $(logLines).each(function (index, newLogLine) {
+                    var newDiv = $('<div class="logLine">' + newLogLine +'\n</div>');
+                    $('#logOutput').append(newDiv);
                 });
                 // remove extra lines but do not reload page if numLines is more than we currently have
-                removeExtraLines(false);
+                _removeExtraLines(false);
             }
-        });
-
-        request.fail(function(jqXHR, textStatus) {
-            clearInterval(id);
-            id = setInterval(update, 1000 * 10);
-            var newDiv = $("<div class='logLine'>Error: " + textStatus + "...Trying again in 10 seconds.</div>").hide();
-            $("#logOutput").append(newDiv);
+        }).fail(function (xhr, status) {
+            clearInterval(_repeatingTaskId);
+            _repeatingTaskId = setInterval(_update, 1000 * 10);
+            var newDiv = $('<div class="logLine">Error: ' + status + '...Trying again in 10 seconds.</div>').hide();
+            $('#logOutput').append(newDiv);
             newDiv.slideDown();
         });
-    };
+    },
+    
+    mod = {
+        
+        /** Initialize this module. */
+        init: function () {
+            
+            if (_initialized) return;
+            
+            _update();
+            _repeatingTaskId = setInterval(_update, 1500);
+            $('#startBtn').hide();
 
-    setNumberOfLines = function(num) {
-        if (isNaN(num) || num <= 10) {
-            $("#numLines").val(10);
-            $("#decrementLinesBtn").removeClass("prev").addClass("prev_disabled");
-        } else {
-            $("#numLines").val(num);
-            $("#decrementLinesBtn").removeClass("prev_disabled").addClass("prev");
-        }
-        removeExtraLines(true);
-    };
-
-    removeExtraLines = function(reloadIfNeeded) {
-        var numLogsCurrent = $('.logLine').size();
-        var numLinesNew = $("#numLines").val();
-        var linesToSlice = numLogsCurrent - numLinesNew;
-        if (linesToSlice > 0) {
-            $('.logLine').slice(0, linesToSlice).slideUp(200, function() {
-                this.remove();
+            $('#numLines').change(function () {
+                _setNumberOfLines($('#numLines').val());
             });
-        } else if (linesToSlice < 0 && reloadIfNeeded) {
-            // we requested more lines than we currently have, reload page to obtain
-            window.location.href = "?file=" + $('#file').val() + "&numLines=" + numLinesNew;
+            
+            $('#incrementLinesBtn').click(function () {
+                var num = parseInt($('#numLines').val());
+                _setNumberOfLines(num+10);
+            });
+
+            $('#pauseBtn').click(function () {
+                clearInterval(_repeatingTaskId);
+                $('#pauseBtn').fadeOut(100, function () {
+                    $('#startBtn').fadeIn(25);
+                });
+            });
+
+            $('#startBtn').click(function () {
+                _repeatingTaskId = setInterval(_update, 1500);
+                $('#startBtn').fadeOut(100, function () {
+                    $('#pauseBtn').fadeIn(25);
+                });
+            });
+            
+            _initialized = true;
         }
+    
     };
-
-    update();
-    var repeatingTaskId = setInterval(update, 1500);
-    $("#startBtn").hide();
-
-    $("#numLines").change(function() {
-        setNumberOfLines($("#numLines").val());
-    });
-
-    $("#decrementLinesBtn").click(function() {
-        var num = parseInt($("#numLines").val());
-        setNumberOfLines(num-10);
-    });
-
-    $("#incrementLinesBtn").click(function() {
-        var num = parseInt($("#numLines").val());
-        setNumberOfLines(num+10);
-    });
-
-    $("#pauseBtn").click(function() {
-        clearInterval(repeatingTaskId);
-        $("#pauseBtn").fadeOut(100, function() {
-            $("#startBtn").fadeIn(25);
-        });
-    });
-
-    $("#startBtn").click(function() {
-        repeatingTaskId = setInterval(update, 1500);
-        $("#startBtn").fadeOut(100, function() {
-            $("#pauseBtn").fadeIn(25);
-        });
-    });
-});
+    
+    return mod;
+})();
+ 
+$(function () { yukon.support.logs.init(); });
