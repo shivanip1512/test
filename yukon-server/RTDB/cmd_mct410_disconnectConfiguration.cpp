@@ -50,11 +50,14 @@ Mct410DisconnectConfigurationCommand::Mct410DisconnectConfigurationCommand(const
     validate(Condition(_connectDelay <= 10, ClientErrors::BadParameter)
              << "Invalid connect delay (" << _connectDelay << "), must be 0-10");
 
-    validate(Condition(_disconnectMinutes >= 5 && _disconnectMinutes <= 60, ClientErrors::BadParameter)
-             << "Invalid number of disconnect minutes (" << _disconnectMinutes << "), must be 5-60");
+    if( _disconnectMode == Cycling )
+    {
+        validate(Condition(_disconnectMinutes >= 5 && _disconnectMinutes <= 60, ClientErrors::BadParameter)
+                 << "Invalid number of disconnect minutes (" << _disconnectMinutes << "), must be 5-60");
 
-    validate(Condition(_connectMinutes >= 5 && _connectMinutes <= 60, ClientErrors::BadParameter)
-             << "Invalid number of connect minutes (" << _connectMinutes << "), must be 5-60");
+        validate(Condition(_connectMinutes >= 5 && _connectMinutes <= 60, ClientErrors::BadParameter)
+                 << "Invalid number of connect minutes (" << _connectMinutes << "), must be 5-60");
+    }
 
     validate(Condition(_demandInterval > 0, ClientErrors::BadParameter)
              << "Invalid demand interval (" << _demandInterval << "), must be a positive integer");
@@ -83,29 +86,47 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::decodeCommand(cons
     //  just did the read
     if( _executionState == &Mct410DisconnectConfigurationCommand::done )
     {
-        if( payload )
+        if( ! payload || payload->size() < 11 )
         {
-            description += "\nConfig data received: ";
-            for each(const unsigned char byte in *payload)
-            {
-                description += CtiNumStr(byte).hex().zpad(2);
-            }
+            throw CommandException(ClientErrors::InvalidData, "Payload too small");
+        }
 
-            //  the rest of the disconnect configuration elements
-            unsigned dynamicDemand = (*payload)[5] << 8 | (*payload)[6];
+        description += "\nConfig data received: ";
+        for each(const unsigned char byte in *payload)
+        {
+            description += CtiNumStr(byte).hex().zpad(2);
+        }
 
-            _returnedDisconnectDemandThreshold = dynamicDemand & 0x0fff;
+        //  the rest of the disconnect configuration elements
+        const unsigned dynamicDemand = (*payload)[5] << 8 | (*payload)[6];
 
-            switch( dynamicDemand & 0x3000 )
-            {
-                case 0x3000:  *_returnedDisconnectDemandThreshold /= 10.0;
-                case 0x2000:  *_returnedDisconnectDemandThreshold /= 10.0;
-                case 0x1000:  *_returnedDisconnectDemandThreshold /= 10.0;
-                case 0x0000:  *_returnedDisconnectDemandThreshold /= 10.0;
-            }
+        _returnedDisconnectDemandThreshold = dynamicDemand & 0x0fff;
 
-            // adjust for the demand interval
-            *_returnedDisconnectDemandThreshold *= (3600 / _demandInterval);
+        switch( dynamicDemand & 0x3000 )
+        {
+            case 0x3000:  *_returnedDisconnectDemandThreshold /= 10.0;
+            case 0x2000:  *_returnedDisconnectDemandThreshold /= 10.0;
+            case 0x1000:  *_returnedDisconnectDemandThreshold /= 10.0;
+            case 0x0000:  *_returnedDisconnectDemandThreshold /= 10.0;
+        }
+
+        // adjust for the demand interval
+        *_returnedDisconnectDemandThreshold *= (3600 / _demandInterval);
+
+        const unsigned returnedDisconnectMinutes = (*payload)[9];
+        const unsigned returnedConnectMinutes    = (*payload)[10];
+
+        if( *_returnedDisconnectDemandThreshold > 0.0 )
+        {
+            _returnedDisconnectMode = DemandThreshold;
+        }
+        else if( returnedDisconnectMinutes || returnedConnectMinutes )
+        {
+            _returnedDisconnectMode = Cycling;
+        }
+        else
+        {
+            _returnedDisconnectMode = OnDemand;
         }
     }
 
@@ -120,6 +141,11 @@ void Mct410DisconnectConfigurationCommand::invokeResultHandler(ResultHandler &rh
 boost::optional<float> Mct410DisconnectConfigurationCommand::getDisconnectDemandThreshold() const
 {
     return _returnedDisconnectDemandThreshold;
+}
+
+boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> Mct410DisconnectConfigurationCommand::getDisconnectMode() const
+{
+    return _returnedDisconnectMode;
 }
 
 DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTime now, const YukonError_t error_code, std::string &description)

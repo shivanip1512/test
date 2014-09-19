@@ -16,6 +16,8 @@
 
 #include "portglob.h"
 
+#include "std_helper.h"
+
 #include <boost/assign/list_of.hpp>
 
 #include <stack>
@@ -43,10 +45,12 @@ const std::map<std::string, bool> ReconnectButtonLookup = boost::assign::map_lis
 
 typedef Commands::Mct410DisconnectConfigurationCommand Disc;
 
-const std::map<std::string, Disc::DisconnectMode> DisconnectModeLookup = boost::assign::map_list_of
-    ("ON_DEMAND",        Disc::OnDemand)
-    ("DEMAND_THRESHOLD", Disc::DemandThreshold)
-    ("CYCLING",          Disc::Cycling);
+typedef boost::bimap<Disc::DisconnectMode, std::string> DisconnectModeStrings;
+
+const DisconnectModeStrings DisconnectModes = boost::assign::list_of< DisconnectModeStrings::relation >
+    (Disc::OnDemand,        "ON_DEMAND")
+    (Disc::DemandThreshold, "DEMAND_THRESHOLD")
+    (Disc::Cycling,         "CYCLING");
 }
 
 
@@ -1011,6 +1015,13 @@ void Mct410Device::handleCommandResult(const Mct410Command &command)
 
 void Mct410Device::handleCommandResult(const Mct410DisconnectConfigurationCommand &command)
 {
+    if( const boost::optional<Disc::DisconnectMode> disconnectMode = command.getDisconnectMode() )
+    {
+        if( const boost::optional<std::string> disconnectStr = bimapFind<std::string>(DisconnectModes.left, *disconnectMode) )
+        {
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, *disconnectStr);
+        }
+    }
     if( boost::optional<float> disconnectDemandThreshold = command.getDisconnectDemandThreshold() )
     {
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold, *disconnectDemandThreshold);
@@ -1564,7 +1575,7 @@ YukonError_t Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq
             const std::string disconnectModeStr = getConfigData<std::string>(deviceConfig, MCTStrings::DisconnectMode);
             const Commands::Mct410DisconnectConfigurationCommand::DisconnectMode disconnectMode =
                     resolveConfigData(
-                            DisconnectModeLookup,
+                            DisconnectModes.right,
                             disconnectModeStr,
                             MCTStrings::DisconnectMode);
 

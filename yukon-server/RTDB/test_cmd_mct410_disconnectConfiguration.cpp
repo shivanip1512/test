@@ -75,6 +75,11 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
             BOOST_CHECK( ! r.get());
 
             BOOST_CHECK_EQUAL(disconnectCommand.getDisconnectDemandThreshold(), 0.0f);
+
+            const boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> mode = disconnectCommand.getDisconnectMode();
+
+            BOOST_REQUIRE(mode);
+            BOOST_CHECK_EQUAL(*mode, Mct410DisconnectConfigurationCommand::Cycling);
         }
     }
 
@@ -141,18 +146,81 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
 
             BOOST_REQUIRE(disconnectDemandThreshold);
             BOOST_CHECK_CLOSE(*disconnectDemandThreshold, 400.0f, 0.1);
+
+            const boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> mode = disconnectCommand.getDisconnectMode();
+
+            BOOST_REQUIRE(mode);
+            BOOST_CHECK_EQUAL(*mode, Mct410DisconnectConfigurationCommand::DemandThreshold);
         }
     }
     {
-        try
+        Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::OnDemand, 264213, 400.0, 10, 60, 60, Mct410DisconnectConfigurationCommand::ButtonNotRequired, 600);
+
         {
-            Mct410DisconnectConfigurationCommand disconnectCommand(Mct410DisconnectConfigurationCommand::OnDemand, 264213, 400.0, 10, 60, 60, Mct410DisconnectConfigurationCommand::ButtonNotRequired, 600);
-            BOOST_FAIL("Did not throw");
+            DlcCommand::request_ptr r = disconnectCommand.executeCommand(execute_time);
+
+            //  make sure it's not null
+            BOOST_REQUIRE(r.get());
+
+            BOOST_CHECK_EQUAL(r->function(), 0xfe);
+            BOOST_CHECK_EQUAL(r->io(),       Cti::Protocols::EmetconProtocol::IO_Function_Write);
+            BOOST_CHECK_EQUAL(r->length(),   9);
+
+            const std::vector<unsigned> expected = boost::assign::list_of
+                (0x04)(0x08)(0x15)(0x00)(0x00)(0x0a)(0x00)(0x00)(0x44);
+
+            const std::vector<unsigned char> actual = r->payload();
+
+            BOOST_CHECK_EQUAL(actual.size(), 9);
+            BOOST_CHECK_EQUAL_COLLECTIONS(actual.begin(), actual.end(),
+                                          expected.begin(), expected.end());
         }
-        catch( DlcCommand::CommandException &ex )
         {
-            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::BadParameter);
-            BOOST_CHECK_EQUAL(ex.error_description, "Invalid number of disconnect minutes (0), must be 5-60");
+            const boost::optional<DlcCommand::Bytes> no_payload;
+            std::string description;
+            std::vector<DlcCommand::point_data> points;
+
+            DlcCommand::request_ptr r = disconnectCommand.decodeCommand(execute_time + 5, 0x1fe, no_payload, description, points);
+
+            BOOST_CHECK_EQUAL(description, "");
+
+            BOOST_REQUIRE(r.get());
+            BOOST_CHECK_EQUAL(r->function(),  0xfe);
+            BOOST_CHECK_EQUAL(r->io(),        Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(r->length(),    13);
+            BOOST_CHECK(r->payload().empty());
+        }
+        {
+            const DlcCommand::Bytes payload = boost::assign::list_of
+                (0x00)  //  disconnect status info
+                (0x00)  //  disconnect error flag
+                (0x04)(0x08)(0x15)  //  disconnect receiver address
+                (0x00)(0x00)  //  disconnect demand threshold
+                (0x0a)  //  load limit connect delay
+                (0x00)  //  disconnect load limit count
+                (0x00)  //  cycling mode - disconnect minutes
+                (0x00)  //  cycling mode - connect minutes
+                (0x00)  //  configuration byte
+                (0x00); //  disconnect max usage per minute
+
+            std::string description;
+            std::vector<DlcCommand::point_data> points;
+
+            DlcCommand::request_ptr r = disconnectCommand.decodeCommand(execute_time + 10, 0x1fe, payload, description, points);
+
+            BOOST_CHECK_EQUAL(description, "\nConfig data received: 000004081500000a0000000000");
+
+            BOOST_CHECK( ! r.get());
+
+            const boost::optional<float> disconnectDemandThreshold = disconnectCommand.getDisconnectDemandThreshold();
+
+            BOOST_REQUIRE(disconnectDemandThreshold);
+            BOOST_CHECK_EQUAL(*disconnectDemandThreshold, 0.0f);
+
+            const boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> mode = disconnectCommand.getDisconnectMode();
+
+            BOOST_REQUIRE(mode);
+            BOOST_CHECK_EQUAL(*mode, Mct410DisconnectConfigurationCommand::OnDemand);
         }
     }
 }

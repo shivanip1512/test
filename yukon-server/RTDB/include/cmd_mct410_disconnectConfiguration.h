@@ -44,6 +44,7 @@ public:
     virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description);
 
     boost::optional<float> getDisconnectDemandThreshold() const;
+    boost::optional<DisconnectMode> getDisconnectMode() const;
 
 private:
 
@@ -57,6 +58,7 @@ private:
     long _demandInterval;
 
     boost::optional<float> _returnedDisconnectDemandThreshold;
+    boost::optional<DisconnectMode> _returnedDisconnectMode;
 
     virtual void invokeResultHandler(ResultHandler &rh) const;
 

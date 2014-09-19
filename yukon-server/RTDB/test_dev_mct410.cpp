@@ -2756,7 +2756,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             std::string mode;
 
-            BOOST_CHECK( ! mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, mode) );
+            BOOST_CHECK( mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, mode) );
+
+            BOOST_CHECK_EQUAL( mode, "DEMAND_THRESHOLD" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_cycling)
@@ -2849,7 +2851,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             std::string mode;
 
-            BOOST_CHECK( ! mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, mode) );
+            BOOST_CHECK( mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, mode) );
+
+            BOOST_CHECK_EQUAL( mode, "CYCLING" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_on_demand)
@@ -2871,25 +2875,78 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( outList.empty() );
+        BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        int writeMsgPriority,
+            readMsgPriority;        // Capture message priorities to validate ordering
+
+        INMESS im;
+
+        // Disconnect messages - read-after-write.
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      9 );
+
+            const std::vector<unsigned> expected = boost::assign::list_of
+                (0x12)(0xd6)(0x87)(0x00)(0x00)(0x04)(0x00)(0x00)(0x40);
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            writeMsgPriority = om->Priority;
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xfe );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+
+            readMsgPriority = om->Priority;
+            OutEchoToIN(*om, im);
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK( writeMsgPriority > readMsgPriority );
 
         {
-            const CtiMessage *msg = *retList_itr++;
+            im.Return.ProtocolInfo.Emetcon.Function = 0xfe;
+            im.Return.ProtocolInfo.Emetcon.IO = 3;
+            im.Buffer.DSt.Length = 13;
 
-            const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(msg);
+            BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) );
+            BOOST_CHECK( ! mct410.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode) );
 
-            BOOST_REQUIRE(ret);
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct410.ResultDecode(im, CtiTime(), vgList, retList, outList) );
 
-            BOOST_CHECK_EQUAL( ret->DeviceId(),
-                                    123456 );
-            BOOST_CHECK_EQUAL( ret->Status(),
-                                    ClientErrors::BadParameter );
-            BOOST_CHECK_EQUAL( ret->ResultString(),
-                                    "Test MCT-410iL / Invalid number of disconnect minutes (0), must be 5-60" );
+            double threshold = 0.0;
+
+            BOOST_CHECK( mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold, threshold) );
+
+            BOOST_CHECK_EQUAL( threshold, 0.0f );
+
+            std::string mode;
+
+            BOOST_CHECK( mct410.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisconnectMode, mode) );
+
+            BOOST_CHECK_EQUAL( mode, "ON_DEMAND" );
         }
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume)
