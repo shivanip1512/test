@@ -13,7 +13,7 @@ public class Request extends Message {
     private long userMessageID;
     private int optionsField;
     
-    public Request() { super(); }
+    public Request() { }
     
     public Request(int deviceID, String commandString, long userMessageID) {
         this.deviceID = deviceID;
