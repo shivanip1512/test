@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/26/2014 4:48:41 PM                         */
+/* Created on:     9/22/2014 10:29:56 AM                        */
 /*==============================================================*/
 
 
@@ -3793,7 +3793,6 @@ INSERT INTO DeviceTypeCommand VALUES (-500, -126, 'VersacomSerial', 21, 'N', -1)
 INSERT INTO DeviceTypeCommand VALUES (-501, -34, 'CCU-721', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-502, -35, 'CCU-721', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-503, -36, 'CCU-721', 3, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-504, -37, 'CCU-721', 4, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-505, -1, 'MCT-410FL', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-506, -81, 'MCT-410FL', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-507, -3, 'MCT-410FL', 3, 'Y', -1);
