@@ -9,7 +9,6 @@ public class LiteCommand extends LiteBase implements YukonCommand {
     private String category;
     
     public LiteCommand(int commandId) {
-        super();
         setLiteID(commandId);
         setLiteType(LiteTypes.COMMAND);
     }
