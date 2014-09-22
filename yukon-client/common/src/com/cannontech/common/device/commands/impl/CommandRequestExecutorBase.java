@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -130,60 +129,60 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             
             if (message instanceof Return) {
             
-            	Return retMessage = (Return) message;
-                long userMessageId = retMessage.getUserMessageID();
+            	Return rtn = (Return) message;
+                long userMessageId = rtn.getUserMessageID();
                 
                 // this is one of ours
                 if (pendingUserMessageIds.containsKey(userMessageId)) {
                     
                 	T command = pendingUserMessageIds.get(userMessageId);
                     if (debug) {
-                        log.debug("Got return message " + retMessage + " for my " + command + " on " + this);
+                        log.debug("Got return message " + rtn + " for my " + command + " on " + this);
                     }
                     
                     // check the status message and create an error if necessary 
                     SpecificDeviceErrorDescription specificErrorDescription = null;
-                    int status = retMessage.getStatus();
+                    int status = rtn.getStatus();
                     if (status != 0) {
                         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(status);
-                        specificErrorDescription  = new SpecificDeviceErrorDescription(errorDescription, retMessage.getResultString());
+                        specificErrorDescription  = new SpecificDeviceErrorDescription(errorDescription, rtn.getResultString());
                         if (debug) {
-                            log.debug("Calling receivedError on " + callback + " for " + retMessage);
+                            log.debug("Calling receivedError on " + callback + " for " + rtn);
                         }
                     }
                     
                     // grab point data and give it to the callback
-                    List<?> resultVector = retMessage.getMessages();
-                    for (Object aResult : resultVector) {
-                        if (aResult instanceof PointData) {
-                            PointData pData = (PointData) aResult;
+                    List<Message> messages = rtn.getMessages();
+                    for (Message m : messages) {
+                        if (m instanceof PointData) {
+                            PointData pd = (PointData) m;
                             if (debug) {
-                                log.debug("Calling receivedValue on " + callback + " for " + retMessage);
+                                log.debug("Calling receivedValue on " + callback + " for " + rtn);
                             }
-                            callback.receivedValue(command, pData);
+                            callback.receivedValue(command, pd);
                         } else {
-                            handleUnknownReturn(userMessageId, aResult);
+                            handleUnknownReturn(userMessageId, m);
                         }
                     }
                     
                     // last results
-                    if (retMessage.getExpectMore() == 0) {
+                    if (rtn.getExpectMore() == 0) {
 
                         if (specificErrorDescription != null) {
                             if (debug) {
-                                log.debug("Calling receivedLastError on " + callback + " for " + retMessage);
+                                log.debug("Calling receivedLastError on " + callback + " for " + rtn);
                             }
                             callback.receivedLastError(command, specificErrorDescription);
                             
                             
                         } else {
-                            log.debug("Calling receivedLastResultString on " + callback + " for " + retMessage);
-                            callback.receivedLastResultString(command, retMessage.getResultString());
+                            log.debug("Calling receivedLastResultString on " + callback + " for " + rtn);
+                            callback.receivedLastResultString(command, rtn.getResultString());
                             
                         }
                         
                         // insert CommandRequestExecutionResult record
-                    	saveCommandRequestExecutionResult(this.commandRequestExecution, command, status, retMessage.getCommandString());
+                    	saveCommandRequestExecutionResult(this.commandRequestExecution, command, status, rtn.getCommandString());
                         
                         pendingUserMessageIds.remove(userMessageId);
                         
@@ -191,14 +190,14 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     } else {
                         if (specificErrorDescription != null) {
                             if (debug) {
-                                log.debug("Calling receivedIntermediateError on " + callback + " for " + retMessage);
+                                log.debug("Calling receivedIntermediateError on " + callback + " for " + rtn);
                             }
                             callback.receivedIntermediateError(command, specificErrorDescription);
                         } else {
                             if (debug) {
-                                log.debug("Calling receivedIntermediateResultString on " + callback + " for " + retMessage);
+                                log.debug("Calling receivedIntermediateResultString on " + callback + " for " + rtn);
                             }
-                            callback.receivedIntermediateResultString(command, retMessage.getResultString());
+                            callback.receivedIntermediateResultString(command, rtn.getResultString());
                         }
                     }
 
