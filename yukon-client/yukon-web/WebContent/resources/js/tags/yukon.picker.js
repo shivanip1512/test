@@ -112,7 +112,7 @@ yukon.protoPicker = function (okText,
         
         var allSelected = this.allLinks.length > 0;
         this.allLinks.forEach(function (hitRow, index, arr) {
-            if (! $(hitRow.link.parentNode.parentNode).hasClass('highlighted')) {
+            if (!hitRow.link.closest('tr').hasClass('highlighted')) {
                 allSelected = false;
             }
         });
@@ -162,7 +162,7 @@ yukon.protoPicker = function (okText,
     /** Called when the user clicks on a row for selection. */
     selectThisItem = function (hit, link) {
         
-        var parentRow, rows, index;
+        var row, rows, index;
         
         $(this.nothingSelectedDiv).hide();
         
@@ -172,10 +172,10 @@ yukon.protoPicker = function (okText,
             return;
         }
         
-        parentRow = link.parentNode.parentNode;
-        if ($(parentRow).hasClass('highlighted')) {
+        row = link.closest('tr');
+        if (row.hasClass('highlighted')) {
             // unselect
-            $(parentRow).removeClass('highlighted');
+            row.removeClass('highlighted');
             removeFromSelectedItems.call(this, hit);
             if (this.selectAllCheckBox != null && 'undefined' !== typeof this.selectAllCheckBox) {
                 this.selectAllCheckBox.checked = false;
@@ -184,15 +184,11 @@ yukon.protoPicker = function (okText,
             // select
             if (!this.multiSelectMode) {
                 // not multi-select mode; unselect all others
-                rows = parentRow.parentNode.childNodes;
-                for (index = 0; index < rows.length; index++) {
-                    $(rows[index]).removeClass('highlighted');
-                }
                 this.selectedItems = [hit];
-                $(parentRow).addClass('highlighted');
+                row.addClass('highlighted').siblings().removeClass('highlighted');
             } else {
                 this.selectedItems.push(hit);
-                $(parentRow).addClass('highlighted');
+                row.addClass('highlighted');
                 updateSelectAllCheckbox.call(this);
             }
         }
@@ -715,15 +711,14 @@ yukon.protoPicker = function (okText,
         var pickerThis = this,
             numSelectedBefore = this.selectedItems.length;
         
-        this.allLinks.forEach(function (hitRow, index, arr) {
-            // hitRow IS an element, so we don't need any jQuery sugar around it
-            var parentRow = hitRow.link.parentNode.parentNode;
+        this.allLinks.forEach(function (item, index, arr) {
+            var row = item.link.closest('tr');
             if (pickerThis.selectAllCheckBox.checked) {
-                $(parentRow).addClass('highlighted');
-                pickerThis.selectedItems.push(hitRow.hit);
+                row.addClass('highlighted');
+                pickerThis.selectedItems.push(item.hit);
             } else {
-                $(parentRow).removeClass('highlighted');
-                removeFromSelectedItems.call(pickerThis, hitRow.hit);
+                row.removeClass('highlighted');
+                removeFromSelectedItems.call(pickerThis, item.hit);
             }
         });
         
@@ -779,8 +774,8 @@ yukon.protoPicker = function (okText,
         this.jqAllPagesSelectedParentNode.hide();
         this.jqClearEntireSelectionLinkParentNode.hide();
         this.jqEntireSelectionCleared.show();
-        this.allLinks.forEach(function (hitRow, index, arr) {
-            $(hitRow.link.parentNode.parentNode).removeClass('highlighted');
+        this.allLinks.forEach(function (item, index, arr) {
+            item.link.closest('tr').removeClass('highlighted');
         });
         this.selectAllCheckBox.checked = false;
     };
