@@ -34,11 +34,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayServiceImpl.class);
     
-    RfnGatewayDataCache dataCache;
-    ConnectionFactory connectionFactory;
-    ConfigurationSource configurationSource;
-    RfnDeviceCreationService rfnDeviceCreationService;
-    PaoLocationDao paoLocationDao;
+    private RfnGatewayDataCache dataCache;
+    private ConnectionFactory connectionFactory;
+    private ConfigurationSource configurationSource;
+    private RfnDeviceCreationService rfnDeviceCreationService;
+    private PaoLocationDao paoLocationDao;
     
     //Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
