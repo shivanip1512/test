@@ -1151,7 +1151,8 @@ yukon.ui = (function () {
 
 /** JQUERY PLUGINS */
 (function () {
-    /** Add some helpful functionality to jQuery */
+    
+    /** Selects all text inside an element. Useful for copy action. */
     $.fn.selectText = function () {
         var text = this[0],
             range,
@@ -1200,21 +1201,21 @@ yukon.ui = (function () {
     };
     
     /** Set visibility to visible */
-    $.fn.visible = function() {
+    $.fn.visible = function () {
         return this.each(function () {
             $(this).css('visibility', 'visible');
         });
     };
     
     /** Set visibility to hidden */
-    $.fn.invisible = function() {
+    $.fn.invisible = function () {
         return this.each(function () {
             $(this).css('visibility', 'hidden');
         });
     };
     
     /** Toggle visibility */
-    $.fn.visibilityToggle = function() {
+    $.fn.visibilityToggle = function () {
         return this.each(function () {
             $(this).css('visibility', function (i, visibility) {
                 return (visibility === 'visible') ? 'hidden' : 'visible';
