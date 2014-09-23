@@ -1110,10 +1110,8 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
     CtiString CmdStr(_CmdStr);
     UINT        flag   = 0;
     UINT        iValue = 0;
-    DOUBLE      dValue = 0.0;
 
     CHAR        tbuf[80];
-    CHAR        tbuf2[80];
 
     CtiString   temp2;
     CtiString   token;
@@ -1215,7 +1213,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                     shedTime = 360;
                 }
 
-                _snprintf(tbuf2, sizeof(tbuf2),"SHED %dS", (INT)dValue);
+                _snprintf(tbuf, sizeof(tbuf),"SHED %dS", (INT)shedTime);
 
                 _cmd["shed"] = CtiParseValue( shedTime );
             }
@@ -4798,7 +4796,6 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
     DOUBLE      dValue = 0.0;
 
     CHAR        tbuf[80];
-    CHAR        tbuf2[80];
 
     CtiString   str;
     CtiString   temp;
@@ -5192,7 +5189,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     UINT        flag   = 0;
     UINT        offset = 0;
     UINT        iValue = 0;
-    DOUBLE      dValue = 0.0;
     CHAR        tbuf[80];
 
     CtiString   str;
@@ -6056,7 +6052,6 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
     UINT        flag   = 0;
     UINT        offset = 0;
     UINT        iValue = 0;
-    DOUBLE      dValue = 0.0;
 
     CtiString   str;
     CtiString   temp;
@@ -6307,11 +6302,9 @@ void CtiCommandParser::doParseControlSA(const string &_CmdStr)
     UINT        flag   = 0;
     UINT        offset = 0;
     INT         iValue = 0;
-    DOUBLE      dValue = 0.0;
 
     CHAR        *p;
     CHAR        tbuf[80];
-    CHAR        tbuf2[80];
 
     CtiString   temp;
     CtiString   valStr;
@@ -6925,7 +6918,6 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
     UINT        flag   = 0;
     UINT        offset = 0;
     UINT        iValue = 0;
-    DOUBLE      dValue = 0.0;
     CHAR        tbuf[80];
 
     CtiString   str;
