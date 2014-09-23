@@ -141,6 +141,12 @@ yukon.tools.commander = (function () {
         return result;
     },
     
+    /**
+     * Checks for pending requests awaiting reponses every 200ms as a 
+     * recursive timeout.  If pending requests are detected, a request
+     * to the server is made for responses.  Any responses processed are
+     * recorded and any completed requests are deleted from the pending cache.
+     */
     _update = function () {
         if (Object.keys(_pending).length > 0) {
             $.ajax({
@@ -176,7 +182,7 @@ yukon.tools.commander = (function () {
     },
     
     /** 
-     * User cliced the execute button or hit enter in the command textfield.
+     * User clicked the execute button or hit enter in the command textfield.
      * Send the command request to the server.
      */
     _execute = function () {
