@@ -1,6 +1,7 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -52,8 +54,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.PAObjectID, ypo.Type");
         sql.append("from YukonPaObject ypo");
-        sql.append(  "join Device d on ypo.PAObjectID = d.DeviceId");
-        sql.append(  "join RfnAddress rfn on d.DeviceId = rfn.DeviceId");
+        sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
         sql.append(  "and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
         sql.append(  "and rfn.Model").eq(rfnIdentifier.getSensorModel());
@@ -175,5 +176,18 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     public String getFormattedDeviceName(RfnDevice device) throws IllegalArgumentException{
         return device.getName();
+    }
+
+    @Override
+    public List<RfnDevice> getDevicesByPaoType(PaoType paoType) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM YukonPaObject ypo JOIN RfnAddress rfn ON ypo.PAObjectID = rfn.DeviceId");
+        sql.append("WHERE ypo.Type").eq(paoType);
+        try {
+            return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<RfnDevice>();
+        }
     }
 }

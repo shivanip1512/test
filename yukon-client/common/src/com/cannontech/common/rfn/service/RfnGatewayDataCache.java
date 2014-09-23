@@ -32,4 +32,8 @@ public interface RfnGatewayDataCache {
      */
     public void put(PaoIdentifier paoIdentifier, RfnGatewayData data);
     
+    /**
+     * Remove RfnGatewayData for the specified id from the cache.
+     */
+    public void remove(PaoIdentifier paoIdentifier);
 }

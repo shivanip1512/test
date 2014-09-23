@@ -1,5 +1,6 @@
 package com.cannontech.common.mock;
 
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -42,6 +43,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
     @Override
     public void updateDevice(RfnDevice device) throws NotFoundException {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<RfnDevice> getDevicesByPaoType(PaoType paoType) {
         throw new MethodNotImplementedException();
     }
 }

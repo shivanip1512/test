@@ -22,4 +22,8 @@ public class RfnGateway extends RfnDevice implements Locatable {
     public PaoLocation getLocation() {
         return paoLocation;
     }
+    
+    public void setLocation(PaoLocation paoLocation) {
+        this.paoLocation = paoLocation;
+    }
 }

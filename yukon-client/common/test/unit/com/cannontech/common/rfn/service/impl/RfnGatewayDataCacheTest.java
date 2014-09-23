@@ -100,6 +100,33 @@ public class RfnGatewayDataCacheTest {
         cache.get(paoIdentifier); //NetworkManagerCommunicationException thrown here
     }
     
+    @Test(expected=NetworkManagerCommunicationException.class)
+    public void test_remove() throws NetworkManagerCommunicationException {
+        //setup
+        RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao);
+        FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
+        ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
+        //create data
+        PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
+        RfnGatewayData data = buildTestData("Test Gateway 1");
+        //add data to cache
+        cache.put(paoIdentifier, data);
+        //retrieve data from cache
+        RfnGatewayData cachedData = cache.get(paoIdentifier);
+        //check that data was retrieved from cache
+        Assert.assertNotNull("Retrieved null data.", cachedData);
+        
+        //remove data from cache
+        cache.remove(paoIdentifier);
+        
+        //set mode to throw exception if cache attempts to request missing data
+        fakeTemplate.setMode(FakeRequestReplyTemplate.Mode.EXCEPTION);
+        // attempt to retrieve the remove data from the cache, should throw exception when it
+        // attempts to request the data because it is missing
+        cache.get(paoIdentifier);
+    }
+    
     private RfnGatewayData buildTestData(String gatewayName) {
         RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
         

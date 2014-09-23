@@ -1,7 +1,9 @@
 package com.cannontech.amr.rfn.dao;
 
+import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -46,5 +48,12 @@ public interface RfnDeviceDao {
      * @throws NotFoundException
      */
     public void updateDevice(RfnDevice device) throws NotFoundException;
-
+    
+    /**
+     * Returns List of RfnDevices of the given PaoType. An empty list is returned if no RfnDevices
+     * of the given PaoType exist.
+     * @param paoType
+     * @return List
+     */
+    public List<RfnDevice> getDevicesByPaoType(PaoType paoType); 
 }

@@ -71,6 +71,11 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     public void put(PaoIdentifier paoIdentifier, RfnGatewayData data) {
        cache.put(paoIdentifier, data);
     }
+
+    @Override
+    public void remove(PaoIdentifier paoIdentifier) {
+        cache.invalidate(paoIdentifier);
+    }
     
     /**
      * This LoadingCache requests RfnGatewayData from Network Manager if it is not present for the requested id. The
@@ -116,6 +121,11 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
         @Override
         public void put(PaoIdentifier paoIdentifier, RfnGatewayData data) {
             cacheMap.put(paoIdentifier, data);
+        }
+        
+        @Override
+        public void invalidate(Object key) {
+            cacheMap.remove(key);
         }
     }
 }

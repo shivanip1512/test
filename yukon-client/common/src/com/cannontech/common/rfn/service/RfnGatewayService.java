@@ -32,7 +32,7 @@ public interface RfnGatewayService {
      * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier);
+    public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Creates a new gateway in Yukon and Network Manager.
@@ -65,7 +65,7 @@ public interface RfnGatewayService {
      * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean deleteGateway(PaoIdentifier paoIdentifier);
+    public boolean deleteGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Test the gateway's connection to Network Manager.
