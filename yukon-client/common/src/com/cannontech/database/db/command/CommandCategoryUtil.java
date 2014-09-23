@@ -60,12 +60,12 @@ public class CommandCategoryUtil {
      * false if not. (more than likely it is just a YukonPaobject.paoType value)
      */
     public static boolean isCommandCategory(String category) {
-        try {
-            CommandCategory cc = CommandCategory.valueOf(category);
-            return ALL_CATEGORIES.contains(cc);
-        } catch (IllegalArgumentException e) {
-            return false;
+        
+        for (CommandCategory commandCategory : CommandCategory.values()) {
+            if (commandCategory.getDbString().equalsIgnoreCase(category)) return true;
         }
+        
+        return false;
     }
     
     public static List<PaoType> getAllTypesForCategory(CommandCategory category) {

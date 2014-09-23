@@ -71,7 +71,6 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
 import com.cannontech.yukon.server.cache.BaselineLoader;
 import com.cannontech.yukon.server.cache.CICustomerLoader;
-import com.cannontech.yukon.server.cache.CommandLoader;
 import com.cannontech.yukon.server.cache.ConfigLoader;
 import com.cannontech.yukon.server.cache.ContactLoader;
 import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
@@ -174,9 +173,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     // derived from allYukonUsers,allYukonRoles,allYukonGroups
     // see type info in IDatabaseCache
     private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands = null;
+    private Map<Integer, LiteCommand> allCommands = null;
     private Map<Integer, LiteYukonPAObject> allRoutes = null;
-    private List<LiteCommand> allCommands = null;
-    private Map<Integer, LiteCommand> allCommandsMap = null;
     private Map<Integer, LiteStateGroup> allStateGroupMap = null;
     private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
 
@@ -412,26 +410,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     }
 
     @Override
-    public synchronized List<LiteCommand> getAllCommands() {
+    public synchronized Map<Integer, LiteCommand> getAllCommands() {
+        
         if (allCommands == null) {
-            allCommands = new ArrayList<>();
-            allCommandsMap = new HashMap<>();
-            CommandLoader commandLoader = new CommandLoader(allCommands, allCommandsMap, databaseAlias);
-            commandLoader.run();
+            allCommands = new ConcurrentHashMap<Integer, LiteCommand>();
+            for (LiteCommand command : commandDao.getAllCommands()) {
+                allCommands.put(command.getLiteID(), command);
+            }
         }
+        
         return allCommands;
-    }
-
-    @Override
-    public synchronized Map<Integer, LiteCommand> getAllCommandsMap() {
-        if (allCommandsMap != null) {
-            return allCommandsMap;
-        }
-
-        releaseAllCommands();
-        getAllCommands();
-
-        return allCommandsMap;
     }
 
     @Override
@@ -1454,51 +1442,23 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return lBase;
     }
 
-    private synchronized LiteBase handleCommandChange(DbChangeType dbChangeType, int id) {
-        LiteBase lBase = null;
-
-        // if the storage is not already loaded, we must not care about it
-        if (allCommands == null) {
-            return lBase;
-        }
-
-        switch (dbChangeType) {
-        case ADD:
-            lBase = allCommandsMap.get(new Integer(id));
-            if (lBase == null) {
-                LiteCommand lc = commandDao.getCommand(id);
-                allCommands.add(lc);
-                allCommandsMap.put(lc.getCommandId(), lc);
-                
-                lBase = lc;
-            }
-            break;
-
-        case UPDATE:
-            LiteCommand lc = commandDao.getCommand(id);
-            allCommandsMap.put(id, lc);
+    private synchronized LiteBase handleCommandChange(DbChangeType type, int commandId) {
+        
+        if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
             
-            lBase = lc;
-            break;
-
-        case DELETE:
-            for (int i = 0; i < allCommands.size(); i++) {
-                if (allCommands.get(i).getCommandId() == id) {
-                    allCommandsMap.remove(new Integer(id));
-                    lBase = allCommands.remove(i);
-                    break;
-                }
-            }
-            break;
-
-        default:
+            LiteCommand lc = commandDao.getCommand(commandId);
+            getAllCommands().put(lc.getCommandId(), lc);
+            return lc;
+            
+        } else if (type == DbChangeType.DELETE) {
+            return getAllCommands().remove(commandId);
+        } else {
             releaseAllCommands();
-            break;
+            return null;
         }
-
-        return lBase;
+        
     }
-
+    
     private synchronized LiteBase handleConfigChange(DbChangeType dbChangeType, int id) {
         boolean alreadyAdded = false;
         LiteBase lBase = null;
@@ -2049,7 +2009,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized void releaseAllCommands() {
         allCommands = null;
-        allCommandsMap = null;
     }
 
     @Override

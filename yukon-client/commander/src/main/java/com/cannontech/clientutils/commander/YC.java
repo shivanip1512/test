@@ -18,6 +18,7 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1265,7 +1266,7 @@ public class YC extends Observable implements MessageListener {
             String labels[] = keysAndValues.getKeys();
             String commands[] = keysAndValues.getValues();
 
-            List<LiteCommand> allCommands = cache.getAllCommands();
+            Collection<LiteCommand> allCommands = cache.getAllCommands().values();
 
             for (int i = 0; i < labels.length; i++) {
                 

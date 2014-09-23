@@ -21,7 +21,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public final class CommandDaoImpl implements CommandDao {
     
-    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private IDatabaseCache cache;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
@@ -42,13 +42,25 @@ public final class CommandDaoImpl implements CommandDao {
         }
     };
     
+    public static final YukonRowMapper<LiteCommand> COMMAND_MAPPER = new YukonRowMapper<LiteCommand>() {
+        @Override
+        public LiteCommand mapRow(YukonResultSet rs) throws SQLException {
+            int commandId = rs.getInt("CommandId");
+            String commandText = rs.getString("Command");
+            String label = rs.getString("Label");
+            String category = rs.getString("Category");
+            LiteCommand command = new LiteCommand(commandId, commandText, label, category);
+            return command;
+        }
+    };
+    
     @Override
     public List<LiteDeviceTypeCommand> getAllDevTypeCommands(String type) {
         
         List<LiteDeviceTypeCommand> commands = new ArrayList<>();
-        synchronized (databaseCache) {
+        synchronized (cache) {
             
-            for (LiteDeviceTypeCommand command: databaseCache.getAllDeviceTypeCommands()) {
+            for (LiteDeviceTypeCommand command: cache.getAllDeviceTypeCommands()) {
                 if (type.equalsIgnoreCase(command.getDeviceType())) commands.add(command); 
             }
         }
@@ -63,8 +75,8 @@ public final class CommandDaoImpl implements CommandDao {
         
         List<LiteDeviceTypeCommand> commands = new ArrayList<>();
         
-        synchronized (databaseCache) {
-            for (LiteDeviceTypeCommand command : databaseCache.getAllDeviceTypeCommands()) {
+        synchronized (cache) {
+            for (LiteDeviceTypeCommand command : cache.getAllDeviceTypeCommands()) {
                 if (command.getCommandId() == commandId) commands.add(command);
             }
         }
@@ -77,9 +89,9 @@ public final class CommandDaoImpl implements CommandDao {
         
         List<LiteCommand> commands = new ArrayList<>();
         
-        synchronized (databaseCache) {
+        synchronized (cache) {
             
-            for (LiteCommand command : databaseCache.getAllCommands()) {
+            for (LiteCommand command : cache.getAllCommands().values()) {
                 if (category.equalsIgnoreCase(command.getCategory())) commands.add(command);
             }
         }
@@ -87,14 +99,7 @@ public final class CommandDaoImpl implements CommandDao {
         
         return commands;
     }
-    
-    @Override
-    public LiteCommand getCommand(int commandId) {
-        synchronized (databaseCache) {
-            return databaseCache.getAllCommandsMap().get(commandId);
-        }
-    }
-    
+
     @Override
     public List<LiteCommand> filterCommandsForUser(Iterable<LiteCommand> commands, LiteYukonUser user) {
         
@@ -106,6 +111,31 @@ public final class CommandDaoImpl implements CommandDao {
         }
         
         return authorized;
+    }
+    
+    @Override
+    public LiteCommand getCommand(int commandId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select CommandId, Command, Label, Category");
+        sql.append("from Command");
+        sql.append("where CommandId").eq(commandId);
+        
+        LiteCommand command = jdbcTemplate.queryForObject(sql, COMMAND_MAPPER);
+        
+        return command;
+    }
+    
+    @Override
+    public List<LiteCommand> getAllCommands() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select CommandId, Command, Label, Category");
+        sql.append("from Command");
+        
+        List<LiteCommand> commands = jdbcTemplate.query(sql, COMMAND_MAPPER);
+        
+        return commands;
     }
     
     @Override

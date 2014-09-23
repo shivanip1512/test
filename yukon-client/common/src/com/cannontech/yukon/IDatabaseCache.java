@@ -39,6 +39,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public interface IDatabaseCache {
+    
     DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType);
 
     List<LiteAlarmCategory> getAllAlarmCategories();
@@ -73,12 +74,7 @@ public interface IDatabaseCache {
 
     List<LiteGear> getAllGears();
 
-    List<LiteCommand> getAllCommands();
-
-    /**
-     * @return Map of commandID to LiteCommand
-     */
-    Map<Integer, LiteCommand> getAllCommandsMap();
+    Map<Integer, LiteCommand> getAllCommands();
 
     List<LiteConfig> getAllConfigs();
 

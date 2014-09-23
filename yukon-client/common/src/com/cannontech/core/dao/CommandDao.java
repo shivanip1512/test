@@ -31,4 +31,7 @@ public interface CommandDao {
     /** Retrieves a device type command from the database. */
     LiteDeviceTypeCommand getDeviceTypeCommand(int deviceCommandId);
     
+    /** Retrieves all commands from the database. */
+    List<LiteCommand> getAllCommands();
+    
 }
