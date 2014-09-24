@@ -2,9 +2,6 @@
 
 #include "DynamicCommand.h"
 #include "ccid.h"
-#include "rwutil.h"
-
-using std::map;
 
 DEFINE_COLLECTABLE( DynamicCommand, DYNAMICCOMMAND_ID )
 

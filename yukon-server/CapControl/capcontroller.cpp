@@ -37,8 +37,8 @@
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
 #include "millisecond_timer.h"
-#include <rw/thr/prodcons.h>
 
+#include <rw/thr/thrfunc.h>
 
 extern void refreshGlobalCParms();
 

@@ -1,10 +1,10 @@
-
 #include "precompiled.h"
 
 #include "ControlStrategy.h"
 #include "NoStrategy.h"
 #include "Controllable.h"
 #include "database_reader.h"
+
 
 Controllable::Controllable()
     : CapControlPao(),

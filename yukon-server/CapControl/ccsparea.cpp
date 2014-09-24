@@ -1,23 +1,9 @@
 #include "precompiled.h"
 
-#include <rw/tpsrtvec.h>
-
-#include "dbaccess.h"
-#include "msg_signal.h"
-
 #include "ccsparea.h"
 #include "ccid.h"
-#include "cccapbank.h"
-#include "pointdefs.h"
-#include "pointtypes.h"
-#include "logger.h"
-#include "capcontroller.h"
-#include "resolvers.h"
-#include "utility.h"
-#include "ccOperationStats.h"
-#include "ccConfirmationStats.h"
-#include "database_writer.h"
 #include "database_util.h"
+#include "ccsubstationbusstore.h"
 
 using std::endl;
 using std::string;

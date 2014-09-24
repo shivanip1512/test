@@ -4,13 +4,10 @@
 #include "ccmessage.h"
 
 #include "msg_signal.h"
+#include "msg_multi.h"
 #include "AttributeService.h"
 #include "ccutil.h"
 #include "VoltageRegulatorManager.h"
-
-#include <rw/thr/countptr.h>
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/barrier.h>
 
 class CtiCCExecutor
 {

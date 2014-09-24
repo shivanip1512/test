@@ -1,10 +1,12 @@
 #pragma once
 
 #include "yukon.h"
-#include "row_reader.h"
-#include "rwutil.h"
 #include "cctypes.h"
-#include <string>
+
+namespace Cti
+{
+class RowReader;
+}
 
 
 class CapControlPao
@@ -54,15 +56,16 @@ class CapControlPao
 
         CapControlPao& operator=(const CapControlPao& right);
 
-        void CapControlPao::restore(Cti::RowReader& rdr);
+        void restore(Cti::RowReader& rdr);
 
-        bool CapControlPao::operator == (const CapControlPao& right) const;
-        bool CapControlPao::operator != (const CapControlPao& right) const;
+        bool operator == (const CapControlPao& right) const;
+        bool operator != (const CapControlPao& right) const;
 
         void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
         long getDisabledStatePointId() const;
 
-        Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;};
+        Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;}
         void removePointId(long pId);
         void addPointId(const long ID);
 };
+

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw/toolpro/sockaddr.h>
-#include <rw/toolpro/sockport.h>
 #include <rw/thr/thread.h>
 
 #include <vector>

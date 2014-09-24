@@ -1,17 +1,5 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccstatsobject.cpp
-
-        Programmer:  Julie Richter
-
-        Description:    CCStatsObject
-
-
-        Initial Date:  2/24/2009
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2009
----------------------------------------------------------------------------*/
-
 #include "precompiled.h"
+
 #include "ccstatsobject.h"
 
 

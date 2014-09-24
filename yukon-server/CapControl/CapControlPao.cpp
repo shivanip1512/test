@@ -1,10 +1,8 @@
 #include "precompiled.h"
 
 #include "CapControlPao.h"
-#include "resolvers.h"
 #include "capcontroller.h"
 
-using std::string;
 
 CapControlPao::CapControlPao() :
     _paoId(0),
@@ -26,7 +24,7 @@ CapControlPao::~CapControlPao()
 
 void CapControlPao::restore(Cti::RowReader& rdr)
 {
-    string tempString;
+    std::string tempString;
 
     rdr["paobjectid"] >> _paoId;
     rdr["category"] >> _paoCategory;

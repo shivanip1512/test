@@ -1,27 +1,9 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
-#include "dbaccess.h"
-#include "connection.h"
-#include "types.h"
-#include "observe.h"
-#include "ccfeeder.h"
-#include "cccapbank.h"
-#include "msg_pcrequest.h"
-#include "msg_cmd.h"
-#include "ControlStrategy.h"
-#include "ccmonitorpoint.h"
-#include "ccsubstationbus.h"
 #include "CapControlPao.h"
+#include "ccOperationStats.h"
+#include "ccConfirmationStats.h"
 
-namespace Cti {
-namespace Database {
-    class DatabaseConnection;
-}
-}
 
 class CtiCCSubstation : public CapControlPao
 {

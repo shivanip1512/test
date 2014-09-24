@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#include <rw/thr/thrfunc.h>
-
 #include "CapControlDispatchConnection.h"
 #include "ccsubstationbusstore.h"
 

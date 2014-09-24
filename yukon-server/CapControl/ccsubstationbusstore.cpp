@@ -1,12 +1,5 @@
 #include "precompiled.h"
 
-#include <map>
-#include <iostream>
-#include <sstream>
-
-#include <rw/rwfile.h>
-#include <rw/thr/thrfunc.h>
-
 #include "ccsubstationbusstore.h"
 #include "ControlStrategy.h"
 #include "ccsubstationbus.h"
@@ -40,7 +33,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include <string>
+#include <rw/rwfile.h>
+#include <rw/thr/thrfunc.h>
 
 #define HOURLY_RATE 3600
 

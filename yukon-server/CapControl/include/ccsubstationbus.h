@@ -1,31 +1,13 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
-#include "dbaccess.h"
-#include "connection.h"
-#include "types.h"
-#include "observe.h"
-#include "ccfeeder.h"
-#include "cccapbank.h"
-#include "msg_pcrequest.h"
-#include "msg_cmd.h"
-#include "StrategyManager.h"
-#include "TimeOfDayStrategy.h"
-#include "ccmonitorpoint.h"
 #include "Controllable.h"
-#include "sorted_vector.h"
-#include "PointResponse.h"
-#include "mgr_paosched.h"
+#include "ccOperationStats.h"
+#include "ccConfirmationStats.h"
+#include "regression.h"
+#include "ccfeeder.h"
+#include "TimeOfDayStrategy.h"
 #include "EventLogEntry.h"
 
-namespace Cti {
-namespace Database {
-    class DatabaseConnection;
-}
-}
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 //For Sorted Vector, the vector will use this to determine position in the vector.

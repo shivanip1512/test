@@ -1,16 +1,8 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
-#include "dbaccess.h"
-#include "types.h"
-#include "ctitime.h"
-#include "logger.h"
-#include "row_reader.h"
-
+class CtiTime;
 namespace Cti {
+class RowReader;
 namespace Database {
     class DatabaseConnection;
 }

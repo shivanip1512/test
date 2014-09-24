@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rw/thr/thread.h>
+
 #include "dbaccess.h"
 #include "connection_client.h"
 #include "DispatchConnection.h"

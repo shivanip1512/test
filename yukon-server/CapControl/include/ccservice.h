@@ -1,11 +1,10 @@
 #pragma once
 
-#include "ccclientlistener.h"
 #include "cservice.h"
-#include "capcontroller.h"
-#include "ccsubstationbusstore.h"
-#include "ccexecutor.h"
-#include "dllBase.h"
+
+class CtiCapController;
+class CtiCCClientListener;
+
 
 class CtiCCService : public CService
 {

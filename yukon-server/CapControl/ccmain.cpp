@@ -1,19 +1,6 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccmain.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiCCMain.
-                        CtiCCMain is the main program for Cap Control.
-
-        Initial Date:  9/04/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <rw/toolpro/winsock.h>
-#include <rw/thr/thrutil.h>
 
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"

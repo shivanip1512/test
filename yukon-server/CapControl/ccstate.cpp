@@ -1,21 +1,9 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccstate.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiCCState.
-                        CtiCCState is a copy of each entry in the state table
-
-        Initial Date:  9/04/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include "dbaccess.h"
-#include "ccid.h"
 #include "ccstate.h"
+#include "ccid.h"
 #include "logger.h"
+#include "row_reader.h"
 
 using std::endl;
 using std::string;

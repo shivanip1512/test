@@ -1,26 +1,16 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccservice.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description:  Source file for CtiCCService.
-
-    Initial Date:  9/04/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "precompiled.h"
-#include <io.h>
 
 #include "id_capcontrol.h"
 #include "ccservice.h"
-#include "eventlog.h"
-#include "rtdb.h"
+#include "dllBase.h"
 #include "ccsubstationbus.h"
 #include "logger.h"
 #include "ctitime.h"
 #include "thread_monitor.h"
 #include "ExecutorFactory.h"
+#include "ccclientlistener.h"
+#include "capcontroller.h"
+#include "ccsubstationbusstore.h"
 
 using std::endl;
 

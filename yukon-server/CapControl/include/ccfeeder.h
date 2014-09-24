@@ -1,29 +1,13 @@
-
 #pragma once
 
-#include <rw/collect.h>
-
-#include "dbaccess.h"
-#include "connection.h"
-#include "types.h"
-#include "observe.h"
-#include "ccmonitorpoint.h"
-#include "ccoriginalparent.h"
-#include "cccapbank.h"
-#include "cctypes.h"
-#include "msg_pcrequest.h"
-#include "msg_cmd.h"
-#include "StrategyManager.h"
-#include "sorted_vector.h"
-#include "regression.h"
 #include "Controllable.h"
+#include "ccOperationStats.h"
+#include "ccConfirmationStats.h"
+#include "ccOriginalParent.h"
+#include "regression.h"
+#include "cccapbank.h"
 #include "EventLogEntry.h"
-
-namespace Cti {
-namespace Database {
-    class DatabaseConnection;
-}
-}
+#include "sorted_vector.h"
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <rw/collect.h>
-
-#include <map>
-
 #include "MsgCapControlCommand.h"
 
 //No namespace. RogueWave Pukes

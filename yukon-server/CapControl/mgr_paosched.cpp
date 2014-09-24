@@ -17,11 +17,9 @@
 #include "MsgVerifyBanks.h" 
 #include "MsgVerifyInactiveBanks.h" 
 
-#include <stdlib.h>
-
-#include <rw/thr/prodcons.h>
-
 #include <boost/regex.hpp>
+
+#include <rw/thr/thrfunc.h>
 
 extern unsigned long _CC_DEBUG;
 extern bool CC_TERMINATE_THREAD_TEST;

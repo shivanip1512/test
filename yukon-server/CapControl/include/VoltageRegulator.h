@@ -11,8 +11,6 @@
 
 #include "EventTypes.h"
 
-#include <rw/collect.h>
-
 #include <map>
 #include <set>
 #include <string>

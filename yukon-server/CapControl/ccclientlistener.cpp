@@ -9,10 +9,9 @@
 #include "utility.h"
 #include "thread_monitor.h"
 #include "ThreadStatusKeeper.h"
-
-#include <rw/toolpro/inetaddr.h>
-
 #include "amq_constants.h"
+
+#include <rw/thr/thrfunc.h>
 
 using std::endl;
 

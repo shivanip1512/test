@@ -1,7 +1,4 @@
-
-
 #pragma once
-
 
 #include "CapControlPao.h"
 #include "StrategyManager.h"

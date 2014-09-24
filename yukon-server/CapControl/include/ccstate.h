@@ -1,9 +1,12 @@
 #pragma once
 
-#include <rw/collect.h>
+#include "collectable.h"
 
-#include "connection.h"
-#include "observe.h"
+namespace Cti
+{
+class RowReader;
+}
+
 
 class CtiCCState
 {

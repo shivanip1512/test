@@ -4,7 +4,6 @@
 #include "ccmonitorpoint.h"
 #include "ccid.h"
 #include "utility.h"
-#include "database_writer.h"
 #include "database_util.h"
 #include "logger.h"
 

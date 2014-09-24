@@ -2,6 +2,7 @@
 
 #include "MsgSubstations.h"
 #include "ccid.h"
+#include "logger.h"
 
 extern unsigned long _CC_DEBUG;
 

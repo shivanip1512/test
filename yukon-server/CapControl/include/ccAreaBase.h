@@ -29,7 +29,7 @@ public:
     bool getOvUvDisabledFlag() const;
     std::string getAdditionalFlags() const;
 
-    Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;};
+    Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;}
     void addSubstationId(long subId);
     Cti::CapControl::PaoIdVector::iterator removeSubstationId(Cti::CapControl::PaoIdVector::iterator subIter);
     void removeSubstationId(long subId);
@@ -43,8 +43,8 @@ public:
     void updatePowerFactorData();
 
     void setDirty(bool flag);
-    bool isDirty() {return _dirty;};
-    virtual bool isSpecial() {return false;};
+    bool isDirty() {return _dirty;}
+    virtual bool isSpecial() {return false;}
 
 
     void setDynamicData(Cti::RowReader& rdr);

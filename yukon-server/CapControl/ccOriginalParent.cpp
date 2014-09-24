@@ -3,8 +3,6 @@
 #include "ccoriginalparent.h"
 #include "ccid.h"
 #include "ccutil.h"
-#include "row_reader.h"
-#include "database_writer.h"
 #include "database_util.h"
 
 using std::endl;

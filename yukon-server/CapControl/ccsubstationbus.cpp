@@ -1,32 +1,15 @@
 #include "precompiled.h"
 
-#include <rw/tpsrtvec.h>
-
-#include "dbaccess.h"
-#include "msg_signal.h"
-
 #include "ccsubstationbus.h"
 #include "ccid.h"
-#include "cccapbank.h"
-#include "ccfeeder.h"
-#include "pointdefs.h"
-#include "pointtypes.h"
-#include "logger.h"
-#include "capcontroller.h"
-#include "resolvers.h"
-#include "mgr_holiday.h"
-#include "mgr_paosched.h"
-#include "utility.h"
-#include "tbl_pt_alarm.h"
-#include "IVVCStrategy.h"
-#include "database_writer.h"
 #include "database_util.h"
-#include "Exceptions.h"
-#include "PointResponse.h"
-#include "ccutil.h"
+#include "ccsubstationbusstore.h"
+#include "capcontroller.h"
+#include "mgr_holiday.h"
+#include "tbl_pt_alarm.h"
 #include "MsgVerifyBanks.h"
-#include "DatabaseDaoFactory.h"
-#include "PointResponseDao.h"
+
+#include <rw/tpsrtvec.h>
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponsePtr;

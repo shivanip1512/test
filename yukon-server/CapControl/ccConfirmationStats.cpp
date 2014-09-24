@@ -1,28 +1,10 @@
-
-
-/*---------------------------------------------------------------------------
-        Filename:  ccconfirmationstats.cpp
-
-        Programmer:  Julie Richter
-
-        Description:    Source file for CtiCCConfirmationStats.
-                        CtiCCConfirmationStats maintains the state and handles
-                        the persistence of cap banks for Cap Control.
-
-        Initial Date:  8/30/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
-#include "msg_signal.h"
-#include "pointtypes.h"
-#include "msg_pdata.h"
 
-#include "dbaccess.h"
-#include "pointdefs.h"
-#include "logger.h"
-#include "resolvers.h"
 #include "ccconfirmationstats.h"
+#include "pointtypes.h"
+#include "pointdefs.h"
+#include "msg_pdata.h"
+#include "logger.h"
 #include "ccutil.h"
 
 using namespace capcontrol;

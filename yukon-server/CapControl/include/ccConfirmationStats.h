@@ -1,9 +1,5 @@
 #pragma once
 
-#include "msg_cmd.h"
-#include "dbaccess.h"
-#include "observe.h"
-#include "types.h"
 #include "ccoperationstats.h"  
           
 class CtiCCConfirmationStats  
