@@ -1,18 +1,19 @@
-/**
- * Singleton that manages the porter response monitor feature
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.PorterResponseMonitor');
 
+/**
+ * Singleton that manages the porter response monitor feature.
+ * 
+ * @module yukon.PorterResponseMonitor
+ * @requires JQUERY
+ * @requires JQUERY UI
+ */
 yukon.PorterResponseMonitor = (function () {
     
     var mod = {
         
-        /** 
-         * Re-index a row so that the spring form binding works 
+        /** Re-index a row so that the spring form binding works. 
+         *  @param {Object} row - row to index.
+         *  @param {Object} index - index id.
          */
         reindex: function(row, index) {
             row.data('row', index);
@@ -27,10 +28,7 @@ yukon.PorterResponseMonitor = (function () {
             row.find('.js-remove').removeAttr('id');
         },
         
-        /** 
-         * Re-index all rows for spring form binding and
-         * adjusts button states for each row.
-         */
+        /** Re-index all rows for spring form binding and adjusts button states for each row. */ 
         reindexAll: function() {
             var rows = $('#rules-table tbody tr');
             rows.each(function(index, elem) {
@@ -60,7 +58,6 @@ yukon.PorterResponseMonitor = (function () {
 $(function() {
     
     /** SETUP ROWS AFTER PAGE LOAD*/
-    // just get rid of the extra hidden input that spring uses for the checkbox state
     $('#rules-table tbody tr').each(function(idx, elem) {
         $(elem).find('[name^="_rule"]').remove();
     });

@@ -1,15 +1,11 @@
 /**
- * JavaScript for the dropdown menus in Yukon
- * 
- * Tags: dropdown.tag, ajaxDropdown.tag, and criteria.tag
- * 
- * @requires jQuery 1.8.3+
+ * JavaScript for the dropdown menus in Yukon.
+ * @requires JQUERY
  */
 $(function() {
     
     /** Handle clicks on menu triggers */
     $(document).on('click', '.dropdown-trigger', function(e) {
-        
         var trigger = $(this),
         menu = trigger.find('.dropdown-menu');
         
@@ -47,9 +43,10 @@ $(function() {
         return false;
     });
 
-    /**
-     * Reposition when showing to ensure the menu follows the element even
-     * if the page changed since the last time it was shown.
+    /** Reposition when showing to ensure the menu follows the element even
+     *  if the page changed since the last time it was shown.
+     *  @param {Object} menu - Menu item that needs to be changed.
+     *  @param {Object} container - div containing the drop down
      */
     function positionDropdownMenu(menu, container) {
         
@@ -71,7 +68,10 @@ $(function() {
         }
     }
     
-    /** Retrieve a menu via ajax and open it. */
+    /** Retrieve a menu via ajax and open it. 
+     *  @param {Object} target - div containing the drop down
+     *  @param {Object} event - jquery event object. 
+     * */
     function ajaxMenuOpen(target, e) {
         var menu = target.data('menu'),
             params;
@@ -146,7 +146,9 @@ $(function() {
         return true;
     });
     
-    /** Update a criteria button's text */
+    /** Update a criteria button's text
+     *  @param {Object} menu - menu option.
+     */
     function updateCriteriaButton(menu) {
         
         var trigger = $(menu.data('trigger')),

@@ -1,8 +1,18 @@
 yukon.namespace('yukon.ami.peakDayProfile');
 
+/**
+ * Handles peak day profile operations.
+ * 
+ * @module yukon.ami.peakDayProfile
+ * @requires JQUERY
+ */
 yukon.ami.peakDayProfile = (function () {
     var mod,
-        // helper function to reset days after options
+    
+        /** Helper function to reset days.
+         *  @param {Object} selectElement - Item selected in drop down.
+         *  @param Array.<string> values - List of pre/post available days.  
+         */ 
         _setAvailableValuesForDaysAfterSelectElement = function (selectElement, values) {
             values.forEach(function (optVal, index, arr) {
                 var newOpt = document.createElement('option');
@@ -13,6 +23,11 @@ yukon.ami.peakDayProfile = (function () {
         };
 
     mod = {
+            
+         /** Set criteria and starts the process to load profiles.
+         *  @param {Object} divId - Id of div. 
+         *  @param {Object} profileRequestOrigin - Origin of the profile request.
+         */     
         peakDayProfile_start: function (divId, profileRequestOrigin) {
             var initiateComplete,
                 args,
@@ -20,7 +35,11 @@ yukon.ami.peakDayProfile = (function () {
                 divSel = '#' + divId;
         
             $(divSel + '_startButton').prop('disabled', true);
-        
+            
+            /** Shows the return message in alert.
+             *  @param {Object} transport - jqXHR object
+             *  @param {Object} json - json having the response data 
+             */ 
             initiateComplete = function (transport, json) {
                 alert(json['returnMsg']);
                 $(divSel + '_startButton').prop('disabled', false);
@@ -50,6 +69,8 @@ yukon.ami.peakDayProfile = (function () {
                 initiateComplete(jqXHR, jsonData);
             });
         },
+       
+        /** Sets start and stop dates for selected peak after change of peak value. */
         changePeak: function () {
             // convert el lists into js arrays
             var preAvailableDaysAfterPeak = [],
