@@ -42,12 +42,11 @@ public class PaoPointsController {
     
     @RequestMapping("points")
     public String points(ModelMap model, int deviceId, YukonUserContext userContext,
-            @DefaultSort(dir = Direction.asc, sort = "POINTNAME")
-            SortingParameters sorting) {
+            @DefaultSort(dir = Direction.asc, sort = "POINTNAME") SortingParameters sorting) {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, sorting ,accessor);
+        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, sorting, accessor);
         
         model.addAttribute("points", liteYukonPoints);
         model.addAttribute("device", device);
@@ -92,7 +91,7 @@ public class PaoPointsController {
         
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         
-        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(device );
+        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(device);
         
         List<String[]> dataRows = Lists.newArrayList();
         for (LiteYukonPoint point: points) {
