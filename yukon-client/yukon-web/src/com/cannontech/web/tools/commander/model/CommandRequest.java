@@ -12,6 +12,7 @@ public class CommandRequest implements Completable {
     private long timestamp;
     private CommandParams params;
     private List<CommandResponse> responses = new ArrayList<>();
+    private String requestText;
     
     public long getId() {
         return id;
@@ -43,6 +44,14 @@ public class CommandRequest implements Completable {
     
     public void setResponses(List<CommandResponse> responses) {
         this.responses = responses;
+    }
+    
+    public String getRequestText() {
+        return requestText;
+    }
+    
+    public void setRequestText(String requestText) {
+        this.requestText = requestText;
     }
     
     @Override

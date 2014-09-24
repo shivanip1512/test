@@ -2,6 +2,7 @@ package com.cannontech.web.tools.commander;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,6 @@ import com.cannontech.web.tools.commander.model.CommandParams;
 import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
 import com.cannontech.web.tools.commander.model.CommandRequestExceptionType;
-import com.cannontech.web.tools.commander.model.CommandType;
 import com.cannontech.web.tools.commander.service.CommanderService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.base.Predicate;
@@ -72,12 +72,27 @@ public class CommanderController {
     
     private static final String keyBase = "yukon.web.modules.tools.commander";
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
+    private static final Comparator<CommandRequest> requestSorter = new Comparator<CommandRequest>() {
+        @Override
+        public int compare(CommandRequest o1, CommandRequest o2) {
+            if (o1.getTimestamp() == o2.getTimestamp()) {
+                return 0;
+            } else if (o1.getTimestamp() < o2.getTimestamp()) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+    };
     
     @RequestMapping({"/commander", "/commander/"})
-    public String commander(ModelMap model) {
+    public String commander(ModelMap model, LiteYukonUser user) {
         
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
+        List<CommandRequest> requests = new ArrayList<>(commanderService.getRequests(user).values());
+        Collections.sort(requests, requestSorter);
+        model.addAttribute("requests", requests);
         
         return "commander/commander.jsp";
     }
@@ -178,12 +193,11 @@ public class CommanderController {
     public @ResponseBody Map<String, Object> execute(HttpServletResponse resp, YukonUserContext userContext, 
             @ModelAttribute CommandParams params) {
         
-        LiteYukonUser user = userContext.getYukonUser();
         Map<String, Object> result = new HashMap<>();
         
         List<CommandRequest> commands = null;
         try {
-            commands = commanderService.sendCommand(user, params);
+            commands = commanderService.sendCommand(userContext, params);
         } catch (CommandRequestException e) {
             commands = e.getRequests();
             if (e.getType() == CommandRequestExceptionType.PORTER_CONNECTION_INVALID) {
@@ -197,10 +211,9 @@ public class CommanderController {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
         }
         
-        List<Map<String, Object>> requests = new ArrayList<>();
+        List<Map<String, CommandRequest>> requests = new ArrayList<>();
         for (CommandRequest command : commands) {
-            String reqPrintout = buildRequestPrintout(userContext, command.getParams());
-            ImmutableMap<String, Object> request = ImmutableMap.of("request", command, "requestText", reqPrintout);
+            ImmutableMap<String, CommandRequest> request = ImmutableMap.of("request", command);
             requests.add(request);
         }
         result.put("requests", requests);
@@ -240,21 +253,6 @@ public class CommanderController {
         List<PaoLocation> locations = paoLocationService.getNearbyLocations(location, 5, DistanceUnit.MILES);
         
         return paoLocationService.getFeatureCollection(locations);
-    }
-    
-    /** Returns the text representing the request to put in the console window. */
-    private String buildRequestPrintout(YukonUserContext userContext, CommandParams params) {
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        CommandType type = params.getType();
-        String key = type.getRequestTextKey();
-        if (type.hasRoute()) {
-            String route = paoDao.getYukonPAOName(params.getRouteId());
-            return accessor.getMessage(key, params.getSerialNumber(), route, params.getCommand());
-        } else {
-            String pao = paoDao.getYukonPAOName(params.getPaoId());
-            return accessor.getMessage(key, pao, params.getCommand());
-        }
     }
     
     /** Get all visible commands, sorted by display order, that this user has permission to use. */

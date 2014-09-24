@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
@@ -25,11 +26,13 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.Device;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.commander.model.CommandParams;
 import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
@@ -63,14 +66,17 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @PostConstruct private void init() { porter.addMessageListener(this); }
     @Autowired private CommandDao commandDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @Override
-    public List<CommandRequest> sendCommand(LiteYukonUser user, CommandParams params) throws CommandRequestException {
+    public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params) throws CommandRequestException {
+        
+        LiteYukonUser user = userContext.getYukonUser();
         
         log.debug("User: " + user + " attempting command: " + params);
         // TODO log the attempt with event log service
         
-        List<CommandRequest> commands = buildCommands(params, user);
+        List<CommandRequest> commands = buildCommands(params, userContext);
         
         if (!porter.isValid()) {
             for (CommandRequest command : commands) {
@@ -192,7 +198,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
      * Build a {@link CommandRequest} for all commands in the parameters.
      * (Mulitiple commands can be specified in the same text by using an '&')
      */
-    private List<CommandRequest> buildCommands(CommandParams params, LiteYukonUser user) {
+    private List<CommandRequest> buildCommands(CommandParams params, YukonUserContext userContext) {
         
         List<CommandRequest> reqs = new ArrayList<>();
         List<String> commands = splitCommands(params);
@@ -222,13 +228,29 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
             cr.setId(messageId);
             cr.setParams(copy);
             cr.setTimestamp(Instant.now().getMillis());
+            cr.setRequestText(buildRequestPrintout(userContext, copy));
             
-            getRequests(user).put(messageId, cr);
+            getRequests(userContext.getYukonUser()).put(messageId, cr);
             reqs.add(cr);
             
         }
         
         return reqs;
+    }
+    
+    /** Returns the text representing the request to put in the console window. */
+    private String buildRequestPrintout(YukonUserContext userContext, CommandParams params) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        CommandType type = params.getType();
+        String key = type.getRequestTextKey();
+        if (type.hasRoute()) {
+            String route = paoDao.getYukonPAOName(params.getRouteId());
+            return accessor.getMessage(key, params.getSerialNumber(), route, params.getCommand());
+        } else {
+            String pao = paoDao.getYukonPAOName(params.getPaoId());
+            return accessor.getMessage(key, pao, params.getCommand());
+        }
     }
     
     /** Add the serial number to the command if there is no serial number specified. */

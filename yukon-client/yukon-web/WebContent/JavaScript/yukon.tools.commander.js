@@ -13,7 +13,7 @@ yukon.tools.commander = (function () {
     var
     mod = {},
     
-    /** {object} - A map of target button id's to CommandType enum entries. */
+    /** {object} - Map of target button id's to CommandType enum entries. */
     _commandTypes = { 
         'target-device-btn': 'DEVICE',
         'target-lm-group-btn': 'LOAD_GROUP',
@@ -21,7 +21,7 @@ yukon.tools.commander = (function () {
         'target-versacom-btn': 'VERSACOM'
     },
     
-    /** {object} - A hash of regex expressions for finding prompt, update, and queueing command parts. */
+    /** {object} - Map of regex expressions for finding prompt, update, and queueing command parts. */
     _regex = {
         prompt: /\s\?'([^']*)'/g,
         firstPrompt: /\?'([^']*)'/,
@@ -29,7 +29,7 @@ yukon.tools.commander = (function () {
         noqueue: /\snoqueue/gi
     },
     
-    /** {object} - A map of MessageType enum entries to response css class names. */
+    /** {object} - Map of MessageType enum entries to response css class names. */
     _responseTypes = {
         'ERROR': 'cmd-resp-fail', 
         'SUCCESS': 'cmd-resp-success', 
@@ -46,6 +46,22 @@ yukon.tools.commander = (function () {
     _pending = {},
     
     _initialized = false,
+    
+    /** 
+     * Prime the pending cache with any pending requests.
+     * Should be called on page load before the _update timeout is started. 
+     */
+    _primePending = function () {
+        var reqs = yukon.fromJson('#intial-requests');
+        reqs.forEach(function (req, index, array) {
+            if (!req.complete) {
+                var resps = req.responses.map(function (resp) {
+                    return resp.id;
+                });
+                _pending[req.id] = resps;
+            }
+        });
+    },
     
     /** Remove any prompts, ' update', or ' noqueue' from the command. */
     _cleanCommand = function(command) {
@@ -114,10 +130,9 @@ yukon.tools.commander = (function () {
     /** 
      * Log a new request to the console window.  If not complete, add the message id to the pending bucket.
      * @param {object} req - The JSON object representing the request. 
-     * @param {String} text - The i18n'd text to display as the request.
      * @returns {jqObject} The jquery object of the result div added to the console. 
      */
-    _logRequest = function (req, text) {
+    _logRequest = function (req) {
         
         var timestamp = moment(req.timezone).tz(_tz).format(_timeFormat),
             result = $('<div>'), 
@@ -125,7 +140,7 @@ yukon.tools.commander = (function () {
             pending = $('#cmd-templates .cmd-pending').clone();
         
         result.addClass('cmd-req-resp').data('requestId', req.id).attr('data-request-id', req.id);
-        resultReq.addClass('cmd-req').text('[' + timestamp + '] - ' + text).appendTo(result);
+        resultReq.addClass('cmd-req').text('[' + timestamp + '] - ' + req.requestText).appendTo(result);
         result.append(pending);
         _pending[req.id] = [];
         
@@ -279,7 +294,7 @@ yukon.tools.commander = (function () {
                 dataType: 'json'
             }).done(function (result, status, xhr) {
                 for (var i in result.requests) {
-                    _logRequest(result.requests[i].request, result.requests[i].requestText);
+                    _logRequest(result.requests[i].request);
                 }
             }).fail(function (xhr, status, errorThrown) {
                 var 
@@ -287,7 +302,7 @@ yukon.tools.commander = (function () {
                 reason = xhr.responseJSON.reason;
                 
                 for (var i in requests) {
-                    _logRequest(requests[i].request, requests[i].requestText);
+                    _logRequest(requests[i].request);
                     _logError(requests[i].request.id, reason);
                 }
             }).always(function () {
@@ -409,6 +424,10 @@ yukon.tools.commander = (function () {
                 _promptForInput();
             });
             
+            // Prime the pending cache with any pending requests found in the console.
+            _primePending();
+            
+            // Start the recursive updating
             setTimeout(_update, 200);
             
             _initialized = true;

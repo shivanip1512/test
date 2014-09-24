@@ -107,8 +107,29 @@
         <cti:button id="clear-console-btn" nameKey="clear" classes="right"/>
         <cti:button id="select-console-btn" nameKey="selectAll" classes="left"/>
     </div>
-    <div id="commander-results" class="content scroll-lg"></div>
+    <div id="commander-results" class="content scroll-lg">
+        <c:forEach var="req" items="${requests}">
+            <div class="cmd-req-resp" data-request-id="${req.id}">
+                <div class="cmd-req">${fn:escapeXml(req.requestText)}</div>
+                <c:forEach var="resp" items="${req.responses}">
+                    <c:if test="${resp.type == 'SUCCESS'}"><c:set var="clazz" value="cmd-resp-success"/></c:if>
+                    <c:if test="${resp.type == 'ERROR'}"><c:set var="clazz" value="cmd-resp-fail"/></c:if>
+                    <c:if test="${resp.type == 'INHIBITED'}"><c:set var="clazz" value="cmd-resp-warn"/></c:if>
+                    <div class="${clazz}" data-response-id="${resp.id}">
+                        <c:forEach var="result" items="${resp.results}">
+                            <div>${fn:escapeXml(result)}</div>
+                        </c:forEach>
+                    </div>
+                </c:forEach>
+                <c:if test="${!req.complete}">
+                    <div class="cmd-pending clearfix"><cti:icon icon="icon-loading-bars"/></div>
+                </c:if>
+            </div>
+        </c:forEach>
+    </div>
 </div>
+
+<cti:toJson id="intial-requests" object="${requests}"/>
 
 <!-- Template elements for js cloning. -->
 <div id="cmd-templates" class="dn">

@@ -1,63 +1,30 @@
-<%@ attribute name="name" required="true" %>
-<%@ attribute name="rowHighlight" required="false" %>
-<%@ attribute name="nameColumnWidth" required="false" %>
-<%@ attribute name="id" required="false" %>
-<%@ attribute name="nameClass" required="false" %>
-<%@ attribute name="valueClass" required="false" %>
-<%@ attribute name="isSection" required="false" type="java.lang.Boolean" %>
-
+<%@ tag trimDirectiveWhitespaces="true" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:uniqueIdentifier var="trId" prefix="nameValueTr_"/>
-<c:if test="${not empty pageScope.id}">
-    <c:set var="trId" value="${pageScope.id}" />
-</c:if>
-
-<c:choose>
-  <c:when test="${empty nameValueNest}">
-      <c:set var="nameValueNest" value="0" scope="request"/>
-  </c:when>
-  <c:otherwise>
-      <c:set var="nameValueNest" value="${nameValueNest + 1}" scope="request"/>
-  </c:otherwise>
-</c:choose>
-
-<c:set var="indentStyle" value="indent${nameValueNest}" scope="request"/>
+<%@ attribute name="name" required="true" %>
+<%@ attribute name="nameColumnWidth" required="false" %>
+<%@ attribute name="id" required="false" %>
+<%@ attribute name="nameClass" required="false" %>
+<%@ attribute name="valueClass" required="false" %>
 
 <c:choose>
     <c:when test="${nameValueContainer}">
-        
-        <c:if test="${pageScope.nameValueNest > -1}">
-            </td></tr>
-        </c:if>
-
-        <c:set var="trClass" value="${indentStyle}"/>
-        <c:if test="${pageScope.isSection}">
-            <c:set var="trClass" value="section ${trClass}"/>
-        </c:if>
         <c:choose>
-            <c:when test="${pageScope.rowHighlight}">
-                <c:set var="trClass" value="highlighted ${trClass}"/>
+            <c:when test="${not empty pageScope.nameColumnWidth}">
+                <c:set var="withWidth">style="width:${nameColumnWidth};"</c:set>
             </c:when>
-            <c:when test="${altRowOn && altRow}">
-                <c:set var="trClass" value="altRow ${trClass}"/>
-            </c:when>
+            <c:otherwise><c:set var="withWidth" value=""/></c:otherwise>
         </c:choose>
-        <tr class="${trClass}" id="${trId}">
-            <c:set var="altRow" value="${!altRow}" scope="request"/>
-            <td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" <c:if test="${not empty pageScope.nameColumnWidth}">style="width:${pageScope.nameColumnWidth};"</c:if>>${name}${(not empty name)? ':':'&nbsp;'}</td>
-            <td class="value <c:if test="${!empty valueClass}"> ${valueClass}</c:if>"><jsp:doBody/></td>
+        <tr <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
+            <td class="name ${pageScope.nameClass}" ${withWidth}>${name}${(not empty name)? ':' : '&nbsp;'}</td>
+            <td class="value ${pageScope.valueClass}"><jsp:doBody/></td>
         </tr>
     </c:when>
     <c:otherwise>
-        <div class="error" style="font-weight: bold">
-            ERROR: The &lt;nameValue&gt; tag must be enclosed in a &lt;nameValueContainer&gt; tag
+        <div class="error">
+            <strong>ERROR: The &lt;nameValue&gt; tag must be enclosed in a &lt;nameValueContainer&gt; tag</strong>
         </div>
     </c:otherwise>
 </c:choose>
-
-<c:if test="${nameValueNest > -1}">
-    <c:set var="nameValueNest" value="${nameValueNest - 1}" scope="request"/>
-</c:if>

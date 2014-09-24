@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.commander.model.CommandParams;
 import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
@@ -16,7 +17,7 @@ public interface CommanderService {
      * {@link CommandRequestException} if thrown. 
      * @throws {@link CommandRequestException} when the connection to porter is invalid, contains the {@link CommandRequest}s.
      */
-    List<CommandRequest> sendCommand(LiteYukonUser user, CommandParams params) throws CommandRequestException;
+    List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params) throws CommandRequestException;
     
     /**
      * Removes the requests stored for this user from the internal concurrent hash map.
