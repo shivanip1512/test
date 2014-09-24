@@ -709,13 +709,21 @@ yukon.protoPicker = function (okText,
     yukon.protoPicker.prototype.selectAll = function () {
         
         var pickerThis = this,
-            numSelectedBefore = this.selectedItems.length;
+            numSelectedBefore = this.selectedItems.length,
+            currentlySelected = {};
+        
+        pickerThis.selectedItems.forEach(function (item, index, arr) {
+            currentlySelected[item[pickerThis.idFieldName]] = item;
+        });
         
         this.allLinks.forEach(function (item, index, arr) {
-            var row = item.link.closest('tr');
+            var row = item.link.closest('tr'),
+                alreadyThere = currentlySelected[item.hit[pickerThis.idFieldName]];
             if (pickerThis.selectAllCheckBox.checked) {
                 row.addClass('highlighted');
-                pickerThis.selectedItems.push(item.hit);
+                if (!alreadyThere) {
+                    pickerThis.selectedItems.push(item.hit);
+                }
             } else {
                 row.removeClass('highlighted');
                 removeFromSelectedItems.call(pickerThis, item.hit);
@@ -873,13 +881,11 @@ yukon.protoPicker = function (okText,
             outputColumns.push(translatedColumn);
         });
         
-        resultTable = yukon.ui.util.createHtmlTableFromJson(this.selectedItems, outputColumns);
-        $(resultTable).addClass('compact-results-table');
-        $(resultTable).addClass('picker-results-table');
-        $(resultTable).addClass('row-highlighting');
-        this.selectedItemsDisplayArea.innerHTML = '';
-        this.selectedItemsDisplayArea.appendChild(resultTable);
-        $(this.selectedItemsPopup).dialog({minWidth: 400});
+        resultTable = yukon.ui.util.createTable({ data: this.selectedItems, columns: outputColumns, focusIndicator: false })
+        .addClass('compact-results-table picker-results-table');
+        $(this.selectedItemsDisplayArea).empty();
+        $(this.selectedItemsDisplayArea).append(resultTable);
+        $(this.selectedItemsPopup).dialog({ minWidth: 400 });
     };
     
     /** 
