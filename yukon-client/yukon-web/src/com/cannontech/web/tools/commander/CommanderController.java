@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.geojson.FeatureCollection;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.DistanceUnit;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
@@ -47,6 +51,7 @@ import com.cannontech.web.tools.commander.model.CommandRequestException;
 import com.cannontech.web.tools.commander.model.CommandRequestExceptionType;
 import com.cannontech.web.tools.commander.model.CommandType;
 import com.cannontech.web.tools.commander.service.CommanderService;
+import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -57,6 +62,8 @@ public class CommanderController {
     
     @Autowired private ServerDatabaseCache cache;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private PaoLocationService paoLocationService;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private CommandDao commandDao;
     @Autowired private CommanderService commanderService;
@@ -219,6 +226,20 @@ public class CommanderController {
         List<LiteCommand> commands = commands(type.getDbString(), user);
         
         return commands;
+    }
+    
+    /** Get paos nearby */
+    @RequestMapping(value="/commander/{paoId}/nearby", method=RequestMethod.POST)
+    public @ResponseBody FeatureCollection nearby(HttpServletResponse resp, @PathVariable int paoId) {
+        
+        PaoLocation location = paoLocationDao.getLocation(paoId);
+        if (location == null) {
+            resp.setStatus(HttpStatus.NO_CONTENT.value());
+            return null;
+        }
+        List<PaoLocation> locations = paoLocationService.getNearbyLocations(location, 5, DistanceUnit.MILES);
+        
+        return paoLocationService.getFeatureCollection(locations);
     }
     
     /** Returns the text representing the request to put in the console window. */

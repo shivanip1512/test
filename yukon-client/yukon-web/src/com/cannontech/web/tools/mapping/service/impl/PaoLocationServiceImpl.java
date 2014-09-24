@@ -1,9 +1,10 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -14,6 +15,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Maps;
@@ -26,13 +28,12 @@ public class PaoLocationServiceImpl implements PaoLocationService {
 
     @Autowired
     public PaoLocationServiceImpl(ConfigurationSource configSource) {
-        String mapProjection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION);
-        projection = StringUtils.isEmpty(mapProjection) ? "EPSG:4326" : mapProjection;
+        projection = configSource.getString(MasterConfigStringKeysEnum.MAP_PROJECTION, "EPSG:4326");
     }
-
+    
     @Override
-    public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos) {
-        Set<PaoLocation> locations = paoLocationDao.getLocations(paos);
+    public FeatureCollection getFeatureCollection(Iterable<PaoLocation> locations) {
+        
         FeatureCollection features = new FeatureCollection();
         // Set coordinate reference system for these locations.
         Map<String, Object> crsProperties = Maps.newHashMap();
@@ -40,6 +41,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         Crs crs = new Crs();
         crs.setProperties(crsProperties);
         features.setCrs(crs);
+        
         for (PaoLocation location : locations) {
             Feature feature = new Feature();
             // Feature "id" is paoId.
@@ -48,9 +50,29 @@ public class PaoLocationServiceImpl implements PaoLocationService {
             feature.setGeometry(point);
             // Set feature properties.
             feature.getProperties().put(FeaturePropertyType.PAO_IDENTIFIER.getKeyName(),
-                                        location.getPaoIdentifier());
+                    location.getPaoIdentifier());
             features.add(feature);
         }
+        
         return features;
     }
+    
+    @Override
+    public FeatureCollection getLocationsAsGeoJson(Iterable<? extends YukonPao> paos) {
+        Set<PaoLocation> locations = paoLocationDao.getLocations(paos);
+        return getFeatureCollection(locations);
+    }
+    
+    @Override
+    public List<PaoLocation> getNearbyLocations(PaoLocation location, double distance, DistanceUnit unit) {
+        
+        List<PaoLocation> locations = paoLocationDao.getAllLocations();
+        List<PaoLocation> nearby = new ArrayList<>();
+        for (PaoLocation current : locations) {
+            if (location.distanceTo(current, unit) <= distance) nearby.add(current); 
+        }
+        
+        return nearby;
+    }
+    
 }

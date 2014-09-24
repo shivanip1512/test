@@ -71,6 +71,7 @@ import com.cannontech.yukon.BasicServerConnection;
  */
 @ManagedResource
 public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> implements CommandRequestExecutor<T> {
+    
     private final static Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
     private final static Random random = new Random();
 
@@ -80,12 +81,12 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-	@Autowired private NextValueHelper nextValueHelper;
-	@Autowired private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
-	@Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-	@Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-	@Autowired private CommandPermissionConverter commandPermissionConverter;
-	@Autowired private @Qualifier("main") Executor executor;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
+    @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private CommandPermissionConverter commandPermissionConverter;
+    @Autowired private @Qualifier("main") Executor executor;
     @Autowired private @Qualifier("porter") BasicServerConnection porterConnection;
 
     private Set<Permission> loggableCommandPermissions = new HashSet<>();
@@ -117,25 +118,25 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         }
         
         public CommandRequestExecution getCommandRequestExecution() {
-        	return commandRequestExecution;
+            return commandRequestExecution;
         }
         
         @Override
         public synchronized void messageReceived(MessageEvent e) {
-        	
+            
             boolean debug = log.isDebugEnabled();
             
             Message message = e.getMessage();
             
             if (message instanceof Return) {
             
-            	Return rtn = (Return) message;
+                Return rtn = (Return) message;
                 long userMessageId = rtn.getUserMessageID();
                 
                 // this is one of ours
                 if (pendingUserMessageIds.containsKey(userMessageId)) {
                     
-                	T command = pendingUserMessageIds.get(userMessageId);
+                    T command = pendingUserMessageIds.get(userMessageId);
                     if (debug) {
                         log.debug("Got return message " + rtn + " for my " + command + " on " + this);
                     }
@@ -182,7 +183,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                         }
                         
                         // insert CommandRequestExecutionResult record
-                    	saveCommandRequestExecutionResult(this.commandRequestExecution, command, status, rtn.getCommandString());
+                        saveCommandRequestExecutionResult(this.commandRequestExecution, command, status, rtn.getCommandString());
                         
                         pendingUserMessageIds.remove(userMessageId);
                         
@@ -207,8 +208,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                 // but I think this makes it a little more resilient to strange
                 // errors
                 if (pendingUserMessageIds.isEmpty()) {
-                	
-                	// complete the callback
+                    
+                    // complete the callback
                     callback.complete();
                     
                     // complete the commandRequestExecution record
@@ -243,15 +244,15 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         }
         
         public void setCanceled() {
-        	this.canceled = true;
+            this.canceled = true;
         }
         
         public boolean isCanceled() {
-        	return this.canceled;
+            return this.canceled;
         }
         
         public CountDownLatch getCommandsAreWritingLatch() {
-        	return commandsAreWritingLatch;
+            return commandsAreWritingLatch;
         }
         
         @Override
@@ -266,21 +267,21 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution, CommandRequestExecutionStatus executionStatus) {
-    	
-    	commandRequestExecution.setStopTime(new Date());
-    	commandRequestExecution.setCommandRequestExecutionStatus(executionStatus);
+        
+        commandRequestExecution.setStopTime(new Date());
+        commandRequestExecution.setCommandRequestExecutionStatus(executionStatus);
         commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
     }
     
     private void saveCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status, String returnMsgCommand) {
-    	
-    	CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
-    	commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
-    	commandRequestExecutionResult.setCommand(returnMsgCommand);
-    	commandRequestExecutionResult.setCompleteTime(new Date());
-		commandRequestExecutionResult.setErrorCode(status);
-    	
-    	applyIdsToCommandRequestExecutionResult(command, commandRequestExecutionResult);
+        
+        CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
+        commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
+        commandRequestExecutionResult.setCommand(returnMsgCommand);
+        commandRequestExecutionResult.setCompleteTime(new Date());
+        commandRequestExecutionResult.setErrorCode(status);
+        
+        applyIdsToCommandRequestExecutionResult(command, commandRequestExecutionResult);
         
         commandRequestExecutionResultDao.saveOrUpdate(commandRequestExecutionResult);
     }
@@ -358,104 +359,104 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         
         // execute
         executor.execute(new Runnable() {
-        	@Override
+            @Override
             public void run() {
-		        // build up a list of command requests
-		        final List<RequestHolder> commandRequests = new ArrayList<>(commands.size());
-		        int groupMessageId = random.nextInt();
-		        
-		        for (T command : commands) {
-		            
-		            // build basic request
-		            Request request = new Request();
-		            String commandStr = command.getCommandCallback().generateCommand(parameterDto);
+                // build up a list of command requests
+                final List<RequestHolder> commandRequests = new ArrayList<>(commands.size());
+                int groupMessageId = random.nextInt();
+                
+                for (T command : commands) {
+                    
+                    // build basic request
+                    Request request = new Request();
+                    String commandStr = command.getCommandCallback().generateCommand(parameterDto);
                     request.setCommandString(commandStr);
                     request.setGroupMessageID(groupMessageId);
                     request.setPriority(priority);
                     
-		            // allow executor to adjust request (set deviceId, routeId, etc)
-		            adjustRequest(request, command);
-		            
-		            // request holder
-		            RequestHolder requestHolder = new RequestHolder();
-		            requestHolder.command = command;
-		            requestHolder.request = request;
-		            commandRequests.add(requestHolder);
-		        }
-		
-		        // create listener
-		        CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
-		                                                                                        callback, 
-		                                                                                        groupMessageId,
-		                                                                                        execution);
-		        
-		        msgListeners.put(callback, messageListener);
-		        
-		        log.debug("Addinging porter message listener: " + messageListener);
-		        porterConnection.addMessageListener(messageListener);
-		
-		        boolean exceptionOccured = false;
-		        boolean nothingWritten = true;
-		        boolean completeAndRemoveListener = false;
-		        RequestHolder currentRequestHolder = null;
-		        try {
-		            // write requests
-		        	log.debug("Starting commandRequests loop. groupMessageId = " + groupMessageId);
-		            for (RequestHolder requestHolder : commandRequests) {
+                    // allow executor to adjust request (set deviceId, routeId, etc)
+                    adjustRequest(request, command);
+                    
+                    // request holder
+                    RequestHolder requestHolder = new RequestHolder();
+                    requestHolder.command = command;
+                    requestHolder.request = request;
+                    commandRequests.add(requestHolder);
+                }
+        
+                // create listener
+                CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
+                                                                                                callback, 
+                                                                                                groupMessageId,
+                                                                                                execution);
+                
+                msgListeners.put(callback, messageListener);
+                
+                log.debug("Addinging porter message listener: " + messageListener);
+                porterConnection.addMessageListener(messageListener);
+        
+                boolean exceptionOccured = false;
+                boolean nothingWritten = true;
+                boolean completeAndRemoveListener = false;
+                RequestHolder currentRequestHolder = null;
+                try {
+                    // write requests
+                    log.debug("Starting commandRequests loop. groupMessageId = " + groupMessageId);
+                    for (RequestHolder requestHolder : commandRequests) {
 
-		            	currentRequestHolder = requestHolder;
+                        currentRequestHolder = requestHolder;
 
-		            	if (!messageListener.isCanceled()) {
+                        if (!messageListener.isCanceled()) {
 
-			                porterConnection.write(requestHolder.request);
-			                nothingWritten = false;
+                            porterConnection.write(requestHolder.request);
+                            nothingWritten = false;
 
-			                if (commandRequiresLogging(requestHolder.request)) {
-			                    logCommand(requestHolder.request, user);
-			                }
-			                if (log.isDebugEnabled()) {
-			                    log.debug("Sent request to porter: " + requestHolder.request);
-			                }
+                            if (commandRequiresLogging(requestHolder.request)) {
+                                logCommand(requestHolder.request, user);
+                            }
+                            if (log.isDebugEnabled()) {
+                                log.debug("Sent request to porter: " + requestHolder.request);
+                            }
 
-		            	} else {
-		            		log.debug("Not sending request due to cancel: " + requestHolder.request);
-		            	}
-		            }
-		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
+                        } else {
+                            log.debug("Not sending request due to cancel: " + requestHolder.request);
+                        }
+                    }
+                    log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
 
-		        } catch (ConnectionException e) {
-		        	exceptionOccured = true;
-		        	String error = "No porter connection.";
-		        	callback.processingExceptionOccured(error);
-		        	completeAndRemoveListener = true;
-		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
+                } catch (ConnectionException e) {
+                    exceptionOccured = true;
+                    String error = "No porter connection.";
+                    callback.processingExceptionOccured(error);
+                    completeAndRemoveListener = true;
+                    log.debug("Removing porter message listener because an exception occured: " + messageListener);
 
-		        	commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), error, user);
+                    commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), error, user);
 
-		        } catch (Exception e) {
-		        	exceptionOccured = true;
-		        	callback.processingExceptionOccured(e.getMessage());
-		        	completeAndRemoveListener = true;
-		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
+                } catch (Exception e) {
+                    exceptionOccured = true;
+                    callback.processingExceptionOccured(e.getMessage());
+                    completeAndRemoveListener = true;
+                    log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
 
-		        	commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
+                    commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
 
-		        } finally {
-		            if (nothingWritten && !messageListener.isCanceled()) {
-		            	completeAndRemoveListener = true;
-		                log.debug("Removing porter message listener because nothing was written: " + messageListener);
-		            }
+                } finally {
+                    if (nothingWritten && !messageListener.isCanceled()) {
+                        completeAndRemoveListener = true;
+                        log.debug("Removing porter message listener because nothing was written: " + messageListener);
+                    }
 
-		            if (completeAndRemoveListener) {
-		            	callback.complete();
-		            	messageListener.removeListener();
-		            	completeCommandRequestExecutionRecord(execution, exceptionOccured ? CommandRequestExecutionStatus.FAILED : CommandRequestExecutionStatus.COMPLETE);
-		            }
+                    if (completeAndRemoveListener) {
+                        callback.complete();
+                        messageListener.removeListener();
+                        completeCommandRequestExecutionRecord(execution, exceptionOccured ? CommandRequestExecutionStatus.FAILED : CommandRequestExecutionStatus.COMPLETE);
+                    }
 
-		            messageListener.getCommandsAreWritingLatch().countDown();
-		            log.debug("Latch counted down. groupMessageId = " + groupMessageId);
-		        }
-        	}
+                    messageListener.getCommandsAreWritingLatch().countDown();
+                    log.debug("Latch counted down. groupMessageId = " + groupMessageId);
+                }
+            }
         });
 
         return commandRequestExecutionIdentifier;
@@ -467,15 +468,15 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         
         if(msgListeners.isEmpty()){
             log.debug("No message listeners found while cancelling command request execution.");
-        	return 0;
+            return 0;
         }
         // get listener
         CommandResultMessageListener messageListener = msgListeners.get(callback);
         
         // The callback has already returned.
         if(messageListener == null) {
-        	log.debug("No message listeners matching callback found while cancelling command request execution.");
-        	return 0;
+            log.debug("No message listeners matching callback found while cancelling command request execution.");
+            return 0;
         }
         
         // cancel listener
@@ -486,13 +487,13 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         // wait for the listener latch to countdown, which will happen when it has finished its commandRequests write loop
         log.debug("Awaiting latch countdown. groupMessageId = " + messageListener.getGroupMessageId());
         try {
-        	if (!messageListener.getCommandsAreWritingLatch().await(5, TimeUnit.MINUTES)) {
-        		log.error("Timeout waiting for latch, continue with cancelExecution anyway. groupMessageId = " + messageListener.getGroupMessageId());
-        	} else {
-        		log.debug("Latch await over, continue with cancelExecution. groupMessageId = " + messageListener.getGroupMessageId());
-        	}
+            if (!messageListener.getCommandsAreWritingLatch().await(5, TimeUnit.MINUTES)) {
+                log.error("Timeout waiting for latch, continue with cancelExecution anyway. groupMessageId = " + messageListener.getGroupMessageId());
+            } else {
+                log.debug("Latch await over, continue with cancelExecution. groupMessageId = " + messageListener.getGroupMessageId());
+            }
         } catch (InterruptedException e) {
-        	log.error("Latch wait encountered InterruptedException. groupMessageId = " + messageListener.getGroupMessageId(), e);
+            log.error("Latch wait encountered InterruptedException. groupMessageId = " + messageListener.getGroupMessageId(), e);
         }
 
         // run cancel command

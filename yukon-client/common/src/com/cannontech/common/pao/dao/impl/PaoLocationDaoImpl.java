@@ -6,8 +6,10 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -23,98 +25,105 @@ import com.cannontech.database.YukonRowMapper;
 import com.google.common.collect.Sets;
 
 public class PaoLocationDaoImpl implements PaoLocationDao {
-
+    
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-
-    private final static YukonRowMapper<PaoLocation> locationMapper = new YukonRowMapper<PaoLocation>() {
+    
+    private final static YukonRowMapper<PaoLocation> mapper = new YukonRowMapper<PaoLocation>() {
         @Override
         public PaoLocation mapRow(YukonResultSet rs) throws SQLException {
+            
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectId", "Type");
             PaoLocation location = new PaoLocation();
             location.setPaoIdentifier(paoIdentifier);
             location.setLatitude(rs.getDouble("Latitude"));
             location.setLongitude(rs.getDouble("Longitude"));
+            
             return location;
         }
     };
-
+    
     @Override
     public Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos) {
-        Set<Integer> paoIds = Sets.newHashSet();
-        for (YukonPao yukonPao : paos) {
-            paoIds.add(yukonPao.getPaoIdentifier().getPaoId());
-        }
+        
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT l.PAObjectId,Latitude,Longitude,Type ");
-                sql.append("FROM PaoLocation l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
-                sql.append("WHERE l.PAObjectId").in(subList);
+                sql.append("select pl.PAObjectId, Latitude, Longitude, Type");
+                sql.append("from PaoLocation pl");
+                sql.append("join YukonPAObject ypo on ypo.PAObjectId = pl.PAObjectId");
+                sql.append("where pl.PAObjectId").in(subList);
                 return sql;
             }
         };
-        final Set<PaoLocation> lastLocations = Sets.newHashSet();
+        
+        final Set<PaoLocation> locations = Sets.newHashSet();
         ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
-        chunkingTemplate.query(sqlGenerator, paoIds, new YukonRowCallbackHandler() {
+        chunkingTemplate.query(sqlGenerator, PaoUtils.asPaoIdList(paos), new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                PaoLocation location = locationMapper.mapRow(rs);
-                lastLocations.add(location);
+                PaoLocation location = mapper.mapRow(rs);
+                locations.add(location);
             }
         });
-        return lastLocations;
+        
+        return locations;
     }
-
+    
     @Override
     public PaoLocation getLocation(int paoId) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT l.PAObjectId,Latitude,Longitude,Type ");
-        sql.append("FROM PaoLocation l JOIN YukonPAObject p ON l.PAObjectId = p.PAObjectID ");
-        sql.append("WHERE l.PAObjectId").eq(paoId);
-        return jdbcTemplate.queryForObject(sql, locationMapper);
+        sql.append("select pl.PAObjectId, Latitude, Longitude, Type");
+        sql.append("from PaoLocation pl");
+        sql.append("join YukonPAObject ypo on ypo.PAObjectId = pl.PAObjectId");
+        sql.append("where pl.PAObjectId").eq(paoId);
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, mapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
-
+    
+    @Override
+    public List<PaoLocation> getAllLocations() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select pl.PAObjectId, Latitude, Longitude, Type");
+        sql.append("from PaoLocation pl");
+        sql.append("join YukonPAObject ypo on ypo.PAObjectId = pl.PAObjectId");
+        
+        return jdbcTemplate.query(sql, mapper);
+    }
+    
     @Override
     public void save(PaoLocation location) {
         // Insert the location or update if already exists.
-        SqlStatementBuilder insertSql = new SqlStatementBuilder();
-        SqlParameterSink insertParams = insertSql.insertInto("PaoLocation");
-        insertParams.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
-        insertParams.addValue("Latitude", location.getLatitude());
-        insertParams.addValue("Longitude", location.getLongitude());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink values = sql.insertInto("PaoLocation");
+        values.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
+        values.addValue("Latitude", location.getLatitude());
+        values.addValue("Longitude", location.getLongitude());
         try {
-            jdbcTemplate.update(insertSql);
+            jdbcTemplate.update(sql);
         } catch (DataIntegrityViolationException e) {
             // Device already has a location, update the coordinates.
-            SqlStatementBuilder updateSql = new SqlStatementBuilder();
-            SqlParameterSink updateParams = updateSql.update("PaoLocation");
-            updateParams.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
-            updateParams.addValue("Latitude", location.getLatitude());
-            updateParams.addValue("Longitude", location.getLongitude());
-            updateSql.append("WHERE PAObjectId").eq(location.getPaoIdentifier().getPaoId());
-            jdbcTemplate.update(updateSql);
+            sql = new SqlStatementBuilder();
+            values = sql.update("PaoLocation");
+            values.addValue("PAObjectId", location.getPaoIdentifier().getPaoId());
+            values.addValue("Latitude", location.getLatitude());
+            values.addValue("Longitude", location.getLongitude());
+            sql.append("where PAObjectId").eq(location.getPaoIdentifier().getPaoId());
+            jdbcTemplate.update(sql);
         }
     }
-
+    
     @Override
     public void saveAll(Iterable<PaoLocation> locations) {
-        /*
-         * // If "update if already exists" logic is not required, then SQL batch inserts can be
-         * // used instead.
-         * SqlStatementBuilder sql = new SqlStatementBuilder();
-         * sql.append("INSERT INTO Location (");
-         * sql.append("PAObjectId,Latitude,Longitude");
-         * sql.append(") VALUES (?,?,?) ");
-         * List<Object[]> batchArgs = Lists.newArrayList();
-         * for (Location location : locations) {
-         * batchArgs.add(new Object[] { location.getPaoIdentifier().getPaoId(),
-         * location.getLatitude(), location.getLongitude() });
-         * }
-         * template.batchUpdate(sql.getSql(), batchArgs);
-         */
         for (PaoLocation location : locations) {
             save(location);
         }
     }
+    
 }

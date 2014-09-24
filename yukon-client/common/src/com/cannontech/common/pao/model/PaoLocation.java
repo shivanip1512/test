@@ -31,7 +31,38 @@ public class PaoLocation {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-
+    
+    public double distanceTo(PaoLocation location, DistanceUnit unit) {
+        
+        double theta = longitude - location.getLongitude();
+        double dist = Math.sin(deg2rad(latitude)) 
+                * Math.sin(deg2rad(location.getLatitude())) + Math.cos(deg2rad(latitude)) 
+                * Math.cos(deg2rad(location.getLatitude())) 
+                * Math.cos(deg2rad(theta));
+        
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        
+        if (unit == DistanceUnit.KILOMETERS) {
+            dist = dist * 1.609344;
+        } else if (unit == DistanceUnit.NAUTICAL_MILES) {
+            dist = dist * 0.8684;
+        }
+        
+        return dist;
+    }
+    
+    /** Converts decimal degrees to radians */
+    public static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+      
+    /** Converts radians to decimal degrees */
+    public static double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;

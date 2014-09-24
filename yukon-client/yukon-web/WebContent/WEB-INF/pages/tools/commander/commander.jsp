@@ -114,4 +114,25 @@
 <div id="cmd-templates" class="dn">
     <div class="cmd-pending clearfix"><cti:icon icon="icon-loading-bars"/></div>
 </div>
+
+<div data-dialog id="prompt-dialog" class="dn"
+        data-title="<cti:msg2 key=".prompt"/>"
+        data-event="yukon.tools.commander.user.input"
+        data-position-my="left top+2"
+        data-position-at="left bottom"
+        data-position-of="#command-text">
+    <table class="name-value-table">
+        <thead></thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr>
+                <td class="name js-prompt-text"></td>
+                <td class="value">
+                    <input class="js-prompt-input" type="text">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 </cti:standardPage>

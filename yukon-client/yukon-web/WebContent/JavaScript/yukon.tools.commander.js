@@ -21,6 +21,14 @@ yukon.tools.commander = (function () {
         'target-versacom-btn': 'VERSACOM'
     },
     
+    /** {object} - A hash of regex expressions for finding prompt, update, and queueing command parts. */
+    _regex = {
+        prompt: /\s\?'([^']*)'/g,
+        firstPrompt: /\?'([^']*)'/,
+        update: /\supdate/gi,
+        noqueue: /\snoqueue/gi
+    },
+    
     /** {object} - A map of MessageType enum entries to response css class names. */
     _responseTypes = {
         'ERROR': 'cmd-resp-fail', 
@@ -39,11 +47,32 @@ yukon.tools.commander = (function () {
     
     _initialized = false,
     
-    /** Update the common commands dropdown with for the selected pao. */
+    /** Remove any prompts, ' update', or ' noqueue' from the command. */
+    _cleanCommand = function(command) {
+        return command.replace(_regex.prompt, '')
+                      .replace(_regex.update, '')
+                      .replace(_regex.noqueue, '');
+    },
+    
+    /** 
+     * Update the common commands dropdown with for the selected pao.
+     * Attempt to keep the current command if we can find it in the list of new commands;
+     * not perfect but it's the best we can do without hitting the server.
+     */
     _updateCommandsForPao = function (paoId) {
         $.getJSON('commander/commands?' + $.param({ paoId: paoId }))
         .done(function (commands) {
+            
+            var keep = false,
+                currentText = _cleanCommand($('#command-text').val());
+            
             _updateCommonCommands(commands);
+            
+            commands.forEach(function (command, index) {
+                if (command.label === currentText || _cleanCommand(command.command) === currentText) keep = true;
+            });
+            
+            if (!keep) $('#command-text').val('');
         });
     },
     
@@ -58,13 +87,28 @@ yukon.tools.commander = (function () {
             
         first.siblings().remove();
         commands.forEach(function (command) {
-            var option = $('<option>');
-            option.val(command.command);
-            option.text(command.label);
-            select.append(option);
+            if (command.label.trim()) {
+                select.append($('<option>').text(command.label).val(command.command));
+            } else {
+                select.append($('<optgroup>')); // Essentially adds a blank space
+            }
         });
         
-        $('#command-text').val('');
+    },
+    
+    /** Find any prompts in the command and show dialog for input if need be. */
+    _promptForInput = function () {
+        
+        var field = $('#command-text'),
+            command = field.val(),
+            dialog = $('#prompt-dialog'),
+            at = command.search(_regex.firstPrompt);
+            
+        if (at != -1) {
+            dialog.find('.js-prompt-text').text(_regex.firstPrompt.exec(command)[1]);
+            dialog.find('.js-prompt-input').val('');
+            yukon.ui.dialog('#prompt-dialog');
+        }
     },
     
     /** 
@@ -260,9 +304,10 @@ yukon.tools.commander = (function () {
             
             if (_initialized) return;
             
-            /** Autofill the command text field when the choose a common command. */
+            /** Autofill the command text field when the choose a common command; prompt for any user input needed. */
             $('#common-commands').change(function (ev) {
                 $('#command-text').val($(this).val());
+                _promptForInput();
             });
             
             /** User clicked the expresscom or versacom target buttons, update the common commands. */
@@ -306,8 +351,8 @@ yukon.tools.commander = (function () {
             });
             
             /** User hit enter in the command textfield. */
-            $('#command-text').on('keypress', function (ev) {
-                if (ev.which === 13) _execute();
+            $('#command-text').on('keyup', function (ev) {
+                if (ev.which === yg.keys.enter) _execute();
             });
             
             /** User clicked the clear button in the console. */
@@ -346,6 +391,24 @@ yukon.tools.commander = (function () {
                 });
             });
             
+            /** User has supplied input for command, use it and check if more is needed. */
+            $('#prompt-dialog').on('yukon.tools.commander.user.input keyup', function (ev) {
+                
+                // Ignore keydown events that are not the enter key.
+                if (ev.type === 'keyup') {
+                    if (ev.which !== yg.keys.enter) return true;
+                }
+                
+                var field = $('#command-text'),
+                    current = field.val(),
+                    input = $(this).find('.js-prompt-input').val();
+                
+                field.val(current.replace(_regex.firstPrompt, input));
+                $('#prompt-dialog').dialog('close');
+                field.focus();
+                _promptForInput();
+            });
+            
             setTimeout(_update, 200);
             
             _initialized = true;
@@ -356,8 +419,16 @@ yukon.tools.commander = (function () {
         
         /** A device was chosen from the device picker, update the commands and set the route if need be. */
         deviceChosen: function (paos) {
-            var paoId = paos[0].paoId;
-            _updateCommandsForPao(paoId);
+            
+            var row = $('#device-row'),
+                paoId = paos[0].paoId,
+                type = paos[0].type,
+                prevType = row.data('type');
+            
+            if (prevType !== type) {
+                row.data('type', type);
+                _updateCommandsForPao(paoId);
+            }
             
             $.ajax({ url: 'commander/route/' + paoId, dataType: 'json' })
             .done(function (route, status, xhr) {

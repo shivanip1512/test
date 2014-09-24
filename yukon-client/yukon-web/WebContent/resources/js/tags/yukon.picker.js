@@ -947,8 +947,7 @@ $(function () {
     
     $(document).on('keydown', '.js-picker-dialog', function (ev) {
         
-        var keys = { up: 38, down: 40, left: 37, right: 39, enter: 13 },
-            key = ev.which,
+        var key = ev.which,
             dialog = $(this),
             table = dialog.find('.picker-results-table tbody'),
             next = dialog.find('.next-page'),
@@ -956,12 +955,12 @@ $(function () {
             focus = $(':focus'),
             searching = focus.is('.js-picker-search');
         
-        if (yukon.values(keys).indexOf(key) != -1) {
+        if (yukon.values(yg.keys).indexOf(key) != -1) {
             
             ev.stopPropagation();
             ev.preventDefault();
             
-            if (key == keys.down) {
+            if (key == yg.keys.down) {
                 if (searching) {
                     table.find('tr:first-child').focus();
                 } else if (focus.is('tr')) {
@@ -971,7 +970,7 @@ $(function () {
                         focus.next().focus();
                     }
                 }
-            } else if (key == keys.up) {
+            } else if (key == yg.keys.up) {
                 if (searching) {
                     table.find('tr:last-child').focus();
                 } else if (focus.is('tr')) {
@@ -981,11 +980,11 @@ $(function () {
                         focus.prev().focus();
                     }
                 }
-            } else if (key == keys.right) {
+            } else if (key == yg.keys.right) {
                 if (next.css('visibility') !== 'hidden') next[0].click();
-            } else if (key == keys.left) {
+            } else if (key == yg.keys.left) {
                 if (prev.css('visibility') !== 'hidden') prev[0].click();
-            } else if (key == keys.enter) {
+            } else if (key == yg.keys.enter) {
                 if (focus.is('tr')) {
                     focus.find('a').trigger('click');
                 } else if (searching) {

@@ -495,7 +495,7 @@ yukon.ui = (function () {
                 if ($(e.target).hasClass('js-allowSubmitViaEnterKey')) {
                     return true;
                 }
-                if (e.keyCode == 13) {
+                if (e.keyCode == yukon.keys.enter) {
                     return false;
                 }
             });

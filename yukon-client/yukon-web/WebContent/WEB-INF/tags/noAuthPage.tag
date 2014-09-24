@@ -73,7 +73,9 @@
             <li><a id="contact-us" href="javascript:void(0)" data-popup="#contact-us-dialog"><i:inline key="yukon.web.layout.standard.contactUs"/></a></li>
             <cti:msg2 var="dialogTitle" key="layout.standard.contactUs"/>
             <div id="contact-us-dialog" class="dn" data-title="${dialogTitle}"
-                data-position-my="right bottom" data-position-at="right top" data-position-of="#contact-us">
+                data-position-my="right bottom" 
+                data-position-at="right top" 
+                data-position-of="#contact-us">
 
               <cti:globalSetting var="email" globalSettingType="CONTACT_EMAIL"/>
               <div class="stacked">
