@@ -265,5 +265,10 @@ public class RfnGatewayServiceTest {
         public void saveAll(Iterable<PaoLocation> locations) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public List<PaoLocation> getAllLocations() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
