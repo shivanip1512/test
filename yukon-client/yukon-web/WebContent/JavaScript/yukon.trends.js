@@ -17,7 +17,18 @@ yukon.trends = (function() {
             yukon.ui.elementGlass.show('[data-trend]');
             $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function(trend) {
                 
-                var labels = JSON.parse(decodeURIComponent($('#label-json').html()));
+                var labels = JSON.parse(decodeURIComponent($('#label-json').html())),
+                    labelFormat = '%Y-%m-%d %l:%M:%S %p',
+                    dateTimeLabelFormats = {
+                        millisecond: [labelFormat,labelFormat],
+                        second:      [labelFormat,labelFormat],
+                        minute:      [labelFormat,labelFormat],
+                        hour:        [labelFormat,labelFormat],
+                        day:         [labelFormat,labelFormat],
+                        week:        [labelFormat,labelFormat],
+                        month:       [labelFormat,labelFormat],
+                        year:        [labelFormat,labelFormat]
+                    };
                 // Create the chart
                 $('[data-trend]').highcharts('StockChart', {
                     
@@ -51,6 +62,14 @@ yukon.trends = (function() {
                         shadow: true
                     },
                     
+                    plotOptions: {
+                        series: {
+                            dataGrouping: {
+                                dateTimeLabelFormats: dateTimeLabelFormats
+                            }
+                        }
+                    },
+
                     rangeSelector : {
                         buttons: [{
                             type: 'day',
@@ -89,6 +108,7 @@ yukon.trends = (function() {
                     series : trend.series,
 
                     tooltip: {
+                        dateTimeLabelFormats: dateTimeLabelFormats,
                         valueDecimals: 3
                     },
                     
