@@ -47,8 +47,9 @@ public class HardwarePointsController {
             AccountInfoFragment account,
             @DefaultSort(dir=Direction.asc, sort="POINTNAME") SortingParameters sorting) {
         
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, sorting);
+        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, sorting, accessor );
         
         model.addAttribute("device", device);
         model.addAttribute("deviceId", deviceId);
@@ -63,7 +64,6 @@ public class HardwarePointsController {
         model.addAttribute("inventoryId", inventoryId);
         model.addAttribute("accountNumber", account.getAccountNumber());
         
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         buildColumn(model, accessor, PointSortField.ATTRIBUTE, sorting);
         buildColumn(model, accessor, PointSortField.POINTNAME, sorting);
         buildColumn(model, accessor, PointSortField.POINTTYPE, sorting);

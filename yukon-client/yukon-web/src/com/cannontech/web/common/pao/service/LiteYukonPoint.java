@@ -18,21 +18,6 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
     private final PaoPointIdentifier paoPointIdentifier;
     private final BuiltInAttribute attribute;
     
-    public static Comparator<LiteYukonPoint> ATTRIBUTE_COMPARATOR = new Comparator<LiteYukonPoint>() {
-        @Override
-        public int compare(LiteYukonPoint o1, LiteYukonPoint o2) {
-            if (o1.attribute == o2.attribute) {
-                return 0;
-            } else if (o1.attribute == null) {
-                return 1;
-            } else if (o2.attribute == null) {
-                return -1;
-            } else {
-                return o1.attribute.getDescription().compareToIgnoreCase(o2.attribute.getDescription());
-            }
-        }
-    };
-    
     public static Comparator<LiteYukonPoint> POINTNAME_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
         public int compare(LiteYukonPoint o1, LiteYukonPoint o2) {
@@ -83,7 +68,6 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
     
     static {
         ImmutableMap.Builder<PointSortField, Comparator<LiteYukonPoint>> mapBuilder = ImmutableMap.builder();
-        mapBuilder.put(PointSortField.ATTRIBUTE, ATTRIBUTE_COMPARATOR);
         mapBuilder.put(PointSortField.POINTNAME, POINTNAME_COMPARATOR);
         mapBuilder.put(PointSortField.POINTOFFSET, POINTOFFSET_COMPARATOR);
         mapBuilder.put(PointSortField.POINTTYPE, POINTTYPE_COMPARATOR);

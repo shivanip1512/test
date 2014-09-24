@@ -38,25 +38,27 @@ public class PaoPointsController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private YukonPointHelper yukonPointHelper;
+   
     
     @RequestMapping("points")
     public String points(ModelMap model, int deviceId, YukonUserContext userContext,
-            @DefaultSort(dir=Direction.asc, sort="POINTNAME") SortingParameters sorting) {
+            @DefaultSort(dir = Direction.asc, sort = "POINTNAME")
+            SortingParameters sorting) {
         
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, sorting);
+        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, sorting ,accessor);
         
+        model.addAttribute("points", liteYukonPoints);
         model.addAttribute("device", device);
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        model.addAttribute("points", liteYukonPoints);
         
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         buildColumn(model, accessor, PointSortField.ATTRIBUTE, sorting);
         buildColumn(model, accessor, PointSortField.POINTNAME, sorting);
         buildColumn(model, accessor, PointSortField.POINTTYPE, sorting);
         buildColumn(model, accessor, PointSortField.POINTOFFSET, sorting);
-        
+
         return "device/points.jsp";
     }
     
@@ -90,7 +92,7 @@ public class PaoPointsController {
         
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         
-        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(device);
+        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(device );
         
         List<String[]> dataRows = Lists.newArrayList();
         for (LiteYukonPoint point: points) {
