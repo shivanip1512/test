@@ -57,6 +57,7 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGroupMemberEditorDao, PartialDeviceGroupDao {
@@ -425,19 +426,48 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
         
         DeviceGroupUtil.validateName(group.getName());
+        String previousGroupName = getGroupById(group.getId()).getFullName();
         
         StoredDeviceGroup parentGroup = getStoredGroup(group.getParent());
+        String groupName = SqlUtils.convertStringToDbValue(group.getName());
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE DeviceGroup");
-        sql.append("SET GroupName = ?, ParentDeviceGroupId = ?");
-        sql.append("WHERE");
-        sql.append("DeviceGroupId = ?");
-        
-        String rawName = SqlUtils.convertStringToDbValue(group.getName());
-        
+        sql.append("SET GroupName").eq(groupName);
+        sql.append(", ParentDeviceGroupId").eq(parentGroup.getId());
+        sql.append("WHERE DeviceGroupId").eq(group.getId());
+
+        List<String> tablesToUpdate = ImmutableList.of("DeviceGroupComposedGroup",
+                                                       "DeviceDataMonitor",
+                                                       "OutageMonitor",
+                                                       "TamperFlagMonitor",
+                                                       "StatusPointMonitor",
+                                                       "PorterResponseMonitor",
+                                                       "ValidationMonitor");
+
+        List<String> jobProperties = ImmutableList.of("deviceGroup",
+                                                      "deviceGroupNames");
+        SqlStatementBuilder update = new SqlStatementBuilder();
+        update.append("UPDATE JobProperty");
+        update.append("SET Value = REPLACE(Value,")
+              .appendArgument(previousGroupName)
+              .append(",")
+              .appendArgument(group.getFullName())
+              .append(")");
+        update.append("WHERE Value").contains(previousGroupName);
+        update.append("AND Name").in(jobProperties);
+
+        update.append(";");
+        for (String tableName : tablesToUpdate) {
+            update.append("UPDATE ").append(tableName);
+            update.append("SET GroupName").eq(group.getFullName());
+            update.append("WHERE GroupName").eq(previousGroupName);
+            update.append(";");
+        }
+
         try {
-            jdbcTemplate.update(sql.toString(), rawName, parentGroup.getId(), group.getId());
+            jdbcTemplate.update(sql);
+            jdbcTemplate.update(update);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Cannot change group name to the same name as an existing group with the same parent.", e);
         }

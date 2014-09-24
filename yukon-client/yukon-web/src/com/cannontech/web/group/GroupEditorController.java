@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,8 +49,10 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsTreeNode;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableSet;
 
 @RequestMapping("/editor/*")
 @Controller
@@ -161,7 +165,7 @@ public class GroupEditorController {
         // MOVE GROUPS TREE JSON
         Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
-        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, null);
+        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.EMPTY_SET);
         
         String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap());
         mav.addObject("moveGroupDataJson", moveGroupJson); 
@@ -174,7 +178,7 @@ public class GroupEditorController {
             }
         };
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
-        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, null);
+        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.EMPTY_SET);
         
         String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap());
         mav.addObject("copyGroupDataJson", copyGroupJson); 
@@ -216,43 +220,35 @@ public class GroupEditorController {
     }
 
     @RequestMapping("updateGroupName")
-    public ModelAndView updateGroupName(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-        
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
-        
-        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
-
-        String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-        String newGroupName = ServletRequestUtils.getStringParameter(request, "newGroupName");
+    @CheckRoleProperty(YukonRoleProperty.DEVICE_GROUP_EDIT)
+    public String updateGroupName(ModelMap model, String groupName, String newGroupName) {
 
         // Make sure a new name was entered and doesn't contain slashes
         newGroupName = newGroupName.trim();
-        if (StringUtils.isEmpty(newGroupName) || !DeviceGroupUtil.isValidName(newGroupName)) {
-            mav.addObject("errorMessage",
+        if (!DeviceGroupUtil.isValidName(newGroupName)) {
+            model.addAttribute("errorMessage",
                           "You must enter a New Group Name.  Group names may not contain slashes.");
-            return mav;
+            return "redirect:/group/editor/home";
         }
 
         StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
-        group.setName(newGroupName.trim());
-        
+        group.setName(newGroupName);
+
         if(!group.isEditable()){
-            mav.addObject("errorMessage", "Non-editable groups cannot be updated.");
-            return mav;
+            model.addAttribute("errorMessage", "Non-editable groups cannot be updated.");
+            return "redirect:/group/editor/home";
         }
-        
+
         try {
             deviceGroupEditorDao.updateGroup(group);
         } catch (DuplicateException e){
-            mav.addObject("errorMessage", e.getMessage());
-            return mav;
+            model.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/group/editor/home";
         }
 
-        mav.addObject("groupName", group.getFullName());
+        model.addAttribute("groupName", group.getFullName());
 
-        return mav;
+        return "redirect:/group/editor/home";
 
     }
 
@@ -362,10 +358,12 @@ public class GroupEditorController {
             }
         }
         
+        Set<? extends NodeAttributeSettingCallback<DeviceGroup>> callbacks = ImmutableSet.of(new DisableCurrentGroup());
+        
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new DisableCurrentGroup());
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, callbacks);
         String dataJson = JsonUtils.toJson(root.toMap());
         
         mav.addObject("groupDataJson", dataJson);

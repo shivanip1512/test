@@ -198,7 +198,9 @@
       <page name="deviceGroups" type="BASIC">
         <link>/group/editor/home</link>
         <pages>
-          <page name="deviceGroups.create.composed" type="BASIC"/>
+          <page name="deviceGroups.create.composed" type="DETAIL">
+            <labelArgument>${groupName}</labelArgument>
+          </page>
           <page name="deviceGroups.addDevices" type="DETAIL">
             <labelArgument>${groupName}</labelArgument>
           </page>

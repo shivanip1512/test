@@ -12,9 +12,10 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="multi" type="java.lang.Boolean" description="If true, selection mode will be multiselection. 
-                                                                 Default: single selection." %> 
-<%@ attribute name="predicates" description="Optional comma separated strings of DeviceGroupPredicateEnum 
+<%@ attribute name="multi" type="java.lang.Boolean" description="If true, selection mode will be multiselection.
+                                                                 Default: single selection." %>
+<%@ attribute name="callbacks" type="java.util.Set" description="Callbacks to be preformed on the node. Can be used to disable selecting certain nodes"%>
+<%@ attribute name="predicates" description="Optional comma separated strings of DeviceGroupPredicateEnum
                                              entry names to filter the tree data by. Default: 'NON_HIDDEN'" %>
 
 <%@ attribute name="classes" description="CSS class names applied to the component element." %>
@@ -37,7 +38,7 @@
 </cti:checkRolesAndProperties>
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
 
-<cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}"/>
+<cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}" callbacks="${callbacks}"/>
 <c:set var="titleKey" value="${multi ? 'yukon.common.selectGroups.title' : 'yukon.common.selectGroup.title'}"/>
 <c:set var="selectKey" value="${multi ? 'yukon.common.selectGroups' : 'yukon.common.selectGroup'}"/>
 

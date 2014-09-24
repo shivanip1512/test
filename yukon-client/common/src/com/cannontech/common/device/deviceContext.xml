@@ -206,6 +206,8 @@
     <bean id="deviceGroupComposedGroupDao" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedGroupDaoImpl"/>
     <bean id="deviceGroupComposedGroupRowAndFieldMapper" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedGroupRowAndFieldMapper"/>
     
+    <bean class="com.cannontech.common.device.groups.composed.dao.impl.ComposedDeviceGroupServiceImpl"/>
+
     <bean id="peakReportDao" class="com.cannontech.common.device.peakReport.dao.impl.PeakReportDaoImpl"/>
     
     <bean id="deviceGroupTreeFactory"

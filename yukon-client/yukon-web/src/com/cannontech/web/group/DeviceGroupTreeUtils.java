@@ -2,6 +2,7 @@ package com.cannontech.web.group;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,14 +12,22 @@ import com.cannontech.common.device.groups.service.DeviceGroupPredicateEnum;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.web.util.JsTreeNode;
+import com.google.common.collect.ImmutableSet;
 
 public class DeviceGroupTreeUtils {
 
     public static JsTreeNode makeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback) {
+
+        DeviceGroupJsTreeBuilder builder = new DeviceGroupJsTreeBuilder();
+
+        return builder.doMakeDeviceGroupJsTree(dgh, rootName, ImmutableSet.of(nodeCallback), "");
+    }
+
+    public static JsTreeNode makeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, Set<? extends NodeAttributeSettingCallback<DeviceGroup>> callbacks) {
     
         DeviceGroupJsTreeBuilder builder = new DeviceGroupJsTreeBuilder();
         
-        return builder.doMakeDeviceGroupJsTree(dgh, rootName, nodeCallback, "");
+        return builder.doMakeDeviceGroupJsTree(dgh, rootName, callbacks, "");
     }
     
     public static void setupNodeAttributes(JsTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName, String href) {

@@ -1817,6 +1817,14 @@
         </attribute>
         <attribute>
             <description>
+                Callbacks to be preformed on the node. Can be used to disable selecting certain nodes.
+            </description>
+            <name>callbacks</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue> 
+        </attribute>
+        <attribute>
+            <description>
                 The name given to the root node. Defaults to "Groups".
             </description>
             <name>rootName</name>

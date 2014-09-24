@@ -1,6 +1,8 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.jsp.JspException;
 
@@ -17,6 +19,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.HighlightSelectedGroupNodeAttributeSettingCallback;
+import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
 
 @Configurable(value="deviceGroupHierarchyJsonPrototype", autowire=Autowire.BY_NAME)
@@ -26,6 +29,7 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport {
     private @Autowired DeviceGroupUiService deviceGroupUiService;
     
     private String predicates = "";
+    private Set<NodeAttributeSettingCallback<DeviceGroup>> callbacks = new HashSet<>();
     private String rootName = "";
     private String selectGroupName = null;
     private String selectedNodePathVar = null;
@@ -53,20 +57,26 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport {
             }
         }
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);
+        Set<NodeAttributeSettingCallback<DeviceGroup>> allCallbacks = new HashSet<>();
+        if (nodeCallback != null) {
+            allCallbacks.add(nodeCallback);
+        }
+        allCallbacks.addAll(callbacks);
+
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, allCallbacks);
         
         String extSelectedNodePath = null;
         if (nodeCallback != null) {
             extSelectedNodePath = nodeCallback.getJsTreeSelectedNodePath();
             if (!StringUtils.isBlank(selectedNodePathVar)) {
-                this.getJspContext().setAttribute(selectedNodePathVar, extSelectedNodePath);
+                getJspContext().setAttribute(selectedNodePathVar, extSelectedNodePath);
             }
         }
         
         if (var == null) {
             getJspContext().getOut().write(JsonUtils.toJson(root.toMap()));
         } else {
-            this.getJspContext().setAttribute(var, JsonUtils.toJson(root.toMap()));
+            getJspContext().setAttribute(var, JsonUtils.toJson(root.toMap()));
         }
     }
     
@@ -74,6 +84,10 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport {
         this.predicates = predicates;
     }
     
+    public void setCallbacks(Set<NodeAttributeSettingCallback<DeviceGroup>> callbacks) {
+        this.callbacks = callbacks;
+    }
+
     public void setRootName(String rootName) {
         if (!StringUtils.isBlank(rootName)) {
             this.rootName = rootName;

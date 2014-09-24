@@ -5,6 +5,7 @@ package com.cannontech.web.group;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
@@ -15,7 +16,7 @@ public class DeviceGroupJsTreeBuilder {
     
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     
-    public JsTreeNode doMakeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId) {
+    public JsTreeNode doMakeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, Set<? extends NodeAttributeSettingCallback<DeviceGroup>> callbacks, String parentNodeId) {
         
         DeviceGroup deviceGroup = dgh.getGroup();
         
@@ -41,12 +42,14 @@ public class DeviceGroupJsTreeBuilder {
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
-            node.addChild(doMakeDeviceGroupJsTree(d, null, nodeCallback, nodePath));
+            node.addChild(doMakeDeviceGroupJsTree(d, null, callbacks, nodePath));
         }
         
         // run special callback to set specific attributes if provided
-        if (nodeCallback != null) {
-            nodeCallback.setAdditionalAttributes(node, deviceGroup);
+        if (callbacks != null ) {
+            for (NodeAttributeSettingCallback<DeviceGroup> callback : callbacks) {
+                callback.setAdditionalAttributes(node, deviceGroup);
+            }
         }
         
         // leaf attribute should only be set after possible child groups have been added

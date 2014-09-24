@@ -1,69 +1,81 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="deviceGroups.create.composed">
+<c:if test="${not empty errorMsg}">
+    <div class="stacked error">${errorMsg}</div>
+</c:if>
 
-    <c:if test="${not empty errorMsg}">
-        <div class="stacked error">${errorMsg}</div>
-    </c:if>
-    
-    <form id="buildForm" action="<cti:url value="/group/composedGroup/build"/>" method="post">
-        <cti:csrfToken/>
-        <input type="hidden" name="groupName" value="${fn:escapeXml(groupName)}">
-        <input type="hidden" name="firstLoad" value="false">
-        
-        <%-- NAME --%>
-        <tags:nameValueContainer2 tableClass="stacked">
-            <tags:nameValue2 nameKey=".nameLabel">${fn:escapeXml(groupName)}</tags:nameValue2>
-        </tags:nameValueContainer2>
-                
-        <%-- INSTRUCTIONS --%>
-        <tags:sectionContainer2 nameKey="instructions">
-            <i:inline key=".instructions"/>
-        </tags:sectionContainer2>
-        
-        <%-- MATCH --%>
-        <h3>
-        <i:inline key=".matchSentence.prefix"/> 
-        <select name="compositionType">
+<cti:url var="action" value="/group/composedGroup/save"/>
+<form:form commandName="rules" action="${action}" method="post">
+
+    <cti:csrfToken/>
+    <form:hidden path="groupName"/>
+            
+    <%-- MATCH --%>
+    <h3>
+        <i:inline key=".matchSentence.prefix"/>
+        <form:select path="compositionType">
             <c:forEach var="compositionType" items="${availableCompositionTypes}">
-                <c:set var="selected" value=""/>
-                <c:if test="${compositionType == selectedCompositionType}">
-                    <c:set var="selected" value="selected"/>
+                <form:option value="${compositionType}"><cti:msg key="${compositionType.formatKey}"/></form:option>
+            </c:forEach>
+        </form:select>
+        <i:inline key=".matchSentence.suffix"/>
+        <cti:icon icon="icon-help"  classes="cp fn" popup="#instructions" data-popup-toggle="true"/>
+        <cti:msg2 var="title" key=".instructions.title"/>
+        <div id="instructions" class="dn" data-title="${title}" data-width="600">
+            <i:inline key=".instructions"/>
+        </div>
+    </h3>
+    <hr>
+    <%-- RULES TABLE --%>
+    <div class="separated-sections js-rules-list">
+        <c:forEach var="group" items="${rules.groups}" varStatus="status">
+            <div class="clearfix section js-rule">
+                <span><i:inline key=".ruleSentence.deviceGroup.prefix"/></span>
+
+                <form:select path="groups[${status.index}].negate">
+                    <form:option value="false"><i:inline key=".contained"/></form:option>
+                    <form:option value="true"><i:inline key=".notContained"/></form:option>
+                </form:select>
+
+                <span><i:inline key=".ruleSentence.deviceGroup.suffix"/></span>
+
+                <c:if test="${not empty group.groupFullName}">
+                    <cti:list var="values">
+                        <cti:item value="${group.groupFullName}" />
+                    </cti:list>
                 </c:if>
-                <option value="${compositionType}" ${selected}><cti:msg key="${compositionType.formatKey}"/></option>
-            </c:forEach>
-         </select>
-         <i:inline key=".matchSentence.suffix"/>
-         </h3>
-         <hr>
-        <%-- RULES TABLE --%>
-        <div class="separated-sections">
-            <c:forEach var="group" items="${groups}">
-                <div class="clearfix section">
-                    <span><i:inline key=".ruleSentence.deviceGroup.prefix"/></span>
-                    <select name="notSelect_${group.order}">
-                        <option value="false">contained in</option>
-                        <option value="true" <c:if test="${group.negate}">selected</c:if>>not contained in</option>
-                    </select>
-                    <span><i:inline key=".ruleSentence.deviceGroup.suffix"/></span>
-                    <cti:msg2 key=".noGroupSelectedAlert" var="noGroupSelectedAlert"/>
-                    <tags:deviceGroupNameSelector fieldName="deviceGroupNameField_${group.order}" 
-                                                  noGroupSelectedAlertText="${noGroupSelectedAlert}"
-                                                  fieldValue="${group.groupFullName}" 
-                                                  dataJson="${chooseGroupTreeJson}"/>
-                    <cti:button classes="fr" nameKey="remove" type="submit" name="removeRow${group.order}" renderMode="buttonImage" icon="icon-cross"/>
-                </div>
-            </c:forEach>
-        </div>
-        <div class="action-area"><cti:button nameKey="addAnotherDeviceGroup" type="submit" name="addRow" icon="icon-add"/></div>
-    
-        <%-- SAVE --%>
-        <div class="page-action-area">
-            <cti:button nameKey="save" type="submit" classes="primary action"/>
-        </div>
-    </form>
+                <tags:deviceGroupPicker inputName="groups[${status.index}].groupFullName" inputValue="${values}" callbacks="${callbacks}"/>
+                <cti:button classes="fr js-remove-rule" nameKey="remove"  renderMode="buttonImage" icon="icon-cross"/>
+            </div>
+        </c:forEach>
+    </div>
+    <div class="action-area">
+        <cti:button nameKey="addAnotherDeviceGroup" icon="icon-add" classes="js-add-rule"/>
+    </div>
+
+    <%-- SAVE --%>
+    <div class="page-action-area">
+        <cti:button nameKey="save" type="submit" classes="primary action"/>
+        <cti:url var="cancel" value="/group/editor/home" />
+        <cti:button nameKey="cancel" href="${cancel}"/>
+    </div>
+</form:form>
+
+<div class="dn js-template js-rule clearfix section">
+    <span><i:inline key=".ruleSentence.deviceGroup.prefix"/></span>
+    <select name="groups[?].negate">
+        <option value="false"><i:inline key=".contained"/></option>
+        <option value="true"><i:inline key=".notContained"/></option>
+    </select>
+    <span><i:inline key=".ruleSentence.deviceGroup.suffix"/></span>
+    <tags:deviceGroupPicker inputName="groups[?].groupFullName" callbacks="${callbacks}"/>
+    <cti:button classes="fr js-remove-rule" nameKey="remove"  renderMode="buttonImage" icon="icon-cross"/>
+</div>
+<cti:includeScript link="/JavaScript/yukon.tools.composed.group.js"/>
 </cti:standardPage>
