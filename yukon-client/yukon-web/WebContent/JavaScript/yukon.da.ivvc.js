@@ -1,19 +1,26 @@
+yukon.namespace('yukon.da.ivvc');
+
 /**
  * Singleton that manages the ivvc pages in capcontrol
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @requires JQUERY
+ * @requires JQUERY UI
  */
-
-yukon.namespace('yukon.da');
-yukon.namespace('yukon.da.ivvc');
 
 yukon.da.ivvc = (function () {
 
-    var _zoneId,
-        _subBusId,
-        _timeOut,
-        _updateRecentEvents = function () {
+    var 
+    /** @type {number} - The Zone Id of the substation to locate the substation */
+    _zoneId,
+    
+    /** @type {number} - The Substation Bus Id of the substation*/
+    _subBusId,
+    
+    /** @type {number} - The setTimeout reference for periodic update of recent events. */
+    _timeOut,
+    
+    /** Updates the recent events.*/
+    _updateRecentEvents = function () {
             var params = {
                 'zoneId': _zoneId,
                 'subBusId': _subBusId,
@@ -57,7 +64,8 @@ yukon.da.ivvc = (function () {
         },
 
         mod = {
-
+                
+            /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */
             init : function (params) {
                 var controlRole = params.controlRole === 'true' ? true : false,
                     localCapControl = yukon.da;
@@ -102,6 +110,10 @@ yukon.da.ivvc = (function () {
                 }
             },
 
+            /** 
+             * Returns the point data.
+             * @param {number} point - Point Id to find the specific point details.
+             */
             setRedBulletForPoint : function (pointId) {
                 return function (data) {
 

@@ -1,12 +1,13 @@
-/**
- * Singleton that manages the all capcontrol pages functionality
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.da');
 
+/**
+ * Singleton that manages the all capcontrol pages functionality.
+ * 
+ * @module yukon.da
+ * @requires JQUERY
+ * @requires JQUERY UI
+ * @requires OPEN_LAYERS
+ */
 yukon.da = (function () {
 
     var lock_buttons = function(el_id) {
@@ -31,7 +32,10 @@ yukon.da = (function () {
             });
         },
 
-        // these two functions exist to work around the inability of IE to show/hide option elements
+        /** 
+         * This method exist to work around the inability of IE to hide option elements.
+         * @param {Object} opt - Options for element.
+         */
         _hideOption = function (opt) {
             if ($('html').is('.ie')) {
                 $(opt).wrap('<span>').hide();
@@ -40,6 +44,10 @@ yukon.da = (function () {
             }
         },
         
+        /** 
+         * This method exist to work around the inability of IE to show option elements.
+         * @param {Object} opt - Options for element
+         */
         _showOption = function (opt) {
             var span;
             if ($('html').is('.ie')) {
@@ -53,10 +61,12 @@ yukon.da = (function () {
             }
         },
 
+        /** Hides the alert message.*/
         _hideAlertMessage = function() {
             $('#alert-message-container').hide('fade', {}, 3000);
         },
-
+        
+        /** Initialize the cap bank tier.*/
         _initBankTier =  function () {
 
             var banks = $('[data-bank-id]');
@@ -119,7 +129,7 @@ yukon.da = (function () {
                 bankPicker.show.call(bankPicker);
             });
 
-            /* bank move */
+            /** Bank Move */
             $(document).on('click', 'li.toggle', function(e) {
                 if (e.target === e.currentTarget) {
                     var li = $(this);
@@ -147,6 +157,9 @@ yukon.da = (function () {
             });
         },
 
+        /** 
+         * Initialize the Sub-station 
+         */
         initSubstation: function() {
             var feederFilter = $('.js-feeder-filter').eq(0),
                 busFilter = $('.js-bus-filter').eq(0);
@@ -189,6 +202,10 @@ yukon.da = (function () {
             });
         },
 
+        /** 
+         * Apply the Bus Filter
+         * @param Array.<number> busIds - List of Bus Ids
+         */
         applyBusFilter : function(busIds) {
             var busRows = $('#subBusTable [data-bus-id]'),
                 feederRows = $("#fdrTable [data-parent-id]"),
@@ -231,6 +248,10 @@ yukon.da = (function () {
             mod.applyFeederFilter(feederIds);
         },
 
+        /** 
+         * Apply the Feeder filter on the list 
+         * @param Array.<number> feederIds - List of feeder Ids
+         */
         applyFeederFilter : function (feederIds) {
             var feederRows = $("#fdrTable [data-feeder-id]"),
                 bankRows = $('#capBankTable [data-parent-id]');
@@ -258,10 +279,16 @@ yukon.da = (function () {
             });
         },
         
+        /** 
+         * Get command Menu 
+         * @param {number} id - id of the menu item
+         * @param {string} event - event name 
+         */ 
         getCommandMenu : function(id, event) {
             mod.getMenuFromURL(yukon.url('/capcontrol/menu/commandMenu?id=' + id), event);
         },
         
+        /** Check if the page has expired */
         checkPageExpire : function() {
             var paoIds = [];
 
@@ -281,10 +308,17 @@ yukon.da = (function () {
             });
         },
 
+        /** Hide the content pop-up */
         hideContentPopup : function() {
             $('#contentPopup').dialog('close');
         },
 
+        /** 
+         * Get menu from the URL 
+         * @param {string} url - url
+         * @param {Object} event - Jquery event object
+         * @param {Object} params - Request parameters
+         */
         getMenuFromURL : function (url, event, params) {
             $.ajax(url).done( function(data) {
                 $('#menuPopup').html(data);
@@ -295,14 +329,27 @@ yukon.da = (function () {
             });
         },
 
+        /** 
+         * Select/Check all the check boxes 
+         * @param {Object} allCheckBox - Check Box List
+         * @param {Object} selector - Selected check box list
+         */
         checkAll: function(allCheckBox, selector) {
             $(selector).prop('checked', allCheckBox.checked);
         },
 
+        /** Hides the menu pop up.*/
         hideMenu : function () {
             $('#menuPopup').dialog('close');
         },
 
+        /** 
+         * Show dialog 
+         * @param {string} title - Title.
+         * @param {string} url - url.
+         * @param {string} options - options.
+         * @param {Object} selector - Request parameters.
+         */
         showDialog : function(title, url, options, selector) {
             var dialogArgs = { 'title': title,
                                'width'    : 'auto',
@@ -315,6 +362,10 @@ yukon.da = (function () {
             dialog.load(url).dialog(dialogArgs);
         },
 
+        /** 
+         * Show the menu pop-up  
+         * @param {Object} params - Request parameters.
+         */
         showMenuPopup : function (params) {
             var dialogArgs = {
                 'title': $('#menuPopup #dialogTitle').val(),
@@ -327,10 +378,20 @@ yukon.da = (function () {
             $('#menuPopup').dialog(dialogArgs);
         },
 
+        /**  
+         * Select/check all the checkboxes
+         * @param {Object} allCheckBox - Check Box List
+         * @param {Object} selector - Selected check box list
+         */
         checkAll : function(allCheckBox, selector) {
             $(selector).prop('checked', allCheckBox.checked);
         },
 
+        /** 
+         * Lock the buttons for a particular groupId
+         * @param {string} groupId - groupId to be locked or disabled.
+         * @param {number} secs - seconds
+         */
         addLockButtonForButtonGroup : function (groupId, secs) {
             $(document).ready(function() {
                 var buttons = $('#' + groupId + ' input'),
@@ -342,12 +403,23 @@ yukon.da = (function () {
             });
         },
 
+        /** 
+         * Disable the buttons on submit 
+         * @param {string} groupId - groupId to be locked or disabled.
+         */
         lockButtonsPerSubmit : function (groupId) {
             $('#' + groupId + ' input').each(function() {
                 this.disabled = true;
             });
         },
 
+        /** 
+         * Show alert message for the particular action performed
+         * @param {string} action - Action performed.
+         * @param {string} item - Item on which the action is performed.
+         * @param {string} result - Result of action
+         * @param {boolean} success - Success indicator flag.
+         */
         showAlertMessageForAction : function(action, item, result, success) {
             if (action !== '') {
                 action = '"' + action + '"';
@@ -356,6 +428,12 @@ yukon.da = (function () {
             mod.showAlertMessage(message, success);
         },
 
+
+        /** 
+         * Show alert message.
+         * @param {string} message - Alert message
+         * @param {boolean} success - Success indicator flag.
+         */
         showAlertMessage : function(message, success) {
             var contents = $('#alert-message-contents');
 
@@ -369,6 +447,10 @@ yukon.da = (function () {
             setTimeout (_hideAlertMessage, success ? 3000 : 8000);
         },
 
+        /** 
+         * Show message.
+         * @param {string} message - Message to be shown.
+         */
         showMessage : function(message) {
             $('#alert-message-contents').html(message);
             $('#alert-message-container').show();

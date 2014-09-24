@@ -1,12 +1,11 @@
+yukon.namespace('yukon.da.comments');
+
 /**
  * Singleton that manages the comments for capcontrol objects
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @requires JQUERY
+ * @requires JQUERYUI 
  */
-
-yukon.namespace('yukon.da.comments');
-
 yukon.da.comments = (function () {
     
     var mod,
@@ -26,6 +25,8 @@ yukon.da.comments = (function () {
         };
 
     mod = {
+            
+        /** Adds a new comment to the Cap Bank*/  
         addComment : function () {
             var newComment = $('#newCommentInput').val(),
                 commentsUrl,
@@ -40,11 +41,13 @@ yukon.da.comments = (function () {
             }
         },
 
+        /** Hides a Comment row on click of Cancel.*/
         hideNewRow : function () {
             $('#newCommentInput').val('');
             $('#newRow').hide();
         },
 
+        /** Create a new row for adding a new comment.*/
         showNewRow : function () {
             $("input[name='editCommentInput']").each(function (index, elem) {
                 var elemsCommentId = elem.id.split('_')[1];
@@ -57,6 +60,9 @@ yukon.da.comments = (function () {
             $('#newRow').flash();
         },
 
+        /** Saves a new comment or cancels the operation.
+         *  @param {Object} event - key stroke object.
+         */
         addOrCancel : function (event) {
             var key = event.keyCode;
             if (key === 27) {
@@ -68,7 +74,11 @@ yukon.da.comments = (function () {
             }
             return (key !== 13);
         },
-
+        
+        /** Edits a comment or cancels the operation.
+         *  @param {Object} event - key stroke object.
+         *  @param {number} commentId - Id of comment on which the operation is performed.
+         */
         updateOrCancel : function (event, commentId) {
             var key = event.keyCode;
             if (key === 27) {
@@ -81,12 +91,18 @@ yukon.da.comments = (function () {
             return (key !== 13);
         },
 
+        /** Cancels the edit operation of the comment.
+         *  @param {number} commentId - Id of comment on which the operation is performed.
+         */
         cancelUpdate : function (commentId) {
             $('#comment_' + commentId).show();
             $('#editCommentSpan_' + commentId).hide();
             $('#editComment_' + commentId).val($('#comment_' + commentId).html());
         },
     
+        /** Updates the comment.
+         *  @param {number} commentId - Id of comment on which the operation is performed.
+         */
         updateComment : function (commentId) {
             var newComment = $('#editComment_' + commentId).val(),
                 commentsUrl,
@@ -100,7 +116,10 @@ yukon.da.comments = (function () {
                 _submitForm();
             }
         },
-
+        
+        /** Edits the comment.
+         *  @param {number} commentId - Id of comment which is being edited.
+         */
         editComment : function (commentId) {
             mod.hideNewRow();
             $("input[name='editCommentInput']").each(function (index, elem) {
@@ -116,6 +135,9 @@ yukon.da.comments = (function () {
             $('#editComment_' + commentId).focus();
         },
     
+        /** Deletes a comment.
+         *  @param {number} commentId - Id of comment which is being deleted.
+         */
         deleteComment : function (commentId) {
             var commentsUrl = $('#commentForm').data('commentsUrl');
             $('#commentId').val(commentId);

@@ -17,6 +17,13 @@ $(document).on('click', 'li.menuOption.stateChange', function(event) {
     doChangeState($(event.currentTarget).closest("ul").find("input[name='paoId']").val(), $(event.currentTarget).val());
 });
 
+/** This method executes the command.
+ *  @param {number} itemId - PAO Id.
+ *  @param {number} commandId - Id of the command that needs to be executed.
+ *  @param {Object} event - Jquery event object.
+ *  @param {string} reason - Comment given while executing the command.
+ *  @param {string} onReasonMenu - If set to true , executes the command
+ */
 function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
     var parameters = {'itemId': itemId, 'commandId': commandId};
     if (reason) parameters.reason =  reason;
@@ -38,6 +45,9 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
     });
 }
 
+/** This method executes the normal commands.
+ *  @param {number} commandId - Id of the command that needs to be executed.
+ */
 function doSystemCommand(commandId) {
     $.ajax({
         url: yukon.url('/capcontrol/command/system'),
@@ -48,6 +58,10 @@ function doSystemCommand(commandId) {
     });
 }
 
+/** This method changes the state of the cap bank.
+ *  @param {number} itemId - PAO ID.
+ *  @param {number} stateId - Raw State Id. 
+ */
 function doChangeState(itemId, stateId) {
     $.ajax({
         url: yukon.url('/capcontrol/command/manualStateChange'),
@@ -58,6 +72,10 @@ function doChangeState(itemId, stateId) {
     });
 }
 
+/** This method resets the cap bank op count
+ *  @param {number} itemId - PAO ID.
+ *  @param {number} newOpCount - New count. 
+ */
 function doResetBankOpCount(itemId, newOpCount) {
     yukon.da.hideMenu();
     $.ajax({
@@ -69,6 +87,12 @@ function doResetBankOpCount(itemId, newOpCount) {
     });
 }
 
+/** This method changes the Operational State.
+ *  @param {number} bankId - PAO ID.
+ *  @param {number} stateId - State Id.
+ *  @param {string} reason - Reason for change . 
+ *  @param {string} onReasonMenu - If set to true, executes the command.  
+ */
 function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
     yukon.da.hideMenu();
     parameters = {'bankId': bankId, 'opState': stateId, 'reason': reason};
@@ -83,6 +107,9 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
     });
 }
 
+/** Adds behavior to the command.
+ *  @param {Objest} selector - Option selected.
+ */
 function addCommandMenuBehavior(selector) {
     $(document).on('click', selector, function (event) {
         yukon.da.getCommandMenu($(event.currentTarget).closest("a")[0].id.split('_')[1], event);
