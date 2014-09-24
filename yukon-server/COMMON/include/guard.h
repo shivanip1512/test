@@ -134,5 +134,29 @@ private:
 
     T& _res;
 };
-#pragma pack(pop, LockGuardPack)
 
+template <class T>
+class TryLockGuard
+{
+    bool _acquired;
+    T& _res;
+
+public:
+    TryLockGuard(T& resource) : _res(resource)
+    {
+        _acquired = _res.tryAcquire();
+    }
+
+    ~TryLockGuard()
+    {
+        if( _acquired )
+            _res.release();
+    }
+
+    bool isAcquired() const
+    {
+        return _acquired;
+    }
+};
+
+#pragma pack(pop, LockGuardPack)

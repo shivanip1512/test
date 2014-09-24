@@ -22,29 +22,6 @@ class Immutable
     mutable boost::ptr_deque<SharedPtr>  _cleanupList;
     mutable CtiCriticalSection           _mux;
 
-    template <class Ressource>
-    class TryLockGuard
-    {
-        bool _acquired;
-        Ressource& _mux;
-
-    public:
-        TryLockGuard(Ressource& m) : _mux(m)
-        {
-            _acquired = _mux.tryAcquire();
-        }
-
-        ~TryLockGuard()
-        {
-            if( _acquired ) _mux.release();
-        }
-
-        bool isAcquired() const
-        {
-            return _acquired;
-        }
-    };
-
     /// Try to acquire the exclusion lock and cleanup known unused objects
     void tryCleanup() const
     {
@@ -107,7 +84,9 @@ public:
 
         SharedPtr copy = *_content;
 
-        if( ! --_readers && _needsCleanup )
+        --_readers;
+
+        if( _needsCleanup )
         {
             tryCleanup();
         }
