@@ -52,6 +52,30 @@
             If present, a form will be submitted when the 'ok' button is clicked.  If the value is not present, the first 
             form found inside the popup will be submitted.  Otherwise the value is a css selector to the form to submit.
         </tags:nameValue>
+        <tags:nameValue name="data-position-my">
+            When positioning a dialog, the part of the dialog to be used.<br>
+            Values: 'left|center|right', followed by a space, followed by  'top|center|bottom'. Order matters.<br>
+            Each of these can have +X or -X attached (X is an integer) to move them X pixels away.<br>
+            Sample Value: left+2 bottom-2<br>
+            Default Value: center center<br>
+            See <a href="#positioning-example">Example below</a> for usage
+        </tags:nameValue>
+        <tags:nameValue name="data-position-at">
+            When positioning a dialog, the part of the reference object to be used. 
+            If <span class="label label-attr">data-position-of</span> is present, then that element. Otherwise, the window is used.<br>
+            Values: 'left|center|right', followed by a space, followed by  'top|center|bottom'. Order matters.<br>
+            Each of these can have +X or -X attached (X is an integer) to move them X pixels away.<br>
+            Sample Value: left+2 bottom-2<br>
+            Default Value: center center<br>
+            See <a href="#positioning-example">Example below</a> for usage
+        </tags:nameValue>
+        <tags:nameValue name="data-position-of">
+            When positioning a dialog, the reference object for position.<br>
+            Values: css selector<br>
+            Sample Value: '#button1'<br>
+            Default Value: window object when not present<br>
+            See <a href="#positioning-example">Example below</a> for usage
+        </tags:nameValue>
     </tags:nameValueContainer>
     <br><br>
     <h2>Popup/Dialog Trigger Options</h2>
@@ -106,6 +130,37 @@
         data-height=&quot;300&quot;&gt;This is a popup with initial width of 500 pixels and height of 300 pixels.&lt;/div&gt;
 &lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#popup-2&quot;/&gt;
 </pre>
-    
+
+
+<h2 id="positioning-example">Positioning</h2>
+
+<p class="description">
+    A popup that will be immediately above the button
+</p>
+<div class="column-4-20 clearfix dialog-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="positioned-popup-1" 
+            data-title="Popup Example"
+            data-position-my="right bottom"
+            data-position-at="right top-4"
+            data-position-of="#positioned-link-1"
+            data-width="300">
+                This popup is 4 pixels above the button, with their right edges aligned.
+        </div>
+        <cti:button id="positioned-link-1" label="Positioned Popup" data-popup="#positioned-popup-1" data-popup-toggle=""/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;positioned-popup-1&quot;
+    data-title=&quot;Popup Example&quot;
+    data-position-my=&quot;right bottom&quot;
+    data-position-at=&quot;right top-4&quot;
+    data-position-of=&quot;#positioned-link-1&quot;&gt;
+        This popup is 4 pixels above the button, with their right edges aligned.
+&lt;/div&gt;
+&lt;cti:button id=&quot;positioned-link-1&quot; label=&quot;Positioned Popup&quot; data-popup=&quot;#positioned-popup-1&quot; data-popup-toggle=""/&gt;
+</pre>
 </tags:styleguide>
 </cti:standardPage>

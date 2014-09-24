@@ -621,8 +621,8 @@ yukon.ui = (function () {
          * data-popup-toggle - If present, the trigger element can be clicked to close the popup as well.
          *
          * Positioning options: see http://api.jqueryui.com/position/
-         * data-position-my -  top/center/bottom + left/center/right. Default is 'center'
-         * data-position-at -  top/center/right + left/center/right. Default is 'center'
+         * data-position-my -  'left|center|right top|center|bottom', Order matters. Default is 'center'
+         * data-position-at -  'left|center|right top|center|bottom', Order matters. Default is 'center'
          * data-position-of -  selector|element.  Default is 'window'.
          */
         dialog: function (popup, url) {
