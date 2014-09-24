@@ -201,7 +201,7 @@ yukon.protoPicker = function (okText,
             resultArea = $('<div>').attr('id', this.resultAreaId),
             resultAreaFixed = $('<div>').attr('id', this.resultAreaFixedId),
             pickerThis = this,
-            createItemLink = function (hit, link) {
+            selectItemLink = function (hit, link) {
                 if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) !== -1) {
                     return null;
                 } else {
@@ -212,14 +212,18 @@ yukon.protoPicker = function (okText,
                 }
             },
             outputColumns = [],
-            processRowForRender = function (rowElement, rowObject) {
-                if (pickerThis.excludeIds.indexOf(rowObject[pickerThis.idFieldName]) !== -1) {
-                    $(rowElement).addClass('disabled');
-                    $(rowElement).attr('title', Picker.alreadySelectedHoverMessage);
+            processRowForRender = function (row, data) {
+                
+                row = $(row);
+                row.attr('data-id', data[pickerThis.idFieldName]);
+                
+                if (pickerThis.excludeIds.indexOf(data[pickerThis.idFieldName]) !== -1) {
+                    row.addClass('disabled');
+                    row.attr('title', Picker.alreadySelectedHoverMessage);
                 } else {
                     pickerThis.selectedItems.forEach(function (item, index, arr){
-                        if (rowObject[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
-                            $(rowElement).addClass('highlighted');
+                        if (data[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
+                            row.addClass('highlighted');
                         }
                     });
                 }
@@ -235,14 +239,14 @@ yukon.protoPicker = function (okText,
                 var translatedColumn = {
                      'title': outputColumn.title,
                      'field': outputColumn.field,
-                     'link': createItemLink
+                     'link': selectItemLink
                  };
                  if (outputColumn.maxCharsDisplayed > 0) {
                      translatedColumn.maxLen = outputColumn.maxCharsDisplayed;
                  }
                  outputColumns.push(translatedColumn);
                  // only the first column is a link
-                 createItemLink = null;
+                 selectItemLink = null;
              });
             
             resultTable = yukon.ui.util.createTable({

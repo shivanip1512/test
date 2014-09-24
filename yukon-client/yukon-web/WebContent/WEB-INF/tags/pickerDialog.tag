@@ -125,7 +125,7 @@
 
 <c:if test="${pageScope.viewOnlyMode}">
     <c:set var="viewMode" value="true"/>
-    <span id="picker_${id}_label"><span></span></span>
+    <span id="picker_${id}_btn"><span></span></span>
 </c:if>
 <c:if test="${!pageScope.viewOnlyMode}">
     <c:set var="viewMode" value="false"/>
