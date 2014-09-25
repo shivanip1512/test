@@ -217,7 +217,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("No disconnect configured on this device")
     ("Transmitter is overheating")
     ("Command needs channel config to continue.")
-    ("Command requires a valid date.")
+    ("Unknown Error Code (279)")
     //  280
     ("Failed to resolve an IP for the given DNS name.")
     ("Failed to find a point for the given device.")

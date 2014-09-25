@@ -147,7 +147,6 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of
     (ClientErrors::NoDisconnect,                error_info(ERRTYPESYSTEM,   "No disconnect configured on this device"))
     (ClientErrors::TransmitterOverheating,      error_info(ERRTYPEPROTOCOL, "Transmitter is overheating"))
     (ClientErrors::NeedsChannelConfig,          error_info(ERRTYPESYSTEM,   "Command needs channel config to continue."))
-    (ClientErrors::InvalidDate,                 error_info(ERRTYPESYSTEM,   "Command requires a valid date."))
     (ClientErrors::DnsLookupFailed,             error_info(ERRTYPESYSTEM,   "Failed to resolve an IP for the given DNS name."))
     (ClientErrors::PointLookupFailed,           error_info(ERRTYPESYSTEM,   "Failed to find a point for the given device."))
     (ClientErrors::NeedsDateRangeReset,         error_info(ERRTYPESYSTEM,   "The device's date range must be reset to continue."))
