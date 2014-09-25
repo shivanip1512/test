@@ -8,7 +8,6 @@
 <cti:standardPage module="dr" page="scenarioDetail">
 
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="YUKON_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>

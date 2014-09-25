@@ -15,14 +15,30 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="titleLinkHtml" %>
 
-<cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
+<cti:default var="hideEnabled" value="${true}"/>
+<cti:default var="showInitially" value="${true}"/>
+<cti:default var="styleClass" value=""/>
+
+<c:choose>
+    <c:when test="${hideEnabled}">
+        <c:choose>
+            <c:when test="${showInitially}"><c:set var="showHide" value="show"/></c:when>
+            <c:otherwise><c:set var="showHide" value="hide"/></c:otherwise>
+        </c:choose>
+        <cti:yukonCookie var="showHide" scope="hideReveal" id="${pageScope.title}" defaultValue="${showHide}"/>
+        <c:set var="collapsed" value="${showHide eq 'hide' ? ' collapsed' : ''}"/>
+    </c:when>
+    <c:otherwise><c:set var="collapsed" value=""/></c:otherwise>
+</c:choose>
+
+<c:set var="styleClass" value="${styleClass}${collapsed}"/>
 
 <cti:uniqueIdentifier prefix="titled-container-" var="thisId"/>
 <c:if test="${!empty pageScope.id}">
     <c:set var="thisId" value="${id}"/>
 </c:if>
 
-<div class="titled-container box-container clearfix ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
+<div class="titled-container box-container clearfix ${styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
 
     <div class="title-bar clearfix">
         <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
@@ -35,27 +51,13 @@
         <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
             <cti:icon icon="icon-help" classes="cp" data-popup="#box-container-info-popup-${thisId}" data-popup-toggle=""/>
         </c:if>
-        <c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
-            <div class="controls" id="${thisId}_control">
-                <cti:icon icon="icon-collapse" id="${thisId}_minusImg" classes="minMax"/> 
-                <cti:icon icon="icon-expand" id="${thisId}_plusImg" classes="minMax"/> 
-              </div>
+        <c:if test="${hideEnabled}">
+            <div class="controls"><cti:icon icon="show-hide"/></div>
         </c:if>
     </div>
     
-    <div id="${thisId}_content" class="content clearfix">
-        <jsp:doBody/>
-    </div>
+    <div id="${thisId}_content" class="content clearfix"><jsp:doBody/></div>
 </div>
-<c:if test="${empty pageScope.showInitially}">
-  <c:set var="showInitially" value="${true}"/> <%-- show by default --%>
-</c:if>
-
-<c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
-    <script type="text/javascript">
-        hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${showInitially ? true : false}, '${cti:jsSafe(pageScope.title)}');
-    </script>
-</c:if>
 
 <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
     <div id="box-container-info-popup-${thisId}" 

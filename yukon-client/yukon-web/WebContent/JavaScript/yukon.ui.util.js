@@ -479,6 +479,7 @@ $(function() { yukon.ui.util.loadComplete = true; });
  */
 yukon.namespace('yukon.tag.scheduledFileExportInputs');
 yukon.tag.scheduledFileExportInputs = (function () {
+    
     var 
     
     _lastDisplayName = false,
@@ -547,13 +548,18 @@ yukon.tag.scheduledFileExportInputs = (function () {
 
     return mod;
 }());
-$(function () { yukon.tag.scheduledFileExportInputs.init(); });
 
-/** Section containers with show/hide behavior */
-$(function() {
-    $(document).on('click', '.toggle-title', function (event) {
-        $(event.currentTarget).closest('.titled-container').each(function(index, elem){
-            $(elem).toggleClass("collapsed");
-       });
+/** Wire up common behavior after page load */
+$(function () {
+    
+    yukon.tag.scheduledFileExportInputs.init(); 
+
+    /** Containers with show/hide behavior */
+    $(document).on('click', '.toggle-title, .titled-container .controls .show-hide', function (ev) {
+        var container = $(this).closest('.titled-container').toggleClass('collapsed'),
+            title = container.find('.title').text().trim(),
+            hidden = container.is('.collapsed');
+        yukon.cookie.set('hideReveal', title, hidden ? 'hide' : 'show');
     });
+
 });

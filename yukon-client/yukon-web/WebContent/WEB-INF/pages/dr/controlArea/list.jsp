@@ -12,7 +12,6 @@
 <cti:standardPage module="dr" page="controlAreaList">
 
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
 

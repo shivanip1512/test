@@ -13,7 +13,6 @@
 <%@ attribute name="container" description="container type: 'box' or 'section'. Default:'box'" %>
 
 <cti:includeScript link="/JavaScript/yukon.widget.js"/>
-<cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
 
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 

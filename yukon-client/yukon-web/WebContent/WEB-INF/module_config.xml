@@ -1345,7 +1345,6 @@
   <module name="consumer">
     <skin name="LEFT_SIDE_MENU" />
     <css file="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css" />
-    <script file="/JavaScript/yukon.hide.reveal.js" />
     <menu>
       <options>
         <option name="account">

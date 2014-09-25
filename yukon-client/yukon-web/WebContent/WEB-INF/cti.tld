@@ -377,6 +377,40 @@
   </tag>
   
   <tag>
+    <name>yukonCookie</name>
+    <tag-class>com.cannontech.web.taglib.YukonCookieTag</tag-class>
+    <body-content>empty</body-content>
+    <description>
+        Retreives a value stored in the Yukon cookie. Values are stored as property
+        names that are a concatination of scope + id.
+    </description>
+    <attribute>
+      <name>var</name>
+      <description>Set the var to the resulting map.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scope</name>
+      <description>The scope of the value. i.e. 'hideReveal'</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <description>The id (persistId) of the value. i.e. 'meterInfoSection'</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>defaultValue</name>
+      <description>The value returned if the cookie did not contain the property requested.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>toJson</name>
     <tag-class>com.cannontech.web.taglib.JsonTag</tag-class>
     <body-content>empty</body-content>
