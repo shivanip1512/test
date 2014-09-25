@@ -3,57 +3,53 @@ function hideRevealSectionSetup(showElement,
                                 clickableElement,
                                 section, 
                                 showInitially, 
-                                persistId, 
-                                slide) {
-    // cache the jQuery objects
+                                persistId) {
+    
     section = $(document.getElementById(section));
     showElement = $(document.getElementById(showElement));
     hideElement = $(document.getElementById(hideElement));
-
+    
     var doShow = function(doSlide) {
-        section.slideDown(doSlide, 'swing');
-        showElement.hide();
+        section.show();
         hideElement.show();
-
+        showElement.hide();
+        
         if (persistId != '') {
-            YukonClientPersistance
-                    .persistState('hideReveal', persistId, 'show');
+            yukon.cookie.set('hideReveal', persistId, 'show');
         }
     };
     
-    var doHide = function(doSlide) {
-        $(section).slideUp(doSlide, 'swing');
+    var doHide = function() {
+        section.hide();
         hideElement.hide();
         showElement.show();
         if (persistId != '') {
-            YukonClientPersistance.persistState('hideReveal', persistId, 'hide');
+            yukon.cookie.set('hideReveal', persistId, 'hide');
         }
     };
-
+    
     var lastState = null;
     if (persistId != '') {
-        lastState = YukonClientPersistance.getState('hideReveal', persistId);
+        lastState = yukon.cookie.get('hideReveal', persistId);
     }
-
+    
     if (lastState) {
         if (lastState == 'show') {
-            doShow(0);
+            doShow();
         } else {
-            doHide(0);
+            doHide();
         }
     } else if (showInitially) {
-        doShow(0);
+        doShow();
     } else {
-        doHide(0);
+        doHide();
     }
-
-    $(document.getElementById(clickableElement)).click(function(event) {
-        // convert from true/false (passed in) to a relevant numerical value
-        slide = slide ? 400 : 0;
+    
+    $(document.getElementById(clickableElement)).click(function (event) {
         if (section.is(":visible")) {
-            doHide(slide);
+            doHide();
         } else {
-            doShow(slide);
+            doShow();
         }
     });
 }

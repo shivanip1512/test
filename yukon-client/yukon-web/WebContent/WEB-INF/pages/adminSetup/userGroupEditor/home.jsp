@@ -8,8 +8,6 @@
 
 <cti:standardPage module="adminSetup" page="userEditor">
 
-    <cti:includeScript link="JQUERY_COOKIE"/>
-    
     <cti:url value="/adminSetup/user/view" var="userUrl"/>
     <cti:url value="/adminSetup/userGroup/view" var="userGroupUrl"/>
     <cti:url value="/adminSetup/roleGroup/view" var="roleGroupUrl"/>

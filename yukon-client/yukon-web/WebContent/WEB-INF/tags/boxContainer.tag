@@ -15,7 +15,6 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="titleLinkHtml" %>
 
-<cti:includeScript link="/JavaScript/yukon.cookies.js"/>
 <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
 
 <cti:uniqueIdentifier prefix="titled-container-" var="thisId"/>

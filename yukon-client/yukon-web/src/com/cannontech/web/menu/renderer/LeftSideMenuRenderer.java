@@ -157,21 +157,21 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                 String hideRevealSetupJs = null;
                 
                 if (level == maxParentDepth) { // why not a > here?
-                	
-                	// Set child div id for hide/show
-                	String expandableOptionSpanId = option.getId() + "_expanderSpan";
-                	String childDivId = option.getId() + "_children";
-                	String expandImgId  = childDivId + "_expandImg";
-                	String collapseImgId  = childDivId + "_collapseImg";
-                	
-                	// stick everything in this expandableOption, which wil itself be put into the optionDiv
-                	Span expandableOption = new Span();
-                	expandableOption.setID(expandableOptionSpanId);
-                	expandableOption.setClass("expandCollapseSpan");
+                    
+                    // Set child div id for hide/show
+                    String expandableOptionSpanId = option.getId() + "_expanderSpan";
+                    String childDivId = option.getId() + "_children";
+                    String expandImgId  = childDivId + "_expandImg";
+                    String collapseImgId  = childDivId + "_collapseImg";
+                    
+                    // stick everything in this expandableOption, which wil itself be put into the optionDiv
+                    Span expandableOption = new Span();
+                    expandableOption.setID(expandableOptionSpanId);
+                    expandableOption.setClass("expandCollapseSpan");
 
                     hideRevealSetupJs = "<script type=\"text/javascript\">" +
-                    						   "hideRevealSectionSetup('"+expandImgId+"', '"+collapseImgId+"', '"+expandableOptionSpanId+"', '"+childDivId+"', false, '"+expandableOptionSpanId+"');" +
-                    						   "</script>";
+                                               "hideRevealSectionSetup('"+expandImgId+"', '"+collapseImgId+"', '"+expandableOptionSpanId+"', '"+childDivId+"', false, '"+expandableOptionSpanId+"');" +
+                                               "</script>";
                     
                     // configure div that holds child divs
                     childrenDiv.setID(childDivId);
@@ -194,7 +194,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                     optionDiv.addElement(expandableOption);
                     
                 }  else {
-                	
+                    
                     optionDiv.addElement(link);
                 }
                 
@@ -209,11 +209,11 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                 
                 optionDiv.addElement(childrenDiv);
                 if (hideRevealSetupJs != null) {
-                	optionDiv.addElement(hideRevealSetupJs);
+                    optionDiv.addElement(hideRevealSetupJs);
                 }
 
                 if(!childOptions.isEmpty() || !subMenuOption.isCollapseIfEmpty()) {
-                	menuOptionList.add(optionDiv);
+                    menuOptionList.add(optionDiv);
                 }
             }
         }

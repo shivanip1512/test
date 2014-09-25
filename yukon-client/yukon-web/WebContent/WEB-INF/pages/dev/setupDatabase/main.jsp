@@ -8,7 +8,6 @@
 
 <cti:standardPage module="dev" page="setupDatabase">
 <cti:includeScript link="JQUERY_GRID"/>
-<cti:includeScript link="JQUERY_COOKIE"/>
     
 <style>
 

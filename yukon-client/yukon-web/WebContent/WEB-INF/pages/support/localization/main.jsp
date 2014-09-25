@@ -8,8 +8,6 @@
 <cti:standardPage module="support" page="localization"
     title="${pageTitle}">
 
-    <cti:includeScript link="JQUERY_COOKIE" />
-
     <script type="text/javascript">
         $(function() {
             $('#tabs').tabs();

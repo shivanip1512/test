@@ -13,7 +13,6 @@
         <source src="<cti:url value="/WebConfig/yukon/audio/beep1.mp3"/>" type="audio/mpeg">
     </audio>
 
-    <cti:includeScript link="JQUERY_COOKIE" />
     <cti:includeScript link="/JavaScript/yukon.tdc.js" />
 
     <div class="column-8-16">

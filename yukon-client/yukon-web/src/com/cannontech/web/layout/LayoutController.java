@@ -99,15 +99,16 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_SPECTRUM.getPath());
         builder.add(JsLibrary.JQUERY_CHOSEN.getPath());
         builder.add(JsLibrary.JQUERY_SCROLLTO.getPath());
+        builder.add(JsLibrary.JQUERY_COOKIE.getPath());
         
         // Add Yukon common libraries
         builder.add(JsLibrary.YUKON.getPath());
+        builder.add(JsLibrary.YUKON_COOKIE.getPath());
         builder.add(JsLibrary.YUKON_ALERTS.getPath());
         builder.add(JsLibrary.YUKON_CONFIRM.getPath());
         builder.add("/JavaScript/yukon.ui.util.js");
         builder.add("/JavaScript/yukon.data.updater.js");
         builder.add("/JavaScript/yukon.dropdown.js");
-        builder.add("/JavaScript/yukon.cookies.js");
         builder.add("/JavaScript/yukon.analytics.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
         builder.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath());

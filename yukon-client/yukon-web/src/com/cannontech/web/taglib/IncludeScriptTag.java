@@ -17,8 +17,9 @@ public class IncludeScriptTag extends SimpleTagSupport {
 
     @Override
     public void doTag() throws JspException {
+        
         StandardPageTag spTag = StandardPageTag.find(getJspContext());
-        if(this.force) {
+        if (this.force) {
             // Beware of multiple includes!
             JspWriter out = getJspContext().getOut();
             try {
@@ -53,4 +54,5 @@ public class IncludeScriptTag extends SimpleTagSupport {
     public void setLink(String link) {
         this.link = link;
     }
+    
 }
