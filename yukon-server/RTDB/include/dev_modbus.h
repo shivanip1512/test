@@ -68,7 +68,7 @@ public:
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
-    int sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList );
+    YukonError_t sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList );  //  not override or virtual
     YukonError_t recvCommRequest( OUTMESS *OutMessage ) override;
 
     virtual YukonError_t generate(CtiXfer &xfer);

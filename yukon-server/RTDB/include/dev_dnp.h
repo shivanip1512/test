@@ -86,7 +86,7 @@ public:
     LONG getAddress() const;
     LONG getMasterAddress() const;
 
-    int sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList );
+    YukonError_t sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList );
     YukonError_t recvCommRequest( OUTMESS *OutMessage ) override;
 
     void initUnsolicited();

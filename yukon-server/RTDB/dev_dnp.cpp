@@ -612,8 +612,6 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
         sendCommRequest(OutMessage, outList);
 
-
-
         nRet = ClientErrors::None;
     }
 
@@ -627,9 +625,9 @@ Protocol::Interface *DnpDevice::getProtocol()
 }
 
 
-int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
+YukonError_t DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
 
     //  write the outmess_header
     outmess_header *om_buf = reinterpret_cast<outmess_header *>(OutMessage->Buffer.OutMessage);

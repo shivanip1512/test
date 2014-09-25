@@ -136,9 +136,9 @@ void CtiProtocolLMI::setDeadbands( const vector<unsigned> &points, const vector<
 }
 
 
-int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList )
+YukonError_t CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList )
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
     OUTMESS seriesv_outmess;
 
     lmi_outmess_struct tmp_om_struct;
@@ -168,7 +168,7 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* >
 }
 
 
-int CtiProtocolLMI::recvCommResult( const INMESS &InMessage, std::list< OUTMESS* > &outList )
+YukonError_t CtiProtocolLMI::recvCommResult( const INMESS &InMessage, std::list< OUTMESS* > &outList )
 {
     int offset = 0;
     const lmi_inmess_struct &lmi_in = *((const lmi_inmess_struct *)InMessage.Buffer.InMessage);
@@ -198,7 +198,7 @@ int CtiProtocolLMI::recvCommResult( const INMESS &InMessage, std::list< OUTMESS*
     //          pretty simple, but watch this space for breakage if it gets more complex
     _seriesv.recvCommResult(seriesv_inmess, outList);
 
-    return 0;
+    return ClientErrors::None;
 }
 
 

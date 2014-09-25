@@ -11,8 +11,8 @@ namespace Protocol {
 YukonError_t Interface::generate( CtiXfer &xfer )                       {   return ClientErrors::NoMethod;   }
 YukonError_t Interface::decode  ( CtiXfer &xfer, YukonError_t status )  {   return ClientErrors::NoMethod;   }
 
-int Interface::sendCommRequest( OUTMESS *&OutMessage,    std::list< OUTMESS* > &outList )   {   return ClientErrors::NoMethod;    }
-int Interface::recvCommResult ( const INMESS &InMessage, std::list< OUTMESS* > &outList )   {   return ClientErrors::NoMethod;    }
+YukonError_t Interface::sendCommRequest( OUTMESS *&OutMessage,    std::list< OUTMESS* > &outList )   {   return ClientErrors::NoMethod;    }
+YukonError_t Interface::recvCommResult ( const INMESS &InMessage, std::list< OUTMESS* > &outList )   {   return ClientErrors::NoMethod;    }
 
 YukonError_t Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return ClientErrors::NoMethod;    }
 YukonError_t Interface::sendCommResult ( INMESS   &InMessage  )   {   return ClientErrors::NoMethod;    }

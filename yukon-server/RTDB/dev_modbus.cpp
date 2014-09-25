@@ -207,9 +207,9 @@ YukonError_t ModbusDevice::decode(CtiXfer &xfer, YukonError_t status)
 }
 
 
-int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
+YukonError_t ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList )
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
 
     if( OutMessage )
     {

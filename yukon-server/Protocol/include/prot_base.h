@@ -36,8 +36,8 @@ public:
     virtual ~Interface() { }
 
     //  client-side (Scanner, PIL) functions
-    virtual int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
-    virtual int recvCommResult ( const INMESS   &InMessage,  std::list< OUTMESS* > &outList );
+    virtual YukonError_t sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
+    virtual YukonError_t recvCommResult ( const INMESS &InMessage, std::list< OUTMESS* > &outList );
 
     virtual void getInboundPoints ( pointlist_t  &point_list );
     virtual void getInboundStrings( stringlist_t &string_list );

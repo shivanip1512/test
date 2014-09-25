@@ -2180,9 +2180,9 @@ unsigned long CtiProtocolION::getEventLogLastPosition( void )
 }
 
 
-int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+YukonError_t CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
 
     ion_outmess_struct tmp_om_struct;
 
@@ -2210,9 +2210,9 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &out
 }
 
 
-int CtiProtocolION::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &outList )
+YukonError_t CtiProtocolION::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &outList )
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
 
     const unsigned char *buf;
     unsigned long len, offset;
@@ -2271,7 +2271,7 @@ int CtiProtocolION::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &o
     }
     else
     {
-        retVal = -1;  //  make this an error code sometime?
+        retVal = ClientErrors::DataMissing;
     }
 
     return retVal;

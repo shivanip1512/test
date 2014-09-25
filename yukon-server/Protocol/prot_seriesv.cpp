@@ -117,9 +117,9 @@ void CtiProtocolSeriesV::setAnalogOutPoints( int min, int max )
 }
 
 
-int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+YukonError_t CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
-    int retVal = ClientErrors::None;
+    YukonError_t retVal = ClientErrors::None;
 
     seriesv_outmess_struct tmp_om_struct;
 
@@ -146,7 +146,7 @@ int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > 
 }
 
 
-int CtiProtocolSeriesV::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &outList )
+YukonError_t CtiProtocolSeriesV::recvCommResult( const INMESS &InMessage, list< OUTMESS* > &outList )
 {
     const seriesv_inmess_struct &response = *((const seriesv_inmess_struct *)InMessage.Buffer.InMessage);
     const seriesv_pointdata *pd = (const seriesv_pointdata *)(InMessage.Buffer.InMessage + sizeof(seriesv_inmess_struct));
@@ -156,7 +156,7 @@ int CtiProtocolSeriesV::recvCommResult( const INMESS &InMessage, list< OUTMESS* 
         _returned_points.push(pd[i]);
     }
 
-    return 0;
+    return ClientErrors::None;
 }
 
 
