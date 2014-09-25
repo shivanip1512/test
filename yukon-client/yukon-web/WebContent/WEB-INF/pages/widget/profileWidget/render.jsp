@@ -8,8 +8,8 @@
     // Reinit the datepickers. Required after an action is take on the Meter Profile
     // page and the contents, including the date pickers, are ajaxed in.
     $(function () {
-        if ('undefined' !== typeof yukon.ui.dateTimePickers) {
-            yukon.ui.dateTimePickers.init();
+        if (typeof yukon.ui.initDateTimePickers !== 'undefined') {
+            yukon.ui.initDateTimePickers();
         }
     });
 </script>
@@ -34,7 +34,7 @@
             // stop the ajax so it doesn't reload the popup as we're using it
             if ($('#' + popupDivName).is(':visible')) {
                 // init these datepickers each time the popup is made visible
-                yukon.ui.dateTimePickers.init('#' + popupDivName);
+                yukon.ui.initDateTimePickers();
                 scanningUpdater.stop();
             }
             else {

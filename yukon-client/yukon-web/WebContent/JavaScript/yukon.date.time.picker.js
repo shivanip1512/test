@@ -4,6 +4,7 @@
  *  - http://keith-wood.name/datetimeEntry.html
  */
 yukon.namespace('yukon.ui.dateTimePickers');
+
 yukon.ui.dateTimePickers = function () {
     
     var _initialized = false,
@@ -85,7 +86,6 @@ yukon.ui.dateTimePickers = function () {
     // public interface
     mod = {
         ancestorInit : function (elemId) {
-            //mod.init(cachedcfgDtArgs, cachedcfgTpArgs, elemId);
             yukon.ui.initDateTimePickers(cachedcfgDtArgs, cachedcfgTpArgs, elemId);
         },
         /**
@@ -121,9 +121,11 @@ yukon.ui.dateTimePickers = function () {
                 }
                 $.extend(datetimepickerArgs, cfgDtArgs);
             }
+            
             if (true === _initialized && 2 === nargs) {
                 return;
             }
+            
             // Date
             $(ancestor + 'input.js-datePicker').each(function () {
                 var self = $(this);
@@ -146,6 +148,7 @@ yukon.ui.dateTimePickers = function () {
                 }
                 
             }).removeClass('js-datePicker').closest('.datetimeEntry_wrap').addClass('date'); //this class is used to set a fixed width based on the type of input we are creating
+            
             $(ancestor + 'input.js-datePickerUI').each(function () {
                 var self = $(this),
                     args = _getPickerArgs(self),
@@ -180,6 +183,7 @@ yukon.ui.dateTimePickers = function () {
                     spinnerImage: ''
                 });
             }).removeClass('js-dateTimePicker').closest('.datetimeEntry_wrap').addClass('dateTime'); //this class is used to set a fixed width based on the type of input we are creating
+            
             $(ancestor + 'input.js-dateTimePickerUI').each(function () {
                 var self = $(this);
                 //copy the defaults
@@ -198,6 +202,7 @@ yukon.ui.dateTimePickers = function () {
                     spinnerImage: ''
                 });
             }).removeClass('js-timePicker').closest('.datetimeEntry_wrap').addClass('time'); //this class is used to set a fixed width based on the type of input we are creating
+            
             $(ancestor + 'input.js-timePickerUI').each(function () {
                 var self = $(this);
                 //copy the defaults
@@ -207,10 +212,13 @@ yukon.ui.dateTimePickers = function () {
                 self.timepicker($.extend(defaultArgs, _getPickerArgs(self)));
                 _insertTimezone(self);
             }).removeClass('js-timePickerUI');
+            
             _initialized = true;
         }
     };
+    
     this.initialNowVal = null;
+    
     return mod;
 };
 
