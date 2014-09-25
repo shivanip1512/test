@@ -71,6 +71,11 @@ const PointAttribute PointAttribute::OpenOpCount                   = PointAttrib
 
 const PointAttribute PointAttribute::LastControlReason             = PointAttribute(PointAttribute::LastControlReasonAttribute,            "Last Control Reason");
 
+const PointAttribute PointAttribute::ForwardSetPoint               = PointAttribute(PointAttribute::ForwardSetPointAttribute,              "FORWARD_SET_POINT");
+const PointAttribute PointAttribute::ForwardBandwidth              = PointAttribute(PointAttribute::ForwardBandwidthAttribute,             "FORWARD_BANDWIDTH");
+
+
+
 const PointAttribute& PointAttribute::valueOf(const std::string& name)
 {
     AttributeMap::iterator itr = nameToAttributeMap.find(name);

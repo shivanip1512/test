@@ -76,7 +76,10 @@ class IM_EX_CTIBASE PointAttribute
             CloseOpCountAttribute,
             OpenOpCountAttribute,
 
-            LastControlReasonAttribute
+            LastControlReasonAttribute,
+
+            ForwardSetPointAttribute,
+            ForwardBandwidthAttribute
         };
 
         static const PointAttribute Unknown;
@@ -145,6 +148,9 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute OpenOpCount;
 
         static const PointAttribute LastControlReason;
+
+        static const PointAttribute ForwardSetPoint;
+        static const PointAttribute ForwardBandwidth;
 
         std::string name() const;
         Attribute value() const;
