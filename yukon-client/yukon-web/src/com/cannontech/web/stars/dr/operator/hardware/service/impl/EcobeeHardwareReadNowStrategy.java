@@ -8,8 +8,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.dao.CollectingDeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -21,7 +22,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadNowStrategy;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
-import com.cannontech.web.widget.AttributeReadingHelper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
@@ -31,7 +31,7 @@ public class EcobeeHardwareReadNowStrategy implements HardwareReadNowStrategy{
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
     
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private AttributeReadingHelper attributeReadingHelper;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceDao deviceDao;
     
 
@@ -45,8 +45,7 @@ public class EcobeeHardwareReadNowStrategy implements HardwareReadNowStrategy{
                 BuiltInAttribute.OUTDOOR_TEMPERATURE, BuiltInAttribute.COOL_SET_TEMPERATURE,
                 BuiltInAttribute.HEAT_SET_TEMPERATURE);
 
-        CollectingDeviceAttributeReadCallback result = 
-                attributeReadingHelper.initiateReadAndWait(device, allAttributes,
+        DeviceReadResult result = deviceAttributeReadService.initiateReadAndWait(device, allAttributes,
                                              DeviceRequestType.LM_DEVICE_DETAILS_ATTRIBUTE_READ,
                                              userContext.getYukonUser());
         
@@ -56,7 +55,7 @@ public class EcobeeHardwareReadNowStrategy implements HardwareReadNowStrategy{
             resultMap.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
         } else {
             Set<String> errors = new HashSet<>();
-            for (DeviceAttributeReadError error : result.getMessages()) {
+            for (DeviceAttributeReadError error : result.getErrors()) {
                 errors.add(accessor.getMessage(error.getSummary()));
             }
 

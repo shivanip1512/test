@@ -2,17 +2,24 @@ package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
@@ -23,6 +30,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -35,7 +43,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 			.getLogger(CalculatedPointServiceImpl.class);
 
 	private AttributeService attributeService;
-	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+	private DeviceAttributeReadService deviceAttributeReadService;
 	private PeakReportService peakReportService;
 
 	/**
@@ -52,25 +60,19 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		// Makes a call to the meter to find the usage,
 		// which we use to calculate the point
 		logger.info("Starting meter read for " + meter.toString());
-		CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(
-				meter, Collections.singleton(BuiltInAttribute.USAGE),
-				type,
-				userContext.getYukonUser());
+		DeviceReadResult readResult = deviceAttributeReadService.initiateReadAndWait(meter,
+				Collections.singleton(BuiltInAttribute.USAGE), type, userContext.getYukonUser());
 
         PointValueHolder currentPVH = null;
-		if (meterReadResults.isAnyErrorOrException()) {
+		if (!readResult.isSuccess()) {
 			
-			if (meterReadResults.isErrorsExist()) {
-				results.setErrors(meterReadResults.getErrors());
-			} else if (meterReadResults.isExceptionOccured()) {
-				results.setDeviceError(meterReadResults.getExceptionReason());
-			}
+			results.setErrors(readResult.getErrors());
 			return results;
 			
 		} else {
 			LitePoint lp = attributeService.getPointForAttribute(meter,
 					BuiltInAttribute.USAGE);
-			for (PointValueHolder pvh : meterReadResults.getValues()) {
+			for (PointValueHolder pvh : readResult.getPointValues()) {
 				if (pvh.getId() == lp.getLiteID()) {
 					currentPVH = pvh;
 				}
@@ -88,7 +90,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		if (peakReportResults.getErrors().isEmpty()) {
 			calculatedDifferenceUsage = peakReportResults.getTotalUsage();
 		} else {
-            results.setErrors(peakReportResults.getErrors());
+            results.setErrors(translateErrors(peakReportResults.getErrors()));
 			return results;
 		}
 
@@ -107,7 +109,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
                                                          currentPVH.getType(),
                                                          calculatedDifferenceUsage);
 
-        results.setErrors(peakReportResults.getErrors());
+        results.setErrors(translateErrors(peakReportResults.getErrors()));
         results.setCurrentPVH(currentPVH);
         results.setDifferencePVH(differencePVH);
         results.setCalculatedPVH(calculatedPVH);
@@ -121,12 +123,20 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 	}
 
 	@Required
-	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-	}
-
-	@Required
 	public void setPeakReportService(PeakReportService peakReportService) {
 		this.peakReportService = peakReportService;
+	}
+	
+	private Set<DeviceAttributeReadError> translateErrors(List<SpecificDeviceErrorDescription> plcErrors) {
+		Set<DeviceAttributeReadError> errors = new HashSet<>();
+		for (SpecificDeviceErrorDescription error : plcErrors) {
+			MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments(
+					"yukon.common.device.attributeRead.plc.errorSummary", error.getCategory(), error.getDescription(),
+					error.getErrorCode(), error.getPorter());
+			MessageSourceResolvable detail = YukonMessageSourceResolvable.createDefaultWithoutCode(error.getTroubleshooting());
+			DeviceAttributeReadError readError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary, detail);
+			errors.add(readError);
+		}
+		return errors;
 	}
 }

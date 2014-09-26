@@ -580,18 +580,6 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         }
         
         @Override
-        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, int priority) {
-            CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
-            return executeWithParameterDto(commands, callback, this.parameterDto.withPriority(priority), execution);
-        }
-        
-        @Override
-        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noqueue, int priority) {
-            CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
-            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue).withPriority(priority), execution);
-        }
-
-        @Override
         public String toString() {
 
             ToStringCreator tsc = new ToStringCreator(this);

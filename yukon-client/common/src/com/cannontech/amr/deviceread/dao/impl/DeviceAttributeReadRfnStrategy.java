@@ -133,18 +133,18 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
 
             @Override
-            public void receivedLastValue(PaoIdentifier pao) {
+            public void receivedLastValue(PaoIdentifier pao, String value) {
                 //ignore the last value if this device had an error
                 if (!errors.contains(pao)) {
                     saveCommandRequestExecutionResult(execution,  pao.getPaoId(),  0);
                 }
-                delegateCallback.receivedLastValue(pao);
+                delegateCallback.receivedLastValue(pao, value);
             }
             
             @Override
             public void setCompletionCounter(int completionCounter) {
                 this.completionCounter = new AtomicInteger(completionCounter);
-            }
+            } 
             
         };
         
@@ -192,12 +192,12 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
 
             @Override
-            public void receivedLastValue(PaoIdentifier pao) {
+            public void receivedLastValue(PaoIdentifier pao, String value) {
                 //ignore the last value if this device had an error
                 if (groupCallback.getErrors().get(new SimpleDevice(pao)) == null) {
                     CommandRequestDevice command = new CommandRequestDevice();
                     command.setDevice(new SimpleDevice(pao));
-                    groupCallback.receivedLastResultString(command, "");
+                    groupCallback.receivedLastResultString(command, value);
                     saveCommandRequestExecutionResult(groupCallback.getExecution(),  pao.getPaoId(),  0);
                 }
             }
@@ -205,8 +205,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             @Override
             public void setCompletionCounter(int completionCounter) {
                 this.completionCounter = new AtomicInteger(completionCounter);
-            }
-            
+            }            
         };
         
         initiateRead(points, strategyCallback);
@@ -279,7 +278,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
 
             @Override
             public void complete() {
-                delegateCallback.receivedLastValue(device.getPaoIdentifier());
+                delegateCallback.receivedLastValue(device.getPaoIdentifier(), "");
                 int remaining = pendingRequests.decrementAndGet();
                 if (remaining == 0) {
                     delegateCallback.complete();
@@ -355,7 +354,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         public void complete() {
             if(!isComplete) {
                 isComplete = true;
-                delegateCallback.receivedLastValue(device.getPaoIdentifier());
+                delegateCallback.receivedLastValue(device.getPaoIdentifier(), "");
                 int remaining = pendingRequests.decrementAndGet();
                 if (remaining == 0) {
                     delegateCallback.complete();

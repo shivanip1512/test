@@ -4,37 +4,25 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
-import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
-import com.cannontech.amr.rfn.service.WaitableRfnMeterDisconnectCallback;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -49,14 +37,13 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MeterDao meterDao;
-    @Autowired private PlcDeviceAttributeReadService readService;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DisconnectService disconnectService;  
-    @Autowired private RfnMeterDisconnectService rfnDisconnectService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private StateDao stateDao;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
 
@@ -70,68 +57,17 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping("read")
-    public String read(final ModelMap model, final YukonUserContext userContext, Integer deviceId) {
-        // This method will be changed by YUK-12715 Refactor PlcDeviceAttributeReadService
-        // It should just call DeviceAttributeReadService.readMeter without checking if the device is PLC or RF
+    public String read(ModelMap model, YukonUserContext userContext, Integer deviceId) {
+    	
         YukonMeter meter = meterDao.getForId(deviceId);
         initModel(model, userContext, meter);
-        if (meter instanceof RfnMeter){
-            final MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            WaitableRfnMeterDisconnectCallback callback = new WaitableRfnMeterDisconnectCallback() {
-    
-                @Override
-                public void processingExceptionOccured(MessageSourceResolvable message) {
-                    SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
-                    model.addAttribute("errors", Lists.newArrayList(error));
-                }
-    
-                @Override
-                public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
-                    model.addAttribute("success", true);
-                }
-    
-                @Override
-                public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
-                    SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
-                    model.addAttribute("errors", Lists.newArrayList(error));
-                }
-                
-                private SpecificDeviceErrorDescription getErrorDescription(NetworkManagerError errorType,
-                                                                           MessageSourceResolvable message) {
-                    String detail = accessor.getMessage(message);
-                    DeviceErrorDescription errorDescription =
-                        deviceErrorTranslatorDao.translateErrorCode(errorType.getErrorCode(), userContext);
-                    SpecificDeviceErrorDescription deviceErrorDescription =
-                        new SpecificDeviceErrorDescription(errorDescription, detail);
-                    
-                    return deviceErrorDescription;
-                }
-            };
-            
-            rfnDisconnectService.send( (RfnMeter)meter,  RfnMeterDisconnectStatusType.QUERY, callback);
-            
-            try {
-                callback.waitForCompletion();
-            } catch (InterruptedException e) { /* Ignore */ }
-            
-        } else if (meter instanceof PlcMeter) {
-            CommandResultHolder result = readService.readMeter(meter,
-                    disconnectAttribute,
-                    DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,
-                    userContext.getYukonUser());
-            
-            if (result.getErrors().isEmpty() && StringUtils.isEmpty(result.getExceptionReason())) {
-                String configStr = result.getLastResultString();
-                model.addAttribute("configString", configStr);
-                model.addAttribute("success", true);
-            }
-            
-            model.addAttribute("errors", result.getErrors());
-            if (StringUtils.isNotEmpty(result.getExceptionReason())) {
-                model.addAttribute("exceptionReason", result.getExceptionReason());
-            }
-            
-        }
+		DeviceReadResult result = deviceAttributeReadService.initiateReadAndWait(meter, disconnectAttribute,
+				DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ, userContext.getYukonUser());
+		if (result.isSuccess()) {
+			model.addAttribute("success", true);
+			model.addAttribute("configString", result.getLastResultString());
+		}
+		model.addAttribute("errors", result.getErrors());
         
         return "disconnectMeterWidget/render.jsp";
     }

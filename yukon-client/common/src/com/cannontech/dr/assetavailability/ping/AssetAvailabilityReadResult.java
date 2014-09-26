@@ -20,10 +20,10 @@ import com.google.common.collect.Sets;
  */
 public class AssetAvailabilityReadResult implements DeviceAttributeReadCallback, Completable {
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityReadResult.class);
-    private Set<Integer> devicesToRead;
-    private Set<Integer> successDevices = Sets.newHashSet();
-    private Set<Integer> failedDevices = Sets.newHashSet();
-    private List<DeviceAttributeReadError> errorList = Lists.newArrayList();
+    private final Set<Integer> devicesToRead;
+    private final Set<Integer> successDevices = Sets.newHashSet();
+    private final Set<Integer> failedDevices = Sets.newHashSet();
+    private final List<DeviceAttributeReadError> errorList = Lists.newArrayList();
     
     public AssetAvailabilityReadResult(Iterable<Integer> devicesToRead) {
         this.devicesToRead = Sets.newHashSet(devicesToRead);
@@ -41,7 +41,7 @@ public class AssetAvailabilityReadResult implements DeviceAttributeReadCallback,
     }
 
     @Override
-    public void receivedLastValue(PaoIdentifier pao) {
+    public void receivedLastValue(PaoIdentifier pao, String value) {
         log.debug("Asset availability read received last value for paoId " + pao.getPaoId());
     }
 

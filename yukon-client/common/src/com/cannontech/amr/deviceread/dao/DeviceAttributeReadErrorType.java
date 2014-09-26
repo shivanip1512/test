@@ -3,6 +3,7 @@ package com.cannontech.amr.deviceread.dao;
 import com.cannontech.common.rfn.service.NetworkManagerError;
 
 public enum DeviceAttributeReadErrorType {
+	
     NO_STRATEGY,
     NO_ATTRIBUTE,
     NO_POINT,
@@ -10,7 +11,6 @@ public enum DeviceAttributeReadErrorType {
     UNKNOWN(NetworkManagerError.FAILURE.getErrorCode()), 
     EXCEPTION(NetworkManagerError.FAILURE.getErrorCode()),
     ;
-    
 
     private final Integer errorCode;
 

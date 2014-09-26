@@ -136,12 +136,12 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
             }
 
             @Override
-            public void receivedLastValue(PaoIdentifier pao) {
+            public void receivedLastValue(PaoIdentifier pao, String value) {
                 //ignore the last value if this device had an error
                 if (groupCallback.getErrors().get(new SimpleDevice(pao)) == null) {
                     CommandRequestDevice command = new CommandRequestDevice();
                     command.setDevice(new SimpleDevice(pao));
-                    groupCallback.receivedLastResultString(command, "");
+                    groupCallback.receivedLastResultString(command, value);
                     saveCommandRequestExecutionResult(groupCallback.getExecution(),  pao.getPaoId(),  0);
                 }
             }
@@ -166,7 +166,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
             @Override
             public void complete() {
                 groupCallback.complete();
-            }
+            }       
         }, type, groupCallback.getExecution(), user);
     }
 

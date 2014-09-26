@@ -313,7 +313,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             @Override
-            public void receivedLastValue(PaoIdentifier pao) {
+            public void receivedLastValue(PaoIdentifier pao, String value) {
                 log.debug("deviceAttributeReadCallback.receivedLastValue for cdEvent");
             }
 
@@ -327,7 +327,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedException(DeviceAttributeReadError error) {
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
-
+            
         };
         multispeakEventLogService.initiateMeterRead(meter.getMeterNumber(), meter, "N/A", "getCDMeterState", mspVendor.getCompanyName());
         deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
@@ -537,7 +537,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
              * (as derived by MeterReadCommandGenerationService.getMinimalCommandSet(...))
              */
             @Override
-            public void receivedLastValue(PaoIdentifier pao) {
+            public void receivedLastValue(PaoIdentifier pao, String value) {
                 YukonMeter meter = meterLookup.get(pao);
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
 
@@ -686,7 +686,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             @Override
-            public void receivedLastValue(PaoIdentifier pao) {
+            public void receivedLastValue(PaoIdentifier pao, String value) {
                 log.debug("deviceAttributeReadCallback.receivedLastValue for formattedBlockEvent");
             }
 

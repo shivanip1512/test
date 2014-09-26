@@ -22,7 +22,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareReadNowStrategy;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareStrategyType;
-import com.cannontech.web.widget.AttributeReadingHelper;
 
 public class RfHardwareReadNowStrategy implements HardwareReadNowStrategy {
     private static final Logger log = YukonLogManager.getLogger(RfHardwareReadNowStrategy.class);
@@ -31,7 +30,6 @@ public class RfHardwareReadNowStrategy implements HardwareReadNowStrategy {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private AttributeReadingHelper attributeReadingHelper;
     @Autowired private DeviceDao deviceDao;
     @Autowired private AttributeService attributeService;
 

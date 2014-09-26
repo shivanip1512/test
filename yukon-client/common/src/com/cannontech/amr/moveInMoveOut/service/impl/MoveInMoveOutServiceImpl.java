@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
@@ -31,7 +33,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceEventEnum;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -75,11 +76,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private MeterDao meterDao;
-    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    
     @Override
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
 
@@ -105,39 +108,30 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 // which we use to calculate the point
                 PlcMeter meter = moveInResult.getPreviousMeter();
                 logger.info("Starting meter read for " + meter.toString());
-                CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(meter, 
-                                                                                  Collections.singleton(BuiltInAttribute.USAGE),
-                                                                                  DeviceRequestType.MOVE_IN_MOVE_OUT_USAGE_READ,
-                                                                                  moveInFormObj.getUserContext().getYukonUser());
                 
-                if (meterReadResults.isAnyErrorOrException()) {
-                    
-                	if (meterReadResults.isErrorsExist()) {
-                	
-	                	logger.info("Move in for " + moveInResult.getPreviousMeter()
-	                                .toString() + " failed. " + meterReadResults.getErrors());
-	                	moveInResult.setErrors(meterReadResults.getErrors());
-	                	
-                	} else if (meterReadResults.isExceptionOccured()) {
-                		
-                		logger.info("Move in for " + moveInResult.getPreviousMeter()
-                                .toString() + " failed. " + meterReadResults.getExceptionReason());
-                		moveInResult.setErrorMessage(meterReadResults.getExceptionReason());
-                	}
-                    
-                    return moveInResult;
-                }   
+				DeviceReadResult readResult = deviceAttributeReadService.initiateReadAndWait(meter,
+						Collections.singleton(BuiltInAttribute.USAGE), DeviceRequestType.MOVE_IN_MOVE_OUT_USAGE_READ,
+						moveInFormObj.getUserContext().getYukonUser());
+				
+				
+				if (!readResult.isSuccess()) {
+
+					logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed. "+ readResult.getErrors());
+					moveInResult.setErrors(readResult.getErrors());
+
+					return moveInResult;
+				} 
                     
                 PointValueHolder currentPVH = null;
                 LitePoint lp = attributeService.getPointForAttribute(meter,
                                                                      BuiltInAttribute.USAGE);
     
-                for (PointValueHolder pvh : meterReadResults.getValues()) {
+                for (PointValueHolder pvh : readResult.getPointValues()) {
                      if (pvh.getId() == lp.getLiteID()) {
                          currentPVH = pvh;
                      }
                 }
-    
+                
                 moveInResult.setCurrentReading(currentPVH);
                 moveInResult.setCalculatedDifference(new SimplePointValue(currentPVH.getId(), 
                                                                           currentPVH.getPointDataTimeStamp(), 
@@ -263,27 +257,17 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 // which we use to calculate the point
                 PlcMeter meter = moveOutResult.getPreviousMeter();
                 logger.info("Starting meter read for " + meter.toString());
-                CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(meter, 
-                                                                                  Collections.singleton(BuiltInAttribute.USAGE),
-                                                                                  DeviceRequestType.MOVE_IN_MOVE_OUT_USAGE_READ,
-                                                                                  moveOutFormObj.getUserContext().getYukonUser());
-    
-                
-                if (meterReadResults.isAnyErrorOrException()) {
+
+				DeviceReadResult readResult = deviceAttributeReadService.initiateReadAndWait(meter,
+						Collections.singleton(BuiltInAttribute.USAGE), DeviceRequestType.MOVE_IN_MOVE_OUT_USAGE_READ,
+						 moveOutFormObj.getUserContext().getYukonUser());
+               
+                if (!readResult.isSuccess()) {
                     
-                	if (meterReadResults.isErrorsExist()) {
-                	
-	                	logger.info("Move in for " + moveOutResult.getPreviousMeter()
-	                                .toString() + " failed. " + meterReadResults.getErrors());
-	                	moveOutResult.setErrors(meterReadResults.getErrors());
-	                    
-                	} else if (meterReadResults.isExceptionOccured()) {
-                		
-                		logger.info("Move in for " + moveOutResult.getPreviousMeter()
-                                .toString() + " failed. " + meterReadResults.getExceptionReason());
-                		moveOutResult.setErrorMessage(meterReadResults.getExceptionReason());
-                	}
-                    
+					logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed. "
+							+ readResult.getErrors());
+					moveOutResult.setErrors(readResult.getErrors());
+
                     return moveOutResult;
                     
                 } else {
@@ -292,12 +276,12 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     
                     LitePoint lp = attributeService.getPointForAttribute(meter,
                                                                          BuiltInAttribute.USAGE);
-                    for (PointValueHolder pvh : meterReadResults.getValues()) {
+                    for (PointValueHolder pvh : readResult.getPointValues()) {
                          if (pvh.getId() == lp.getLiteID()) {
                              currentPVH = pvh;
                          }
                     }
-    
+                    
                     moveOutResult.setCurrentReading(currentPVH);
                     moveOutResult.setCalculatedDifference(new SimplePointValue(currentPVH.getId(), 
                                                                                currentPVH.getPointDataTimeStamp(), 
@@ -559,7 +543,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         }
         return true;
     }
-    
+        
     @Override
     public boolean isAuthorized(LiteYukonUser liteYukonUser, PlcMeter meter) {
     	

@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.PreviousReadings;
@@ -23,25 +22,25 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
-import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.collect.Sets;
 
 /**
  * Widget used to display basic device information
  */
-public class MeterReadingsWidget extends WidgetControllerBase {
+public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
 
-    @Autowired private AttributeReadingHelper widgetHelper;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private AttributeService attributeService;
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private PointService pointService;
     @Autowired private YukonPointHelper yukonPointHelper;
+    @Autowired private MeterDao meterDao;
     
     private List<? extends Attribute> attributesToShow;
     private Attribute previousReadingsAttributeToShow;
@@ -55,23 +54,21 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         this.previousReadingsAttributeToShow = previousReadingsAttributeToShow;
     }
     
-    @Override
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
-            throws ServletRequestBindingException {
+    @RequestMapping("render")
+    public String render(ModelMap model, YukonUserContext userContext, Integer deviceId) {
 
-        YukonMeter meter = widgetHelper.getMeter(request);
-        ModelAndView mav = new ModelAndView("meterReadingsWidget/render.jsp");
-        mav.addObject("device", meter);
-        mav.addObject("attributes", attributesToShow);
-        mav.addObject("previousReadingsAttribute", previousReadingsAttributeToShow);
+        YukonMeter meter = meterDao.getForId(deviceId);
+        model.addAttribute("device", meter);
+        model.addAttribute("attributes", attributesToShow);
+        model.addAttribute("previousReadingsAttribute", previousReadingsAttributeToShow);
         
         Set<Attribute> allSupportedAttributes = attributeService.getAvailableAttributes(meter);
         Map<Attribute, Boolean> supportedAttributes = ServletUtil.convertSetToMap(allSupportedAttributes);
-        mav.addObject("supportedAttributes", supportedAttributes);
+        model.addAttribute("supportedAttributes", supportedAttributes);
         Set<Attribute> allExistingAttributes = 
                 attributeService.getExistingAttributes(meter, Sets.newHashSet(attributesToShow));
         Map<Attribute, Boolean> existingAttributes = ServletUtil.convertSetToMap(allExistingAttributes);
-        mav.addObject("existingAttributes", existingAttributes);
+        model.addAttribute("existingAttributes", existingAttributes);
         
         // don't attempt unless USAGE is supported and exists
         boolean usageAttributeExists = existingAttributes.containsKey(previousReadingsAttributeToShow);
@@ -79,41 +76,39 @@ public class MeterReadingsWidget extends WidgetControllerBase {
 	        LitePoint lp = attributeService.getPointForAttribute(meter, previousReadingsAttributeToShow);
 	        PreviousReadings previousReadings = pointService.getPreviousReadings(lp);
 	        
-	        mav.addObject("previousReadings_All", previousReadings.getPrevious36());
-	        mav.addObject("previousReadings_Daily", previousReadings.getPrevious3Months());
-	        mav.addObject("previousReadings_CutoffDate", previousReadings.getCutoffDate());
-	        mav.addObject("previousReadings_Cutoff", !previousReadings.getPrevious3Months().isEmpty());
-	        mav.addObject("previousReadings_OptionValue", "VALUE");
+	        model.addAttribute("previousReadings_All", previousReadings.getPrevious36());
+	        model.addAttribute("previousReadings_Daily", previousReadings.getPrevious3Months());
+	        model.addAttribute("previousReadings_CutoffDate", previousReadings.getCutoffDate());
+	        model.addAttribute("previousReadings_Cutoff", !previousReadings.getPrevious3Months().isEmpty());
+	        model.addAttribute("previousReadings_OptionValue", "VALUE");
         }
-        mav.addObject("usageAttributeExists", usageAttributeExists);
-
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        model.addAttribute("usageAttributeExists", usageAttributeExists);
         
-        boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes, user);
-        mav.addObject("readable", readable);
+		boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes,
+				userContext.getYukonUser());
+        model.addAttribute("readable", readable);
         
         List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(meter);
-        mav.addObject("points", points);
-        mav.addObject("deviceName", paoLoadingService.getDisplayablePao(meter).getName());
+        model.addAttribute("points", points);
+        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(meter).getName());
         
-        return mav;
+        return "meterReadingsWidget/render.jsp";
     }
     
-    public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
-    throws ServletRequestBindingException {
-        
-        YukonMeter meter = widgetHelper.getMeter(request);
-        Set<Attribute> allExistingAttributes = 
-                attributeService.getExistingAttributes(meter, Sets.newHashSet(attributesToShow));
-        
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
-        
-        ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
-        widgetHelper.initiateRead(request, meter,allExistingAttributes, mav.getModelMap(), 
-                                 DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ);
+    @RequestMapping("read")
+	public String read(ModelMap model, YukonUserContext userContext, Integer deviceId) {
 
-        return mav;
-    }
+		YukonMeter meter = meterDao.getForId(deviceId);
+		Set<Attribute> attributes = attributeService.getExistingAttributes(meter, Sets.newHashSet(attributesToShow));
+
+		meteringEventLogService.readNowPushedForReadingsWidget(userContext.getYukonUser(), meter.getDeviceId());
+
+		DeviceReadResult result = deviceAttributeReadService.initiateReadAndWait(meter, attributes,
+				DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
+
+		model.addAttribute("result", result);
+
+		return "common/deviceAttributeReadResult.jsp";
+	}
 
 }

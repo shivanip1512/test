@@ -3,7 +3,6 @@ package com.cannontech.amr.moveInMoveOut.service.impl;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -18,16 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.tools.email.EmailHtmlMessage;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
@@ -39,6 +41,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     private TemplateProcessorFactory templateProcessorFactory;
     private EmailService emailService;
     private PointFormattingService pointFormattingService;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     
     String emailSubject = "Email notification from Energy Services Operations Center";
 
@@ -186,8 +189,8 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterName", moveInResult.getPreviousMeter().getName());
 
         setDatesMoveIn(moveInResult, msgData, userContext);
-        buildErrorStr(moveInResult.getErrors(), moveInResult.getErrorMessage(), msgData);
-
+        buildErrorStr(moveInResult.getErrors(), moveInResult.getErrorMessage(), msgData, userContext);
+        
         String subject = tp.process(baseSubjectFormatMoveIn, msgData);
         String body = null;
         try{
@@ -196,7 +199,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        sendEmail(moveInResult.getEmailAddress(), subject, body);
+        sendEmail(moveInResult.getEmailAddress(), subject, body, body);
     }
 
     private void createMoveOutSuccessEmail(MoveOutResult moveOutResult,
@@ -279,7 +282,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterName", moveOutResult.getPreviousMeter().getName());
 
         setDatesMoveOut(moveOutResult, msgData, userContext);
-        buildErrorStr(moveOutResult.getErrors(), moveOutResult.getErrorMessage(), msgData);
+        buildErrorStr(moveOutResult.getErrors(), moveOutResult.getErrorMessage(), msgData, userContext);
 
         String subject = tp.process(baseSubjectFormatMoveOut, msgData);
         String body = null;
@@ -289,18 +292,27 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        sendEmail(moveOutResult.getEmailAddress(), subject, body);
+        sendEmail(moveOutResult.getEmailAddress(), subject, body, body);
     }
 
-    private void sendEmail(String toEmailAddress, String subject, String body) {
+    private void sendEmail(String toEmailAddress, String subject, String body, String htmlBody) {
         try {
-            EmailMessage emailMessage = 
-                    new EmailMessage(InternetAddress.parse(toEmailAddress), subject, body);
+        	EmailHtmlMessage emailMessage = new EmailHtmlMessage(InternetAddress.parse(toEmailAddress), subject, body, htmlBody);
             emailService.sendMessage(emailMessage);
         } catch (MessagingException e) {
             logger.warn("Unable to email message to address " + toEmailAddress + ".", e);
         }
     }
+    
+    private void sendEmail(String toEmailAddress, String subject, String body) {
+        try {
+        	EmailMessage emailMessage = new EmailMessage(InternetAddress.parse(toEmailAddress), subject, body);
+            emailService.sendMessage(emailMessage);
+        } catch (MessagingException e) {
+            logger.warn("Unable to email message to address " + toEmailAddress + ".", e);
+        }
+    }
+
 
     
     private void setDatesMoveOut(MoveOutResult moveOutResult,
@@ -322,10 +334,11 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("stopDate", currentDate);
     }
 
-    private void buildErrorStr(List<SpecificDeviceErrorDescription> errors,
-            String errorMessage, Map<String, Object> msgData) {
-        String errorsStr = "";
-        String tab = "    ";
+    private void buildErrorStr(Set<DeviceAttributeReadError> errors,
+            String errorMessage, Map<String, Object> msgData, YukonUserContext userContext) {
+    	
+    	MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(userContext);
+        StringBuilder errorsStr = new StringBuilder();
 
         if (errorMessage != null){
             msgData.put("errorMessage", errorMessage);
@@ -333,13 +346,20 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             msgData.put("errorMessage", " ");
         }
         
-        for (SpecificDeviceErrorDescription description : errors) {
-            errorsStr += description.getDescription() + " " + description.getErrorCode() + "\r\n" + tab + description.getPorter() + " \r\n" + tab + description.getTroubleshooting() + " \r\n";
-        }
-        
+        for (DeviceAttributeReadError error : errors) {
+        	errorsStr.append("<br>");
+        	errorsStr.append("<br>");
+        	errorsStr.append(messageSourceAccessor.getMessage(error.getSummary()));
+        	errorsStr.append("<br>");
+			if (error.getDetail() != null) {
+			  	errorsStr.append("<br>");
+				errorsStr.append(messageSourceAccessor.getMessage(error.getDetail()));
+			}
+        }   
         msgData.put("errors", errorsStr);
+        
     }
-
+    
     @Required
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;

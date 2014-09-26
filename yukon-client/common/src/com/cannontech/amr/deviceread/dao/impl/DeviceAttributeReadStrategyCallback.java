@@ -16,7 +16,7 @@ public interface DeviceAttributeReadStrategyCallback {
      * This method will be called once per PAO and will indicate that receivedValue will not
      * be invoked any additional times for the given PAO.
      */
-    public void receivedLastValue(PaoIdentifier pao);
+    public void receivedLastValue(PaoIdentifier pao, String value);
     
     /**
      * For a given PAO, this method should be called in those cases that the receivedValue method will NOT be called.

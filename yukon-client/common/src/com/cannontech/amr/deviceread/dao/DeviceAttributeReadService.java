@@ -3,6 +3,7 @@ package com.cannontech.amr.deviceread.dao;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -10,6 +11,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.SimpleCallback;
@@ -36,7 +38,7 @@ public interface DeviceAttributeReadService {
                              DeviceRequestType type,
                              LiteYukonUser user);
 
-    /*
+    /**
      * This method will attempt to read device collection
      */
 
@@ -46,7 +48,7 @@ public interface DeviceAttributeReadService {
                                final SimpleCallback<GroupMeterReadResult> callback,
                                LiteYukonUser user);
 
-    /*
+    /**
      * This method will attempt to read device collection and retry if needed. This method supports
      * PLC devices only, all other devices will be marked as unsupported.
      */
@@ -56,6 +58,12 @@ public interface DeviceAttributeReadService {
                                                                       CommandCompletionCallback<CommandRequestDevice> callback,
                                                                       LiteYukonUser user,
                                                                       RetryParameters retryParameters);
+    
+    /**
+     * This method will attempt to read device and wait for the result
+     */
+    DeviceReadResult initiateReadAndWait(YukonDevice device, Set<? extends Attribute> toRead,
+                                                              DeviceRequestType requestType, LiteYukonUser user);
     
     
     // The methods below this line represent a distinct part of this service.
@@ -70,5 +78,4 @@ public interface DeviceAttributeReadService {
     public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type);
 
     public GroupMeterReadResult getResult(String id);
-
 }

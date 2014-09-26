@@ -47,9 +47,7 @@
     <bean id="meterRowMapper" class="com.cannontech.amr.meter.dao.impl.MeterRowMapper"/>
 
 	<bean id="meterReadCommandGeneratorService" class="com.cannontech.amr.deviceread.service.impl.MeterReadCommandGeneratorServiceImpl"/>
-
-    <bean id="plcDeviceAttributeReadService" class="com.cannontech.amr.deviceread.dao.impl.PlcDeviceAttributeReadServiceImpl"/>
-        
+      
     <bean id="peakReportService"
         class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">
         <property name="dateFormattingService" ref="dateFormattingService" />
@@ -65,7 +63,6 @@
     <bean id="calculatedPointService"
         class="com.cannontech.amr.deviceread.dao.impl.CalculatedPointServiceImpl">
         <property name="attributeService" ref="attributeService" />
-        <property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService" />
         <property name="peakReportService" ref="peakReportService" />
     </bean>
 

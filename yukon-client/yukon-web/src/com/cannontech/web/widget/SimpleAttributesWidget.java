@@ -15,26 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class SimpleAttributesWidget extends WidgetControllerBase {
     
-    @Autowired private AttributeReadingHelper widgetHelper;
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceDao deviceDao;
@@ -45,7 +40,6 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
 
         ModelAndView mav = new ModelAndView("simpleAttributesWidget/render.jsp");
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
 
         // device
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -95,11 +89,16 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         // command
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
         Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(device, attributes);
 
         ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
-        widgetHelper.initiateRead(request, device, allExistingAttributes, mav.getModelMap(), 
-                                  DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ);
+                
+		DeviceReadResult result = deviceAttributeReadService.initiateReadAndWait(device, allExistingAttributes,
+				DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ, user);
+
+		mav.getModelMap().addAttribute("result", result);
 
         return mav;
     }

@@ -3,79 +3,63 @@ package com.cannontech.web.widget;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
-import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
-public class TouWidget extends WidgetControllerBase {
+public class TouWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
-    @Autowired private AttributeReadingHelper widgetHelper;
+    @Autowired private MeterDao meterDao;
 
-    @Override
-    public ModelAndView render(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    @RequestMapping("render")
+    public String render(ModelMap model, YukonUserContext userContext, Integer deviceId){
         
-        ModelAndView mav = new ModelAndView("touWidget/render.jsp");
-        YukonMeter meter = widgetHelper.getMeter(request);
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-
-        // Finds the existing attributes for the supplied meter
+    	YukonMeter meter = meterDao.getForId(deviceId);
         Set<Attribute> existingTouAttributes = attributeService.getExistingAttributes(meter, AttributeHelper.getTouWidgetAttributes());
-        boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), existingTouAttributes, user);
-
-        // Add objects to mav.
-        mav.addObject("meter", meter);
-        mav.addObject("readable", readable);
-        
-        if (existingTouAttributes.size() > 0) {
-            mav.addObject("touAttributesAvailable", true);
-            for (Attribute touAttribute : existingTouAttributes) {
-                mav.addObject(touAttribute.getKey(), touAttribute);
-            }
-        } else {
-            mav.addObject("touAttributesAvailable", false);
-        }
-        
-        return mav;
+        initModel(model, existingTouAttributes, userContext, meter);
+      
+        return "touWidget/render.jsp";
     }
 
-    public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
-    throws ServletRequestBindingException {
-        YukonMeter meter = widgetHelper.getMeter(request);
+    @RequestMapping("read")
+    public String read(ModelMap model, YukonUserContext userContext, Integer deviceId){
 
-        // Finds the existing attributes for the supplied meter
-        Set<Attribute> existingTouAttributes = 
-                attributeService.getExistingAttributes(meter, AttributeHelper.getTouWidgetAttributes());
+    	YukonMeter meter = meterDao.getForId(deviceId);
+        Set<Attribute> attributes = attributeService.getExistingAttributes(meter, AttributeHelper.getTouWidgetAttributes());
+        initModel(model, attributes, userContext, meter);
+        
+		DeviceReadResult result = deviceAttributeReadService.initiateReadAndWait(meter, attributes, DeviceRequestType.TOU_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
+		model.put("result", result);
 
-        ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
-        widgetHelper.initiateRead(request, meter, existingTouAttributes, mav.getModelMap(),
-                                 DeviceRequestType.TOU_WIDGET_ATTRIBUTE_READ);
-
-        if (existingTouAttributes.size() > 0) {
-            mav.addObject("touAttributesAvailable", true);
-            for (Attribute touAttribute : existingTouAttributes) {
-                mav.addObject(touAttribute.getKey(), touAttribute);
-            }
-        } else {
-            mav.addObject("touAttributesAvailable", false);
-        }
-
-        return mav;
+        return "common/deviceAttributeReadResult.jsp";
     }
+    
+	private void initModel(ModelMap model, Set<Attribute> attributes, YukonUserContext userContext, YukonMeter meter) {
+		if (attributes.size() > 0) {
+			model.put("touAttributesAvailable", true);
+			for (Attribute touAttribute : attributes) {
+				model.put(touAttribute.getKey(), touAttribute);
+			}
+		} else {
+			model.put("touAttributesAvailable", false);
+		}
+
+		boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), attributes, userContext.getYukonUser());
+		model.put("readable", readable);
+		model.put("meter", meter);
+	}
 
 }

@@ -260,9 +260,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
            </property>
-        <property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService"/>
-        <property name="attributeService" ref="attributeService"/>
-        <property name="meterDao" ref="meterDao"/>
     </bean>
 
     <bean id="meterInformationWidget"
@@ -1609,8 +1606,6 @@
     <bean id="exportAttributeValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportAttributeValidator"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportFieldValidator"/>
     <bean id="dataRangeValidator" class="com.cannontech.web.tools.dataExporter.validator.DataRangeValidator"/>
-
-    <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingHelper"/>
 
     <bean id="lmReportedDataBackingService" class="com.cannontech.web.updater.dr.LmReportedDataBackingService"/>
     <jms:listener-container 

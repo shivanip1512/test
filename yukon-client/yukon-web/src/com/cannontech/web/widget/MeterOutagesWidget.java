@@ -10,21 +10,16 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -32,26 +27,21 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ExpireLRUMap;
-import com.cannontech.util.ServletUtil;
-import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.collect.Sets;
 
 /**
  * Widget used to display basic device information
  * This is assumed to be for PLC meters. See RfnOutagesWidget for RFN meter types.
  */
-public class MeterOutagesWidget extends WidgetControllerBase {
+public class MeterOutagesWidget extends AdvancedWidgetControllerBase {
 
-    private MeterDao meterDao;
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+	@Autowired private MeterDao meterDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
-    private AttributeService attributeService;
+    @Autowired private AttributeService attributeService;
 
     //Contains <DeviceID>,<PerishableOutageData>
     private final ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
@@ -124,63 +114,53 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     
     public PointValueComparator pointValueComparator = new PointValueComparator();
     
-    @Override
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        YukonMeter meter = getMeter(request);
+    @RequestMapping("render")
+    public String render(ModelMap model, YukonUserContext userContext, Integer deviceId){
 
-        Set<Attribute> allExistingAttributes = getExistingAttributes(meter);
+    	YukonMeter meter = meterDao.getForId(deviceId);
+        Set<Attribute> attributes = getExistingAttributes(meter);
 
-        ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
+        initModel( model, meter, attributes, userContext);
         
         PerishableOutageData data = getOutageData(meter);
-        mav.addObject("data", data);
-                             
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean readable = deviceAttributeReadService.isReadable(Sets.newHashSet(meter), allExistingAttributes, user);
-        mav.addObject("readable", readable);
+        model.put("data", data);
 
-        return mav;
+        return "meterOutagesWidget/render.jsp";
     }
 
-    public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
-    throws Exception {
-        YukonMeter meter = getMeter(request);
+    @RequestMapping("read")
+    public String read(ModelMap model, YukonUserContext userContext, Integer deviceId){
+  
+    	YukonMeter meter = meterDao.getForId(deviceId);
+        Set<Attribute> attributes = getExistingAttributes(meter);
         
-        Set<Attribute> allExistingAttributes = getExistingAttributes(meter);
+        initModel( model, meter, attributes, userContext);
         
-        ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
-
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
-        
-        if( allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG)) {
-            PerishableOutageData data = addOutageData(meter, result.getValues(), userContext);
-            mav.addObject("data", data);
+		DeviceReadResult result = deviceAttributeReadService.initiateReadAndWait(meter, attributes,
+				DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
+       
+        if( attributes.contains(BuiltInAttribute.OUTAGE_LOG)) {
+            PerishableOutageData data = addOutageData(meter, result.getPointValues(), userContext);
+            model.put("data", data);
         }
 
-        mav.addObject("isRead", true);
-
-        mav.addObject("result", result);
+        model.put("isRead", true);
+        model.put("result", result);
         
-        boolean readable = deviceAttributeReadService.isReadable(Sets.newHashSet(meter), allExistingAttributes, userContext.getYukonUser());
-        mav.addObject("readable", readable);
-        
-        return mav;
+        return "meterOutagesWidget/render.jsp";
     }
     
-    private ModelAndView getOutagesModelAndView(YukonMeter meter, Set<Attribute> allExistingAttributes) throws Exception{
+    private void initModel(ModelMap model, YukonMeter meter, Set<Attribute> attributes, YukonUserContext userContext){
 
-        ModelAndView mav = new ModelAndView("meterOutagesWidget/render.jsp");
-        mav.addObject("device", meter);
-        mav.addObject("attribute", BuiltInAttribute.BLINK_COUNT);
-        mav.addObject("isRead", false);
+        boolean readable = deviceAttributeReadService.isReadable(Sets.newHashSet(meter), attributes, userContext.getYukonUser());
+        model.put("readable", readable);
+        model.put("device", meter);
+        model.put("attribute", BuiltInAttribute.BLINK_COUNT);
+        model.put("isRead", false);
+        model.put("isBlinkConfigured", attributes.contains(BuiltInAttribute.BLINK_COUNT) );
+        model.put("isOutageSupported", attributeService.isAttributeSupported(meter, BuiltInAttribute.OUTAGE_LOG) );
+        model.put("isOutageConfigured", attributes.contains(BuiltInAttribute.OUTAGE_LOG) );
         
-        mav.addObject("isBlinkConfigured", allExistingAttributes.contains(BuiltInAttribute.BLINK_COUNT) );
-        mav.addObject("isOutageSupported", attributeService.isAttributeSupported(meter, BuiltInAttribute.OUTAGE_LOG) );
-        mav.addObject("isOutageConfigured", allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG) );
-
-        return mav; 
     }
     
     private Set<Attribute> getExistingAttributes(YukonDevice device) {
@@ -189,12 +169,6 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         attributesToShow.add(BuiltInAttribute.BLINK_COUNT);
         attributesToShow.add(BuiltInAttribute.OUTAGE_LOG);
         return attributeService.getExistingAttributes(device, attributesToShow);
-    }
-
-    private YukonMeter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        YukonMeter meter = meterDao.getForId(deviceId);
-        return meter;
     }
 
     private PerishableOutageData addOutageData(YukonMeter meter, List<PointValueHolder> values, YukonUserContext userContext) {
@@ -231,20 +205,5 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     
     private PerishableOutageData getOutageData(YukonMeter meter) {
             return recentOutageLogs.get(meter.getDeviceId());
-    }
-    
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Required
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
 }

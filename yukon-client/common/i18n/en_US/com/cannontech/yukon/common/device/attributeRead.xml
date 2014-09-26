@@ -8,6 +8,7 @@
 
     <entry key="yukon.common.device.attributeRead.plc.errorSummary">{1} ({2})</entry>
     <entry key="yukon.common.device.attributeRead.plc.exception">Unknown error: {0}</entry>
+    <entry key="yukon.common.device.attributeRead.plc.unknownError">Unknown Error</entry>
     
     <entry key="yukon.common.device.attributeRead.rfn.notKnown">Unable to find RFN fields: {0}</entry>
     <entry key="yukon.common.device.attributeRead.rfn.statusError">Read error (status): {0}</entry>

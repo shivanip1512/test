@@ -12,8 +12,7 @@ public interface CommandRequestExecutionTemplate<T> {
     /* This method requires CommandRequestExecution to be created prior to calling execute*/
     public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, CommandRequestExecution execution);
     public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noQueue);
-    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, int priority);
-    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noQueue, int priority);
+
     
     public CommandRequestExecutionContextId getContextId();
 }

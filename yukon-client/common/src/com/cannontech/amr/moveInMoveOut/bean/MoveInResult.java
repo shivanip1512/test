@@ -2,9 +2,11 @@ package com.cannontech.amr.moveInMoveOut.bean;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -17,7 +19,7 @@ public class MoveInResult{
     private PointValueHolder calculatedDifference;
     private PlcMeter previousMeter;
     private PlcMeter newMeter;
-    private List<SpecificDeviceErrorDescription> errors = new ArrayList<SpecificDeviceErrorDescription>();  //contains device read errors 
+    private Set<DeviceAttributeReadError> errors = new HashSet<DeviceAttributeReadError>();  //contains device read errors 
     private List<DeviceGroup> deviceGroupsRemoved = new ArrayList<DeviceGroup>();
     private String emailAddress;
     private String submissionType;
@@ -67,10 +69,10 @@ public class MoveInResult{
     public void setSubmissionType(String submissionType) {
         this.submissionType = submissionType;
     }
-    public List<SpecificDeviceErrorDescription> getErrors() {
+    public Set<DeviceAttributeReadError> getErrors() {
         return errors;
     }
-    public void setErrors(List<SpecificDeviceErrorDescription> errors) {
+    public void setErrors(Set<DeviceAttributeReadError> errors) {
         this.errors = errors;
     }
     public String getEmailAddress() {

@@ -3,9 +3,6 @@ package com.cannontech.web.widget;
 import java.util.Collections;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -28,9 +24,7 @@ import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -40,7 +34,6 @@ import com.google.common.collect.ListMultimap;
 public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private MeterDao meterDao;
-    @Autowired private AttributeReadingHelper widgetHelper;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private AttributeService attributeService;
     
@@ -54,8 +47,8 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping("render")
-    public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, NotFoundException {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+    public String render(ModelMap model, int deviceId) throws ServletRequestBindingException, NotFoundException {
+
         RfnMeter meter = meterDao.getRfnMeterForId(deviceId);
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", deviceId);
@@ -70,8 +63,9 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping("outageData")
-    public String outageData(ModelMap model, HttpServletRequest req, HttpServletResponse resp, YukonUserContext context) throws ServletRequestBindingException {
-        YukonMeter meter = widgetHelper.getMeter(req);
+    public String outageData(ModelMap model, int deviceId) throws ServletRequestBindingException {
+
+        YukonMeter meter = meterDao.getForId(deviceId);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> data = rphDao.getAttributeData(Collections.singleton(meter), 
                                 BuiltInAttribute.OUTAGE_LOG, 
                                 new Instant().minus(Duration.standardDays(100)).toDate(), 
@@ -129,12 +123,4 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
             this.invalid = invalid;
         }
     }
-    
-    @RequestMapping("read")
-    public String read(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
-        YukonMeter meter = widgetHelper.getMeter(request);
-        widgetHelper.initiateRead(request, meter, attributes, model, DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ);
-        return "common/deviceAttributeReadResult.jsp";
-    }
-    
 }

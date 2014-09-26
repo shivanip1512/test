@@ -87,8 +87,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             log.debug("Points:" + points);
             log.debug("Commands:" + commands);
         }
-        commandRequestDeviceExecutor
-            .createTemplateAndExecute(groupCallback.getExecution(), groupCallback, commands, user);
+		commandRequestDeviceExecutor.createTemplateAndExecute(groupCallback.getExecution(), groupCallback, commands, user);
     }
  
     @Override
@@ -117,13 +116,14 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
-                delegateCallback.receivedLastValue(command.getDevice().getPaoIdentifier());
+                delegateCallback.receivedLastValue(command.getDevice().getPaoIdentifier(), value);
             }
             
             @Override
             public void processingExceptionOccured(String reason) {
                 MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.plc.exception", reason);
-                DeviceAttributeReadError exception = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary);
+                MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCode("yukon.common.device.attributeRead.plc.unknownError");
+                DeviceAttributeReadError exception = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary, detail);
                 delegateCallback.receivedException(exception);
             }
         };
@@ -165,15 +165,17 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
 
         unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
 
-        log.debug("Attributes are not supported:" + attributes + " for  " + unsupportedDevices);
-
+   
         for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getDevicesAndPoints()) {
             if (identifier.getPao().getPaoType().isMct()) {
                 supportedDevices.add(identifier);
             } else {
+            	//Adding devices that support the attribute and that are not MCTs. 
                 unsupportedDevices.add(identifier.getPao());
             }
         }
+        
+        log.debug("Unsupported devices:"+ unsupportedDevices);
         
         commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices,
                                                          execution.getId(),
@@ -184,6 +186,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             List<CommandRequestDevice> commandRequests =
                 meterReadCommandGeneratorService.getCommandRequests(supportedDevices);
             execution.setRequestCount(commandRequests.size());
+            commandRequestExecutionDao.saveOrUpdate(execution);
             CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor =
                 new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, retryParameters);
             executionObjects = retryExecutor.execute(commandRequests, callback, execution, user);
@@ -193,8 +196,8 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             commandRequestExecutionDao.saveOrUpdate(execution);
             CommandRequestExecutionContextId commandRequestExecutionContextId =
                 new CommandRequestExecutionContextId(execution.getContextId());
-            executionObjects =
-                new CommandRequestExecutionObjects<CommandRequestDevice>(null, null, commandRequestExecutionContextId);
+			executionObjects = new CommandRequestExecutionObjects<CommandRequestDevice>(null, null, commandRequestExecutionContextId);
+			callback.complete();
         }
 
         return executionObjects;
