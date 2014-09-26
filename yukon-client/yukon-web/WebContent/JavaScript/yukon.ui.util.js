@@ -376,28 +376,6 @@ yukon.ui.util = (function () {
             $('#collection-type-' + uniqueId).val(type);
         },
         
-        /*
-         * This allows the picker (and anything else that might need it) to distinguish
-         * between a tag being called on a main page (window.loadComplete will be false)
-         * and a tag being used in page loaded as a result of an openSimpleDialog call
-         * (which happens after the window has loaded completely).
-         */
-        loadComplete : false,
-        
-        /**
-         * Use this method to call a function after a page has been completely loaded.  If this method
-         * is called after the window has already been loaded, the method is called immediately.
-         */
-        callAfterMainWindowLoad : function (func) {
-            if (mod.loadComplete) {
-                func();
-            } else {
-                $(function() {
-                    func();
-                });
-            }
-        },
-        
         cronExpFreqChange : function (id, sel) {
             var selectedFreqVal = sel.options[sel.selectedIndex].value,
                 cronTime = $('#' + id + '_cronExpTimeDiv'),
@@ -463,8 +441,6 @@ yukon.ui.util = (function () {
     
     return mod;
 })();
-
-$(function() { yukon.ui.util.loadComplete = true; });
 
 /**
  * Module to add behavior to schedule file export inputs in the

@@ -50,5 +50,7 @@ ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
 </div>
 
 <script type="text/javascript">
-yukon.ui.util.callAfterMainWindowLoad(${id}.init.bind(${id}));
+$(function () {
+    ${id}.init.bind(${id}))();
+});
 </script>

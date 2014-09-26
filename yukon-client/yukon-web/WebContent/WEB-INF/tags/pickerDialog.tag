@@ -179,10 +179,10 @@
 
 <script type="text/javascript">
 try {
-    yukon.ui.util.callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
+    $(function () { ${id}.init.bind(${id}, ${viewMode})(); });
 } catch (callAfterLoadex) {
     debug.log('exception for picker: ' + "${id}" + ': ' + callAfterLoadex);
-    alert("pickerDialog.tag: callAfterMainWindowLoad exception: " + callAfterLoadex);
+    alert("pickerDialog.tag: yukon.picker.init exception: " + callAfterLoadex);
 }
 
 if (${!empty excludeIds}) {

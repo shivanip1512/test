@@ -194,7 +194,5 @@
 </div>
 
 <script type="text/javascript">
-yukon.ui.util.callAfterMainWindowLoad(function () {
-    yukon.ui.util.cronExpFreqChange('${id}', $('#' + '${id}_cronExpFreq')[0]);
-});
+$(function () { yukon.ui.util.cronExpFreqChange('${id}', $('#' + '${id}_cronExpFreq')[0]); });
 </script>
