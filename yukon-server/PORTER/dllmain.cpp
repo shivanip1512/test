@@ -17,7 +17,7 @@
 #endif
 
 #include "portglob.h"
-#include "utility.h"
+#include "module_util.h"
 
 using std::endl;
 using std::cerr;
