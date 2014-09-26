@@ -29,7 +29,7 @@ public class MiscellaneousMethodController {
 		} catch (EnergyCompanyNotFoundException e) {
 			log.error("User is not associated with an Energy Company. No methods available.");
 		}
-		if (null != energyCompanyByOperator){
+		if (null != energyCompanyByOperator) {
            model.addAttribute("energyCompanyId",energyCompanyByOperator.getEnergyCompanyId());
 		}
     }
