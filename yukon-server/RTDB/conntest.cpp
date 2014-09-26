@@ -1,11 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   conntest
-*
-* Exercise in connections
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <crtdbg.h>
@@ -17,9 +9,6 @@
 #include <utility>
 
 #include <rw\thr\thrfunc.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw/toolpro/inetaddr.h>
 #include <rw\rwerr.h>
 #include <rw\thr\mutex.h>
 

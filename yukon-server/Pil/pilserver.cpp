@@ -48,11 +48,7 @@
 #include "connection_client.h"
 #include "win_helper.h"
 
-#include <rw/toolpro/winsock.h>
 #include <rw/thr/thrfunc.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw/toolpro/inetaddr.h>
 #include <rw/rwerr.h>
 #include <rw/thr/mutex.h>
 

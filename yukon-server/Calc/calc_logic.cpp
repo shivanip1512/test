@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
 #include <rw/thr/thrutil.h>
-#include <rw/toolpro/winsock.h>
 
 #include "dbaccess.h"
 //  #include "monitor.h"
@@ -27,27 +26,10 @@ LPTSTR szDisplayName = "Yukon Calc-Logic Service";
 
 int main( int argc, char *argv[] )
 {
-    RWWinSockInfo sock_init;        // global declare for winsock
+    Cti::createExclusiveEvent(CompileInfo, "CalcLogic");
 
-    HANDLE hExclusion;
     // If set console does not fail then we are running as a console application
-    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "CalcLogic")) != NULL )
-    {
-       // Oh no, calc_logic is running on this machine already.
-       CloseHandle(hExclusion);
-       cout << CompileInfo.project << " is already running!" << endl;
-       exit(-1);
-    }
-
-    hExclusion = CreateEvent(NULL, TRUE, FALSE, "CalcLogic");
-
-    if( hExclusion == (HANDLE)NULL )
-    {
-       cout << "Couldn't create CalcLogic event!" << endl;
-       exit(-1);
-    }
-
-    if( setConsoleTitle(CompileInfo) )
+    if( Cti::setConsoleTitle(CompileInfo) )
     {
         //  Process command line
         //  Process command line

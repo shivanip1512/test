@@ -1,24 +1,9 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dll_prot
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4.14.2 $
-* DATE         :  $Date: 2008/11/20 16:49:26 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
 using namespace std;
 
-#include <rw\thr\mutex.h>
-
-#include "utility.h"
+#include "module_util.h"
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -26,7 +11,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
             break;
         }

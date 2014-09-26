@@ -38,7 +38,8 @@ CtiLMClientListener& CtiLMClientListener::getInstance()
     Constructor
 ---------------------------------------------------------------------------*/
 CtiLMClientListener::CtiLMClientListener() :
-    _doquit(FALSE),
+    _started(false),
+    _doquit(false),
     _listenerConnection( Cti::Messaging::ActiveMQ::Queue::loadmanagement )
 {
 }
@@ -48,7 +49,10 @@ CtiLMClientListener::CtiLMClientListener() :
 ---------------------------------------------------------------------------*/
 CtiLMClientListener::~CtiLMClientListener()
 {
-    stop();
+    if( _started )
+    {
+        stop();
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -58,6 +62,8 @@ CtiLMClientListener::~CtiLMClientListener()
 ---------------------------------------------------------------------------*/
 void CtiLMClientListener::start()
 {
+    _started = true;
+
     RWThreadFunction thr_func = rwMakeThreadFunction( *this, &CtiLMClientListener::_listen );
     RWThreadFunction check_thr_func = rwMakeThreadFunction( *this, &CtiLMClientListener::_check );
 
@@ -83,7 +89,7 @@ void CtiLMClientListener::stop()
             dout << CtiTime() << " - Shutting down client listener thread..." << endl;
         }
 
-        _doquit = TRUE;
+        _doquit = true;
 
         try{
             _listenerConnection.close();

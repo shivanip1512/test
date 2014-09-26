@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portmain
-*
-* Date:   2/2/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14.14.2 $
-* DATE         :  $Date: 2008/11/21 16:14:53 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -83,7 +70,7 @@ int main(int argc, char* argv[] )
        slog << endl << CtiTime() << " **** Simulator Started **** " << endl;
    }
 
-   if( SetConsoleTitle("Port Control") ) // We are a console application
+   if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
    {
       //Process command line
       if( argc > 1 && strcmp(argv[1], "-install") == 0  )

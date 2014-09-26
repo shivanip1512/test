@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "utility.h"
+#include "module_util.h"
 #include "dlldefs.h"
 #include "amq_constants.h"
 #include "amq_connection.h"
@@ -12,7 +12,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
             break;
         }

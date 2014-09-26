@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#include <rw/toolpro/winsock.h>
-
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"
 #include "dbaccess.h"
@@ -17,41 +15,18 @@
 // Close all yukon messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
-extern compileinfo_t CompileInfo;
 
 using namespace std;
 
 int main(int argc, char* argv[] )
 {
-    RWWinSockInfo sock_init;
-
     INT RunningInConsole = false;
     LPTSTR szServiceName = "CapControl";
     LPTSTR szDisplayName = "Yukon Cap Control Service";
-    HANDLE hExclusion;
 
-    /*{
-        RWMutexLock::LockGuard guard(coutMux);
-        cout << CtiTime() << " - Cap Controller starting up..." << endl;
-    }*/
+    Cti::createExclusiveEvent(CompileInfo, "CapControl");
 
-    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "CapControl")) != NULL )
-    {
-       // Oh no, porter is running on this machine already.
-       CloseHandle(hExclusion);
-       cout << "Cap Control is already running!!!" << endl;
-       exit(-1);
-    }
-
-    hExclusion = CreateEvent(NULL, TRUE, FALSE, "CapControl");
-
-    if( hExclusion == (HANDLE)NULL )
-    {
-       cout << "Couldn't create CapControl!!!" << endl;
-       exit(-1);
-    }
-
-    if( setConsoleTitle(CompileInfo) ) // We are a console application
+    if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
     {
         //Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )

@@ -6,9 +6,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw/toolpro/winsock.h>
-#include <rw/toolpro/sockport.h>
-#include <rw/toolpro/inetaddr.h>
 
 #include "queue.h"
 #include "netports.h"

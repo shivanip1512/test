@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   sigsrctest
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/sigsrctest.cpp-arc  $
-* REVISION     :  $Revision: 1.8.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
 
 #include <crtdbg.h>
 #include <iostream>
@@ -20,9 +6,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw/toolpro/winsock.h>
-#include <rw/toolpro/sockport.h>
-#include <rw/toolpro/inetaddr.h>
 
 #include "queue.h"
 #include "netports.h"

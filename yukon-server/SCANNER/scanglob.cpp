@@ -2,6 +2,7 @@
 
 #include "dsm2.h"
 #include "scanglob.h"
+#include "module_util.h"
 
 // These next few are required for Win32
 #include <iostream>
@@ -23,21 +24,18 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
-            if((hScannerSyncs[ S_QUIT_EVENT ] = OpenEvent(EVENT_ALL_ACCESS,
-                                                          FALSE,
-                                                          ScannerSyncs[S_QUIT_EVENT].syncObjName))
-               != NULL)
-            {
-                // Oh no, scanner is running on this machine already.
-                CloseHandle(hScannerSyncs[ S_QUIT_EVENT ]);
-                cout << "Scanner is already running!" << endl;
-                exit(-1);
-            }
+            hScannerSyncs[S_QUIT_EVENT] = Cti::createExclusiveEvent("Scanner",
+                                                                    ScannerSyncs[S_QUIT_EVENT].manualReset,
+                                                                    ScannerSyncs[S_QUIT_EVENT].initState,
+                                                                    ScannerSyncs[S_QUIT_EVENT].syncObjName);
 
             for(int i = 0 ;i < S_MAX_MUTEX; i++)
             {
+                if(i == S_QUIT_EVENT)
+                    continue;
+
                 if(i < S_MAX_EVENT)
                 {
                     hScannerSyncs[ i ] = CreateEvent(NULL,

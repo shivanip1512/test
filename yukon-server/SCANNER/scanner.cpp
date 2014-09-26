@@ -32,7 +32,7 @@
 #include "connection_client.h"
 #include "amq_constants.h"
 
-#include "utility.h"
+#include "module_util.h"
 #include "dllyukon.h"
 #include "thread_monitor.h"
 #include "ThreadStatusKeeper.h"
@@ -343,8 +343,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         hScannerSyncs[S_SCAN_EVENT]
     };
 
-    identifyProject(CompileInfo);
-    setConsoleTitle(CompileInfo);
+    Cti::identifyProject(CompileInfo);
 
     Cti::DynamicPaoInfoManager::setOwner(Cti::Application_Scanner);
 

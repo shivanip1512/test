@@ -38,6 +38,7 @@ private:
 
     static CtiLMClientListener _instance;
 
+    bool _started;
     bool _doquit;
 
     void _listen( );

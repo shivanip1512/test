@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dllbase
-*
-* Date:   2/15/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.27.2.2 $
-* DATE         :  $Date: 2008/11/17 19:46:17 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <winbase.h>
@@ -19,7 +6,6 @@
 #include <string.h>
 #include <process.h>
 
-#include <rw/toolpro/winsock.h>
 #include <rw\thr\mutex.h>
 #include <rw\ctoken.h>
 
@@ -35,6 +21,7 @@
 #include "json.h"
 #include "xml.h"
 #include "thread_monitor.h"
+#include "module_util.h"
 
 using namespace std;
 
@@ -90,7 +77,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
             Cti::Encryption::initialize( getYukonBase() );
 

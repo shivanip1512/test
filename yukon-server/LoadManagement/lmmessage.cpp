@@ -557,6 +557,11 @@ vector<LONG> CtiLMEnergyExchangeControlMsg::getPricesOffered() const
     return vector<LONG>( _pricesoffered, _pricesoffered + HOURS_IN_DAY );
 }
 
+// disable the warning generated for '_amountsrequested' and '_pricesoffered':
+// new behavior: elements of array 'array' will be default initialized
+#pragma warning(push)
+#pragma warning(disable:4351)
+
 CtiLMEnergyExchangeControlMsg::CtiLMEnergyExchangeControlMsg( LONG command,
                                                               LONG paoid,
                                                               LONG offerid,
@@ -586,6 +591,8 @@ CtiLMEnergyExchangeControlMsg::CtiLMEnergyExchangeControlMsg( LONG command,
         _pricesoffered[hour] = pricesoffered[hour];
     }
 }
+
+#pragma warning(pop)
 
 /*---------------------------------------------------------------------------
     operator=
@@ -740,6 +747,11 @@ vector<DOUBLE> CtiLMEnergyExchangeAcceptMsg::getAmountsCommitted() const
     return vector<DOUBLE>( _amountscommitted, _amountscommitted + HOURS_IN_DAY );
 }
 
+// disable the warning generated for '_amountscommitted':
+// new behavior: elements of array 'array' will be default initialized
+#pragma warning(push)
+#pragma warning(disable:4351)
+
 CtiLMEnergyExchangeAcceptMsg::CtiLMEnergyExchangeAcceptMsg( LONG paoid,
                                                             LONG offerid,
                                                             LONG revisionnumber,
@@ -764,6 +776,8 @@ CtiLMEnergyExchangeAcceptMsg::CtiLMEnergyExchangeAcceptMsg( LONG paoid,
         _amountscommitted[hour] = amountscommitted[hour];
     }
 }
+
+#pragma warning(pop)
 
 /*---------------------------------------------------------------------------
     operator=

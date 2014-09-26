@@ -68,7 +68,7 @@ CtiLogger& CtiLogger::setOutputFile(const string& file)
     return *this;
 }
 
-CtiLogger& CtiLogger::setOwnerInfo(const compileinfo_t &ownerinfo)
+CtiLogger& CtiLogger::setOwnerInfo(const Cti::compileinfo_t &ownerinfo)
 {
     CtiLockGuard<CtiMutex> guard(_log_mux);
 

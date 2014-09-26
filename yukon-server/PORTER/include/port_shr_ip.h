@@ -2,7 +2,7 @@
 
 #include <rw/thr/thread.h>
 #include <rw/thr/thrfunc.h>
-#include <rw/toolpro/socket.h>
+//#include <rw/toolpro/socket.h>
 
 #include "dlldefs.h"
 #include "streamSocketConnection.h"

@@ -4,8 +4,6 @@
 
 #include <rw/thr/mutex.h>
 #include <rw/thr/thrfunc.h>
-#include <rw/toolpro/sockport.h>
-#include <rw/toolpro/inetaddr.h>
 
 #include "connection_server.h"
 #include "ctibase.h"

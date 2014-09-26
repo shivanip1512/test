@@ -3,8 +3,6 @@
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw/toolpro/neterr.h>
-
 #include "collectable.h"
 #include "pil_conmgr.h"
 #include "pil_exefct.h"

@@ -1,42 +1,13 @@
-/*-----------------------------------------------------------------------------*
-*
-* DATE: 8/25/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10.14.1 $
-* DATE         :  $Date: 2008/11/13 17:23:46 $
-*
-*
-* AUTHOR: Matt Fisher
-*
-* PURPOSE: Main() Module for Foreign Data Router (FDR)
-*
-* DESCRIPTION: Based on CParms it dynamicly loads interface dlls and
-*              starts them by calling their RunInterface() function.
-*              It also get a pointer to their StopInterface() which it
-*              calls on a shutdown.
-*
-*
-*
-* Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <crtdbg.h>
 #include <iostream>
 
-#include <conio.h>
-
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw/thr/thrfunc.h>
-#include <rw/toolpro/winsock.h>
 #include "ctitime.h"
-//#include <rw/thr/thrfunc.h>
-//#include <rw/thr/mutex.h>
 
-//#include "dbaccess.h"
 #include "dlldefs.h"
 #include "ctibase.h"
 #include "logger.h"
@@ -58,32 +29,12 @@ LPTSTR szDisplayName = "Yukon Foreign Data Service";
 
 int main( int argc, char *argv[] )
 {
-    RWWinSockInfo sock_init;        // global declare for winsock
-    HANDLE hExclusion;
-
-    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "FDR_EXCLUSION_EVENT")) != NULL )
-    {
-        // Oops, fdr is running on this machine already.
-        CloseHandle(hExclusion);
-
-        cout << "FDR is already running on this machine, exiting." << endl;
-
-        exit(-1);
-    }
-
-    // Set event so to avoid additional copies of FDR on this machine
-    hExclusion = CreateEvent(NULL, TRUE, FALSE, "FDR_EXCLUSION_EVENT");
-
-    if( hExclusion == (HANDLE)NULL )
-    {
-       cout << "Couldn't create fdr" << endl;
-       exit(-1);
-    }
+    Cti::createExclusiveEvent(CompileInfo, "FDR_EXCLUSION_EVENT");
 
 //    InitYukonBaseGlobals();
 //    identifyProject(CompileInfo);
 
-    if( setConsoleTitle(CompileInfo) ) // We are a console application
+    if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
     {
         // Process command line if in console
 
@@ -114,7 +65,7 @@ int main( int argc, char *argv[] )
             dout.setToStdOut(true);
             dout.setWriteInterval(0);
 
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -138,7 +89,7 @@ int main( int argc, char *argv[] )
         dout.setToStdOut(false);
         dout.setWriteInterval(5000);
 
-        identifyProject(CompileInfo);
+        Cti::identifyProject(CompileInfo);
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

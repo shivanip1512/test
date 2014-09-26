@@ -37,7 +37,7 @@ int main(int argc, char* argv[] )
        exit(-1);
     }
 
-    if( SetConsoleTitle("CCU Simulator") ) // We are a console application
+    if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
     {
           //Process command line
           if( argc > 1 && strcmp(argv[1], "-install") == 0  )

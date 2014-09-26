@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dllmain
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/dllmain.cpp-arc  $
-* REVISION     :  $Revision: 1.9.14.2 $
-* DATE         :  $Date: 2008/11/20 16:49:26 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
 
 #include <stdio.h>
 #include <string.h>
@@ -62,23 +48,24 @@ BOOL APIENTRY DllMain(HANDLE hModule,
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
-            if((hPorterEvents[ P_QUIT_EVENT ] = OpenEvent(EVENT_ALL_ACCESS, FALSE, PorterSyncs[P_QUIT_EVENT].syncObjName))!= NULL)
-            {
-                // Oh no, porter is running on this machine already.
-                CloseHandle(hPorterEvents[ P_QUIT_EVENT ]);
-
-                std::cout << "Porter is already running!" << endl;
-
-                exit(-1);
-            }
+            hPorterEvents[P_QUIT_EVENT] = Cti::createExclusiveEvent("Porter",
+                                                                    PorterSyncs[P_QUIT_EVENT].manualReset,
+                                                                    PorterSyncs[P_QUIT_EVENT].initState,
+                                                                    PorterSyncs[P_QUIT_EVENT].syncObjName);
 
             for(int i = 0 ;i < NUMPORTEREVENTS; i++)
             {
-                hPorterEvents[ i ] = CreateEvent(NULL, PorterSyncs[i].manualReset, PorterSyncs[i].initState, PorterSyncs[i].syncObjName);
+                if(i = P_QUIT_EVENT)
+                    continue;
 
-                if(hPorterEvents[ i ] == (HANDLE)NULL)
+                hPorterEvents[i] = CreateEvent(NULL,
+                                               PorterSyncs[i].manualReset,
+                                               PorterSyncs[i].initState,
+                                               PorterSyncs[i].syncObjName);
+
+                if(hPorterEvents[i] == (HANDLE)NULL)
                 {
                     std::cerr << "Couldn't create porter event # " << i << " " << PorterSyncs[i].syncObjName << endl;
                     exit(-1);

@@ -37,6 +37,7 @@ private:
 
     static CtiCCClientListener _instance;
 
+    bool _started;
     bool _doquit;
 
     void _listen( );

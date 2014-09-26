@@ -1,22 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   con_mgr_vg
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/con_mgr_vg.cpp-arc  $
-* REVISION     :  $Revision: 1.9.10.1 $
-* DATE         :  $Date: 2008/11/13 17:23:48 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw/toolpro/neterr.h>
 #include <rw\thr\mutex.h>
 
 #include "con_mgr_vg.h"

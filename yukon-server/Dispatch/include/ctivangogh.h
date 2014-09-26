@@ -3,7 +3,6 @@
 #include <set>
 
 #include <rw\thr\thrfunc.h>
-#include <rw/toolpro/socket.h>
 
 #include "con_mgr.h"
 #include "con_mgr_vg.h"

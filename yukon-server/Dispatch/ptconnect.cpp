@@ -1,23 +1,7 @@
-/*-----------------------------------------------------------------------------
-    Filename:
-         pointconnect.cpp
-
-    Programmer:
-         Corey G. Plender
-
-    Description:
-        Defines functions related to retrieving point data
-
-    Initial Date:  7/23/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
 using namespace std;
-
-#include <rw/toolpro/neterr.h>
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -76,30 +60,6 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
 
          //(ConnectionManagerCollection[i])->WriteConnQue(CTIDBG_new CtiReturnMsg(Chg)); // Default priority of 7 is used here!
 
-      }
-      catch(RWSockErr& msg )
-      {
-         if(msg.errorNumber() == RWNETECONNRESET)
-         {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " Failed to post change event, the client has shutdown. " << endl;
-            }
-            RemoveConnectionManager(CtiM);
-         }
-         else if(msg.errorNumber() == RWNETECONNABORTED)
-         {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " Connection Aborted, Removing from list." << endl;
-            }
-            RemoveConnectionManager(CtiM);
-         }
-         else
-         {
-            cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
-            cout << "  " << msg.why() << endl;
-         }
       }
       catch(const RWxmsg& x)
       {

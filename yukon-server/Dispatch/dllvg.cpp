@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dllvg
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dllvg.cpp-arc  $
-* REVISION     :  $Revision: 1.10.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:26 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -35,7 +22,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
             break;
         }

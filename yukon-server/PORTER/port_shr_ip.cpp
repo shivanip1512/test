@@ -13,8 +13,6 @@
 #include "cti_asmc.h"
 #include "streamSocketListener.h"
 
-#include <rw/toolpro/inetaddr.h>
-
 #define SCADA_CONNECT_TIMEOUT  5000
 
 #define DEBUG_INPUT_FROM_SCADA 0x00000010

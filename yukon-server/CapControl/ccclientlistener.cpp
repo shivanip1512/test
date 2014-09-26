@@ -41,6 +41,7 @@ CtiCCClientListener& CtiCCClientListener::getInstance()
     Constructor
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::CtiCCClientListener() :
+    _started(false),
     _doquit(false),
     _listenerConnection( Cti::Messaging::ActiveMQ::Queue::capcontrol )
 {
@@ -51,7 +52,10 @@ CtiCCClientListener::CtiCCClientListener() :
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::~CtiCCClientListener()
 {
-    stop();
+    if( _started )
+    {
+        stop();
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -61,6 +65,8 @@ CtiCCClientListener::~CtiCCClientListener()
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::start()
 {
+    _started = true;
+
     RWThreadFunction thr_func = rwMakeThreadFunction( *this, &CtiCCClientListener::_listen );
     RWThreadFunction check_thr_func = rwMakeThreadFunction( *this, &CtiCCClientListener::_check );
 

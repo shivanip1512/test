@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_point
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.65.2.1 $
-* DATE         :  $Date: 2008/11/20 16:49:19 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "boost/mem_fn.hpp"
@@ -28,7 +15,7 @@
 #include "pt_status.h"
 
 #include "resolvers.h"
-#include "utility.h"
+#include "module_util.h"
 
 #include "cparms.h"
 #include "database_reader.h"
@@ -46,7 +33,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
 
             break;
         }

@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   porterpoker
-*
-* Date:   8/26/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10.4.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
 #include <crtdbg.h>
 
 #if !defined (NOMINMAX)
@@ -29,9 +12,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw/toolpro/winsock.h>
-#include <rw/toolpro/sockport.h>
-#include <rw/toolpro/inetaddr.h>
 
 #include "queue.h"
 #include "netports.h"
@@ -141,8 +121,6 @@ void main(int argc, char **argv)
 
     if(argc >= 3)
     {
-        RWWinSockInfo info;
-
         try
         {
             char *pch;

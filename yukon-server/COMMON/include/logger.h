@@ -28,6 +28,7 @@
 #include "ctitime.h"
 #include "CtiPCPtrQueue.h"
 #include "utility.h"
+#include "module_util.h"
 
 class CtiDate;
 
@@ -40,7 +41,7 @@ public:
 
     CtiLogger& setOutputPath(const std::string& path);
     CtiLogger& setOutputFile(const std::string& file);
-    CtiLogger& setOwnerInfo(const compileinfo_t &ownerinfo);
+    CtiLogger& setOwnerInfo(const Cti::compileinfo_t &ownerinfo);
     CtiLogger& setWriteInterval(long millis);
     CtiLogger& setToStdOut(bool to_stdout);
     CtiLogger& setRetentionLength(const unsigned long days_to_keep);

@@ -53,35 +53,6 @@ IM_EX_CTIBASE void applyPortQueueOutMessageReport(void *ptr, void* d);
 
 IM_EX_CTIBASE double limitValue(double input, double min, double max);
 
-struct compileinfo_t
-{
-   char *project;
-   char *version;
-   char *details;
-   char *date;
-};
-
-extern compileinfo_t CompileInfo;
-
-IM_EX_CTIBASE void identifyProject(const compileinfo_t &Info);
-IM_EX_CTIBASE bool setConsoleTitle(const compileinfo_t &Info);
-
-#ifndef BUILD_VERSION
-#define BUILD_VERSION (untagged)
-#endif
-
-#ifndef BUILD_VERSION_DETAILS
-#define BUILD_VERSION_DETAILS __TIMESTAMP__
-#endif
-
-// needed to turn a #define into a string
-#define STRINGIZE( x ) #x
-
-//  common info across all projects
-#define SETCOMPILEINFO( x, y, z ) compileinfo_t CompileInfo = { x, STRINGIZE(y), STRINGIZE(z), __TIMESTAMP__ }
-
-#define PROJECT_ID( x ) SETCOMPILEINFO( x, BUILD_VERSION, BUILD_VERSION_DETAILS )
-
 
 struct CtiQueueAnalysis_t
 {

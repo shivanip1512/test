@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dispmain
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.12.12.3 $
-* DATE         :  $Date: 2008/11/20 20:37:41 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -42,24 +29,7 @@ int main(int argc, char* argv[] )
    LPTSTR szName = "Dispatch";
    LPTSTR szDisplay = "Yukon Dispatch Service";
 
-   HANDLE hExclusion = INVALID_HANDLE_VALUE;
-
-   if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, szName)) != NULL )
-   {
-       // Oh no, dispatch is running on this machine already.
-       CloseHandle(hExclusion);
-       cout << "Dispatch is already running!!!" << endl;
-       Sleep(15000);
-       return(-1);
-   }
-
-   hExclusion = CreateEvent(NULL, TRUE, FALSE, szName);
-
-   if( hExclusion == (HANDLE)NULL )
-   {
-       cout << "Couldn't create " << szName << " Event Object" << endl;
-       return(-1);
-   }
+   Cti::createExclusiveEvent(CompileInfo, szName);
 
    InitDispatchGlobals();
 
@@ -71,9 +41,9 @@ int main(int argc, char* argv[] )
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);
 
-   identifyProject(CompileInfo);
+   Cti::identifyProject(CompileInfo);
 
-   if( setConsoleTitle(CompileInfo) )
+   if( Cti::setConsoleTitle(CompileInfo) )
    {
       //Process command line
       if( argc > 1 && strcmp(argv[1], "-install") == 0  )
@@ -129,9 +99,6 @@ int main(int argc, char* argv[] )
 
    dout.interrupt(CtiThread::SHUTDOWN);
    dout.join();
-
-   if(hExclusion != INVALID_HANDLE_VALUE) CloseHandle(hExclusion);
-
 
    return 0;
 }

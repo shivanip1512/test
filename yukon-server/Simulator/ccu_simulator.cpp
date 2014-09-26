@@ -10,6 +10,7 @@
 #include "BchBehavior.h"
 #include "cparms.h"
 #include "StreamSocketListener.h"
+#include "module_util.h"
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 
@@ -107,8 +108,7 @@ int SimulatorMainFunction(int argc, char **argv)
 
     SimulatorLogger logger(dout);
 
-    identifyProject(CompileInfo);
-    setConsoleTitle(CompileInfo);
+    Cti::identifyProject(CompileInfo);
 
     if( port_min && port_max )
     {

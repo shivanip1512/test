@@ -101,7 +101,7 @@ DeviceConfigDescription.obj \
 timing_util.obj \
 worker_thread.obj \
 resource_helper.obj \
-
+module_util.obj \
 
 CTIPROGS=\
 ctibase.dll

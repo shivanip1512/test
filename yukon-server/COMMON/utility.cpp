@@ -529,34 +529,6 @@ INT OverrideOutMessagePriority(OUTMESS *Out, INT priority)
 //#define  NOIME
 
 
-void identifyProject(const compileinfo_t &Info)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(isDebugLudicrous() && Info.date)      // DEBUGLEVEL added 012903 CGP
-        {
-            dout << CtiTime() << " " << Info.project << " [Version " << Info.version << "]" /* << endl */ << " [Version Details: " << Info.details << ", " << Info.date << "]" << endl;
-        }
-        else
-        {
-            dout << CtiTime() << " " << Info.project << " [Version " << Info.version << "]" /* << endl */ << " [Version Details: " << Info.details << "]" << endl;
-        }
-    }
-
-    return;
-}
-
-bool setConsoleTitle(const compileinfo_t &Info)
-{
-    ostringstream s;
-
-    s << Info.project << " - YUKON " << Info.version;
-
-    return SetConsoleTitle( s.str().c_str() );
-}
-
-
-
 LONG gOutMessageCounter = 0;
 
 void incrementCount()

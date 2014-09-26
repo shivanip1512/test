@@ -4,7 +4,7 @@
 
 #include "dbaccess.h"
 #include "resolvers.h"
-#include "utility.h"
+#include "module_util.h"
 
 #include "port_direct.h"
 #include "port_dialin.h"
@@ -34,7 +34,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     {
         case DLL_PROCESS_ATTACH:
         {
-            identifyProject(CompileInfo);
+            Cti::identifyProject(CompileInfo);
             break;
         }
         case DLL_THREAD_ATTACH:

@@ -34,7 +34,7 @@
 #include <windows.h>
 
 #include "ctitime.h"
-#include <rw/toolpro/winsock.h>
+//#include <rw/toolpro/winsock.h>
 
 #include "CServiceConfig.h"
 #include "id_macs.h"
@@ -58,29 +58,12 @@ int main(int argc, char* argv[] )
 {
     LPTSTR szName = MC_SERVICE_NAME;
     LPTSTR szDisplay = MC_SERVICE_DISPLAY_NAME;
-    HANDLE hExclusion;
 
-    RWWinSockInfo sockInfo;
-
-    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "MC_EXCLUSION_EVENT")) != NULL )
-    {
-       // Oh no, macs is running on this machine already.
-       CloseHandle(hExclusion);
-       cout << "Macs is already running, exiting." << endl;
-       exit(-1);
-    }
-
-    hExclusion = CreateEvent(NULL, TRUE, FALSE, "MC_EXCLUSION_EVENT");
-
-    if( hExclusion == (HANDLE)NULL )
-    {
-       cout << "Couldn't create MACS event" << endl;
-       exit(-1);
-    }
+    Cti::createExclusiveEvent(CompileInfo, "MC_EXCLUSION_EVENT");
 
     // Hack to detect whether we are running as a service
     // or in a console
-    if( setConsoleTitle(CompileInfo) )
+    if( Cti::setConsoleTitle(CompileInfo) )
     {
         if ( argc > 1 )
         {

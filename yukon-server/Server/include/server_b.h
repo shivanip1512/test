@@ -9,9 +9,6 @@
 #include <functional>
 
 #include <rw\thr\thrfunc.h>
-#include <rw/toolpro/winsock.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
 #include <rw\rwerr.h>
 
 #include "con_mgr.h"

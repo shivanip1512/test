@@ -1,27 +1,9 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   vangogh
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.13.2.3 $
-* DATE         :  $Date: 2008/11/17 19:46:17 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
 
 #include <iomanip>
 #include <iostream>
 
 #include <rw\thr\thrfunc.h>
-#include <rw/toolpro/winsock.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw/toolpro/inetaddr.h>
 #include <rw\rwerr.h>
 #include <rw\thr\mutex.h>
 
@@ -37,8 +19,6 @@ using namespace std;
 
 DLLIMPORT extern BOOL  bGCtrlC;
 DLLIMPORT extern CtiLogger dout;
-
-static RWWinSockInfo  winsock;
 
 static _CRT_ALLOC_HOOK pfnOldCrtAllocHook = NULL;
 

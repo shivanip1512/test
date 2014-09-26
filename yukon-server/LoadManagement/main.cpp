@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include <rw/toolpro/winsock.h>
+//#include <rw/toolpro/winsock.h>
 #include <rw/thr/thrutil.h>
 
 #include "lmcontrolareastore.h"
@@ -25,30 +25,10 @@ int main(int argc, char* argv[] )
     INT RunningInConsole = FALSE;
     LPTSTR szServiceName = "LoadManagement";
     LPTSTR szDisplayName = "Yukon Load Management Service";
-    HANDLE hExclusion;
 
-    /*{
-        RWMutexLock::LockGuard guard(coutMux);
-        cout << CtiTime() << " - Load Management starting up..." << endl;
-    }*/
+    Cti::createExclusiveEvent(CompileInfo, "LoadManagement");
 
-    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "LoadManagement")) != NULL )
-    {
-       // Oh no, porter is running on this machine already.
-       CloseHandle(hExclusion);
-       cout << "Load Management is already running!!!" << endl;
-       exit(-1);
-    }
-
-    hExclusion = CreateEvent(NULL, TRUE, FALSE, "LoadManagement");
-
-    if( hExclusion == (HANDLE)NULL )
-    {
-       cout << "Couldn't create LoadManagement!!!" << endl;
-       exit(-1);
-    }
-
-    if( setConsoleTitle(CompileInfo) ) // We are a console application
+    if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
     {
         //Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )
@@ -98,6 +78,5 @@ int main(int argc, char* argv[] )
         END_SERVICE_MAP
     }
 
-    CloseHandle(hExclusion);
     return 0;
 }

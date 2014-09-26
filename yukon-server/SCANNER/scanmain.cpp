@@ -49,7 +49,7 @@ int main(int argc, char* argv[] )
 
    ThreadMonitor.start();
 
-   if( SetConsoleTitle("Scanner") )
+   if( Cti::setConsoleTitle(CompileInfo) )
    {
       //Process command line
       if( argc > 1 && strcmp(argv[1], "-install") == 0  )
