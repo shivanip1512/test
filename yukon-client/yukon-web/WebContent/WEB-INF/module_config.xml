@@ -555,7 +555,6 @@
 
   <module name="capcontrol">
     <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
     <search bean="capControlSearchProducer" />
     <pages>
       <page name="areas" type="BASIC">
