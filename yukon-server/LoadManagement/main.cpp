@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-//#include <rw/toolpro/winsock.h>
 #include <rw/thr/thrutil.h>
 
 #include "lmcontrolareastore.h"

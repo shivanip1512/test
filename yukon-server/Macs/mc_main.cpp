@@ -1,40 +1,11 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mcmain
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.12.12.2 $
-* DATE         :  $Date: 2008/11/21 20:56:59 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------
-        Filename:  mc_main.cpp
-
-        Programmer:   Aaron Lauinger
-
-        Description:  Entry point for Metering and Control Server
-
-        Initial Date: 4/7/99
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999
----------------------------------------------------------------------------*/
-
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
 
 #include <windows.h>
-
 #include "ctitime.h"
-//#include <rw/toolpro/winsock.h>
 
 #include "CServiceConfig.h"
 #include "id_macs.h"
