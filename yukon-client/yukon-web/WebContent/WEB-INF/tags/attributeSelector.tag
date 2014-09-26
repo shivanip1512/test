@@ -1,48 +1,43 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ tag body-content="empty" %>
 
-<%@ attribute name="fieldName" required="true" type="java.lang.String"%>
-<%@ attribute name="attributes" required="true" type="java.lang.Object"%>
-<%@ attribute name="selectedAttributes" required="false" type="java.util.Set"%>
-<%@ attribute name="includeDummyOption" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="multipleSize" required="false" type="java.lang.Integer"%>
-<%@ attribute name="groupItems" required="false" type="java.lang.Boolean"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<c:if test="${empty pageScope.includeDummyOption}">
-	<c:set var="includeDummyOption" value="false"/>
-</c:if>
+<%@ attribute name="id" %>
+<%@ attribute name="name" required="true" %>
+<%@ attribute name="attributes" required="true" type="java.lang.Object" %>
+<%@ attribute name="selectedAttributes" type="java.util.Set" %>
+<%@ attribute name="multipleSize" type="java.lang.Integer" %>
+<%@ attribute name="groupItems" type="java.lang.Boolean" %>
 
-<c:if test="${not empty pageScope.multipleSize}">
-	<c:set var="includeDummyOption" value="false"/>
-</c:if>
+<c:choose>
+    <c:when test="${not empty pageScope.multipleSize}">
+        <cti:msg var="selectOneLabel" key="yukon.common.attribute.select.multi"/>
+    </c:when>
+    <c:otherwise>
+        <cti:msg var="selectOneLabel" key="yukon.common.attribute.select"/>
+    </c:otherwise>
+</c:choose>
 
-
-<cti:uniqueIdentifier var="uniqueId" prefix="attributeSelector_"/>
-
-<select id="${uniqueId}" name="${fieldName}" <c:if test="${not empty pageScope.multipleSize}">multiple size="${pageScope.multipleSize}"</c:if>>
-
-	<c:if test="${includeDummyOption}">
-		<cti:msg var="selectOneLabel" key="yukon.common.device.commander.selector.selectOne"/>
-		<option value="">${selectOneLabel}</option>
-	</c:if>
-
+<select data-placeholder="${selectOneLabel}" class="js-init-chosen"
+    <c:if test="${not empty pageScope.id}">id="${id}"</c:if>
+    <c:if test="${not empty pageScope.multipleSize}">multiple size="${pageScope.multipleSize}"</c:if>
+    name="${name}">
+    
+    <option value="">${selectOneLabel}</option>
+    
     <c:choose>
         <c:when test="${pageScope.groupItems}">
             <c:forEach var="group" items="${attributes}">
                 <optgroup label="<cti:msg2 key="${group.key}"/>">
                     <c:forEach items="${group.value}" var="item">
-                        <c:set var="selected" value=""/>
-                        <c:if test="${selectedAttributes.contains(item)}">
-                            <c:set var="selected" value="selected"/>
-                        </c:if>
-                        <option value="${item.key}" ${selected}>
-                            <cti:formatObject value="${item}"/>
-                        </option>
+                        <c:set var="selected" value="${selectedAttributes.contains(item) ? 'selected' : ''}"/>
+                        <option value="${item.key}" ${selected}><cti:formatObject value="${item}"/></option>
                     </c:forEach>
                 </optgroup>
             </c:forEach>
         </c:when>
-
+        
         <c:otherwise>
             <c:forEach var="attr" items="${attributes}">
                 <c:set var="selected" value=""/>

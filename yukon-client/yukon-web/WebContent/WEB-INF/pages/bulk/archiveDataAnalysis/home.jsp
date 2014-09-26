@@ -7,42 +7,48 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="tools" page="bulk.analysis.home">
-
+    
+    <cti:includeScript link="/JavaScript/yukon.data.analysis.js"/>
+    
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.analysis.home" deviceCollection="${deviceCollection}">
-        <cti:url var="analyzeUrl" value="/bulk/archiveDataAnalysis/home/analyze" />
-        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="${analyzeUrl}">
+    
+        <cti:url var="analyzeUrl" value="/bulk/archiveDataAnalysis/home/analyze"/>
+        <form:form commandName="backingBean" action="${analyzeUrl}">
+        
             <cti:csrfToken/>
-            <cti:deviceCollection deviceCollection="${deviceCollection}" />            
+            <cti:deviceCollection deviceCollection="${deviceCollection}"/>
             
-            <div class="stacked">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".startDateLabel">
-                        <dt:dateTime id="startDate" path="startDate" value="${startDateInitialValue}"/>
-                        <i:inline key="yukon.web.modules.tools.bulk.analysis.home.exclusive"/>
-                    </tags:nameValue2>
-                    
-                    <tags:nameValue2 nameKey=".stopDateLabel">
-                        <dt:dateTime id="stopDate" path="stopDate" value="${stopDateInitialValue}"/>
-                        <i:inline key="yukon.web.modules.tools.bulk.analysis.home.inclusive"/>
-                    </tags:nameValue2>
-                    
-                    <tags:nameValue2 nameKey=".interval">
-                        <form:select path="selectedInterval" class="dateTimeInputWidth">
-                            <c:forEach var="intervalPeriod" items="${intervalPeriods}">
-                                <form:option value="${intervalPeriod}">
-                                    <cti:formatPeriod value="${intervalPeriod}" type="DHMS_REDUCED"/>
-                                </form:option>
-                            </c:forEach>
-                        </form:select>
-                    </tags:nameValue2>
-                    
-                    <tags:selectNameValue nameKey=".attributes" path="selectedAttribute" items="${groupedAttributes}" itemValue="key" groupItems="true"/>
-                    
-                    <tags:checkboxNameValue id="" path="excludeBadQualities" nameKey=".empty" excludeColon="true" checkBoxDescriptionNameKey=".normalQualitiesOnly"/>
-                </tags:nameValueContainer2>
-            </div>
+            <tags:nameValueContainer2 tableClass="with-form-controls">
+                <tags:nameValue2 nameKey=".startDateLabel">
+                    <dt:dateTime id="startDate" path="startDate" value="${startDateInitialValue}"/>
+                    <i:inline key=".exclusive"/>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".stopDateLabel">
+                    <dt:dateTime id="stopDate" path="stopDate" value="${stopDateInitialValue}"/>
+                    <i:inline key=".inclusive"/>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".interval">
+                    <form:select path="selectedInterval" class="dateTimeInputWidth">
+                        <c:forEach var="intervalPeriod" items="${intervalPeriods}">
+                            <form:option value="${intervalPeriod}">
+                                <cti:formatPeriod value="${intervalPeriod}" type="DHMS_REDUCED"/>
+                            </form:option>
+                        </c:forEach>
+                    </form:select>
+                </tags:nameValue2>
+                
+                <tags:selectNameValue id="attribute-select" nameKey=".attributes" path="selectedAttribute" 
+                        items="${groupedAttributes}" itemValue="key" groupItems="true"/>
+                
+                <tags:checkboxNameValue id="" path="excludeBadQualities" nameKey=".empty" excludeColon="true" 
+                        checkBoxDescriptionNameKey=".normalQualitiesOnly"/>
+            </tags:nameValueContainer2>
             
             <cti:button type="submit" nameKey="submitButton" classes="primary action"/>
         </form:form>
+        
     </tags:bulkActionContainer>
+    
 </cti:standardPage>

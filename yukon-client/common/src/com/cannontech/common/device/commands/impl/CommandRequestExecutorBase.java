@@ -231,7 +231,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                 origCommand = command.toString();
             }
             log.warn("received a message in the result vector that wasn't a PointData: " + 
-                     aResult.getClass().toString() + "; original command was: " + origCommand);
+                     aResult.getClass().toString() + "; original command was: " + origCommand + " message was: " + aResult);
         }
         
         public int getGroupMessageId() {

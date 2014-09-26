@@ -68,6 +68,11 @@
     <entry key="yukon.common.device.groupMeterRead.resultDetail.inProgress">In Progress...</entry>
     <entry key="yukon.common.device.groupMeterRead.resultDetail.complete">Complete.</entry>
     <entry key="yukon.common.device.groupMeterRead.resultDetail.canceled">Canceled.</entry>
+    <entry key="yukon.common.device.groupMeterRead.resultDetail.tabularData">Tabular Data:</entry>
+    <entry key="yukon.common.device.groupMeterRead.resultDetail.errorDescription">Error Description</entry>
+    <entry key="yukon.common.device.groupMeterRead.resultDetail.errorCode">Error Code</entry>
+    <entry key="yukon.common.device.groupMeterRead.resultDetail.firstPoint">First Point</entry>
+    <entry key="yukon.common.device.groupMeterRead.resultDetail.lastResult">Last Result</entry>
     
     <entry key="yukon.common.device.groupMeterRead.groupMeterReadResult.IS_SUCCESSFULLY_COMPLETE_TEXT">Complete</entry>
     <entry key="yukon.common.device.groupMeterRead.groupMeterReadResult.IS_EXCEPTION_OCCURED_TEXT">Error: {exceptionReason}</entry>

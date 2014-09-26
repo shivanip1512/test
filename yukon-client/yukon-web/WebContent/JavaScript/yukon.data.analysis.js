@@ -2,7 +2,12 @@
 yukon.namespace('yukon.dataAnalysis');
 
 yukon.dataAnalysis = (function() {
-    var mod = {
+    return {
+        
+        init: function () {
+            $('#attribute-select').chosen();
+        },
+        
         changeStatus : function (msg) {
             if (msg === '') {
                 // analysis was deleted
@@ -48,6 +53,6 @@ yukon.dataAnalysis = (function() {
             row.data('status', status);
         }
     };
-    
-    return mod;
 })();
+
+$(function () { yukon.dataAnalysis.init(); });

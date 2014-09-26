@@ -21,6 +21,7 @@ import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport implements DynamicAttributes{
+    
     private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     private SimpleReportService simpleReportService;
     

@@ -36,7 +36,7 @@
                 <cti:csrfToken/>
                 <form:hidden path="archivedValuesExportFormatType"/>
                 <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
-                <tags:nameValueContainer2 id="formatContainer" >
+                <tags:nameValueContainer2 id="formatContainer" tableClass="with-form-controls">
                     <c:if test="${not empty allFormats}">
                         <tags:nameValue2 nameKey=".existingFormat">
                             <form:select path="formatId" cssClass="fl">
@@ -66,9 +66,10 @@
                         </c:if>
                     </c:if>
                     <tags:nameValue2 nameKey=".attribute" rowId="attributeRow">
-                        <tags:attributeSelector attributes="${groupedAttributes}" 
+                        <tags:attributeSelector id="attribute-select"
+                            attributes="${groupedAttributes}" 
                             selectedAttributes="${archivedValuesExporter.attributes}"
-                            fieldName="attributes"
+                            name="attributes"
                             multipleSize="8"
                             groupItems="true"/>
                     </tags:nameValue2>
@@ -180,5 +181,7 @@
              </div>
          </form:form>
     </div>
+    
     <cti:includeScript link="/JavaScript/yukon.data.exporter.js"/>
+    
 </cti:standardPage>

@@ -77,7 +77,7 @@
                          
                          <cti:msg var="selectAttributeLabel" key="yukon.common.device.commander.attributeSelector.selectAttribute"/>
                          <tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
-                             <tags:attributeSelector fieldName="attribute" attributes="${allGroupedReadableAttributes}" 
+                             <tags:attributeSelector name="attribute" attributes="${allGroupedReadableAttributes}" 
                                 selectedAttributes="${selectedAttributes}" multipleSize="8" groupItems="true"/>
                          </tags:nameValue>
                      
@@ -149,50 +149,52 @@
             
                 <form id="scheduledGroupRequestExecutionForm_cmd" action="<cti:url value="/group/scheduledGroupRequestExecution/schedule"/>" method="post" >
                     <cti:csrfToken/>
-                     <input type="hidden" name="editJobId" value="${editJobId}">
-                     <input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
-                     <cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_"/>
-                     <input type="hidden" name="formUniqueId" value="${formUniqueId}">
-                     
-                     <tags:nameValueContainer>
-                     
-                         <tags:nameValue name="${scheduleNameLabel}">
-                             <input type="text" name="scheduleName" value="${fn:escapeXml(scheduleName)}">
-                         </tags:nameValue>
-                         
-                         <tags:nameValueGap gapHeight="${take12}"/>
-                         
-                         <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
-                         <tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
-                             <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedSelectValue="${commandSelectValue}" selectedCommandString="${commandString}" includeDummyOption="true"/>  
-                         </tags:nameValue>
-                         
-                         <tags:nameValueGap gapHeight="${take10}"/>
-                         
-                         <tags:nameValue id="commandDeviceGroups" name="${groupLabel}">
+                    <input type="hidden" name="editJobId" value="${editJobId}">
+                    <input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
+                    <cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_"/>
+                    <input type="hidden" name="formUniqueId" value="${formUniqueId}">
+                    
+                    <tags:nameValueContainer>
+                    
+                        <tags:nameValue name="${scheduleNameLabel}">
+                            <input type="text" name="scheduleName" value="${fn:escapeXml(scheduleName)}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValueGap gapHeight="${take12}"/>
+                        
+                        <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
+                        <tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
+                            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" 
+                                commands="${commands}" selectedSelectValue="${commandSelectValue}" 
+                                selectedCommandString="${commandString}"/>  
+                        </tags:nameValue>
+                        
+                        <tags:nameValueGap gapHeight="${take10}"/>
+                        
+                        <tags:nameValue id="commandDeviceGroups" name="${groupLabel}">
                             <tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" 
                                                           fieldValue="${deviceGroupName}" 
                                                           dataJson="${groupDataJson}" 
                                                           linkGroupName="true" 
                                                           showSelectedDevicesIcon="false"/>
-                         </tags:nameValue>
-                         
-                         <tags:nameValueGap gapHeight="${take12}"/>
-                         
-                         <tags:nameValue name="${timeFrequencyLabel}">
-                             <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
-                         </tags:nameValue>
-                         
-                         <tags:nameValue name="${retryLabel}">
-                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}"/>
-                         </tags:nameValue>
-                         
-                         <cti:displayForPageEditModes modes="EDIT">
-                             <tags:nameValue name="${scheduleStateLabel}">
-                                 <cti:msg key="yukon.common.device.schedules.state.${status}"/>
-                             </tags:nameValue>
-                         </cti:displayForPageEditModes>
-                         
+                        </tags:nameValue>
+                        
+                        <tags:nameValueGap gapHeight="${take12}"/>
+                        
+                        <tags:nameValue name="${timeFrequencyLabel}">
+                            <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="${retryLabel}">
+                            <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}"/>
+                        </tags:nameValue>
+                        
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <tags:nameValue name="${scheduleStateLabel}">
+                                <cti:msg key="yukon.common.device.schedules.state.${status}"/>
+                            </tags:nameValue>
+                        </cti:displayForPageEditModes>
+                        
                     </tags:nameValueContainer>
 
                     <div class="page-action-area">

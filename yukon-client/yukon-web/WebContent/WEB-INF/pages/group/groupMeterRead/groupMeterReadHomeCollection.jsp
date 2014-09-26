@@ -13,16 +13,14 @@
         <form id="groupMeterReadForm" action="${groupMeterReadUrl}" method="post">
             <cti:csrfToken/>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
-            <div>
-                <strong><cti:msg2 key="yukon.common.device.groupMeterRead.home.selectAttributeLabel"/>:</strong>
-            </div>
-            <tags:attributeSelector attributes="${allGroupedReadableAttributes}" 
-                fieldName="attribute" 
+            <tags:attributeSelector 
+                attributes="${allGroupedReadableAttributes}" 
+                name="attribute" 
                 selectedAttributes="${selectedAttributes}" 
                 multipleSize="8" 
                 groupItems="true"/>
             <div class="page-action-area">
-                <cti:button nameKey="read" type="submit" classes="js-disable-after-click primary action"/>
+                <cti:button nameKey="read" type="submit" busy="true" classes="primary action M0"/>
             </div>
         </form>
 

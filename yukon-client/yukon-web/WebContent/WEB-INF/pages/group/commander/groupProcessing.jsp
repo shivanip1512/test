@@ -33,21 +33,23 @@ function validateGroupIsSelected(btn, alertText) {
         return false;
     }
     
-    $('#submitGroupCommanderButton').prop('disabled', true);
-    $('#waitImg').show();
+    yukon.ui.busy('.js-group-commander');
     $('#groupCommanderForm').submit();
 }
 </script>
 
-    <%-- ERROR MSG --%>
-    <c:if test="${not empty param.errorMsg}">
-        <div class="error stacked">${param.errorMsg}</div>
-        <c:set var="errorMsg" value="" scope="request"/>
-    </c:if>
-    
-    <form id="groupCommanderForm" action="<cti:url value="/group/commander/executeGroupCommand" />" method="post">
-        <cti:csrfToken/>
+<%-- ERROR MSG --%>
+<c:if test="${not empty param.errorMsg}">
+    <div class="error stacked">${param.errorMsg}</div>
+    <c:set var="errorMsg" value="" scope="request"/>
+</c:if>
 
+<a href="<cti:url value="/group/commander/resultList"/>" class="fr">
+    <i:inline key="yukon.web.deviceGroups.commander.recentResultsLabel"/>
+</a>
+<form id="groupCommanderForm" action="<cti:url value="/group/commander/executeGroupCommand" />" method="post">
+    <cti:csrfToken/>
+    
     <%-- SELECT DEVICE GROUP TREE INPUT --%>
     <div><strong><i:inline key="yukon.web.deviceGroups.commander.groupSelectionLabel"/></strong></div>
 
@@ -67,7 +69,8 @@ function validateGroupIsSelected(btn, alertText) {
     <%-- SELECT COMMAND --%>
     <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
     <div>${selectCommandLabel}:</div>
-    <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}" includeDummyOption="true" />
+    <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
+        selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
 
     <br><br>
     <%-- EMAIL --%>
@@ -81,16 +84,10 @@ function validateGroupIsSelected(btn, alertText) {
     <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/spinner.gif" />
     
     <div class="page-action-area stacked half-width">
-        <cti:button nameKey="execute" 
-            classes="primary action"
-            id="submitGroupCommanderButton" 
+        <cti:button nameKey="execute"
+            classes="js-group-commander-btn primary action M0"
             onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');"/>
-        <img id="waitImg" src="${waitImgUrl}" style="display:none;">
-        <a href="<cti:url value="/group/commander/resultList"/>" class="fr">
-            <i:inline key="yukon.web.deviceGroups.commander.recentResultsLabel"/>
-        </a>
     </div>
-    
-    </form>
-    
+</form>
+
 </cti:standardPage>

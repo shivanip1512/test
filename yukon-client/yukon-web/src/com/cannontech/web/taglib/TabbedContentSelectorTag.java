@@ -17,7 +17,7 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
     private enum Mode{ box, section };
 
     private Mode mode = Mode.section;
-    private String classes = "tabbed-container js-init";
+    private String classes = "tabbed-container js-init-tabs";
     private String id="";
     private String selectedTabName = "";
     private List<String> tabNames = new ArrayList<String>();

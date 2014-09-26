@@ -24,7 +24,8 @@
               <%-- SELECT COMMAND --%>
               <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
               <div>${selectCommandLabel}:</div>
-            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}" includeDummyOption="true" />
+            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
+                selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
             <br><br>
             
             <%-- EMAIL --%>

@@ -205,7 +205,7 @@ yukon.ui = (function () {
             
         init: function () {
             if (!initialized) {
-                mod.autoWire();
+                mod.autowire();
                 initialized = true;
                 mod.wizard.init();
             }
@@ -302,10 +302,14 @@ yukon.ui = (function () {
                      }, 
                      'class': 'primary action'}];
         },
-
-        autoWire: function () {
-            var html;
+        
+        autowire: function () {
             
+            /** Initialize any chosen selects on page load. */
+            $('.js-init-chosen').chosen();
+            
+            /** Initialize any tabbed containers on page load. */
+            $('.js-init-tabs').tabs().show();
                 
             /** Add fancy tooltip support (tipsy)
              *  To give an item a custom tooltip, give it a class of 'js-has-tooltip'
@@ -538,33 +542,31 @@ yukon.ui = (function () {
             mod.autofocus();
 
             /** Init page 'Actions' button */
-            html = $('#page-actions')[0];
-            if (typeof html !== 'undefined') {
+            var pageActions = $('#page-actions');
+            if (pageActions.length) {
                 $('#page-actions').remove();
                 var menu = $('#b-page-actions .dropdown-menu');
-                menu.html(html.innerHTML);
+                menu.html(pageActions.html());
                 if (menu.find('.icon').length === menu.find('.icon-blank').length) {
                     menu.addClass('no-icons');
                 }
                 $('#b-page-actions').show();
             }
-
+            
             /** Init page buttons */
-            html = $('#page-buttons')[0];
-            if (typeof html !== 'undefined') {
+            var pageButtons = $('#page-buttons');
+            if (pageButtons.length) {
                 $('#page-buttons').remove();
-                $('.page-actions').append(html.innerHTML);
+                $('.page-actions').append(pageButtons.html());
             }
-        
+            
             /** Add additional options to page 'Actions' button */
             $('.js-page-additional-actions').each(function (index, elem) {
-                $('#b-page-actions .dropdown-menu').append(elem.innerHTML);
-                $(elem).remove();
+                elem = $(elem);
+                $('#b-page-actions .dropdown-menu').append(elem.html());
+                elem.remove();
             });
-        
-            /** Initialize any tabbed containers */
-            $('.tabbed-container.js-init').tabs().show();
-        
+            
             /** 
              * Show a popup when a popup trigger (element with a [data-popup] attribute) is clicked.
              * If the trigger element has a [data-popup-toggle] attribute and the popup is currently open,

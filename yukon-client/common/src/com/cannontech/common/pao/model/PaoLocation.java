@@ -55,12 +55,12 @@ public class PaoLocation {
     
     /** Converts decimal degrees to radians */
     public static double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
+        return deg * Math.PI / 180.0;
     }
       
     /** Converts radians to decimal degrees */
     public static double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
+        return rad * 180.0 / Math.PI;
     }
     
     @Override

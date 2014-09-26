@@ -97,6 +97,8 @@
 <entry key="yukon.common.comma">,</entry>
 
 <entry key="yukon.common.attribute">Attribute</entry>
+<entry key="yukon.common.attribute.select">Select Attribute</entry>
+<entry key="yukon.common.attribute.select.multi">Select Attribute(s)</entry>
 <entry key="yukon.common.units">Units</entry>
 <entry key="yukon.common.timestamp">Timestamp</entry>
 <entry key="yukon.common.value">State/Value</entry>

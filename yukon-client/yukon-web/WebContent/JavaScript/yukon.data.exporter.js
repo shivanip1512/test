@@ -86,9 +86,10 @@ yukon.dataExporter = (function () {
          * Depends on localized text in the jsp, so only run after DOM is ready.
          */
         init: function() {
-            if (_initialized) {
-                return;
-            }
+            
+            if (_initialized) return;
+            
+            $('#attribute-select').chosen();
             
             _config = yukon.fromJson('#module-config');
             

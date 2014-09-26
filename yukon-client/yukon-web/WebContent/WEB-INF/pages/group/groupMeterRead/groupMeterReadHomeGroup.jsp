@@ -30,47 +30,37 @@
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
-        <c:if test="${not empty errorMsg}">
-            <br>
-            <div class="error">${errorMsg}</div>
-        </c:if>
-        
-        <form id="groupMeterReadForm" action="${groupMeterReadURL}" method="post">
-            <cti:csrfToken/>
-        <div class="column-12-12">
-            <div class="column one">
-                <%-- GROUPS HIERARCHY BOX --%>
-                
-                <div><strong><i:inline key="yukon.web.deviceGroups.commander.groupSelectionLabel"/></strong></div>
-                <div class="stacked">
-                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${groupName}" selectedNodePathVar="selectedNodePath"/>
-                    <jsTree:nodeValueSelectingInlineTree fieldId="groupName" 
-                                                        fieldName="groupName"
-                                                        nodeValueName="groupName" 
-                                                        fieldValue="${groupName}"
-                                                        multiSelect="false"
-                                                        maxHeight="400"
-                                                        id="selectGroupTree" 
-                                                        dataJson="${dataJson}" 
-                                                        highlightNodePath="${selectedNodePath}"
-                                                        includeControlBar="true" />
-                </div>
-                
-                <%-- READ BUTTON --%>
-                <div class="page-action-area stacked">
-                    <cti:button type="submit" nameKey="read" busy="true" classes="primary action"/>
-                    <a href="<cti:url value="/group/groupMeterRead/resultsList"/>" class="fr">${recentResultLinkLabel}</a>
-                </div>
-            </div>
-            
-            <div class="column two nogutter">
-                <%-- SELECT ATTRIBUTE --%>
-                <div>${selectAttributeLabel}:</div>
-                <tags:attributeSelector attributes="${allGroupedReadableAttributes}" fieldName="attribute" 
-                    selectedAttributes="${selectedAttributes}" multipleSize="8" groupItems="true"/>
-            </div>
-        </div>
+<c:if test="${not empty errorMsg}">
+    <div class="error buffered">${errorMsg}</div>
+</c:if>
 
-        </form>
+<a href="<cti:url value="/group/groupMeterRead/resultsList"/>" class="fr">${recentResultLinkLabel}</a>
+<form id="groupMeterReadForm" action="${groupMeterReadURL}" method="post">
+    <cti:csrfToken/>
+    <%-- GROUPS HIERARCHY BOX --%>
+    <div class="stacked half-width">
+        <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${groupName}" selectedNodePathVar="selectedNodePath"/>
+        <jsTree:nodeValueSelectingInlineTree fieldId="groupName" 
+                                            fieldName="groupName"
+                                            nodeValueName="groupName" 
+                                            fieldValue="${groupName}"
+                                            multiSelect="false"
+                                            maxHeight="400"
+                                            id="selectGroupTree" 
+                                            dataJson="${dataJson}" 
+                                            highlightNodePath="${selectedNodePath}"
+                                            includeControlBar="true"/>
+    </div>
+    
+    <%-- SELECT ATTRIBUTE --%>
+    <tags:attributeSelector attributes="${allGroupedReadableAttributes}" name="attribute" 
+        selectedAttributes="${selectedAttributes}" multipleSize="8" groupItems="true"/>
+    
+    <%-- READ BUTTON --%>
+    <div class="page-action-area stacked">
+        <cti:button type="submit" nameKey="read" busy="true" classes="primary action"/>
+    </div>
+
+</form>
     
 </cti:standardPage>
