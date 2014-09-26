@@ -10,22 +10,23 @@ import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
 
 public class FilterablePointPicker extends PointPicker {
     @Override
-    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, YukonUserContext userContext,
-            String extraArgs) {
-    	FilterType filterType = FilterType.valueOf(extraArgs);
-    	final BooleanQuery query = new BooleanQuery(false);
-
-    	if (baseCriteria != null) {
-    		query.add(baseCriteria.getCriteria(), Occur.MUST);
-    	}
-
-    	LuceneQueryHelper.buildQueryByFilterType(query, filterType);
-
-    	return new YukonObjectCriteria() {
-			@Override
-			public Query getCriteria() {
-				return query;
-			}
-		};
+    public YukonObjectCriteria combineCriteria(YukonObjectCriteria criteria, YukonUserContext userContext, String extraArgs) {
+        
+        FilterType filterType = FilterType.valueOf(extraArgs);
+        final BooleanQuery query = new BooleanQuery(false);
+        
+        if (criteria != null) {
+            query.add(criteria.getCriteria(), Occur.MUST);
+        }
+        
+        LuceneQueryHelper.buildQueryByFilterType(query, filterType);
+        
+        return new YukonObjectCriteria() {
+            @Override
+            public Query getCriteria() {
+                return query;
+            }
+        };
     }
+    
 }
