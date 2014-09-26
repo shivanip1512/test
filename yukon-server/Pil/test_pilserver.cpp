@@ -2,6 +2,8 @@
 
 #include "pilserver.h"
 #include "msg_pcreturn.h"
+#include "dev_rfn.h"
+#include "cmd_rfn_demandFreeze.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -11,21 +13,37 @@ using namespace std;
 
 struct test_DeviceManager : CtiDeviceManager
 {
-    CtiDeviceSPtr dev;
+    CtiDeviceSPtr devSingle;
+    CtiDeviceSPtr devRfn;
 
     test_DeviceManager() :
-        dev(new CtiDeviceBase())
+        devSingle(new CtiDeviceSingle),
+        devRfn(new Cti::Devices::RfnDevice)
     {
-        dev->setID(42);
+        devSingle->setID(42);
+        devRfn->setID(123);
     }
 
-    virtual ptr_type RemoteGetEqualbyName(const std::string &RemoteName)
+    ptr_type getDeviceByID(long id) override
     {
-        return (RemoteName == "beetlebrox")
-            ? dev
-            : ptr_type();
+        switch( id )
+        {
+            case 42:  return devSingle;
+            case 123: return devRfn;
+        }
+
+        return ptr_type();
     }
-} test_deviceManager;
+
+    ptr_type RemoteGetEqualbyName(const std::string &RemoteName) override
+    {
+        if( RemoteName == "beetlebrox" )
+        {
+            return devSingle;
+        }
+        return ptr_type();
+    }
+};
 
 struct test_RouteManager : CtiRouteManager
 {
@@ -50,16 +68,21 @@ struct test_RouteManager : CtiRouteManager
             ? rte
             : ptr_type();
     }
-} test_routeManager;
+};
 
 
 struct Test_PilServer : Cti::Pil::PilServer
 {
+    test_DeviceManager dev_mgr;
+    test_RouteManager  rte_mgr;
+
     Test_PilServer() :
-        PilServer(&test_deviceManager, 0, &test_routeManager)
+        PilServer(&dev_mgr, 0, &rte_mgr)
     {}
 
-    virtual std::vector<long> getDeviceGroupMembers(std::string groupname) const
+    using PilServer::handleRfnDeviceResult;
+
+    std::vector<long> getDeviceGroupMembers(std::string groupname) const override
     {
         if( groupname == "/pi" )
         {
@@ -80,6 +103,21 @@ struct Test_PilServer : Cti::Pil::PilServer
 
         return std::vector<long>();
     }
+
+    boost::ptr_vector<CtiMessage> vgList, retList;
+
+    virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_, const int priority, void *connectionHandle)
+    {
+        for each( CtiMessage *msg in vgList_ )
+        {
+            vgList.push_back(msg);
+        }
+
+        for each( CtiMessage *msg in retList_ )
+        {
+            retList.push_back(msg);
+        }
+    }
 };
 
 
@@ -99,6 +137,49 @@ struct pilEnvironment
         delete_container(retList);
     }
 };
+
+
+BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
+{
+    Test_PilServer pilServer;
+
+    CtiDeviceManager::ptr_type dev = pilServer.dev_mgr.getDeviceByID(123);
+
+    BOOST_REQUIRE(dev);
+
+    CtiDeviceSingle *devSingle = dynamic_cast<CtiDeviceSingle *>(dev.get());
+
+    BOOST_REQUIRE(devSingle);
+
+    devSingle->incrementGroupMessageCount(11235, 55441, 2);
+
+    BOOST_CHECK_EQUAL(2, devSingle->getGroupMessageCount(11235, 55441));
+
+    Cti::Pil::RfnDeviceRequest req;
+    req.deviceId = 123;
+    req.command.reset(
+            new Cti::Devices::Commands::RfnImmediateDemandFreezeCommand);
+    req.userMessageId    = 11235;
+    req.connectionHandle = reinterpret_cast<void *>(55441);
+
+    Cti::Devices::Commands::RfnCommandResult cmdResult;
+    cmdResult.description = "This was a triumph. I'm making a note here: HUGE SUCCESS.";
+
+    Cti::Pil::RfnDeviceResult result(req, cmdResult, ClientErrors::None);
+
+    pilServer.handleRfnDeviceResult(result);
+
+    BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
+
+    {
+        CtiReturnMsg &retMsg = dynamic_cast<CtiReturnMsg &>(pilServer.retList.front());
+
+        BOOST_CHECK_EQUAL(retMsg.ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
+        BOOST_CHECK( ! retMsg.ExpectMore());  //  FAIL - this should be ExpectMore
+    }
+
+    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, 55441));
+}
 
 
 BOOST_FIXTURE_TEST_SUITE(test_AnalyzeWhiteRabbits, pilEnvironment)

@@ -73,16 +73,16 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    static void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
 
-   void handleInMessageResult(const INMESS &InMessage);
-   void handleRfnDeviceResult(const RfnDeviceResult &result);
-
-   void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle);
-
    void validateConnections();
 
 protected:
 
+   virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle);
+
    virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
+
+   void handleInMessageResult(const INMESS &InMessage);
+   void handleRfnDeviceResult(const RfnDeviceResult &result);
 
 public:
 
