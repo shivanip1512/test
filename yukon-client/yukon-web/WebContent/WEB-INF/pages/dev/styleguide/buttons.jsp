@@ -310,9 +310,9 @@
             <input id="first-name" type="text" name="firstName" value="Bob">
         </div>
         <div class="button-group button-group-toggle full-width">
-            <cti:button label="Set Input to 'Bob'" data-value="Vila" classes="on"/>
-            <cti:button label="Set Input to 'Jim'" data-value="Belushi"/>
-            <input data-input id="first-name" type="text" name="firstName" value="Vila">
+            <cti:button label="Set Input to 'Vila'" data-value="Vila" classes="on"/>
+            <cti:button label="Set Input to 'Belushi'" data-value="Belushi"/>
+            <input data-input type="text" name="lastName" value="Vila">
         </div>
     </div>
 </div>
@@ -325,9 +325,9 @@
 &lt;input id=&quot;first-name&quot; type=&quot;text&quot; name=&quot;firstName&quot; value=&quot;Bob&quot;&gt;
 ...
 &lt;div class=&quot;button-group button-group-toggle&quot;&gt;
-    &lt;cti:button label=&quot;Set Input to 'Bob'&quot; data-value=&quot;Vila&quot; classes=&quot;on&quot;/&gt;
-    &lt;cti:button label=&quot;Set Input to 'Jim'&quot; data-value=&quot;Belushi&quot;/&gt;
-    &lt;input data-input id=&quot;first-name&quot; type=&quot;text&quot; name=&quot;firstName&quot; value=&quot;Vila&quot;/&gt;
+    &lt;cti:button label=&quot;Set Input to 'Vila'&quot; data-value=&quot;Vila&quot; classes=&quot;on&quot;/&gt;
+    &lt;cti:button label=&quot;Set Input to 'Belushi'&quot; data-value=&quot;Belushi&quot;/&gt;
+    &lt;input data-input type=&quot;text&quot; name=&quot;lastName&quot; value=&quot;Vila&quot;/&gt;
 &lt;/div&gt;
 </pre>
     

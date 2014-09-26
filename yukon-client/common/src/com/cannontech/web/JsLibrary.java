@@ -52,7 +52,7 @@ public enum JsLibrary {
     HIGH_STOCK_NO_DATA("/resources/js/lib/highstock/modules/no-data-to-display.js"),
     
     OPEN_LAYERS_MIN("/resources/js/lib/open-layers/ol.js"),
-    OPEN_LAYERS("/resources/js/lib/open-layers/ol-whitespace.js"),
+    OPEN_LAYERS("/resources/js/lib/open-layers/ol-debug.js"),
     
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     

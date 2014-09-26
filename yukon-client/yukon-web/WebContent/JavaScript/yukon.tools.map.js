@@ -187,7 +187,7 @@ yukon.tools.map = (function() {
                 controls: [
                     new ol.control.Attribution(),
                     new ol.control.FullScreen(), 
-                    new ol.control.ScaleLine({units: ol.control.ScaleLineUnits.IMPERIAL, target: 'scale-line'}), 
+                    new ol.control.ScaleLine({units: 'us', target: 'scale-line'}), 
                     new ol.control.Zoom(), 
                     new ol.control.MousePosition({
                         coordinateFormat: ol.coordinate.createStringXY(6),
@@ -198,7 +198,7 @@ yukon.tools.map = (function() {
                 ],
                 layers: _tiles,
                 target: 'map',
-                view: new ol.View2D({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
+                view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
             });
             _destProjection = _map.getView().getProjection().getCode();
             _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
@@ -276,23 +276,30 @@ yukon.tools.map = (function() {
                 $('#filter-form').ajaxSubmit({
                     dataType: 'json',
                     success: function(results) {
+                        
                         $('.js-status-retrieving').hide();
                         $('.js-status-filtering').show();
+                        
                         debug.log('point data request: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
+                        
                         var 
                         source = _getLayer('icons').getSource(),
-                        toAdd = [], toRemove = [];
+                        toAdd = [], toRemove = [],
+                        visible, show, paoId, icon;
                         
-                        for (var paoId in results) {
-                            var show = results[paoId];
-                            var visible = _visibility[paoId];
-                            if (show && !visible) {
-                                toAdd.push(_icons[paoId]);
-                                _visibility[paoId] = true;
-                            } else if (!show && visible) {
-                                toRemove.push(_icons[paoId]);
-                                _visibility[paoId] = false;
+                        for (paoId in results) {
+                            icon = _icons[paoId];
+                            if (icon) { // Ignore any paos we aren't tracking. i.e. They don't have a location.
+                                show = results[paoId];
+                                visible = _visibility[paoId];
+                                if (show && !visible) {
+                                    toAdd.push(icon);
+                                    _visibility[paoId] = true;
+                                } else if (!show && visible) {
+                                    toRemove.push(icon);
+                                    _visibility[paoId] = false;
+                                }
                             }
                         }
                         

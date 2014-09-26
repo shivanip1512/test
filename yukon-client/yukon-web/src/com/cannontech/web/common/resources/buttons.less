@@ -1,43 +1,57 @@
-/* CONTENTS */
+/**
+ * CONTENTS
+ * 
+ * Variables...............Colors mostly.
+ * Button..................The default look of a button.
+ * Naked Button........... Button that looks and acts like a link.
+ * Disabled Button.........What a button should look like when disabled.
+ * Action Button...........A button that looks more intense, used as a call to action.
+ * Button Group............Buttons grouped together, that touch eachother, like toggle buttons.
+ * Button Label............The container element inside a button to hold the button text.
+ * Primary Button..........Action button used as the primary call to action.
+ * Delete Button...........Button used to signifies a destructive delete will happen.
+ * Busy Button.............Button that shows a spinner icon inside it to indicate activity.
+ */
 
-/*
-VARIABLES
-BUTTON
-BUTTON GROUPS
-BUTTON LABEL
-DROPDOWN MENU
-*/
+/* Variables */
 
-/* VARIABLES */
-@primary-color: #06C;
+@primary-color: #06c;
 @primary-button-color: #777;
-@primary-button-color-border: #666;
+@primary-button-color-border: #444;
 @primary-button-color-hover: #888;
 
-/* BUTTON */
+
+
+/* Button */
+
 button, .button, input[type=submit], input[type=button], input[type=reset] {
-    background-color: #F3F3F3;
+    background-color: #f3f3f3;
     border: solid 1px #bbb;
     border-radius: 2px;
     box-shadow: inset 0px 0px 0px #fff,0 1px 0 rgba(0,0,0,0.07);
     color: #444;
+    cursor: pointer;
     display: inline-block;
     float: left;
     font: bold 12px Helvetica, Arial, sans-serif;
     font-smoothing: antialiased;
-    height: 26px;
+    height: 26px !important;
     line-height: 16px;
     margin: 0 5px;
     padding: 4px 8px;
     text-decoration: none;
     text-shadow: 0 1px 0 #fff;
     transition: border-color .20s;
-    &:focus {outline: none;}
+    
+    &:focus { outline: none; }
 }
-button, input[type=submit], input[type=button] {
-    height: 26px !important;
-    cursor: pointer;
-}
+
+button .icon, .button .icon { margin: 0; }
+
+
+
+/* Naked Button (look like links) */
+
 button.naked, .button.naked {
     background-color: transparent;
     border: none;
@@ -47,40 +61,63 @@ button.naked, .button.naked {
     margin-bottom: 0;
     padding: 0;
 }
-button.naked .b-label, .button.naked .b-label {color: @primary-color;font-weight: normal;}
-button.naked:not([disabled]):hover .b-label, .button.naked:not([disabled]):hover .b-label {color: @primary-color;text-decoration: underline}
 
-button[disabled], .button[disabled] {border-color: #d6d6d6}
-button[disabled] .b-label, .button[disabled] .b-label,
-button[disabled] .ui-button-text, .button[disabled] .ui-button-text {color: #888;}
-button[disabled] .icon, .button[disabled] .icon {background-image: url(../Icons/icons-disabled.png);}
+button.naked .b-label, .button.naked .b-label {
+    color: @primary-color;
+    font-weight: normal;
+}
 
-button.action[disabled], .button.action[disabled] {filter: alpha(opacity=50);opacity: .5;}
+button.naked:not([disabled]):hover .b-label, 
+.button.naked:not([disabled]):hover .b-label {
+    color: @primary-color;
+    text-decoration: underline;
+}
 
-/* BUTTON GROUPS */
+
+
+/* Disabled Button */
+
+button[disabled], .button[disabled] { border-color: #d6d6d6; }
+
+button[disabled] .b-label, 
+.button[disabled] .b-label,
+button[disabled] .ui-button-text, 
+.button[disabled] .ui-button-text { 
+    color: #888;
+}
+
+button[disabled] .icon, .button[disabled] .icon {
+    background-image: url(../Icons/icons-disabled.png);
+}
+
+button.action[disabled], .button.action[disabled] {
+    filter: alpha(opacity=50);
+    opacity: .5;
+}
+
+
+
+/* Button Group */
+
 .button-group {
     display: inline-block;
     vertical-align: top;
 }
 
-button.left, 
-.button.left, 
-input.left, 
-select.left, 
+button.left, .button.left, 
+input.left, select.left, 
 .button-group button:first-of-type {
-    margin: 0 0 0 5px;
-    border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    margin: 0 0 0 5px;
 }
 
-button.middle, 
-.button.middle, 
-input.middle, 
-select.middle, 
+button.middle, .button.middle, 
+input.middle, select.middle, 
 .button-group button:not(:first-of-type):not(:last-of-type) {
-    margin: 0;
     border-left: 0;
     border-radius: 0;
+    margin: 0;
 }
 
 button.right, 
@@ -95,15 +132,20 @@ select.right,
 }
 
 button:not([disabled]):not(.naked):not(.action):hover, .button:not([disabled]):not(.naked):not(.action):hover {
-    background-color: #F4F4F4;
+    background-color: #f4f4f4;
     border-color: #aaa;
-    box-shadow:0 0 10px #D4D4D4;
+    box-shadow:0 0 10px #d4d4d4;
     color: #333;
+}
+
+button:not([disabled]):not(.naked):not(.action):focus, .button:not([disabled]):not(.naked):not(.action):focus {
+    box-shadow:0 0 4px #d4d4d4;
+    border-color: #999;
 }
 
 button:not([disabled]):active, .button:not([disabled]):active {
     border-color: #aaa;
-    box-shadow:inset 0 0 10px #D4D4D4;
+    box-shadow:inset 0 0 10px #d4d4d4;
 }
 
 button.on, button.on:hover, .button.on, .button.on:hover {
@@ -111,51 +153,69 @@ button.on, button.on:hover, .button.on, .button.on:hover {
     box-shadow:inset 0 0 10px #bbb !important;
 }
 
+
+
+/* Action Button */
+
 button.action, .button.action {
-    background-color: #F2F2F2;
-    border: 1px solid #D8D8D8 !important;
+    background-color: #f2f2f2;
+    border: 1px solid #d8d8d8 !important;
     transition: border .20s;
     padding: 4px 12px;
 }
+
 button.action:hover, .button.action:hover {
-    background-color: #F3F3F3;
-    border: 1px solid #C6C6C6 !important;
+    background-color: #f3f3f3;
+    border: 1px solid #c6c6c6 !important;
 }
+
+button.action:focus, .button.action:focus {
+    background-color: #f3f3f3;
+    border: 1px solid #c6c6c6 !important;
+}
+
 button.blue, .button.blue {
     background-color: #4B8DF8;
-    border: 1px solid #3079ED !important;
+    border: 1px solid #3079ed !important;
     transition: border .20s;
 }
+
 button.blue:hover, .button.blue:hover {
-    background-color: #3F83F1;
-    border: 1px solid #2F5BB7 !important;
+    background-color: #3f83f1;
+    border: 1px solid #2f5bb7 !important;
 }
+
 button.green, .button.green {
-    background-color: #3A8E00;
-    border: 1px solid #29691D !important;
+    background-color: #3a8e00;
+    border: 1px solid #29691d !important;
     transition: border .20s;
 }
+
 button.green:hover, .button.green:hover {
-    background-color: #3F83F1;
-    border: 1px solid #2D6200 !important;
+    background-color: #3f83f1;
+    border: 1px solid #2d6200 !important;
 }
+
 button.red, .button.red {
-    background-color: #D64937;
-    border: 1px solid #D14836 !important;
+    background-color: #d64937;
+    border: 1px solid #d14836 !important;
     transition: border .20s;
 }
+
 button.red:hover, .button.red:hover {
-    background-color: #D14130;
-    border: 1px solid #B0281A !important;
+    background-color: #d14130;
+    border: 1px solid #b0281a !important;
 }
+
 button.orange, .button.orange {
-    background-color: #FF9900;
-    border: 1px solid #EF8900 !important;
+    background-color: #ff9900;
+    border: 1px solid #ef8900 !important;
     transition: border .20s;
 }
+
 button.orange:hover, .button.orange:hover {
-    background-color: #FF9900;
-    border: 1px solid #EF8900 !important;
+    background-color: #ff9900;
+    border: 1px solid #ef8900 !important;
 }
 
 button.grey, .button.grey {
@@ -163,35 +223,44 @@ button.grey, .button.grey {
     border: 1px solid #666 !important;
     transition: border .20s;
 }
+
 button.grey:hover, .button.grey:hover {
     background-color: #777;
     border: 1px solid #666 !important;
 }
 
 button.action:hover, .button.action:hover {
-    box-shadow: 0 1px 0px #DDD;
+    box-shadow: 0 1px 0px #ddd;
 }
+
 button.action:active, .button.action:active {
     box-shadow: none !important;
-    border-color: #C6C6C6 !important;
+    border-color: #c6c6c6 !important;
 }
+
 button.blue:active, .button.blue:active {
-    border-color: #2F5BB7 !important;
+    border-color: #2f5bb7 !important;
 }
+
 button.green:active, .button.green:active {
-    border-color: #2D6200 !important;
+    border-color: #2d6200 !important;
 }
+
 button.red:active, .button.red:active {
-    border-color: #B0281A !important;
+    border-color: #b0281a !important;
 }
+
 button.orange:active, .button.orange:active {
-    border-color: #EF8900 !important;
+    border-color: #ef8900 !important;
 }
 button.grey:active, .button.grey:active {
     border-color: #666 !important;
 }
 
-/* BUTTON LABEL */
+
+
+/* Button Label */
+
 .b-label, .ui-button-text {
     color: #444;
     display: inline-block;
@@ -211,44 +280,44 @@ button:not([disabled]):hover .ui-button-text,
 }
 button:hover .b-label.red, .button:hover .b-label.red,
 button:hover .ui-button-text.red, .button:hover .ui-button-text.red {
-    color: #DB4A37;
+    color: #db4a37;
 }
 button:hover .b-label.blue, .button:hover .b-label.blue,
 button:hover .ui-button-text.blue, .button:hover .ui-button-text.blue {
-    color: #7090C8;
+    color: #7090c8;
 }
 button:hover .b-label.green, .button:hover .b-label.green,
 button:hover .ui-button-text.green, .button:hover .ui-button-text.green {
-    color: #42B449;
+    color: #42b449;
 }
 button:hover .b-label.yellow, .button:hover .b-label.yellow,
 button:hover .ui-button-text.yellow, .button:hover .ui-button-text.yellow {
-    color: #F7CB38;
+    color: #f7cb38;
 }
 
 button.blue .b-label, .button.blue .b-label,
 button.blue .ui-button-text, .button.blue .ui-button-text {
-    color: #FFF !important;
-    text-shadow: 0 1px 0 #2F5BB7 !important;
+    color: #fff !important;
+    text-shadow: 0 1px 0 #2f5bb7 !important;
 }
 button.green .b-label, .button.green .b-label,
 button.green .ui-button-text, .button.green .ui-button-text {
-    color: #FFF !important;
-    text-shadow: 0 1px 0 #2D6200 !important;
+    color: #fff !important;
+    text-shadow: 0 1px 0 #2d6200 !important;
 }
 button.red .b-label, .button.red .b-label,
 button.red .ui-button-text, .button.red .ui-button-text {
-    color: #FFF !important;
-    text-shadow: 0 1px 0 #B0281A !important;
+    color: #fff !important;
+    text-shadow: 0 1px 0 #b0281a !important;
 }
 button.orange .b-label, .button.orange .b-label,
 button.orange .ui-button-text, .button.orange .ui-button-text {
-    color: #FFF !important;
-    text-shadow: 0 1px 0 #EF8900 !important;
+    color: #fff !important;
+    text-shadow: 0 1px 0 #ef8900 !important;
 }
 button.grey .b-label, .button.grey .b-label,
 button.grey .ui-button-text, .button.grey .ui-button-text {
-    color: #FFF !important;
+    color: #fff !important;
     text-shadow: 0 1px 0 #777 !important;
 }
 
@@ -281,15 +350,19 @@ button.primary:active .ui-button-text,
 .button.orange:active .ui-button-text, 
 .button.grey:active .ui-button-text,
 .button.primary:active .ui-button-text {
-    color: #FFF !important;
+    color: #fff !important;
 }
 
-/* primary button */
+
+
+/* Primary Button */
+
 button.primary, .button.primary {
     background-color: @primary-button-color;
     border: 1px solid @primary-button-color-border !important;
     transition: border .20s;
 }
+
 button.primary:hover, .button.primary:hover,
 button.primary:active, .button.primary:active {
     background-color: @primary-button-color-hover !important;
@@ -297,19 +370,42 @@ button.primary:active, .button.primary:active {
     box-shadow:0 0 10px #bbb;
 }
 
+button.primary:focus, .button.primary:focus {
+    background-color: @primary-button-color-hover !important;
+    border: 1px solid @primary-button-color-border !important;
+    box-shadow:0 0 4px #bbb;
+}
+
 button.primary .b-label, .button.primary .b-label, 
 button.primary .ui-button-text, .button.primary .ui-button-text {
-    color: #FFF !important;
+    color: #fff !important;
     text-shadow: 0 1px 0 @primary-button-color !important;
 }
 
-/* delete button */
-button.delete .b-label, .button.delete .b-label {color: #DB4A37;}
 
-button .icon, .button .icon {margin: 0;}
+
+/* Delete Button */
+
+button.delete .b-label, .button.delete .b-label { color: #db4a37; }
+
+
+
+/* Busy Button */
+
 button .icon:not(.busy) + .b-label, .button .icon:not(.busy) + .b-label, 
-button.busy .b-label, .button.busy .b-label {margin-left: 5px;}
+button.busy .b-label, .button.busy .b-label { 
+    margin-left: 5px;
+}
 
-button .busy, .button .busy {background-image: url(../Icons/spinner.gif) !important; display: none;}
-button.action .busy, .button.action .busy {background-image: url(../Icons/spinner-white.gif) !important;}
-button.busy .busy, .button.busy .busy {display: inline-block;}
+button .busy, .button .busy {
+    background-image: url(../Icons/spinner.gif) !important;
+    display: none;
+}
+
+button.action .busy, .button.action .busy {
+    background-image: url(../Icons/spinner-white.gif) !important;
+}
+
+button.busy .busy, .button.busy .busy {
+    display: inline-block;
+}
