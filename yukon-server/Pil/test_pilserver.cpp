@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
         CtiReturnMsg &retMsg = dynamic_cast<CtiReturnMsg &>(pilServer.retList.front());
 
         BOOST_CHECK_EQUAL(retMsg.ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
-        BOOST_CHECK( ! retMsg.ExpectMore());  //  FAIL - this should be ExpectMore
+        BOOST_CHECK(retMsg.ExpectMore());
     }
 
     BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, 55441));

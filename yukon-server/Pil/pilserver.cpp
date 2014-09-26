@@ -865,19 +865,19 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
         retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
 
+        dev.decrementGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle));
+
+        if( dev.getGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle)) )
+        {
+            retMsg->setExpectMore(true);
+        }
+
         vgList.push_back(retMsg->replicateMessage());
         retList.push_back(retMsg.release());
 
         if( ! result.status )
         {
             dev.extractCommandResult(*result.request.command);
-        }
-
-        dev.decrementGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle));
-
-        if( dev.getGroupMessageCount(result.request.userMessageId, reinterpret_cast<long>(result.request.connectionHandle)) )
-        {
-            retMsg->setExpectMore(true);
         }
 
         return result.status;
