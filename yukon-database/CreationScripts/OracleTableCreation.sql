@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/22/2014 10:07:49 AM                        */
+/* Created on:     9/26/2014 3:52:23 PM                         */
 /*==============================================================*/
 
 
@@ -9315,6 +9315,7 @@ INSERT INTO YukonRoleProperty VALUES (-21311,-213,'Archived Data Analysis','true
 INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','false','Controls access to FDR Translation Manager bulk operation.');
 INSERT INTO YukonRoleProperty VALUES (-21313,-213,'Archived Data Export','true','Controls access to Archived Data Export');
 INSERT INTO YukonRoleProperty VALUES (-21314,-213,'Connect/Disconnect','true','Controls access to Connect/Disconnect collection action.');
+INSERT INTO YukonRoleProperty VALUES (-21315,-213,'Demand Reset','true','Controls access to Demand Reset collection action.');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');
