@@ -163,13 +163,13 @@ button.action, .button.action {
     transition: border .20s;
     padding: 4px 12px;
 }
-
-button.action:hover, .button.action:hover {
-    background-color: #f3f3f3;
-    border: 1px solid #c6c6c6 !important;
-}
-
+button.action:active, .button.action:active,
 button.action:focus, .button.action:focus {
+    box-shadow: none !important;
+    border-color: #c6c6c6 !important;
+}
+button.action:hover, .button.action:hover {
+    box-shadow: 0 1px 0px #ddd;
     background-color: #f3f3f3;
     border: 1px solid #c6c6c6 !important;
 }
@@ -179,10 +179,13 @@ button.blue, .button.blue {
     border: 1px solid #3079ed !important;
     transition: border .20s;
 }
-
 button.blue:hover, .button.blue:hover {
     background-color: #3f83f1;
     border: 1px solid #2f5bb7 !important;
+}
+button.blue:active, .button.blue:active,
+button.blue:focus, .button.blue:focus {
+    border-color: #2f5bb7 !important;
 }
 
 button.green, .button.green {
@@ -190,10 +193,13 @@ button.green, .button.green {
     border: 1px solid #29691d !important;
     transition: border .20s;
 }
-
 button.green:hover, .button.green:hover {
     background-color: #3f83f1;
     border: 1px solid #2d6200 !important;
+}
+button.green:active, .button.green:active,
+button.green:focus, .button.green:focus {
+    border-color: #2d6200 !important;
 }
 
 button.red, .button.red {
@@ -201,10 +207,13 @@ button.red, .button.red {
     border: 1px solid #d14836 !important;
     transition: border .20s;
 }
-
 button.red:hover, .button.red:hover {
     background-color: #d14130;
     border: 1px solid #b0281a !important;
+}
+button.red:active, .button.red:active,
+button.red:focus, .button.red:focus {
+    border-color: #b0281a !important;
 }
 
 button.orange, .button.orange {
@@ -212,10 +221,13 @@ button.orange, .button.orange {
     border: 1px solid #ef8900 !important;
     transition: border .20s;
 }
-
 button.orange:hover, .button.orange:hover {
     background-color: #ff9900;
     border: 1px solid #ef8900 !important;
+}
+button.orange:active, .button.orange:active,
+button.orange:focus, .button.orange:focus {
+    border-color: #ef8900 !important;
 }
 
 button.grey, .button.grey {
@@ -223,37 +235,12 @@ button.grey, .button.grey {
     border: 1px solid #666 !important;
     transition: border .20s;
 }
-
 button.grey:hover, .button.grey:hover {
     background-color: #777;
     border: 1px solid #666 !important;
 }
-
-button.action:hover, .button.action:hover {
-    box-shadow: 0 1px 0px #ddd;
-}
-
-button.action:active, .button.action:active {
-    box-shadow: none !important;
-    border-color: #c6c6c6 !important;
-}
-
-button.blue:active, .button.blue:active {
-    border-color: #2f5bb7 !important;
-}
-
-button.green:active, .button.green:active {
-    border-color: #2d6200 !important;
-}
-
-button.red:active, .button.red:active {
-    border-color: #b0281a !important;
-}
-
-button.orange:active, .button.orange:active {
-    border-color: #ef8900 !important;
-}
-button.grey:active, .button.grey:active {
+button.grey:active, .button.grey:active,
+button.grey:focus, .button.grey:focus {
     border-color: #666 !important;
 }
 
