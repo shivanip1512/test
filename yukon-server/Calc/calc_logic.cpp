@@ -26,7 +26,19 @@ LPTSTR szDisplayName = "Yukon Calc-Logic Service";
 
 int main( int argc, char *argv[] )
 {
-    Cti::createExclusiveEvent(CompileInfo, "CalcLogic");
+    try
+    {
+        if( ! Cti::createExclusiveEvent("CalcLogic") )
+        {
+            cerr << CompileInfo.project <<" is already running on this machine, exiting."<< endl;
+            exit(-1);
+        }
+    }
+    catch( const std::exception& e )
+    {
+        cerr << e.what() << endl;
+        exit(-1);
+    }
 
     // If set console does not fail then we are running as a console application
     if( Cti::setConsoleTitle(CompileInfo) )

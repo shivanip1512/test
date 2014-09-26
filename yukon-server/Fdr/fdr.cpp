@@ -29,7 +29,19 @@ LPTSTR szDisplayName = "Yukon Foreign Data Service";
 
 int main( int argc, char *argv[] )
 {
-    Cti::createExclusiveEvent(CompileInfo, "FDR_EXCLUSION_EVENT");
+    try
+    {
+        if( ! Cti::createExclusiveEvent("FDR_EXCLUSION_EVENT") )
+        {
+            cerr << CompileInfo.project <<" is already running on this machine, exiting."<< endl;
+            exit(-1);
+        }
+    }
+    catch( const std::exception& e )
+    {
+        cerr << e.what() << endl;
+        exit(-1);
+    }
 
 //    InitYukonBaseGlobals();
 //    identifyProject(CompileInfo);

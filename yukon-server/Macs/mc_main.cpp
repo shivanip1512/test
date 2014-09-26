@@ -59,7 +59,19 @@ int main(int argc, char* argv[] )
     LPTSTR szName = MC_SERVICE_NAME;
     LPTSTR szDisplay = MC_SERVICE_DISPLAY_NAME;
 
-    Cti::createExclusiveEvent(CompileInfo, "MC_EXCLUSION_EVENT");
+    try
+    {
+        if( ! Cti::createExclusiveEvent("MC_EXCLUSION_EVENT") )
+        {
+            cerr << CompileInfo.project <<" is already running on this machine, exiting."<< endl;
+            exit(-1);
+        }
+    }
+    catch( const std::exception& e )
+    {
+        cerr << e.what() << endl;
+        exit(-1);
+    }
 
     // Hack to detect whether we are running as a service
     // or in a console

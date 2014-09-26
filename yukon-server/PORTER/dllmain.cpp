@@ -20,6 +20,7 @@
 #include "utility.h"
 
 using std::endl;
+using std::cerr;
 
 CtiSyncDefStruct PorterSyncs[] = {
    { CtiEventType, TRUE , FALSE, "CtiTimeSyncEvent"},
@@ -50,10 +51,23 @@ BOOL APIENTRY DllMain(HANDLE hModule,
         {
             Cti::identifyProject(CompileInfo);
 
-            hPorterEvents[P_QUIT_EVENT] = Cti::createExclusiveEvent("Porter",
-                                                                    PorterSyncs[P_QUIT_EVENT].manualReset,
-                                                                    PorterSyncs[P_QUIT_EVENT].initState,
-                                                                    PorterSyncs[P_QUIT_EVENT].syncObjName);
+            try
+            {
+                hPorterEvents[P_QUIT_EVENT] = Cti::createExclusiveEvent(PorterSyncs[P_QUIT_EVENT].manualReset,
+                                                                        PorterSyncs[P_QUIT_EVENT].initState,
+                                                                        PorterSyncs[P_QUIT_EVENT].syncObjName);
+            }
+            catch( const std::exception& e )
+            {
+                cerr << e.what() << endl;
+                exit(-1);
+            }
+
+            if( ! hPorterEvents[P_QUIT_EVENT] )
+            {
+                cerr <<"Porter is already running on this machine, exiting."<< endl;
+                exit(-1);
+            }
 
             for(int i = 0 ;i < NUMPORTEREVENTS; i++)
             {

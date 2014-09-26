@@ -7,7 +7,6 @@
 #include "guard.h"
 
 using std::endl;
-using std::cerr;
 
 namespace Cti {
 
@@ -45,42 +44,46 @@ bool setConsoleTitle(const compileinfo_t &info)
 }
 
 /**
- * Overload using default parameters.
- * Try to create and exclusive event. Exit if another instance is running.
+ * Create an exclusive event with default arguments.
+ *
+ * @return the event handle,
+ *         NULL if another event with the same name already exist
+ *
+ * @throw  std::runtime_error if CreateEvent fails
  */
-HANDLE createExclusiveEvent(const compileinfo_t &info,
-                            const char *eventName)
+HANDLE createExclusiveEvent(const char *eventName)
 {
-    return createExclusiveEvent(info.project,
-                                true,  // manual reset by default
+    return createExclusiveEvent(true,  // manual reset by default
                                 false, // initial state is false
                                 eventName);
 }
 
 /**
- * Try to create and exclusive event. Exit if another instance is running.
+ * Create an exclusive event.
+ *
+ * @return the event handle,
+ *         NULL if another event with the same name already exist
+ *
+ * @throw  std::runtime_error if CreateEvent fails
  */
-HANDLE createExclusiveEvent(const char *moduleName,
-                            bool  manualReset,
-                            bool  initialState,
+HANDLE createExclusiveEvent(bool manualReset,
+                            bool initialState,
                             const char *eventName)
 {
-    HANDLE hExclusion = CreateEvent(NULL, manualReset, initialState, eventName);
+    const HANDLE hExclusion = CreateEvent(NULL, manualReset, initialState, eventName);
 
     if( hExclusion == NULL )
     {
         const DWORD error = GetLastError();
-        cerr << moduleName <<" failed to create event \""<< eventName <<"\""<< endl;
-        cerr <<"caused by error "<< error <<" / "<< getSystemErrorMessage(error) << endl;
-        exit(-1);
+        std::ostringstream msg;
+        msg <<"failed to create event \""<< eventName <<"\" due to error "<< error <<" / "<< getSystemErrorMessage(error);
+        throw std::runtime_error(msg.str());
     }
 
     if( GetLastError() == ERROR_ALREADY_EXISTS )
     {
         CloseHandle(hExclusion);
-        hExclusion = NULL;
-        cerr << moduleName <<" is already running on this machine, exiting."<< endl;
-        exit(-1);
+        return NULL;
     }
 
     return hExclusion;

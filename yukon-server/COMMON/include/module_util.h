@@ -16,15 +16,11 @@ IM_EX_CTIBASE void identifyProject(const compileinfo_t &info);
 
 IM_EX_CTIBASE bool setConsoleTitle(const compileinfo_t &info);
 
-IM_EX_CTIBASE HANDLE createExclusiveEvent(
-        const compileinfo_t &info,
-        const char *eventName);
+IM_EX_CTIBASE HANDLE createExclusiveEvent(const char *eventName);
 
-IM_EX_CTIBASE HANDLE createExclusiveEvent(
-        const char *moduleName,
-        bool  manualReset,
-        bool  initialState,
-        const char *eventName);
+IM_EX_CTIBASE HANDLE createExclusiveEvent(bool manualReset,
+                                          bool initialState,
+                                          const char *eventName);
 
 } // namespace Cti
 

@@ -26,10 +26,23 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
         {
             Cti::identifyProject(CompileInfo);
 
-            hScannerSyncs[S_QUIT_EVENT] = Cti::createExclusiveEvent("Scanner",
-                                                                    ScannerSyncs[S_QUIT_EVENT].manualReset,
-                                                                    ScannerSyncs[S_QUIT_EVENT].initState,
-                                                                    ScannerSyncs[S_QUIT_EVENT].syncObjName);
+            try
+            {
+                hScannerSyncs[S_QUIT_EVENT] = Cti::createExclusiveEvent(ScannerSyncs[S_QUIT_EVENT].manualReset,
+                                                                        ScannerSyncs[S_QUIT_EVENT].initState,
+                                                                        ScannerSyncs[S_QUIT_EVENT].syncObjName);
+            }
+            catch( const std::exception& e )
+            {
+                cerr << e.what() << endl;
+                exit(-1);
+            }
+
+            if( ! hScannerSyncs[S_QUIT_EVENT] )
+            {
+                cerr <<"Scanner is already running on this machine, exiting."<< endl;
+                exit(-1);
+            }
 
             for(int i = 0 ;i < S_MAX_MUTEX; i++)
             {

@@ -24,7 +24,19 @@ int main(int argc, char* argv[] )
     LPTSTR szServiceName = "CapControl";
     LPTSTR szDisplayName = "Yukon Cap Control Service";
 
-    Cti::createExclusiveEvent(CompileInfo, "CapControl");
+    try
+    {
+        if( ! Cti::createExclusiveEvent("CapControl") )
+        {
+            cerr << CompileInfo.project <<" is already running on this machine, exiting."<< endl;
+            exit(-1);
+        }
+    }
+    catch( const std::exception& e )
+    {
+        cerr << e.what() << endl;
+        exit(-1);
+    }
 
     if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
     {

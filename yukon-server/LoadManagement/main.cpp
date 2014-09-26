@@ -26,7 +26,19 @@ int main(int argc, char* argv[] )
     LPTSTR szServiceName = "LoadManagement";
     LPTSTR szDisplayName = "Yukon Load Management Service";
 
-    Cti::createExclusiveEvent(CompileInfo, "LoadManagement");
+    try
+    {
+        if( ! Cti::createExclusiveEvent("LoadManagement") )
+        {
+            cerr << CompileInfo.project <<" is already running on this machine, exiting."<< endl;
+            exit(-1);
+        }
+    }
+    catch( const std::exception& e )
+    {
+        cerr << e.what() << endl;
+        exit(-1);
+    }
 
     if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
     {

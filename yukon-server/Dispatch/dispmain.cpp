@@ -29,7 +29,19 @@ int main(int argc, char* argv[] )
    LPTSTR szName = "Dispatch";
    LPTSTR szDisplay = "Yukon Dispatch Service";
 
-   Cti::createExclusiveEvent(CompileInfo, szName);
+   try
+   {
+       if( ! Cti::createExclusiveEvent(szName) )
+       {
+           cerr << CompileInfo.project <<" is already running on this machine, exiting."<< endl;
+           exit(-1);
+       }
+   }
+   catch( const std::exception& e )
+   {
+       cerr << e.what() << endl;
+       exit(-1);
+   }
 
    InitDispatchGlobals();
 
