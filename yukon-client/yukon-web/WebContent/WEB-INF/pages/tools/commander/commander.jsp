@@ -95,7 +95,7 @@
     </tags:nameValue2>
     
     <tags:nameValue2 nameKey=".command">
-        <input id="command-text" type="text" size="60">
+        <input id="command-text" type="text" size="60" tabindex="0">
         <cti:button id="cmd-execute-btn" nameKey="execute" classes="primary action fn vat"/>
     </tags:nameValue2>
     

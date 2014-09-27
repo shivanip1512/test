@@ -125,6 +125,9 @@ yukon.tools.commander = (function () {
             dialog.find('.js-prompt-text').text(_regex.firstPrompt.exec(command)[1]);
             dialog.find('.js-prompt-input').val('');
             yukon.ui.dialog('#prompt-dialog');
+        } else {
+            // For some reason setting focus immediately doesn't work.
+            setTimeout(function() { $('#command-text').focus(); }, 100);
         }
     },
     
