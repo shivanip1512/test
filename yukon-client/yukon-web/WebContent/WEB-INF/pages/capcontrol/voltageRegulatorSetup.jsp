@@ -65,13 +65,12 @@
         <x:div styleClass="regulatorPointDiv">
         <f:verbatim>
             <script type="text/javascript">
-                var picker = [];
                 var rowNumber = 0;
                 $(function () {
                     // delegated event listeners for Select Point and No Point links
                     $('.regulatorPointTable').on('click', '[id^="pickerLink"]', function (event) {
                         var rowNum = $(event.currentTarget).data('rowNum');
-                        picker[rowNum].show.call(picker[rowNum]);
+                        window['pointPicker_' + rowNum].show.call(window['pointPicker_' + rowNum]);
                     });
                     $('.regulatorPointTable').on('click', '[id^="clearPoint"]', function (event) {
                         var rowNum = $(event.currentTarget).data('rowNum');
@@ -123,12 +122,12 @@
                     <f:verbatim>
                         <script type="text/javascript">
                             var filterType;
-                            picker[rowNumber] = new Picker('OK', 'Cancel', '(none selected)', 'filterablePointPicker', '', 'picker[' + rowNumber + ']', 'pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
-                            picker[rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
+                            window['pointPicker_' + rowNumber] = new Picker('OK', 'Cancel', '(none selected)', 'filterablePointPicker', '', 'pointPicker_' + rowNumber, 'pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
+                            window['pointPicker_' + rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
                             filterType = document.getElementById('filterType[' + rowNumber + ']').value;
-                            picker[rowNumber].extraArgs = filterType;
-                            picker[rowNumber].immediateSelectMode = true;
-                            picker[rowNumber].init.call(picker[rowNumber]);
+                            window['pointPicker_' + rowNumber].extraArgs = filterType;
+                            window['pointPicker_' + rowNumber].immediateSelectMode = true;
+                            window['pointPicker_' + rowNumber].init.call(window['pointPicker_' + rowNumber]);
                             // stash rowNumber for delegate event handler
                             $($('[id^="pickerLink"]')[rowNumber]).data('rowNum', rowNumber);
                         </script>
@@ -147,12 +146,12 @@
                             rowNumber += 1;
                         </script>
                     </f:verbatim>
-                                                
+                    
                 </h:column>
                 
             </x:dataTable>
             
         </x:div>
         
-    </x:htmlTag>            
+    </x:htmlTag>
 </f:subview>
