@@ -138,6 +138,11 @@ var yukon = (function () {
         /** Convenient 'do nothing' function that doesn't require an argument like void(0); */
         nothing: function () {},
         
+        /** 
+         * Return a percent formatted to the decimal places specified.
+         * i.e.
+         * yukon.percent(13, 205, 3); results in "6.341%"
+         */
         percent: function (count, total, decimals) {
             return (parseFloat(count / total, 10) * 100).toFixed(decimals) + '%';
         },
@@ -151,6 +156,11 @@ var yukon = (function () {
                 return obj[key];
             });
             return values;
+        },
+        
+        /** Fire a callback after a duration. */
+        later: function (millis, callback) {
+            setTimeout(function () { callback(); }, millis);
         }
         
     };

@@ -377,6 +377,39 @@
   </tag>
   
   <tag>
+    <name>replaceAll</name>
+    <tag-class>com.cannontech.web.taglib.ReplaceAllTag</tag-class>
+    <body-content>empty</body-content>
+    <description>
+        Replace all matches of the input string with the replace string using the regex pattern.
+    </description>
+    <attribute>
+      <name>var</name>
+      <description>Set the var to the resulting map.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>input</name>
+      <description>The text to do the replace on.</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>pattern</name>
+      <description>The regex string for the replace operation.</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>replace</name>
+      <description>The replacement text to use for the replace operation.</description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>yukonCookie</name>
     <tag-class>com.cannontech.web.taglib.YukonCookieTag</tag-class>
     <body-content>empty</body-content>

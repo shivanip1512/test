@@ -25,7 +25,8 @@
             <c:when test="${showInitially}"><c:set var="showHide" value="show"/></c:when>
             <c:otherwise><c:set var="showHide" value="hide"/></c:otherwise>
         </c:choose>
-        <cti:yukonCookie var="showHide" scope="hideReveal" id="${pageScope.title}" defaultValue="${showHide}"/>
+        <cti:replaceAll var="persistId" input="${pageScope.title}" replace="" pattern="[^\w]"/>
+        <cti:yukonCookie var="showHide" scope="hideReveal" id="${persistId}" defaultValue="${showHide}"/>
         <c:set var="collapsed" value="${showHide eq 'hide' ? ' collapsed' : ''}"/>
     </c:when>
     <c:otherwise><c:set var="collapsed" value=""/></c:otherwise>

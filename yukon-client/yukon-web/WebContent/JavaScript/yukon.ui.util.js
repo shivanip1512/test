@@ -533,7 +533,7 @@ $(function () {
     /** Containers with show/hide behavior */
     $(document).on('click', '.toggle-title, .titled-container .controls .show-hide', function (ev) {
         var container = $(this).closest('.titled-container').toggleClass('collapsed'),
-            title = container.find('.title').text().trim(),
+            title = container.find('.title').text().trim().replace(/[^\w]/g, '');
             hidden = container.is('.collapsed');
         yukon.cookie.set('hideReveal', title, hidden ? 'hide' : 'show');
     });
