@@ -110,6 +110,7 @@ yukon.tools.commander = (function () {
             }
         });
         
+        select.trigger('chosen:updated').siblings('.chosen-container').css('width', select.css('width'));
     },
     
     /** Find any prompts in the command and show dialog for input if need be. */
@@ -319,8 +320,11 @@ yukon.tools.commander = (function () {
             
             if (_initialized) return;
             
-            /** Autofill the command text field when the choose a common command; prompt for any user input needed. */
-            $('#common-commands').change(function (ev) {
+            /** 
+             * Init the the common commands select with chosen. 
+             * On change, autofill the command text field ; prompt for any user input needed. 
+             */
+            $('#common-commands').chosen().change(function (ev) {
                 $('#command-text').val($(this).val());
                 _promptForInput();
             });
