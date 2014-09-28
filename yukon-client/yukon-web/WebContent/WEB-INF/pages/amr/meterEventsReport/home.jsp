@@ -92,7 +92,7 @@
                     <tags:nameValue2 nameKey=".filter.eventTypesRow">
                         <div id="eventTypeInputs"></div>
                         <cti:msg2 key=".filter.cog.title" var="cogTitle"/>
-                        <a href="javascript:void(0);" title="${cogTitle}" data-popup="#filter-events-popup">
+                        <a href="javascript:void(0);" title="${cogTitle}" data-popup="#filter-events-popup" data-popup-toggle>
                             <cti:icon icon="icon-filter"/>
                             <span class="numEventTypes">
                                 <span id="numEventTypes">${numSelectedEventTypes}</span>

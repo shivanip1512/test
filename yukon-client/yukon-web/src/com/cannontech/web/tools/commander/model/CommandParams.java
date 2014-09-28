@@ -2,18 +2,18 @@ package com.cannontech.web.tools.commander.model;
 
 public class CommandParams {
 
-    private CommandType type;
+    private CommandTarget target;
     private Integer paoId;
     private Integer routeId;
     private String serialNumber;
     private String command;
     
-    public CommandType getType() {
-        return type;
+    public CommandTarget getTarget() {
+        return target;
     }
     
-    public void setType(CommandType type) {
-        this.type = type;
+    public void setTarget(CommandTarget target) {
+        this.target = target;
     }
     
     public Integer getPaoId() {
@@ -54,7 +54,7 @@ public class CommandParams {
         params.setPaoId(paoId);
         params.setRouteId(routeId);
         params.setSerialNumber(serialNumber);
-        params.setType(type);
+        params.setTarget(target);
         
         return params;
     }
@@ -67,7 +67,7 @@ public class CommandParams {
         result = prime * result + ((paoId == null) ? 0 : paoId.hashCode());
         result = prime * result + ((routeId == null) ? 0 : routeId.hashCode());
         result = prime * result + ((serialNumber == null) ? 0 : serialNumber.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((target == null) ? 0 : target.hashCode());
         return result;
     }
     
@@ -100,14 +100,14 @@ public class CommandParams {
                 return false;
         } else if (!serialNumber.equals(other.serialNumber))
             return false;
-        if (type != other.type)
+        if (target != other.target)
             return false;
         return true;
     }
     
     @Override
     public String toString() {
-        return String.format("CommandParams [type=%s, paoId=%s, routeId=%s, serialNumber=%s, command=%s]", type, paoId, routeId, serialNumber, command);
+        return String.format("CommandParams [target=%s, paoId=%s, routeId=%s, serialNumber=%s, command=%s]", target, paoId, routeId, serialNumber, command);
     }
     
 }

@@ -38,7 +38,7 @@ import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
 import com.cannontech.web.tools.commander.model.CommandRequestExceptionType;
 import com.cannontech.web.tools.commander.model.CommandResponse;
-import com.cannontech.web.tools.commander.model.CommandType;
+import com.cannontech.web.tools.commander.model.CommandTarget;
 import com.cannontech.yukon.BasicServerConnection;
 
 /**
@@ -177,13 +177,13 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         
         for (CommandRequest command : commands) {
             CommandParams params = command.getParams();
-            CommandType type = params.getType();
-            int deviceId = type.hasPao() ? params.getPaoId() : Device.SYSTEM_DEVICE_ID;
+            CommandTarget type = params.getTarget();
+            int deviceId = type.isPao() ? params.getPaoId() : Device.SYSTEM_DEVICE_ID;
             
             Request request = new Request(deviceId, params.getCommand(), command.getId());
             
             request.setPriority(priority);
-            if (type.hasRoute()) {
+            if (type.isRoute()) {
                 request.setRouteID(params.getRouteId());
             }
             request.setUserName(user.getUsername());
@@ -220,7 +220,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
             }
             
             // Add Serial Number
-            if (params.getType().hasSerialNumber()) {
+            if (params.getTarget().isSerialNumber()) {
                 copy.setCommand(setSerialNumber(copy.getCommand(), copy.getSerialNumber()));
             }
             
@@ -242,9 +242,9 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     private String buildRequestPrintout(YukonUserContext userContext, CommandParams params) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        CommandType type = params.getType();
+        CommandTarget type = params.getTarget();
         String key = type.getRequestTextKey();
-        if (type.hasRoute()) {
+        if (type.isRoute()) {
             String route = paoDao.getYukonPAOName(params.getRouteId());
             return accessor.getMessage(key, params.getSerialNumber(), route, params.getCommand());
         } else {
@@ -303,14 +303,14 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
      */
     public String parseCommand(String command, CommandParams params) {
         
-        CommandType type = params.getType();
+        CommandTarget type = params.getTarget();
         List<LiteDeviceTypeCommand> commands = new ArrayList<>();
-        if (type == CommandType.DEVICE || type == CommandType.DEVICE) {
+        if (type == CommandTarget.DEVICE || type == CommandTarget.DEVICE) {
             YukonPao pao = paoDao.getYukonPao(params.getPaoId());
             String deviceType = pao.getPaoIdentifier().getPaoType().getDbString();
             commands = commandDao.getAllDevTypeCommands(deviceType);
         } else {
-            if (type == CommandType.EXPRESSCOM) {
+            if (type == CommandTarget.EXPRESSCOM) {
                 commands = commandDao.getAllDevTypeCommands(CommandCategory.EXPRESSCOM_SERIAL.getDbString());
             } else {
                 commands = commandDao.getAllDevTypeCommands(CommandCategory.VERSACOM_SERIAL.getDbString());

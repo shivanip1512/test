@@ -177,7 +177,7 @@ yukon.protoPicker = function (okText,
             // unselect
             row.removeClass('highlighted');
             removeFromSelectedItems.call(this, hit);
-            if (this.selectAllCheckBox != null && 'undefined' !== typeof this.selectAllCheckBox) {
+            if (this.selectAllCheckBox != null && typeof this.selectAllCheckBox !== 'undefined') {
                 this.selectAllCheckBox.checked = false;
             }
         } else {
@@ -886,7 +886,7 @@ yukon.protoPicker = function (okText,
         });
         
         resultTable = yukon.ui.util.createTable({ data: this.selectedItems, columns: outputColumns, focusIndicator: false })
-        .addClass('compact-results-table picker-results-table');
+        .addClass('compact-results-table');
         $(this.selectedItemsDisplayArea).empty();
         $(this.selectedItemsDisplayArea).append(resultTable);
         $(this.selectedItemsPopup).dialog({ minWidth: 400 });

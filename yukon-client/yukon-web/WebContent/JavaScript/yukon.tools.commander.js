@@ -14,7 +14,7 @@ yukon.tools.commander = (function () {
     mod = {},
     
     /** {object} - Map of target button id's to CommandType enum entries. */
-    _commandTypes = { 
+    _targets = { 
         'target-device-btn': 'DEVICE',
         'target-lm-group-btn': 'LOAD_GROUP',
         'target-expresscom-btn': 'EXPRESSCOM',
@@ -252,17 +252,17 @@ yukon.tools.commander = (function () {
         var
         picker,
         valid = true,
-        type = _commandTypes[$('#target-row .on').attr('id')],
-        params = { 
-            type: type,
+        target = _targets[$('#target-row .on').attr('id')],
+        params = {
+                target: target,
             command: $('#command-text').val().trim()
         },
         btn = $('#cmd-execute-btn'),
         field = $('#command-text');
         
-        if (type === 'DEVICE') {
+        if (target === 'DEVICE') {
             params.paoId = $('#pao-id').val();
-        } else if (type === 'LOAD_GROUP') {
+        } else if (target === 'LOAD_GROUP') {
             params.paoId = $('#lm-group-id').val();
         } else {
             params.serialNumber = $('#serial-number').val();
@@ -275,20 +275,29 @@ yukon.tools.commander = (function () {
             field.addClass('animated shake-subtle error')
             .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
         }
-        if (!params.paoId && (type === 'DEVICE' || type === 'LOAD_GROUP')) {
+        if (!params.paoId && (target === 'DEVICE' || target === 'LOAD_GROUP')) {
             valid = false;
-            picker = type === 'DEVICE' ? $('.js-device-picker') : $('.js-lm-group-picker');
+            picker = target === 'DEVICE' ? $('.js-device-picker') : $('.js-lm-group-picker');
             picker.addClass('animated shake-subtle')
             .one(yg.events.animationend, function() { 
                 $(this).removeClass('animated shake-subtle error').find('.b-label').removeClass('error'); 
             }).find('.b-label').addClass('error');
-        } else if ((type === 'EXPRESSCOM' || type === 'VERSACOM') && !params.serialNumber) {
+        } else if ((target === 'EXPRESSCOM' || target === 'VERSACOM') && !params.serialNumber) {
             valid = false;
             $('#serial-number').addClass('animated shake-subtle error')
             .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
         }
         
         if (valid) {
+            
+            // Store the target of the command in the yukon cookie
+            yukon.cookie.set('commander', 'lastTarget', target);
+            if (params.paoId) {
+                yukon.cookie.set('commander', 'lastPaoId', params.paoId);
+            } else {
+                yukon.cookie.set('commander', 'lastSerialNumber', params.serialNumber);
+                yukon.cookie.set('commander', 'lastRouteId', params.routeId);
+            }
             
             yukon.ui.busy(btn);
             field.prop('disabled', true);
@@ -323,6 +332,25 @@ yukon.tools.commander = (function () {
             
             if (_initialized) return;
             
+            // Load common commands if we came in with a previous target from the cookie
+            var target = yukon.cookie.get('commander', 'lastTarget', ''), paoId, category, url;
+            if (target) {
+                if (target === 'DEVICE' || target === 'LOAD_GROUP') {
+                    paoId = yukon.cookie.get('commander', 'lastPaoId', '');
+                    _updateCommandsForPao(paoId);
+                } else {
+                    category = taget === 'EXPRESSCOM' ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
+                    url = 'commander/type-commands?' + $.param({ type: category });
+                    $.getJSON(url).done(function (commands) {
+                        _updateCommonCommands(commands);
+                    });
+                }
+            }
+            
+            // Scroll the console to the bottom incase there are previous commands
+            var lastReq = $('#commander-results .cmd-req-resp:last-child');
+            if (lastReq.length) $('#commander-results').scrollTo(lastReq);
+            
             /** 
              * Init the the common commands select with chosen. 
              * On change, autofill the command text field ; prompt for any user input needed. 
@@ -343,26 +371,30 @@ yukon.tools.commander = (function () {
             
             /** User clicked the device target buttons, update the common commands. */
             $('#target-device-btn').click(function (ev) {
-                var paoId = $('#device-row input[type="hidden"]').first().val();
+                var paoId = $('#device-row input[type="hidden"]').first().val(),
+                    select = $('#common-commands');
                 if (paoId) {
                     // We have picked a device previously.
                     _updateCommandsForPao(paoId);
                 } else {
                     // No device selected yet, just nuke any commands in there.
-                    $('#common-commands option:first-child').siblings().remove();
+                    select.find('option:first-child').siblings().remove();
+                    select.trigger('chosen:updated').siblings('.chosen-container').css('width', select.css('width'));
                 }
                 $('#command-text').val('');
             });
             
             /** User clicked the lm group target buttons, update the common commands. */
             $('#target-lm-group-btn').click(function (ev) {
-                var paoId = $('#load-group-row input[type="hidden"]').first().val();
+                var paoId = $('#load-group-row input[type="hidden"]').first().val(),
+                    select = $('#common-commands');
                 if (paoId) {
                     // We have picked an lm group previously.
                     _updateCommandsForPao(paoId);
                 } else {
                     // No device selected yet, just nuke any commands in there.
-                    $('#common-commands option:first-child').siblings().remove();
+                    select.find('option:first-child').siblings().remove();
+                    select.trigger('chosen:updated').siblings('.chosen-container').css('width', select.css('width'));
                 }
                 $('#command-text').val('');
             });

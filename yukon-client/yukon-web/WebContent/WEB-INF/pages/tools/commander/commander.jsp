@@ -36,19 +36,24 @@
     
     <tags:nameValue2 nameKey=".target" rowId="target-row">
         <div class="button-group button-group-toggle">
+            <c:set var="clazz" value="${target == 'DEVICE' ? 'on' : ''}"/>
             <cti:button id="target-device-btn" icon="icon-database-add" 
-                    nameKey="device" data-show="#device-row" classes="on M0"/>
+                    nameKey="device" data-show="#device-row" classes="${clazz} M0"/>
+            <c:set var="clazz" value="${target == 'LOAD_GROUP' ? 'on' : ''}"/>
             <cti:button id="target-lm-group-btn" icon="icon-database-add" 
-                    nameKey="loadGroup" data-show="#load-group-row"/>
+                    nameKey="loadGroup" data-show="#load-group-row" classes="${clazz}"/>
+            <c:set var="clazz" value="${target == 'EXPRESSCOM' ? 'on' : ''}"/>
             <cti:button id="target-expresscom-btn" icon="icon-textfield" nameKey="expressCom" 
-                    data-show="#serial-number-row, #route-row" data-type="EXPRESSCOM_SERIAL"/>
+                    data-show="#serial-number-row, #route-row" data-type="EXPRESSCOM_SERIAL" classes="${clazz}"/>
+            <c:set var="clazz" value="${target == 'VERSACOM' ? 'on' : ''}"/>
             <cti:button id="target-versacom-btn" icon="icon-textfield" nameKey="versaCom" 
-                    data-show="#serial-number-row, #route-row" data-type="VERSACOM_SERIAL"/>
+                    data-show="#serial-number-row, #route-row" data-type="VERSACOM_SERIAL" classes="${clazz}"/>
         </div>
     </tags:nameValue2>
     
-    <tags:nameValue2 nameKey=".device" rowId="device-row">
-        <input id="pao-id" type="hidden" name="paoId">
+    <c:set var="clazz" value="${target != 'DEVICE' ? 'dn' : ''}"/>
+    <tags:nameValue2 nameKey=".device" rowId="device-row" rowClass="${clazz}">
+        <input id="pao-id" type="hidden" name="paoId" value="${target == 'DEVICE' and not empty paoId ? paoId : ''}">
         <tags:pickerDialog type="commanderDevicePicker" id="commanderDevicePicker"
             buttonStyleClass="js-device-picker"
             linkType="selection"
@@ -56,35 +61,41 @@
             destinationFieldId="pao-id"
             immediateSelectMode="true"
             endAction="yukon.tools.commander.deviceChosen"/>
-        <span class="js-on-route dn">
+        <c:set var="clazz" value="${empty route ? ' dn' : ''}"/>
+        <span class="js-on-route${clazz}" <c:if test="${not empty route}">data-route-id="${route.liteID}"</c:if>>
             <span class="name"><i:inline key=".onRoute"/></span>
-            <span class="value"></span>
+            <span class="value">${fn:escapeXml(route.paoName)}</span>
             <cti:button id="change-route-btn" nameKey="change" icon="icon-pencil" classes="fn vat"/>
             <div data-dialog id="change-route-dialog" title="<cti:msg2 key=".changeRoute"/>" data-width="500" 
                     data-event="yukon.tools.commander.routeChange" class="dn"></div>
         </span>
     </tags:nameValue2>
     
-    <tags:nameValue2 nameKey=".serialNumber" rowId="serial-number-row" rowClass="dn">
-        <input id="serial-number" type="text" name="serialNumber">
+    <c:set var="clazz" value="${!target.serialNumber ? 'dn' : ''}"/>
+    <tags:nameValue2 nameKey=".serialNumber" rowId="serial-number-row" rowClass="${clazz}">
+        <input id="serial-number" type="text" name="serialNumber" value="${serialNumber}">
     </tags:nameValue2>
     
-    <tags:nameValue2 nameKey=".route" rowId="route-row" rowClass="dn">
+    <c:set var="clazz" value="${!target.route ? 'dn' : ''}"/>
+    <tags:nameValue2 nameKey=".route" rowId="route-row" rowClass="${clazz}">
         <select id="route-id" name="routeId">
             <c:forEach var="route" items="${routes}">
-                <option value="${route.paoIdentifier.paoId}">${fn:escapeXml(route.paoName)}</option>
+                <c:set var="selected" value="${routeId == route.paoIdentifier.paoId ? ' selected' : ''}"/>
+                <option value="${route.paoIdentifier.paoId}"${selected}>${fn:escapeXml(route.paoName)}</option>
             </c:forEach>
         </select>
     </tags:nameValue2>
     
-    <tags:nameValue2 nameKey=".loadGroup" rowId="load-group-row" rowClass="dn">
-        <input id="lm-group-id" type="hidden" name="lmGroupId">
+    <c:set var="clazz" value="${target != 'LOAD_GROUP' ? 'dn' : ''}"/>
+    <tags:nameValue2 nameKey=".loadGroup" rowId="load-group-row" rowClass="${clazz}">
+        <input id="lm-group-id" type="hidden" name="lmGroupId" value="${target == 'LOAD_GROUP' and not empty paoId ? paoId : ''}">
         <tags:pickerDialog type="lmGroupPaoPermissionCheckingPicker" id="lmGroupPicker"
             buttonStyleClass="js-lm-group-picker"
             linkType="selection"
             selectionProperty="paoName"
             destinationFieldId="lm-group-id"
             immediateSelectMode="true"
+            initialId="${paoId}"
             endAction="yukon.tools.commander.lmGroupChosen"/>
     </tags:nameValue2>
     

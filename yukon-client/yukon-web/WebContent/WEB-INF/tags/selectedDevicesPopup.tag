@@ -41,10 +41,10 @@
 
 <c:choose>
     <c:when test="${type == 'link'}">
-        <cti:icon icon="${icon}" data-popup="#${id}" classes="cp fn pull-icon-down" title="${targetTitle}"/>
+        <cti:icon icon="${icon}" data-popup="#${id}" data-popup-toggle="" classes="cp fn pull-icon-down" title="${targetTitle}"/>
     </c:when>
     <c:otherwise>
-        <cti:button renderMode="buttonImage" icon="${icon}" title="${targetTitle}" data-popup="#${id}"/>
+        <cti:button renderMode="buttonImage" icon="${icon}" title="${targetTitle}" data-popup="#${id}" data-popup-toggle=""/>
     </c:otherwise>
 </c:choose>
 <div data-title="${popupTitle}" id="${id}" class="dn" data-url="${selectedDevicesTableUrl}" data-width="450" data-height="300"></div>

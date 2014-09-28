@@ -1,5 +1,6 @@
 package com.cannontech.web.tools.commander;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geojson.FeatureCollection;
@@ -50,8 +52,10 @@ import com.cannontech.web.tools.commander.model.CommandParams;
 import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
 import com.cannontech.web.tools.commander.model.CommandRequestExceptionType;
+import com.cannontech.web.tools.commander.model.CommandTarget;
 import com.cannontech.web.tools.commander.service.CommanderService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.cannontech.web.util.WebUtilityService;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -68,6 +72,7 @@ public class CommanderController {
     @Autowired private CommandDao commandDao;
     @Autowired private CommanderService commanderService;
     @Autowired private DeviceSearchService deviceSearchService;
+    @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private static final String keyBase = "yukon.web.modules.tools.commander";
@@ -86,13 +91,40 @@ public class CommanderController {
     };
     
     @RequestMapping({"/commander", "/commander/"})
-    public String commander(ModelMap model, LiteYukonUser user) {
+    public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user) throws IOException {
         
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
         List<CommandRequest> requests = new ArrayList<>(commanderService.getRequests(user).values());
         Collections.sort(requests, requestSorter);
         model.addAttribute("requests", requests);
+        
+        // Check cookie for last target of command execution
+        String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null);
+        if (lastTarget != null) {
+            
+            CommandTarget target = CommandTarget.valueOf(lastTarget);
+            model.addAttribute("target", target);
+            
+            if (target.isPao()) {
+                // Device or load group
+                int paoId = Integer.parseInt(webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null));
+                model.addAttribute("paoId", paoId);
+                // Add route info if available
+                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+                PaoType type = pao.getPaoType();
+                if (type.isRoutable()) {
+                    LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
+                    model.addAttribute("route", route);
+                }
+            } else {
+                model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null));
+                model.addAttribute("routeId", webUtil.getYukonCookieValue(req, "commander", "lastRouteId", null));
+            }
+        } else {
+            // Default to device target
+            model.addAttribute("target", CommandTarget.DEVICE);
+        }
         
         return "commander/commander.jsp";
     }

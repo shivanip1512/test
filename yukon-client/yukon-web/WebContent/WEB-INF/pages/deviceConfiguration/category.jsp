@@ -72,7 +72,7 @@
                         <cti:url var="deleteUrl" value="delete">
                             <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
                         </cti:url>
-                        <cti:button nameKey="remove" id="remove" href="${deleteUrl}" disabled="${disabled}"/>
+                        <cti:button nameKey="delete" id="remove" href="${deleteUrl}" disabled="${disabled}" classes="delete"/>
                     </c:if>
                 </div>
             </cti:checkRolesAndProperties>
