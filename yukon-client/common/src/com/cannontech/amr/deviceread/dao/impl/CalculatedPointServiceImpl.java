@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -43,7 +44,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 			.getLogger(CalculatedPointServiceImpl.class);
 
 	private AttributeService attributeService;
-	private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
 	private PeakReportService peakReportService;
 
 	/**
