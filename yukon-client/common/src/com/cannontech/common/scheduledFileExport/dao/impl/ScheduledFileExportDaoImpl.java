@@ -11,7 +11,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.scheduledFileExport.dao.ScheduledFileExportDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 
@@ -85,12 +84,14 @@ public class ScheduledFileExportDaoImpl implements ScheduledFileExportDao {
 	
 	private long getOldestRphIdInDaysPrevious() {
 		Instant xDaysAgo = Instant.now().minus(Duration.standardDays(initDays));
+		Instant now = Instant.now();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT MIN(ChangeId)");
 		sql.append("FROM RawPointHistory");
 		sql.append("WHERE Timestamp").gte(xDaysAgo);
-		
+        sql.append(  "and Timestamp").lt(now);
+        
 		long changeId = yukonJdbcTemplate.queryForLong(sql);
 		if(changeId == 0) {
 			//No changeIds from the past X days. Just return the most recent one.
