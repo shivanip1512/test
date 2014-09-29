@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/26/2014 3:52:23 PM                         */
+/* Created on:     9/29/2014 12:01:38 PM                        */
 /*==============================================================*/
 
 
@@ -9400,6 +9400,8 @@ INSERT INTO YukonRoleProperty VALUES (-90043,-900,'Allow DR Control','true','All
 INSERT INTO YukonRoleProperty VALUES (-90044,-900,'Asset Availability','false','Controls access to view Asset Availability for Scenarios, Control Areas, Programs, and Load Groups.');
 INSERT INTO YukonRoleProperty VALUES (-90045,-900,'Allow Load Group Control','true','In addition to Allow DR Control, controls access to shed and restore at group level.');
 INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Enable ecobee','false','Controls access to actions and information related to ecobee devices.');
+INSERT INTO YukonRoleProperty VALUES (-90047,-900,'Allow DR Enable/Disable','true','Controls access to enable or disable control areas,load programs and load groups. Requires Allow DR Control.');
+INSERT INTO YukonRoleProperty VALUES (-90048,-900,'Allow Change Gears','true','Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values(-100000, -1000, 'Target', 'true', 'display Target settings');
