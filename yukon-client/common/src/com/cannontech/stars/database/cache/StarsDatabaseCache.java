@@ -309,20 +309,19 @@ public class StarsDatabaseCache implements DBChangeListener {
         log.debug(" ## DBChangeMsg ##\n" + msg);
 
         if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
-            LiteYukonPAObject litePao = null;
-
-            /*
-             * Why look this up if it has just been deleted from cache?
-             * TODO: Will need to add more functionality to handle deletes and adds if STARS is tied
-             * together more firmly with Yukon in the future. (Example might be MCT inventory contents.)
-             */
-            if (msg.getDbChangeType() != DbChangeType.DELETE) {
-                litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(msg.getId());
-            } else {
+            if (msg.getDbChangeType() == DbChangeType.DELETE) {
                 log.debug("DBChangeMsg for a deleted PAO: " + msg);
                 return;
             }
-            
+
+            LiteYukonPAObject litePao;
+            try {
+                litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(msg.getId());
+            } catch (NotFoundException e) {
+                log.debug("DBChangeMsg ignored for PAO: #" + msg.getId() + " because it no longer exists. " + msg);
+                return;
+            }
+
             EnergyCompanySettingDao ecSettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
             for (LiteStarsEnergyCompany ec : getAllEnergyCompanies()) {
                 PaoType paoType = litePao.getPaoType();
