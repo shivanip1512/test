@@ -216,7 +216,7 @@ public class DeviceCommChannelPanel extends DataInputPanel implements ActionList
                 routeType = PaoType.ROUTE_CCU;
             else if (paoType.isLcu())
                 routeType = PaoType.ROUTE_LCU;
-            else if (paoType.isLcu())
+            else if (paoType.isTcu())
                 routeType = PaoType.ROUTE_TCU;
             else if (paoType == PaoType.TAPTERMINAL)
                 routeType = PaoType.ROUTE_TAP_PAGING;
