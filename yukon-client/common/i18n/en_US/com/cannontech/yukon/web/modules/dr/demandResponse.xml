@@ -594,7 +594,8 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.disableProgramsIcon.alt">Click to Disable Programs</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.enablePrograms">Enable Programs</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.enableProgramsIcon.alt">Click to Enable Programs</entry>
-
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.noChangeGear">You do not have permission to change gears.</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.noEnableDisable">You do not have permission to control this scenario.</entry>
 
 <!-- Control Area List -->
 <entry key="yukon.web.modules.dr.controlAreaList.pageTitle">Control Areas</entry>
@@ -802,6 +803,8 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon.alt">Click to Disable Programs</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms">Enable Programs</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon.alt">Click to Enable Programs</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.noChangeGear">You do not have permission to change gears.</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.noEnableDisable">You do not have permission to control this Control Area.</entry>
 
 <!-- Program List -->
 <entry key="yukon.web.modules.dr.programList.pageTitle">Programs</entry>
@@ -864,6 +867,8 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.programDetail.actions.enableIcon.alt">This Program is Disabled, Click to Enable</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.disable">Disable Program</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.alt">This Program is Enabled, Click to Disable</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.noChangeGear">You do not have permission to change gears.</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.noEnableDisable">You do not have permission to control this Program.</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 
@@ -923,6 +928,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.enableIcon.alt">This Load Group is Disabled, Click to Enable</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable">Disable Load Group</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon.alt">This Load Group is Enabled, Click to Disable</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.noEnableDisable">You do not have permission to control this Load Group.</entry>
 
 <entry key="yukon.web.modules.dr.loadGroupDetail.note.macroLoadGroup">This is a macro load group.</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.loadGroups">Load Groups</entry>

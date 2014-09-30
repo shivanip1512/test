@@ -201,81 +201,126 @@
                     <cti:msg2 key=".actions.dailyTimeChange" />
                 </cm:dropdownOption>
             </div>
-            <div data-enable-control-area-action="enable-on" data-pao-id="${controlAreaId}">
-                <cti:url var="sendEnableUrl" value="/dr/controlArea/sendEnableConfirm">
-                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
-                    <cti:param name="isEnabled" value="true"/>
-                </cti:url>
-                <li>
-                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendEnableConfirm.title" 
-                        dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                        labelKey=".actions.enable"/>
-                </li>
-            </div>
-            <div data-enable-control-area-action="disable-on" data-pao-id="${controlAreaId}">
-                <cti:url var="sendDisableUrl" value="/dr/controlArea/sendEnableConfirm">
-                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
-                    <cti:param name="isEnabled" value="false"/>
-                </cti:url>
-                <li>
-                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title" 
-                        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
-                        labelKey=".actions.disable"/>
-                </li>
-            </div>
-            <div data-enable-control-area-action="off" class="dn" data-pao-id="${controlAreaId}">
-                <cm:dropdownOption icon="icon-delete" disabled="true">
-                    <cti:msg2 key=".actions.disable" />
-                </cm:dropdownOption>
-            </div>
-            <div data-change-gears-action="on" data-pao-id="${controlAreaId}">
-                <cti:url var="changeGearsUrl" value="/dr/program/changeGearMultiplePopup">
-                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
-                </cti:url>
-                <li>
-                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+            <c:choose>
+				<c:when test="${enableDisableProgramsAllowed}">
+					<div data-enable-control-area-action="on" data-pao-id="${controlAreaId}">
+            			<cti:url var="sendEnableUrl" value="/dr/controlArea/sendEnableConfirm">
+		            		<cti:param name="controlAreaId" value="${controlAreaId}"/>
+			                <cti:param name="isEnabled" value="true"/>
+			             </cti:url>
+			             <li>
+        		     	<tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendEnableConfirm.title" 
+                			dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
+            	           	labelKey=".actions.enable"/>
+	            	    </li>
+			 		</div>
+		            <div data-disable-control-area-action="on" data-pao-id="${controlAreaId}">
+        		        <cti:url var="sendDisableUrl" value="/dr/controlArea/sendEnableConfirm">
+                		    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+		                    <cti:param name="isEnabled" value="false"/>
+		                </cti:url>
+		                <li>
+        		            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title" 
+                		        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+                        		labelKey=".actions.disable"/>
+		                </li>
+		            </div>
+            		<div data-disable-control-area-action="off" class="dn" data-pao-id="${controlAreaId}">
+		                <cm:dropdownOption icon="icon-delete" disabled="true">
+        	        	    <cti:msg2 key=".actions.disable" />
+            		    </cm:dropdownOption>
+		            </div>
+        	    </c:when>
+            	<c:otherwise>
+		            <div data-enable-control-area-action="off" class="dn" data-pao-id="${controlAreaId}">
+        		        <cm:dropdownOption icon="icon-accept" disabled="true">
+        	        	    <cti:msg2 key=".actions.enable" />
+		                </cm:dropdownOption>
+		            </div>
+		            <div data-disable-control-area-action="off" class="dn" data-pao-id="${controlAreaId}">
+        		        <cm:dropdownOption icon="icon-delete" disabled="true">
+                		    <cti:msg2 key=".actions.disable" />
+		                </cm:dropdownOption>
+		            </div>
+	            </c:otherwise>
+            </c:choose>
+            
+            <c:choose>
+				<c:when test="${changeGearAllowed}">
+		            <div data-change-gears-action="on" data-pao-id="${controlAreaId}">
+        		        <cti:url var="changeGearsUrl" value="/dr/program/changeGearMultiplePopup">
+                		    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+		                </cti:url>
+	                <li>
+    	                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
                             dialogId="drDialog" actionUrl="${changeGearsUrl}" icon="icon-cog-edit"
                             labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
-                </li>
-            </div>
-            <div class="dn" data-change-gears-action="off" data-pao-id="${controlAreaId}">
-                <cm:dropdownOption icon="icon-cog-edit" disabled="true">
-                    <cti:msg2 key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
-                </cm:dropdownOption>
-            </div>
+        	        </li>
+            		</div>
+		            <div class="dn" data-change-gears-action="off" data-pao-id="${controlAreaId}">
+        		        <cm:dropdownOption icon="icon-cog-edit" disabled="true">
+                		    <cti:msg2 key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+		                </cm:dropdownOption>
+		            </div>
+        	    </c:when>
+				<c:otherwise>
+					 <div class="dn" data-change-gears-action="off" data-pao-id="${controlAreaId}">
+                		<cm:dropdownOption icon="icon-cog-edit" disabled="true">
+		                    <cti:msg2 key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+		                </cm:dropdownOption>
+		            </div>
+        	    </c:otherwise>
+            </c:choose>
             <li class="divider"></li>
-            <div data-enable-programs-action="on" data-pao-id="${controlAreaId}">
-                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
-                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
-                    <cti:param name="enable" value="true"/>
-                </cti:url>
-                <li>
-                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title" 
-                        dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}" icon="icon-accept"
-                        labelKey=".actions.enablePrograms"/>
-                </li>
-            </div>
-            <div data-enable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
-                <cm:dropdownOption icon="icon-accept" disabled="true">
-                    <cti:msg2 key=".actions.enablePrograms" />
-                </cm:dropdownOption>
-            </div>
-            <div data-disable-programs-action="on" data-pao-id="${controlAreaId}">
-                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
-                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
-                    <cti:param name="enable" value="false"/>
-                </cti:url>
-                <li>
-                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
-                        dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
-                        labelKey=".actions.disablePrograms"/>
-                </li>
-            </div>
-            <div data-disable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
-                <cm:dropdownOption icon="icon-delete" disabled="true">
-                    <cti:msg2 key=".actions.disablePrograms" />
-                </cm:dropdownOption>
-            </div>
+            <c:choose>
+				<c:when test="${enableDisableProgramsAllowed}">
+		            <div data-enable-programs-action="on" data-pao-id="${controlAreaId}">
+		                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
+		                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+		                    <cti:param name="enable" value="true"/>
+		                </cti:url>
+		                <li>
+        		            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title" 
+                		        dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}" icon="icon-accept"
+                        		labelKey=".actions.enablePrograms"/>
+		                </li>
+		            </div>
+        		    <div data-enable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
+                		<cm:dropdownOption icon="icon-accept" disabled="true">
+		                    <cti:msg2 key=".actions.enablePrograms" />
+		                </cm:dropdownOption>
+        		    </div>
+		            <div data-disable-programs-action="on" data-pao-id="${controlAreaId}">
+        		        <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
+	    	                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+    	    	            <cti:param name="enable" value="false"/>
+		                </cti:url>
+        	        <li>
+            	        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
+                	        dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
+                    	    labelKey=".actions.disablePrograms"/>
+	                </li>
+    		        </div>
+            		<div data-disable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
+		                <cm:dropdownOption icon="icon-delete" disabled="true">
+		                    <cti:msg2 key=".actions.disablePrograms" />
+		                </cm:dropdownOption>
+		            </div>
+        	    </c:when>
+				<c:otherwise>
+					<div data-enable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
+		                <cm:dropdownOption icon="icon-accept" disabled="true">
+		                    <cti:msg2 key=".actions.enablePrograms" />
+		                </cm:dropdownOption>
+		            </div>
+        		    <div data-disable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
+                		<cm:dropdownOption icon="icon-delete" disabled="true">
+	    	                <cti:msg2 key=".actions.disablePrograms" />
+		                </cm:dropdownOption>
+            		</div>
+	            </c:otherwise>
+            </c:choose>
+            
             <div data-reset-peak-action="on" data-pao-id="${controlAreaId}">
                 <c:choose>
                     <c:when test="${!empty controlArea.triggers}">
@@ -330,6 +375,6 @@
             </cm:dropdownOption>
         </cti:checkPaoAuthorization>
     </div>
-    <cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateControlAreaMenu(${controlAreaId})" 
+    <cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateControlAreaMenu(${controlAreaId},${changeGearAllowed},${enableDisableProgramsAllowed})" 
         initialize="true" state="DR_CONTROLAREA/${controlAreaId}/SHOW_ACTION"/>
 </cti:standardPage>

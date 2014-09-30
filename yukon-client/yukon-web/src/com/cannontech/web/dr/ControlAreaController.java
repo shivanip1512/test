@@ -266,6 +266,13 @@ public class ControlAreaController extends DemandResponseControllerBase {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), controlArea, Permission.LM_VISIBLE);
 
         model.addAttribute("controlArea", controlArea);
+        
+        boolean changeGearAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHANGE_GEARS,
+                userContext.getYukonUser());
+        model.addAttribute("changeGearAllowed", changeGearAllowed);
+        boolean enableDisableProgramsAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_PROGRAM,
+                userContext.getYukonUser());
+        model.addAttribute("enableDisableProgramsAllowed", enableDisableProgramsAllowed);
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
         programsHelper.filterPrograms(model, userContext, filter, bindingResult, detailFilter, sorting, paging);
 

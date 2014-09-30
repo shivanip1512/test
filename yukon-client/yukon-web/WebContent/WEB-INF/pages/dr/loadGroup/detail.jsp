@@ -87,6 +87,7 @@
                             </tags:dynamicChooseOption>
                             
                             <cti:msgScope paths=",modules.dr.loadGroup">
+                            <cti:msg2 var="noEnableDisable" key=".actions.noEnableDisable"/> 
                                 <tags:dynamicChooseOption optionId="enabled">
                                     <%-- Actions shown when the Load Group is enabled --%>
                                     <c:if test="${allowShed}">
@@ -105,24 +106,40 @@
                                             dialogId="drDialog" actionUrl="${sendRestoreUrl}" 
                                             icon="icon-control-stop-blue"
                                             labelKey=".actions.sendRestore"/></li>
-                                    <cti:url var="sendDisableUrl" value="/dr/loadGroup/sendEnableConfirm">
-                                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                        <cti:param name="isEnabled" value="false"/>
-                                    </cti:url>
-                                    <li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title" 
-                                            dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
-                                            labelKey=".actions.disable"/></li>
+                                            
+                                     <c:choose>
+										<c:when test="${enableDisableProgramsAllowed}">       
+                                    		<cti:url var="sendDisableUrl" value="/dr/loadGroup/sendEnableConfirm">
+                                        		<cti:param name="loadGroupId" value="${loadGroupId}"/>
+                                        		<cti:param name="isEnabled" value="false"/>
+                                    		</cti:url>
+                                    		<li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title" 
+                                            	dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+                                            	labelKey=".actions.disable"/></li>
+                                       	</c:when>
+                                       	<c:otherwise>
+                                        	<cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${noEnableDisable}"/>
+                                       	</c:otherwise>
+                                      </c:choose>     
+                                            
                                 </tags:dynamicChooseOption>
     
                                 <tags:dynamicChooseOption optionId="disabled">
                                     <%-- Actions shown when the Load Group is disabled --%>
-                                    <cti:url var="sendEnableUrl" value="/dr/loadGroup/sendEnableConfirm">
-                                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                        <cti:param name="isEnabled" value="true"/>
-                                    </cti:url>
-                                    <li><tags:simpleDialogLink titleKey=".sendEnableConfirm.title" 
-                                            dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                                            labelKey=".actions.enable"/></li>
+                                    <c:choose>
+										<c:when test="${enableDisableProgramsAllowed}">  
+                                    		<cti:url var="sendEnableUrl" value="/dr/loadGroup/sendEnableConfirm">
+                                        		<cti:param name="loadGroupId" value="${loadGroupId}"/>
+                                        		<cti:param name="isEnabled" value="true"/>
+                                    		</cti:url>
+                                    		<li><tags:simpleDialogLink titleKey=".sendEnableConfirm.title" 
+                                            		dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
+                                            		labelKey=".actions.enable"/></li>
+                                        </c:when>
+                                        <c:otherwise>
+                                        	<cm:dropdownOption icon="icon-accept" key=".actions.enable" disabled="true" title="${noEnableDisable}"/>
+                                        </c:otherwise>
+                                     </c:choose>     
                                 </tags:dynamicChooseOption>
                             </cti:msgScope>
                         </tags:dynamicChoose>

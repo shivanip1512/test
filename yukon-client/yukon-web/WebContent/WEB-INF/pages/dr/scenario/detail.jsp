@@ -122,29 +122,66 @@
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                 </cti:url>
                                 <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
-                                        dialogId="drDialog" actionUrl="${changeScenarioGearsUrl}" icon="icon-cog-edit"
-                                        labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+                                <c:choose>
+      									<c:when test="${changeGearAllowed}">
+                                    		<tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+                                        		dialogId="drDialog" actionUrl="${changeScenarioGearsUrl}" icon="icon-cog-edit"
+                                        		labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+                                		</c:when>
+                                		<c:otherwise>  
+                                		<cti:msg2 var="noChangeGear" key=".scenarioDetail.actions.noChangeGear"/>      
+                                        	<a class="clearfix" title="${noChangeGear}"> 
+                                				<cti:icon icon="icon-cog-edit" classes="disabled" /> 
+                                				<span class="dib disabled">
+                                    				<cti:msg2 key="yukon.web.modules.dr.programDetail.actions.changeGears" />
+                               				 	</span>
+                            				</a>
+                            			</c:otherwise>
+								</c:choose>
                                 </li>
-                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
-                                    <cti:param name="scenarioId" value="${scenarioId}"/>
-                                    <cti:param name="enable" value="true"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}" icon="icon-accept"
-                                        labelKey=".actions.enablePrograms"/>
-                                </li>
-                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
-                                    <cti:param name="scenarioId" value="${scenarioId}"/>
-                                    <cti:param name="enable" value="false"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
-                                        labelKey=".actions.disablePrograms"/>
-                                </li>
-                            </tags:dynamicChooseOption>
+                                <c:choose>
+      								<c:when test="${enableDisableProgramsAllowed}">
+      									<cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
+                                    		<cti:param name="scenarioId" value="${scenarioId}"/>
+                                    		<cti:param name="enable" value="true"/>
+                                		</cti:url>
+                                		<li>
+                                    	<tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title" 
+                                        	dialogId="drDialog" actionUrl="${sendEnableProgramsUrl}" icon="icon-accept"
+                                        	labelKey=".actions.enablePrograms"/>
+                                    	</li>
+                                    	<cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
+                                    		<cti:param name="scenarioId" value="${scenarioId}"/>
+                                    		<cti:param name="enable" value="false"/>
+                                		</cti:url>
+                                		<li>
+                                    		<tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
+                                        		dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
+                                        		labelKey=".actions.disablePrograms"/>
+                                		</li>
+                                    </c:when>
+                                	<c:otherwise>
+                                	<li>  
+                                		<cti:msg2 var="noEnableDisable" key=".scenarioDetail.actions.noEnableDisable"/>      
+                                        	<a class="clearfix" title="${noEnableDisable}"> 
+                                				<cti:icon icon="icon-accept" classes="disabled" /> 
+                                					<span class="dib disabled">
+                                    					<cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.enablePrograms" />
+                               				 		</span>
+                            				</a>
+                            				</li>
+                            				<li>
+                            				<cti:msg2 var="noEnableDisable" key=".scenarioDetail.actions.noEnableDisable"/>      
+                                        	<a class="clearfix" title="${noEnableDisable}"> 
+                                				<cti:icon icon="icon-delete" classes="disabled" /> 
+                                					<span class="dib disabled">
+                                    					<cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.disablePrograms" />
+                               				 		</span>
+                            				</a>
+                            				</li>
+                            		</c:otherwise>
+								</c:choose>
+                             </tags:dynamicChooseOption>
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>
 

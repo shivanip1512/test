@@ -58,6 +58,10 @@ public class ControlAreaShowActionField extends ControlAreaBackingFieldBase {
                             messageSourceAccessor.getMessage(baseKey + "inactive"));
         controlAreaStateMap.put("fullyActiveMsg",
                             messageSourceAccessor.getMessage(baseKey + "fullyActive"));
+        controlAreaStateMap.put("noChangeGearsMsg",
+                messageSourceAccessor.getMessage(baseKey + "actions.noChangeGear"));
+        controlAreaStateMap.put("noEnableDisableMsg",
+                messageSourceAccessor.getMessage(baseKey + "actions.noEnableDisable"));
         try {
             return jsonWriter.writeValueAsString(controlAreaStateMap);
         } catch (JsonProcessingException e) {

@@ -102,6 +102,13 @@ public class ScenarioController extends DemandResponseControllerBase {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), scenario, Permission.LM_VISIBLE);
         model.addAttribute("scenario", scenario);
 
+        boolean changeGearAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHANGE_GEARS,
+                userContext.getYukonUser());
+        model.addAttribute("changeGearAllowed", changeGearAllowed);
+        boolean enableDisableProgramsAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_PROGRAM,
+                userContext.getYukonUser());
+        model.addAttribute("enableDisableProgramsAllowed", enableDisableProgramsAllowed);
+        
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
         programsHelper.filterPrograms(model, userContext, filter, bindingResult, detailFilter, sorting, paging);
 

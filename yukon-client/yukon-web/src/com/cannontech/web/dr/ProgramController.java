@@ -105,6 +105,13 @@ public class ProgramController extends ProgramControllerBase {
         paoAuthorizationService.verifyAllPermissions(user, program, Permission.LM_VISIBLE);
         model.addAttribute("program", program);
 
+        boolean changeGearAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHANGE_GEARS,
+                userContext.getYukonUser());
+        model.addAttribute("changeGearAllowed", changeGearAllowed);
+        boolean enableDisableProgramsAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_PROGRAM,
+                userContext.getYukonUser());
+        model.addAttribute("enableDisableProgramsAllowed", enableDisableProgramsAllowed);
+        
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
         loadGroupHelper.filterGroups(model, userContext, filter,
                                                bindingResult, detailFilter, flashScope,

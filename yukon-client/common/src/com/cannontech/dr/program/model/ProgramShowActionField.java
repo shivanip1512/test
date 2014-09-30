@@ -59,7 +59,10 @@ public class ProgramShowActionField extends ProgramBackingFieldBase {
                             messageSourceAccessor.getMessage(baseKey + "notRunning"));
         programStateMap.put("changeGearsDisabledMsg",
                             messageSourceAccessor.getMessage(baseKey + "actions.changeGears.disabled"));
-
+        programStateMap.put("noChangeGearsMsg",
+                messageSourceAccessor.getMessage(baseKey + "actions.noChangeGear"));
+        programStateMap.put("noEnableDisableMsg",
+                messageSourceAccessor.getMessage(baseKey + "actions.noEnableDisable"));
         try {
             return jsonWriter.writeValueAsString(programStateMap);
         } catch (JsonProcessingException e) {

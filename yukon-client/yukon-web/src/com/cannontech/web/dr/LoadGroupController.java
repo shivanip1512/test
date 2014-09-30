@@ -129,6 +129,10 @@ public class LoadGroupController extends DemandResponseControllerBase {
         }
         model.addAttribute("allowShed", allowShed);
         
+        boolean enableDisableProgramsAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_PROGRAM,
+                userContext.getYukonUser());
+        model.addAttribute("enableDisableProgramsAllowed", enableDisableProgramsAllowed);
+        
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
         loadGroupHelper.filterGroups(model, userContext, filter,
                                                bindingResult, detailFilter, flashScope,

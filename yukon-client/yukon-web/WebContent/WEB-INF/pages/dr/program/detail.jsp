@@ -26,7 +26,7 @@
     <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
     <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-
+    
     <input id="assetId" type="hidden" value="${programId}"/>
 
     <div class="column-12-12 clearfix">
@@ -116,7 +116,6 @@
                                     dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
                                     labelKey=".actions.start"/></li>
                         </div>
-                        
                         <div class="dn" data-start-action="off" data-pao-id="${programId}">
                             <cm:dropdownOption icon="icon-control-play-blue" disabled="true" key=".actions.start"/>
                         </div>
@@ -131,52 +130,75 @@
                         <div class="dn" data-stop-action="off" data-pao-id="${programId}">
                             <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" key=".actions.stop"/>
                         </div>
-                        <div data-change-gears-action="on" data-pao-id="${programId}">
-                            <cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
-                                <cti:param name="programId" value="${programId}"/>
-                            </cti:url>
-                            <li><tags:simpleDialogLink titleKey=".getChangeGearValue.title" 
-                                    dialogId="drDialog" actionUrl="${changeGearsUrl}" icon="icon-cog-edit"
-                                    labelKey=".actions.changeGears"/></li>
-                        </div>
-                        <div class="dn" data-change-gears-action="off" data-pao-id="${programId}">
-                            <cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears"/>
-                        </div>
-    
-                        <div data-enable-program-action="enable-on" data-pao-id="${programId}">
-                            <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
-                                <cti:param name="programId" value="${programId}"/>
-                                <cti:param name="isEnabled" value="true"/>
-                            </cti:url>
-                            <li><tags:simpleDialogLink titleKey=".sendEnableConfirm.title" 
-                                    dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                                    labelKey=".actions.enable"/></li>
-                        </div>
-                        <div data-enable-program-action="disable-on" data-pao-id="${programId}">
-                            <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
-                                <cti:param name="programId" value="${programId}"/>
-                                <cti:param name="isEnabled" value="false"/>
-                            </cti:url>
-                            <li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title" 
-                                    dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
-                                    labelKey=".actions.disable"/></li>
-                        </div>
-                        <div class="dn" data-enable-program-action="off" data-pao-id="${programId}">
-                            <cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable"/>
-                        </div>
-                    </cti:checkPaoAuthorization>
-                </cti:msgScope>
-                <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
-                    <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
-                    <cti:msg2 var="noProgramControl" key=".noControl"/>
-                    <cm:dropdownOption icon="icon-control-play-blue" disabled="true" key=".actions.start" title="${noProgramControl}"/>
-                    <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" key=".actions.stop" title="${noProgramControl}"/>
-                    <cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears" title="${noProgramControl}"/>
-                    <cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" title="${noProgramControl}"/>
-                </cti:checkPaoAuthorization>
-            </div>
-        </div>
-    </div>
+						<c:choose>
+							<c:when test="${changeGearAllowed}">
+								 <div data-change-gears-action="on" data-pao-id="${programId}">
+                          		 	<cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
+                                		<cti:param name="programId" value="${programId}"/>
+                            	</cti:url>
+                            	<li>
+                            		<tags:simpleDialogLink titleKey=".getChangeGearValue.title" 
+                                    	dialogId="drDialog" actionUrl="${changeGearsUrl}" icon="icon-cog-edit"
+	                                    labelKey=".actions.changeGears"/>
+	                            </li>
+		                        </div>
+		                        <div class="dn" data-change-gears-action="off" data-pao-id="${programId}">
+        		                    <cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears"/>
+		                        </div>
+							</c:when>
+							<c:otherwise>
+								<div class="dn" data-change-gears-action="off" data-pao-id="${programId}">
+                           			 <cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears"/>
+                      		  </div> 
+							</c:otherwise>
+						</c:choose>
+
+						<c:choose>
+							<c:when test="${enableDisableProgramsAllowed}">
+								<div data-enable-program-action="on" data-pao-id="${programId}">
+									<cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
+										<cti:param name="programId" value="${programId}" />
+										<cti:param name="isEnabled" value="true" />
+									</cti:url>
+									<li><tags:simpleDialogLink titleKey=".sendEnableConfirm.title"
+							        		dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
+											labelKey=".actions.enable" /></li>
+								</div>
+								<div data-disable-program-action="on" data-pao-id="${programId}">
+									<cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
+										<cti:param name="programId" value="${programId}" />
+										<cti:param name="isEnabled" value="false" />
+									</cti:url>
+									<li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title"
+									        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+											labelKey=".actions.disable" /></li>
+								</div>
+								<div class="dn" data-disable-program-action="off" data-pao-id="${programId}">
+									<cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" />
+								</div>
+							 </c:when>
+							<c:otherwise>
+								<div class="dn" data-enable-program-action="off" data-pao-id="${programId}">
+									<cm:dropdownOption icon="icon-accept" disabled="true" key=".actions.enable" />
+								</div>
+								<div class="dn" data-disable-program-action="off" data-pao-id="${programId}">
+									<cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" />
+								</div>
+							</c:otherwise>
+						</c:choose>
+					</cti:checkPaoAuthorization>
+				</cti:msgScope>
+				<cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
+					<%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
+					<cti:msg2 var="noProgramControl" key=".noControl" />
+					<cm:dropdownOption icon="icon-control-play-blue" disabled="true" key=".actions.start" title="${noProgramControl}" />
+					<cm:dropdownOption icon="icon-control-stop-blue" disabled="true" key=".actions.stop" title="${noProgramControl}" />
+					<cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears" title="${noProgramControl}" />
+					<cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" title="${noProgramControl}" />
+				</cti:checkPaoAuthorization>
+			</div>
+		</div>
+	</div>
 
     <%-- Child Load Groups for the Program --%>
     <c:set var="baseUrl" value="/dr/program/detail"/>
@@ -245,7 +267,7 @@
             </c:if>
         </div>
     </div>
-    <cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateProgramMenu(${programId})" 
-        initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
-        
+	<cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateProgramMenu(${programId},${changeGearAllowed},${enableDisableProgramsAllowed})" 
+		initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION" />
+
 </cti:standardPage>
