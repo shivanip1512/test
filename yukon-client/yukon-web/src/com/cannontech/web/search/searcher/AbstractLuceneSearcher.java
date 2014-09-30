@@ -19,6 +19,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.web.search.lucene.TopDocsCallbackHandler;
 import com.cannontech.web.search.lucene.YukonObjectSearchAnalyzer;
 import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
@@ -45,6 +46,7 @@ public abstract class AbstractLuceneSearcher<E> {
     }
 
     protected final SearchResults<E> doSearch(final Query query, final int start, final int count) throws IOException {
+        int maxResults = CtiUtilities.addNoOverflow(count, start);
         final SearchResults<E> result =
             getIndexManager().getSearchTemplate().doCallBackSearch(query,
                 new TopDocsCallbackHandler<SearchResults<E>>() {
@@ -66,7 +68,7 @@ public abstract class AbstractLuceneSearcher<E> {
                         result.setResultList(list);
                         return result;
                     }
-                });
+                }, maxResults);
 
         return result;
     }

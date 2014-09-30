@@ -861,4 +861,20 @@ public final class CtiUtilities {
         return ((double)count / total) * 100;
     }
 
+    /**
+     * Adds two integers not overflowing, or underflowing.
+     * If value would overflow than the MAX_VALUE is returned.
+     * If value would underflow than the MIN_VALUE is returned.
+     */
+    public final static int addNoOverflow(int numA, int numB) {
+        long num = (long) numA + numB;
+        if (num >= Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        if (num <= Integer.MIN_VALUE) {
+            return Integer.MIN_VALUE;
+        }
+        return (int) num;
+    }
+    
 }

@@ -1,5 +1,6 @@
 package com.cannontech.web.picker;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,7 +119,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
     }
 
     @Override
-    public final SearchResults<T> search(Iterable<Integer> initialIds, String extraArgs, YukonUserContext userContext) {
+    public final SearchResults<T> search(Collection<Integer> initialIds, String extraArgs, YukonUserContext userContext) {
         if (initialIds == null || !initialIds.iterator().hasNext()) {
             return null;
         }

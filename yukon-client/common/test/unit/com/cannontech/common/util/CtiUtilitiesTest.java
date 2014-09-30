@@ -1,6 +1,8 @@
 package com.cannontech.common.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 
 import java.util.List;
 
@@ -60,7 +62,28 @@ public class CtiUtilitiesTest {
             assertSame(fromSortedList, correctPerson);
         }
     }
+    @Test
+    public void test_addNoOverflow() {
+        assertEquals(3, CtiUtilities.addNoOverflow(1, 2));
 
+        // Test overflow
+        assertEquals(Integer.MAX_VALUE, CtiUtilities.addNoOverflow(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        assertEquals(Integer.MAX_VALUE, CtiUtilities.addNoOverflow(Integer.MAX_VALUE, 1234));
+        assertEquals(Integer.MAX_VALUE, CtiUtilities.addNoOverflow(Integer.MAX_VALUE, 1));
+        assertEquals(Integer.MAX_VALUE, CtiUtilities.addNoOverflow(Integer.MAX_VALUE, 0));
+        assertEquals(Integer.MAX_VALUE - 1, CtiUtilities.addNoOverflow(Integer.MAX_VALUE, -1));
+        assertEquals(Integer.MAX_VALUE - 1234, CtiUtilities.addNoOverflow(Integer.MAX_VALUE, -1234));
+        
+        // Test under flow
+        assertEquals(Integer.MIN_VALUE + 1234, CtiUtilities.addNoOverflow(Integer.MIN_VALUE, 1234));
+        assertEquals(Integer.MIN_VALUE + 1, CtiUtilities.addNoOverflow(Integer.MIN_VALUE, 1));
+        assertEquals(Integer.MIN_VALUE, CtiUtilities.addNoOverflow(Integer.MIN_VALUE, 0));
+        assertEquals(Integer.MIN_VALUE, CtiUtilities.addNoOverflow(Integer.MIN_VALUE, -1));
+        assertEquals(Integer.MIN_VALUE, CtiUtilities.addNoOverflow(Integer.MIN_VALUE, -1234));
+        assertEquals(Integer.MIN_VALUE, CtiUtilities.addNoOverflow(Integer.MIN_VALUE, Integer.MIN_VALUE));
+        
+        assertEquals(-1, CtiUtilities.addNoOverflow(Integer.MIN_VALUE, Integer.MAX_VALUE));
+    }
     @Test
     public void testSmartTranslatedSort() {
         List<String> toSort = ImmutableList.of("az", "za");

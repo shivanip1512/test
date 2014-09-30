@@ -1,6 +1,7 @@
 package com.cannontech.web.picker;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class NotificationGroupPicker extends BasePicker<UltraLightNotificationGr
     }
 
     @Override
-    public SearchResults<UltraLightNotificationGroup> search(Iterable<Integer> initialIds, String extraArgs,
+    public SearchResults<UltraLightNotificationGroup> search(Collection<Integer> initialIds, String extraArgs,
             YukonUserContext userContext) {
         final Set<Integer> initialIdsSet = ImmutableSet.copyOf(initialIds);
         Predicate<UltraLightNotificationGroup> idPredicate = new Predicate<UltraLightNotificationGroup>() {

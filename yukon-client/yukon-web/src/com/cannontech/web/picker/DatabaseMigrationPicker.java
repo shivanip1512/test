@@ -1,5 +1,6 @@
 package com.cannontech.web.picker;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
@@ -35,7 +36,7 @@ public class DatabaseMigrationPicker extends BasePicker<DatabaseMigrationContain
 	}
 
     @Override
-    public SearchResults<DatabaseMigrationContainer> search(Iterable<Integer> initialIds,
+    public SearchResults<DatabaseMigrationContainer> search(Collection<Integer> initialIds,
             String extraArgs, YukonUserContext userContext) {
         throw new UnsupportedOperationException("DatabaseMigrationPicker doesn't support initial ids");
     }

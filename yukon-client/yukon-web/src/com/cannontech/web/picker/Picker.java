@@ -1,5 +1,6 @@
 package com.cannontech.web.picker;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.context.MessageSourceResolvable;
@@ -43,6 +44,5 @@ public interface Picker<T> {
      * Perform a search for the specific ids requested.  This is used to
      * populate the picker if there were previously saved results.
      */
-    public SearchResults<T> search(Iterable<Integer> initialIds,
-            String extraArgs, YukonUserContext userContext);
+    public SearchResults<T> search(Collection<Integer> initialIds, String extraArgs, YukonUserContext userContext);
 }

@@ -1,5 +1,7 @@
 package com.cannontech.web.picker;
 
+import java.util.Collection;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
@@ -37,10 +39,9 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
     }
 
     @Override
-    public SearchResults<T> search(Iterable<Integer> initialIds,
-            String extraArgs, YukonUserContext userContext) {
+    public SearchResults<T> search(Collection<Integer> initialIds, String extraArgs, YukonUserContext userContext) {
         YukonObjectCriteria combinedCriteria = combineCriteria(criteria, initialIds);
-        SearchResults<T> hits = searcher.all(combinedCriteria, 0, Integer.MAX_VALUE);
+        SearchResults<T> hits = searcher.all(combinedCriteria, 0, initialIds.size());
         return hits;
     }
 
