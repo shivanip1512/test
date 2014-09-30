@@ -11,14 +11,16 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -68,6 +70,7 @@ import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.google.common.collect.Lists;
 
 public class StarsDatabaseCache implements DBChangeListener {
+    private Logger log = YukonLogManager.getLogger(StarsDatabaseCache.class);
 
     public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;
     private static final Duration CTRL_HIST_CACHE_INVALID_INTERVAL = Duration.standardDays(7);
@@ -141,7 +144,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                 }
             }
 
-            CTILogger.info("All energy companies loaded");
+            log.info("All energy companies loaded");
         }
 
         return energyCompanies;
@@ -159,7 +162,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                 webConfigMap.put(webConfiguration.getConfigID(), webConfiguration);
             }
 
-            CTILogger.info("All customer web configurations loaded");
+            log.info("All customer web configurations loaded");
         }
 
         return webConfigMap;
@@ -287,7 +290,7 @@ public class StarsDatabaseCache implements DBChangeListener {
             }
             return user;
         } catch (InstantiationException ie) {
-            CTILogger.warn(yukonUser.getUsername()
+            log.warn(yukonUser.getUsername()
                 + " is not a STARS user.  STARS data will not be available for this session.");
         }
 
@@ -303,9 +306,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 
     @Override
     public void dbChangeReceived(DBChangeMsg msg) {
-        CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
-
-        List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
+        log.debug(" ## DBChangeMsg ##\n" + msg);
 
         if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
             LiteYukonPAObject litePao = null;
@@ -318,41 +319,37 @@ public class StarsDatabaseCache implements DBChangeListener {
             if (msg.getDbChangeType() != DbChangeType.DELETE) {
                 litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(msg.getId());
             } else {
-                CTILogger.debug("DBChangeMsg for a deleted PAO: " + msg);
+                log.debug("DBChangeMsg for a deleted PAO: " + msg);
                 return;
             }
-
-            for (int i = 0; i < companies.size(); i++) {
-                LiteStarsEnergyCompany energyCompany = companies.get(i);
-
-                if (litePao.getPaoType().getPaoCategory() == PaoCategory.ROUTE) {
-                    EnergyCompanySettingDao energyCompanySettingDao =
-                        YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+            
+            EnergyCompanySettingDao ecSettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+            for (LiteStarsEnergyCompany ec : getAllEnergyCompanies()) {
+                PaoType paoType = litePao.getPaoType();
+                if (paoType.getPaoCategory() == PaoCategory.ROUTE) {
                     boolean singleEc =
-                        energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY,
-                            energyCompany.getEnergyCompanyId());
+                        ecSettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, ec.getEnergyCompanyId());
                     if (!singleEc) {
-                        handleRouteChange(msg, energyCompany);
+                        handleRouteChange(msg, ec);
                     }
-                } else if (litePao.getPaoType().isDirectProgram()) {
-                    if (energyCompany.getPrograms() != null) {
-                        for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
+                } else if (paoType.isDirectProgram()) {
+                    if (ec.getPrograms() != null) {
+                        for (LiteLMProgramWebPublishing liteProg : ec.getPrograms()) {
                             if (liteProg.getDeviceID() == msg.getId()) {
-                                handleLMProgramChange(msg, energyCompany, liteProg);
+                                handleLMProgramChange(msg, ec, liteProg);
                                 return;
                             }
                         }
                     }
-                } else if (litePao.getPaoType().isLoadGroup()) {
-                    StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
-
-                    if (energyCompany.getPrograms() != null) {
-                        for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
+                } else if (paoType.isLoadGroup()) {
+                    if (ec.getPrograms() != null) {
+                        StarsEnrollmentPrograms categories = ec.getStarsEnrollmentPrograms();
+                        for (LiteLMProgramWebPublishing liteProg : ec.getPrograms()) {
                             boolean groupFound = false;
 
-                            for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
-                                if (liteProg.getGroupIDs()[k] == msg.getId()) {
-                                    handleLMGroupChange(msg, energyCompany, liteProg);
+                            for (int groupId : liteProg.getGroupIDs()) {
+                                if (groupId == msg.getId()) {
+                                    handleLMGroupChange(msg, ec, liteProg);
                                     groupFound = true;
                                     break;
                                 }
@@ -365,7 +362,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                                     ServletUtils.getEnrollmentProgram(categories, liteProg.getProgramID());
                                 for (int k = 0; k < starsProg.getAddressingGroupCount(); k++) {
                                     if (starsProg.getAddressingGroup(k).getEntryID() == msg.getId()) {
-                                        handleLMGroupChange(msg, energyCompany, liteProg);
+                                        handleLMGroupChange(msg, ec, liteProg);
                                         break;
                                     }
                                 }
@@ -378,17 +375,15 @@ public class StarsDatabaseCache implements DBChangeListener {
             if (msg.getCategory().equals(DBChangeMsg.CAT_YUKON_USER)) {
                 LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact(msg.getId());
                 if (liteContact != null) {
-                    CustomerAccountDao customerAccountDao =
-                        YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+                    CustomerAccountDao customerAccountDao = YukonSpringHook.getBean(CustomerAccountDao.class);
                     CustomerAccount customerAccount = null;
                     try {
                         customerAccount = customerAccountDao.getAccountByContactId(liteContact.getContactID());
                     } catch (EmptyResultDataAccessException e) {
-                        CTILogger.warn("Unable to find CustomerAccount for contact id: " + liteContact.getContactID(),
-                            e);
+                        log.warn("Unable to find CustomerAccount for contact id: " + liteContact.getContactID(), e);
                     }
                     if (customerAccount != null) {
-                        ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
+                        ECMappingDao ecMappingDao = YukonSpringHook.getBean(ECMappingDao.class);
                         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
                         StarsCustAccountInformation starsAcctInfo =
                             energyCompany.getStarsCustAccountInformation(customerAccount.getAccountId());
@@ -430,7 +425,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     // Add the lite appliance category to the supplied energy company
                     energyCompany.addProgram(liteLMProgWebPub, liteAppCat);
                 } catch (TransactionException e) {
-                    CTILogger.error(e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                 }
                 break;
 
@@ -448,7 +443,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     // Add the lite appliance category to the supplied energy company
                     energyCompany.updateProgram(liteLMProgWebPub, liteAppCat);
                 } catch (TransactionException e) {
-                    CTILogger.error(e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                 }
                 break;
 
@@ -490,7 +485,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     // Add the lite appliance category to the supplied energy company
                     energyCompany.addApplianceCategory(liteAppCat);
                 } catch (TransactionException e) {
-                    CTILogger.error(e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                 }
                 break;
 
@@ -506,7 +501,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     // Update the lite appliance category to the supplied energy company
                     energyCompany.updateApplianceCategory(liteAppCat);
                 } catch (TransactionException e) {
-                    CTILogger.error(e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                 }
                 break;
 
@@ -553,7 +548,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     StarsLiteFactory.setAddressingGroups(program, liteProg);
                 }
             } catch (java.sql.SQLException e) {
-                CTILogger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
 
             break;
@@ -594,7 +589,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     StarsLiteFactory.setAddressingGroups(program, liteProg);
                 }
             } catch (java.sql.SQLException e) {
-                CTILogger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
 
             break;
@@ -636,7 +631,7 @@ public class StarsDatabaseCache implements DBChangeListener {
             try {
                 StarsAdminUtil.removeRoute(energyCompany, msg.getId());
             } catch (Exception e) {
-                CTILogger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
             break;
         }
