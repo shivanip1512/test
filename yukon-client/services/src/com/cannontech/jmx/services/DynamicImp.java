@@ -1,6 +1,5 @@
 /*
  * Created on Feb 2, 2005
- *
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
@@ -19,93 +18,72 @@ import com.cannontech.importer.BulkImporter;
 /**
  * @author jdayton
  *
- * Wrapper for the BulkImporter to allow plugability into a JMX server
+ *         Wrapper for the BulkImporter to allow plugability into a JMX server
  * 
  */
-public class DynamicImp
-{
-	private BulkImporter bulkImp = null;
+@SuppressWarnings("ucd")
+public class DynamicImp {
+    private BulkImporter bulkImp;
 
-	/**
-	 * Main constructor
-	 */
-	public DynamicImp()
-	{
-		super();
-		
-		bulkImp = new BulkImporter();		
-	}
+    public DynamicImp() {
+        bulkImp = new BulkImporter();
+    }
 
-	
-	/**
-	 * Starts the BulkImp Service
-	 */
-	public void start()
-	{
-		bulkImp.start();
-	}
+    /**
+     * Starts the BulkImp Service
+     */
+    public void start() {
+        bulkImp.start();
+    }
 
-	/**
-	 * Stops the BulkImp Service
-	 */
-	public void stop()
-	{
-		bulkImp.stop();
-	}
+    /**
+     * Stops the BulkImp Service
+     */
+    public void stop() {
+        bulkImp.stop();
+    }
 
-	/**
-	 * Gets the running state
-	 */
-	public boolean isRunning()
-	{
-		return bulkImp.isRunning();
-	}
+    /**
+     * Gets the running state
+     */
+    public boolean isRunning() {
+        return bulkImp.isRunning();
+    }
 
-	/**
-	 * Next time to run
-	 */
-	public String getNextImportTime()
-	{
-		try
-		{
-			Class cls = bulkImp.getClass();
-			Method method = cls.getDeclaredMethod("getNextImportTime", new Class[0]);
-			method.setAccessible(true);
-			GregorianCalendar result = (GregorianCalendar)method.invoke(bulkImp, new Object[0]);
-			
-			return new ModifiedDate( result.getTime().getTime() ).toString();
-		}
-		catch (Exception ignored)
-		{
-			ignored.printStackTrace();
-			return "Unknown";
-		}		
-	}
+    /**
+     * Next time to run
+     */
+    public String getNextImportTime() {
+        try {
+            Class<? extends BulkImporter> cls = bulkImp.getClass();
+            Method method = cls.getDeclaredMethod("getNextImportTime", new Class[0]);
+            method.setAccessible(true);
+            GregorianCalendar result = (GregorianCalendar) method.invoke(bulkImp, new Object[0]);
 
-	//
-	// JMX Specific Part
-	//
-	protected MBeanAttributeInfo[] createMBeanAttributeInfo()
-	{
-		return new MBeanAttributeInfo[]
-		{
-			new MBeanAttributeInfo("Running", "boolean", "The running status of the Service", true, false, true),
-			new MBeanAttributeInfo("NextImportTime", GregorianCalendar.class.getName(), "The next time the Service will import values", true, false, false)
-		};
-	}
+            return new ModifiedDate(result.getTime().getTime()).toString();
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+            return "Unknown";
+        }
+    }
 
-	protected MBeanOperationInfo[] createMBeanOperationInfo()
-	{
-		return new MBeanOperationInfo[]
-		{
-			new MBeanOperationInfo( 
-				"start", "Start the Bulk Importer Service", 
-				new MBeanParameterInfo[0], "void", MBeanOperationInfo.ACTION),
+    //
+    // JMX Specific Part
+    //
+    protected MBeanAttributeInfo[] createMBeanAttributeInfo() {
+        return new MBeanAttributeInfo[] {
+            new MBeanAttributeInfo("Running", "boolean", "The running status of the Service", true, false, true),
+            new MBeanAttributeInfo("NextImportTime", GregorianCalendar.class.getName(),
+                "The next time the Service will import values", true, false, false) };
+    }
 
-			new MBeanOperationInfo( 
-				"stop", "Stop the Bulk Importer Service", 
-				new MBeanParameterInfo[0], "void", MBeanOperationInfo.ACTION)
-		};
-	}
+    protected MBeanOperationInfo[] createMBeanOperationInfo() {
+        return new MBeanOperationInfo[] {
+            new MBeanOperationInfo("start", "Start the Bulk Importer Service", new MBeanParameterInfo[0], "void",
+                MBeanOperationInfo.ACTION),
+
+            new MBeanOperationInfo("stop", "Stop the Bulk Importer Service", new MBeanParameterInfo[0], "void",
+                MBeanOperationInfo.ACTION) };
+    }
 
 }

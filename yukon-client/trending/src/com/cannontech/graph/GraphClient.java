@@ -46,7 +46,6 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -104,11 +103,11 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
-public class GraphClient extends JPanel
-    implements DBChangeListener, GraphDefines, ActionListener, WindowListener, ChangeListener, TreeSelectionListener {
-    
+public class GraphClient extends JPanel implements DBChangeListener, GraphDefines, ActionListener, WindowListener,
+        ChangeListener, TreeSelectionListener {
+
     private static final String applicationName = "Trending";
-    
+
     public static final URL GRAPH_IMG_16 = GraphClient.class.getResource("/GraphTrending16.gif");
     public static final URL GRAPH_IMG_24 = GraphClient.class.getResource("/GraphTrending24.gif");
     public static final URL GRAPH_IMG_32 = GraphClient.class.getResource("/GraphTrending32.gif");
@@ -160,14 +159,16 @@ public class GraphClient extends JPanel
                                     frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                                     // Set to currentDate - always want this
                                     // date to be TODAY!
-                                    GraphClient.this.getStartDateComboBox()
-                                                    .setSelectedDate(com.cannontech.util.ServletUtil.getToday());
+                                    GraphClient.this.getStartDateComboBox().setSelectedDate(
+                                        com.cannontech.util.ServletUtil.getToday());
                                     GraphClient.this.setStartDate(getStartDateComboBox().getSelectedDate());
                                     GraphClient.this.getGraph().setUpdateTrend(true);
                                     updateCurrentPane();
                                     long timer = (System.currentTimeMillis());
-                                    frame.setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new Date(timer)) + " )");
-                                    CTILogger.info("[" + extendedDateTimeformat.format(new Date(timer)) + "] - Yukon Trending - Auto Updating Point Data");
+                                    frame.setTitle("Yukon Trending - ( Updated "
+                                        + extendedDateTimeformat.format(new Date(timer)) + " )");
+                                    CTILogger.info("[" + extendedDateTimeformat.format(new Date(timer))
+                                        + "] - Yukon Trending - Auto Updating Point Data");
                                     frame.setCursor(savedCursor);
 
                                 }
@@ -183,17 +184,13 @@ public class GraphClient extends JPanel
     private int savedViewType = GraphRenderers.LINE;
     private static Graph graphClass = null;
     private static JFrame graphClientFrame = null;
-    public static double scalePercent = 0;
     private static final int NO_WEEK = 0; // one week or less
     private static final int FIRST_WEEK = 1;// exactly the first week
-    private static final int SECOND_WEEK = 2;
-    private static final int THIRD_WEEK = 3;
     private static final int FOURTH_WEEK = 4;
     private static final int FIFTH_WEEK = 5; // exactly the last week
     // Components for controlling the view toggle (historical or current data)
     private int currIndex = 0; // Current timeperiodComboBox index
     private int histIndex = 0; // Historical timeperiodComboBox index
-    private Object currDate = null;
     private Object histDate = null;
     private int histWeek = 0;
     private int currentWeek = NO_WEEK; // used when more than one week is
@@ -234,8 +231,6 @@ public class GraphClient extends JPanel
     private JPanel ivjTrendSetupPanel = null;
     private JEditorPanePrintable ivjSummaryEditorPane = null;
     private JScrollPane ivjSummaryTabScrollPane = null;
-    private JSlider ivjStartTimeJSlider = null;
-    private JTextField ivjStartTimeTestField = null;
     private AdvancedOptionsPanel advOptsPanel = null;
 
     /**
@@ -244,6 +239,7 @@ public class GraphClient extends JPanel
      * This particular method is not needed for catching value changes.
      * ValueChanged(JCValueEvent) is used for that. Insert the method's
      * description here. SN Creation date: (7/19/2001 12:45:10 PM)
+     * 
      * @param event com.klg.jclass.util.value.JCValueEvent
      */
     public GraphClient() {
@@ -271,8 +267,9 @@ public class GraphClient extends JPanel
             // billion updates on the one stateChange.
             if (getStartDate().compareTo(getStartDateComboBox().getSelectedDate()) != 0) {
                 setStartDate(getStartDateComboBox().getSelectedDate());
-                if (currentWeek != NO_WEEK)
+                if (currentWeek != NO_WEEK) {
                     currentWeek = FIRST_WEEK;
+                }
                 refresh();
             }
         } else if (event.getSource() == getViewMenu().getDefaultRadioButtonItem()) {
@@ -357,8 +354,9 @@ public class GraphClient extends JPanel
             getGraph().setUpdateTrend(hasChanged);
             if (hasChanged) {
                 Object item = getTreeViewPanel().getSelectedItem();
-                if (item == null || !(item instanceof LiteBase))
+                if (item == null || !(item instanceof LiteBase)) {
                     return;
+                }
 
                 // Item is an instance of LiteBase...(from previous statement)
                 getGraph().setGraphDefinition(((LiteBase) item).getLiteID());
@@ -371,11 +369,13 @@ public class GraphClient extends JPanel
              */
             Object selected = getTreeViewPanel().getSelectedItem();
 
-            if (selected == null)
+            if (selected == null) {
                 showPopupMessage("Please select a Trend to Edit from the List", JOptionPane.WARNING_MESSAGE);
-            else {
+            } else {
                 if (selected instanceof LiteGraphDefinition) {
-                    ResetPeaksPanel peaksPanel = new ResetPeaksPanel(GraphDataSeries.getAllGraphDataSeries(new Integer(((LiteGraphDefinition) selected).getGraphDefinitionID())));
+                    ResetPeaksPanel peaksPanel =
+                        new ResetPeaksPanel(GraphDataSeries.getAllGraphDataSeries(new Integer(
+                            ((LiteGraphDefinition) selected).getGraphDefinitionID())));
                     boolean hasChanged = peaksPanel.showResetDialog(getGraphParentFrame());
                     getGraph().setUpdateTrend(hasChanged);
                     // The rest of this if statement are done to ensure
@@ -408,7 +408,7 @@ public class GraphClient extends JPanel
             getTrendProperties().setResolutionInMillis(1000L * 60L);
         } else if (event.getSource() == getOptionsMenu().getPlotYesterdayMenuItem()) {
             CTILogger.info("yesterday change");
-            boolean isMasked = getOptionsMenu().getPlotYesterdayMenuItem().isSelected();
+            getOptionsMenu().getPlotYesterdayMenuItem().isSelected();
             getGraph().setUpdateTrend(true);
             refresh();
         } else if (event.getSource() == getOptionsMenu().getMultiplierMenuItem()) {
@@ -459,11 +459,9 @@ public class GraphClient extends JPanel
         } else if (event.getSource() == getTrendMenu().getGetDataNowAllMetersMenuItem()) {
             getGraph().getDataNow(null);
         } else if (event.getSource() == getTrendMenu().getGetDataNowSelectedTrendMenuItem()) {
-            List<LiteYukonPAObject> trendPaobjects = YukonSpringHook.getBean(GraphDao.class)
-                                                                    .getLiteYukonPaobjects(getGraph().getGraphDefinition()
-                                                                                                     .getGraphDefinition()
-                                                                                                     .getGraphDefinitionID()
-                                                                                                     .intValue());
+            List<LiteYukonPAObject> trendPaobjects =
+                YukonSpringHook.getBean(GraphDao.class).getLiteYukonPaobjects(
+                    getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
             getGraph().getDataNow(trendPaobjects);
         } else {
             CTILogger.info(" other action");
@@ -522,10 +520,9 @@ public class GraphClient extends JPanel
         Object selected = getTreeViewPanel().getSelectedItem();
 
         if (selected != null && selected instanceof LiteBase) {
-            int option = JOptionPane.showConfirmDialog(getGraphParentFrame(),
-                                                                   "Are you sure you want to permanently delete '" + ((LiteGraphDefinition) selected).getName() + "'?",
-                                                                   "Confirm Delete",
-                                                                   JOptionPane.YES_NO_OPTION);
+            int option =
+                JOptionPane.showConfirmDialog(getGraphParentFrame(), "Are you sure you want to permanently delete '"
+                    + ((LiteGraphDefinition) selected).getName() + "'?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
                 DBPersistent dbPersistent = LiteFactory.createDBPersistent((LiteBase) selected);
                 getGraph().delete(dbPersistent);
@@ -544,8 +541,9 @@ public class GraphClient extends JPanel
         try {
             Object selected = getTreeViewPanel().getSelectedItem();
 
-            if (selected == null)
+            if (selected == null) {
                 showPopupMessage("Please select a Trend to Edit from the List", JOptionPane.WARNING_MESSAGE);
+            }
 
             // Set cursor to show waiting for update.
             savedCursor = this.getCursor();
@@ -583,30 +581,20 @@ public class GraphClient extends JPanel
      * trendProperties.
      */
     public void export() {
-        SaveAsJFileChooser chooser = null;
-
         switch (getTrendProperties().getViewType()) {
         case GraphRenderers.TABULAR:
-            chooser = new SaveAsJFileChooser(CtiUtilities.getExportDirPath(),
-                                             getTrendProperties().getViewType(),
-                                             getGraph().getHtmlString(),
-                                             getTrendModel().getChartName().toString(),
-                                             getTrendModel());
+            new SaveAsJFileChooser(CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(),
+                getGraph().getHtmlString(), getTrendModel().getChartName().toString(), getTrendModel());
             break;
 
         case GraphRenderers.SUMMARY:
-            chooser = new SaveAsJFileChooser(CtiUtilities.getExportDirPath(),
-                                             getTrendProperties().getViewType(),
-                                             getGraph().getHtmlString(),
-                                             getTrendModel().getChartName().toString());
+            new SaveAsJFileChooser(CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(),
+                getGraph().getHtmlString(), getTrendModel().getChartName().toString());
             break;
 
         default:
-            chooser = new SaveAsJFileChooser(CtiUtilities.getExportDirPath(),
-                                             getTrendProperties().getViewType(),
-                                             getFreeChart(),
-                                             getTrendModel().getChartName().toString(),
-                                             getTrendModel());
+            new SaveAsJFileChooser(CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), getFreeChart(),
+                getTrendModel().getChartName().toString(), getTrendModel());
             break;
 
         }
@@ -641,7 +629,9 @@ public class GraphClient extends JPanel
             CTILogger.info("-> Null pointer Exception - GraphClient.ActionPerformed on UpdateButton");
             e.printStackTrace();
         } finally {
-            getGraphParentFrame().setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new Date(System.currentTimeMillis())) + " )");
+            getGraphParentFrame().setTitle(
+                "Yukon Trending - ( Updated " + extendedDateTimeformat.format(new Date(System.currentTimeMillis()))
+                    + " )");
             this.setCursor(savedCursor);
         }
     }
@@ -654,10 +644,12 @@ public class GraphClient extends JPanel
         if (selected != null) {
             String period = selected.toString();
             getGraph().setPeriod(period);
-            if (getCurrentRadioButton().isSelected() || period.equalsIgnoreCase(ServletUtil.ONEDAY) || period.equalsIgnoreCase(ServletUtil.THREEDAYS) || period.equalsIgnoreCase(ServletUtil.ONEWEEK))
+            if (getCurrentRadioButton().isSelected() || period.equalsIgnoreCase(ServletUtil.ONEDAY)
+                || period.equalsIgnoreCase(ServletUtil.THREEDAYS) || period.equalsIgnoreCase(ServletUtil.ONEWEEK)) {
                 currentWeek = NO_WEEK;
-            else
+            } else {
                 currentWeek = FIRST_WEEK;
+            }
 
             if (!period.equalsIgnoreCase(ServletUtil.TODAY) && !period.equalsIgnoreCase(ServletUtil.ONEDAY)) {
                 getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
@@ -712,8 +704,9 @@ public class GraphClient extends JPanel
             getStartDateComboBox().setEnabled(false);
             getTimePeriodComboBox().removeAllItems();
 
-            for (int i = 0; i < ServletUtil.currentPeriods.length; i++)
+            for (int i = 0; i < ServletUtil.currentPeriods.length; i++) {
                 getTimePeriodComboBox().addItem(ServletUtil.currentPeriods[i]);
+            }
 
             Date date = ServletUtil.getToday();
             if (!((getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK)) {
@@ -738,21 +731,24 @@ public class GraphClient extends JPanel
             getTimePeriodComboBox().removeAllItems();
 
             // -- Fill combo box with historical time periods
-            for (int i = 0; i < ServletUtil.historicalPeriods.length; i++)
+            for (int i = 0; i < ServletUtil.historicalPeriods.length; i++) {
                 getTimePeriodComboBox().addItem(ServletUtil.historicalPeriods[i]);
+            }
 
             if (!((getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK)) {
                 getTimePeriodComboBox().setSelectedIndex(histIndex); // set to
                                                                      // saved
                                                                      // histPeriod
                 if (histDate != null) {
-                    getStartDateComboBox().setSelectedDate(ServletUtil.parseDateStringLiberally((dateFormat.format(histDate)).toString())); // set
-                                                                                                                                            // to
-                                                                                                                                            // saved
-                                                                                                                                            // histDate
+                    getStartDateComboBox().setSelectedDate(
+                        ServletUtil.parseDateStringLiberally((dateFormat.format(histDate)).toString())); // set
+                                                                                                         // to
+                                                                                                         // saved
+                                                                                                         // histDate
                     setStartDate(getStartDateComboBox().getSelectedDate());
-                } else
+                } else {
                     CTILogger.debug("Historical date it null, what should we do???");
+                }
             } else {
                 getTimePeriodComboBox().setSelectedItem(ServletUtil.EVENT);
             }
@@ -806,6 +802,7 @@ public class GraphClient extends JPanel
 
     /**
      * Add action listeners to each JMenuItem in menu.
+     * 
      * @param menu JMenu
      */
     public void addMenuItemActionListeners(JMenu menu) {
@@ -818,8 +815,9 @@ public class GraphClient extends JPanel
                 menu.getItem(i).addActionListener(this);
                 if (item instanceof JMenu) {
                     for (int j = 0; j < ((JMenu) item).getItemCount(); j++) {
-                        if (((JMenu) item).getItem(j) != null)
+                        if (((JMenu) item).getItem(j) != null) {
                             ((JMenu) item).getItem(j).addActionListener(this);
+                        }
                     }
                 }
             }
@@ -829,6 +827,7 @@ public class GraphClient extends JPanel
 
     /**
      * Returns HTML string buffer for summary, usage or tabular displays.
+     * 
      * @param htmlBuffer HTMLBuffer
      * @return StringBuffer.toString()
      */
@@ -879,6 +878,7 @@ public class GraphClient extends JPanel
     /**
      * Format the tabular view Slider. Returns the currently selected value from
      * the slider.
+     * 
      * @param model
      * @param htmlData
      * @return valueSelected
@@ -891,8 +891,11 @@ public class GraphClient extends JPanel
         int valuesCount = sliderValuesArray.length; // number of days in time
                                                     // period
 
-        if (timePeriod.equalsIgnoreCase(ServletUtil.ONEDAY) || timePeriod.equalsIgnoreCase(ServletUtil.TODAY) || (getTrendProperties().getOptionsMaskSettings() & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK || (getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) // 1
-                                                                                                                                                                                                                                                                                                                                                       // day
+        if (timePeriod.equalsIgnoreCase(ServletUtil.ONEDAY)
+            || timePeriod.equalsIgnoreCase(ServletUtil.TODAY)
+            || (getTrendProperties().getOptionsMaskSettings() & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK
+            || (getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) // 1
+                                                                                                                         // day
         {
             // With load duration and event, we show all values at the same
             // time.
@@ -902,13 +905,14 @@ public class GraphClient extends JPanel
                                             // ("new start date selected")
             {
                 // SET SLIDER LABELS
-                if (valuesCount > 7) // More than one week.
+                if (valuesCount > 7) {
                     setSliderLabels(0, 7);
-                else
+                } else {
                     // One week or less.
                     setSliderLabels(0, (valuesCount - 1)); // always start with
                                                            // the min day, max
                                                            // is length - 1
+                }
 
                 // SET CURRENT SLIDER VALUE Selected.
                 if (getCurrentRadioButton().isSelected()) // today and backwards
@@ -926,9 +930,9 @@ public class GraphClient extends JPanel
 
             // Set up the Slider labels and size, this method also calls
             // setSliderLabels
-            valueSelected = setLabelData(getTabularSlider().getMinimum(),
-                                         getTabularSlider().getMaximum(),
-                                         getTabularSlider().getValue());
+            valueSelected =
+                setLabelData(getTabularSlider().getMinimum(), getTabularSlider().getMaximum(),
+                    getTabularSlider().getValue());
             getTabularSlider().setValue(valueSelected);
 
             GregorianCalendar cal = new GregorianCalendar();
@@ -941,7 +945,7 @@ public class GraphClient extends JPanel
                 htmlData.setTabularEndDate(cal.getTime());
 
                 // temporarily set the start date for only one day's data
-                cal.setTime(((Date) sliderValuesArray[valueSelected]));
+                cal.setTime((sliderValuesArray[valueSelected]));
                 htmlData.setTabularStartDate(cal.getTime());
 
             }
@@ -962,7 +966,7 @@ public class GraphClient extends JPanel
                 ivjCurrentRadioButton.setMinimumSize(new Dimension(35, 22));
                 ivjCurrentRadioButton.setMargin(new Insets(2, 2, 2, 2));
                 ivjCurrentRadioButton.setHorizontalAlignment(SwingConstants.RIGHT);
-                
+
                 ivjCurrentRadioButton.addActionListener(this);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
@@ -974,6 +978,7 @@ public class GraphClient extends JPanel
     /**
      * A button group for current and historical radio button exclusive
      * selection.
+     * 
      * @return ButtonGroup dataViewButtonGroup
      */
     private ButtonGroup getDataViewButtonGroup() {
@@ -987,6 +992,7 @@ public class GraphClient extends JPanel
 
     /**
      * A menu listing FILE type functions.
+     * 
      * @return FileMenu fileMenu
      */
     private FileMenu getFileMenu() {
@@ -999,6 +1005,7 @@ public class GraphClient extends JPanel
 
     /**
      * A jFreeChart for containing the graph image.
+     * 
      * @return JFreeChart getGraph().getFreeChart()
      */
     public JFreeChart getFreeChart() {
@@ -1007,6 +1014,7 @@ public class GraphClient extends JPanel
 
     /**
      * A special panel for containing a jfreeChart.
+     * 
      * @return YukonChartPanel freeChartPanel
      */
     private YukonChartPanel getFreeChartPanel() {
@@ -1025,11 +1033,13 @@ public class GraphClient extends JPanel
 
     /**
      * An instance of the Graph class.
+     * 
      * @return com.cannontech.graph.Graph graphClass
      */
     public Graph getGraph() {
-        if (graphClass == null)
+        if (graphClass == null) {
             graphClass = new Graph();
+        }
         return graphClass;
     }
 
@@ -1043,7 +1053,7 @@ public class GraphClient extends JPanel
                 ivjGraphTabPanel = new JPanel();
                 ivjGraphTabPanel.setName("GraphTabPanel");
                 ivjGraphTabPanel.setLayout(new java.awt.BorderLayout());
-                
+
                 ivjGraphTabPanel.add(getFreeChartPanel());
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
@@ -1054,6 +1064,7 @@ public class GraphClient extends JPanel
 
     /**
      * A menu listing HELP type functions.
+     * 
      * @return HelpMenu helpMenu
      */
     private HelpMenu getHelpMenu() {
@@ -1072,7 +1083,7 @@ public class GraphClient extends JPanel
                 ivjHistoricalRadioButton.setText("Historical");
                 ivjHistoricalRadioButton.setMinimumSize(new Dimension(35, 22));
                 ivjHistoricalRadioButton.setMargin(new Insets(2, 2, 2, 2));
-                
+
                 ivjHistoricalRadioButton.addActionListener(this);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
@@ -1084,6 +1095,7 @@ public class GraphClient extends JPanel
     /**
      * A split pane to separate the treeviewPanel and the tabbed pane/trend
      * setup information. Return the JSplitPane1 property value.
+     * 
      * @return JSplitPane ivjLeftRightSplitPane
      */
     private JSplitPane getLeftRightSplitPane() {
@@ -1128,8 +1140,9 @@ public class GraphClient extends JPanel
      */
     private OptionsMenu getOptionsMenu() {
         if (optionsMenu == null) {
-            optionsMenu = new OptionsMenu(getTrendProperties().getOptionsMaskSettings(),
-                                          getTrendProperties().getResolutionInMillis());
+            optionsMenu =
+                new OptionsMenu(getTrendProperties().getOptionsMaskSettings(),
+                    getTrendProperties().getResolutionInMillis());
             addMenuItemActionListeners(optionsMenu);
         }
         return optionsMenu;
@@ -1144,7 +1157,7 @@ public class GraphClient extends JPanel
                 ivjRefreshButton.setMaximumSize(new Dimension(75, 25));
                 ivjRefreshButton.setMinimumSize(new Dimension(45, 25));
                 ivjRefreshButton.setMargin(new Insets(2, 12, 2, 12));
-                
+
                 ivjRefreshButton.addActionListener(this);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
@@ -1183,7 +1196,7 @@ public class GraphClient extends JPanel
                 ivjStartDateComboBox = new DateComboBox();
                 ivjStartDateComboBox.setName("StartDateComboBox");
                 ivjStartDateComboBox.setMinimumSize(new Dimension(50, 23));
-                
+
                 setStartDate(ivjStartDateComboBox.getSelectedDate());
                 CTILogger.info(" DAY -> " + ivjStartDateComboBox.getSelectedDate() + " and  " + getStartDate());
                 ivjStartDateComboBox.addActionListener(this);
@@ -1224,7 +1237,7 @@ public class GraphClient extends JPanel
                 ivjStartDateLabel.setName("StartDateLabel");
                 ivjStartDateLabel.setText("Start Date:");
                 ivjStartDateLabel.setMinimumSize(new Dimension(30, 14));
-                
+
                 ivjStartDateLabel.setEnabled(false);
                 // user code end
             } catch (Throwable ivjExc) {
@@ -1296,7 +1309,7 @@ public class GraphClient extends JPanel
                 ivjTabularEditorPane.setName("TabularEditorPane");
                 ivjTabularEditorPane.setEditable(false);
                 ivjTabularEditorPane.setContentType("text/html");
-                
+
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -1316,7 +1329,7 @@ public class GraphClient extends JPanel
                 ivjTabularSlider.setValue(0);
                 ivjTabularSlider.setMajorTickSpacing(1);
                 ivjTabularSlider.setSnapToTicks(true);
-                
+
                 setSliderSize(0, 0, 1); // default initialize
                 ivjTabularSlider.addChangeListener(this);
             } catch (Throwable ivjExc) {
@@ -1506,30 +1519,14 @@ public class GraphClient extends JPanel
                 constraintsStartDateComboBox.insets = new Insets(5, 5, 5, 5);
                 getTrendSetupPanel().add(getStartDateComboBox(), constraintsStartDateComboBox);
 
-                getTrendSetupPanel().add(getEventLabel(),
-                                         new GridBagConstraints(7,
-                                                                1,
-                                                                1,
-                                                                1,
-                                                                1.0,
-                                                                1.0,
-                                                                GridBagConstraints.EAST,
-                                                                GridBagConstraints.NONE,
-                                                                new Insets(5, 5, 5, 5),
-                                                                0,
-                                                                0));
-                getTrendSetupPanel().add(getEventJSpinner(),
-                                         new GridBagConstraints(8,
-                                                                1,
-                                                                1,
-                                                                1,
-                                                                1.0,
-                                                                1.0,
-                                                                GridBagConstraints.WEST,
-                                                                GridBagConstraints.NONE,
-                                                                new Insets(5, 5, 5, 5),
-                                                                0,
-                                                                0));
+                getTrendSetupPanel().add(
+                    getEventLabel(),
+                    new GridBagConstraints(7, 1, 1, 1, 1.0, 1.0, GridBagConstraints.EAST, GridBagConstraints.NONE,
+                        new Insets(5, 5, 5, 5), 0, 0));
+                getTrendSetupPanel().add(
+                    getEventJSpinner(),
+                    new GridBagConstraints(8, 1, 1, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+                        new Insets(5, 5, 5, 5), 0, 0));
 
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
@@ -1567,29 +1564,29 @@ public class GraphClient extends JPanel
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                	// limit to only refresh device/point tree on create/edit panel for paos and points
-                	if (msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ||
-                			msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
-                		
-	                    CTILogger.info(" ## DBChangeMsg ##\n" + msg);
-	
-	                    // Refreshes the device trees in the createGraphPanel if
-	                    // that's the panel that is open panel.
-	                    if (createPanel != null) {
-	                        ((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
-	                    }
-                	}
-                	// limit to only refresh trend tree for trend db changes.
-                	if (msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB ) {
-	                    // Refreshes the device tree panel in the GraphClient. (Main
-	                    // Frame)
-	                    Object sel = getTreeViewPanel().getSelectedItem();
-	                    getTreeViewPanel().refresh();
-	
-	                    if (sel != null) {
-	                        getTreeViewPanel().selectByString(sel.toString());
-	                    }
-                	}
+                    // limit to only refresh device/point tree on create/edit panel for paos and points
+                    if (msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB
+                        || msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+
+                        CTILogger.info(" ## DBChangeMsg ##\n" + msg);
+
+                        // Refreshes the device trees in the createGraphPanel if
+                        // that's the panel that is open panel.
+                        if (createPanel != null) {
+                            ((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
+                        }
+                    }
+                    // limit to only refresh trend tree for trend db changes.
+                    if (msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB) {
+                        // Refreshes the device tree panel in the GraphClient. (Main
+                        // Frame)
+                        Object sel = getTreeViewPanel().getSelectedItem();
+                        getTreeViewPanel().refresh();
+
+                        if (sel != null) {
+                            getTreeViewPanel().selectByString(sel.toString());
+                        }
+                    }
                 }
             });
         }
@@ -1604,15 +1601,15 @@ public class GraphClient extends JPanel
             // Setup Role Property to create/edit trends.
             ClientSession session = ClientSession.getInstance();
             RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-            boolean graphEdit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION,
-                                                                        session.getUser());
+            boolean graphEdit =
+                rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, session.getUser());
             if (!graphEdit) {
                 getTrendMenu().getCreateMenuItem().setEnabled(false);
                 getTrendMenu().getEditMenuItem().setEnabled(false);
             }
-            
+
             histDate = com.cannontech.util.ServletUtil.getToday();
-            currDate = com.cannontech.util.ServletUtil.getToday();
+            com.cannontech.util.ServletUtil.getToday();
             // user code end
             setName("GraphClient");
             setLayout(new java.awt.GridBagLayout());
@@ -1689,7 +1686,7 @@ public class GraphClient extends JPanel
         dataSource.addDBChangeListener(this);
 
         if (getTrendProperties().getViewType() != GraphRenderers.TABULAR
-                && getTrendProperties().getViewType() != GraphRenderers.SUMMARY) {
+            && getTrendProperties().getViewType() != GraphRenderers.SUMMARY) {
             // not tabular or summary
             savedViewType = getTrendProperties().getViewType();
         }
@@ -1714,7 +1711,6 @@ public class GraphClient extends JPanel
             clientStartupHelper.setAppName(applicationName);
             clientStartupHelper.setRequiredRole(YukonRole.TRENDING.getRoleId());
             clientStartupHelper.setSplashUrl(CtiUtilities.TRENDING_SPLASH);
-
 
             JFrame mainFrame = new JFrame() {
                 // creates a stupid anonymous class to create a unique class name
@@ -1749,7 +1745,7 @@ public class GraphClient extends JPanel
      * @param minDay int
      * @param maxDay int
      * @param cal GregorianCalendar This method is used in setting up which max
-     *            and min time period will be used in setting up the slider.
+     *        and min time period will be used in setting up the slider.
      */
     private int setLabelData(int minIndex, int maxIndex, int value) {
         int next = currentWeek * 7;
@@ -1761,14 +1757,13 @@ public class GraphClient extends JPanel
             setSliderLabels(minIndex, maxIndex);
             currentWeek = NO_WEEK;
         } else if (graphPeriod.equalsIgnoreCase(ServletUtil.ONEDAY)
-                || graphPeriod.equalsIgnoreCase(ServletUtil.THREEDAYS)
-                || graphPeriod.equalsIgnoreCase(ServletUtil.FIVEDAYS)
-                || graphPeriod.equalsIgnoreCase(ServletUtil.ONEWEEK)) {
+            || graphPeriod.equalsIgnoreCase(ServletUtil.THREEDAYS)
+            || graphPeriod.equalsIgnoreCase(ServletUtil.FIVEDAYS) || graphPeriod.equalsIgnoreCase(ServletUtil.ONEWEEK)) {
             // 2 to 7 days (index of array not a value)
             setSliderLabels(minIndex, maxIndex);
             currentWeek = NO_WEEK;
         } else {
-         // 8 or more days
+            // 8 or more days
             if (value == next) {
                 // week "NEXT"
                 currentWeek++;
@@ -1815,7 +1810,8 @@ public class GraphClient extends JPanel
             maxIndex = minIndex + 6;
             setSliderSize(minIndex, maxIndex + 1, weekPrevOrNext);
             sliderLabelTable.put(new Integer(maxIndex + 1), new JLabel("Next"));
-        } else if ((currentWeek == FOURTH_WEEK && getGraph().getPeriod().equalsIgnoreCase(ServletUtil.FOURWEEKS)) || currentWeek == FIFTH_WEEK) {
+        } else if ((currentWeek == FOURTH_WEEK && getGraph().getPeriod().equalsIgnoreCase(ServletUtil.FOURWEEKS))
+            || currentWeek == FIFTH_WEEK) {
             // farthest we can go on slider, no next
             if ((minIndex + 6) < sliderValuesArray.length) {
                 maxIndex = minIndex + 6;
@@ -1825,7 +1821,7 @@ public class GraphClient extends JPanel
             setSliderSize(minIndex - 1, maxIndex, weekPrevOrNext);
             sliderLabelTable.put(new Integer(minIndex - 1), new JLabel("Prev"));
         } else {
-         // not the first nor last week, we can go prev or next from here
+            // not the first nor last week, we can go prev or next from here
             maxIndex = minIndex + 6;
             setSliderSize(minIndex - 1, maxIndex + 1, weekPrevAndNext);
             sliderLabelTable.put(new Integer(minIndex - 1), new JLabel("Prev"));
@@ -1875,8 +1871,7 @@ public class GraphClient extends JPanel
                     // Only tell the user to select a trend if there are
                     // trends to select
                     if (getTrendCount() > 0) {
-                        showPopupMessage("Please Select a Trend From the list",
-                                         JOptionPane.WARNING_MESSAGE);
+                        showPopupMessage("Please Select a Trend From the list", JOptionPane.WARNING_MESSAGE);
                     }
                 }
                 getGraph().update(null, null);
@@ -1901,9 +1896,9 @@ public class GraphClient extends JPanel
             } else if (getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane()) {
                 getGraph().setViewType(GraphRenderers.SUMMARY);
 
-                if (getTreeViewPanel().getSelectedNode().getParent() == null)
+                if (getTreeViewPanel().getSelectedNode().getParent() == null) {
                     getSummaryEditorPane().setText("<CENTER>Please Select a Trend from the list");
-                else {
+                } else {
                     StringBuffer buf = new StringBuffer();
                     getGraph().update(null, null);
                     buf.append(buildHTMLBuffer(new PeakHtml()));
@@ -1957,8 +1952,9 @@ public class GraphClient extends JPanel
                 getSummaryEditorPane().setCaretPosition(0);
             }
             getTrendModel().setNumberOfEvents(((Integer) getEventJSpinner().getValue()).intValue());
-        } else
+        } else {
             showPopupMessage("Please select a Trend from the List", JOptionPane.WARNING_MESSAGE);
+        }
 
         synchronized (GraphClient.class) {
             trendDataAutoUpdater.ignoreAutoUpdate = false;
@@ -1969,14 +1965,16 @@ public class GraphClient extends JPanel
     /**
      * Selections on the left hand tree generate and event that appears here.
      * Creation date: (6/22/00 10:57:11 AM)
+     * 
      * @param event TreeSelectionEvent
      */
     @Override
     public void valueChanged(TreeSelectionEvent event) {
         Cursor savedCursor = null;
 
-        if (getTreeViewPanel() == null)
+        if (getTreeViewPanel() == null) {
             return;
+        }
 
         try {
             // Current cursor set to waiting during the update.
@@ -1985,8 +1983,9 @@ public class GraphClient extends JPanel
 
             // Find the selected graph definition and display it
             Object item = getTreeViewPanel().getSelectedItem();
-            if (item == null || !(item instanceof LiteBase))
+            if (item == null || !(item instanceof LiteBase)) {
                 return;
+            }
 
             // Item is an instance of LiteBase...(from previous statement)
             getGraph().setGraphDefinition(((LiteBase) item).getLiteID());
@@ -1997,7 +1996,9 @@ public class GraphClient extends JPanel
             // and only occur after a double click has happened on a tree node.
             if (event == null) {
                 updateCurrentPane();
-                getGraphParentFrame().setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new Date(System.currentTimeMillis())) + " )");
+                getGraphParentFrame().setTitle(
+                    "Yukon Trending - ( Updated " + extendedDateTimeformat.format(new Date(System.currentTimeMillis()))
+                        + " )");
                 getRefreshButton().requestFocus();
             }
         } catch (Exception e) {
@@ -2012,10 +2013,27 @@ public class GraphClient extends JPanel
         exit();
     }
 
-    @Override public void windowActivated(WindowEvent event) { /* nothing */}
-    @Override public void windowClosed(WindowEvent event) { /* nothing */}
-    @Override public void windowDeactivated(WindowEvent event) { /* nothing */}
-    @Override public void windowDeiconified(WindowEvent event) { /* nothing */}
-    @Override public void windowIconified(WindowEvent event) { /* nothing */}
-    @Override public void windowOpened(WindowEvent event) { /* nothing */}
+    @Override
+    public void windowActivated(WindowEvent event) { /* nothing */
+    }
+
+    @Override
+    public void windowClosed(WindowEvent event) { /* nothing */
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent event) { /* nothing */
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent event) { /* nothing */
+    }
+
+    @Override
+    public void windowIconified(WindowEvent event) { /* nothing */
+    }
+
+    @Override
+    public void windowOpened(WindowEvent event) { /* nothing */
+    }
 }

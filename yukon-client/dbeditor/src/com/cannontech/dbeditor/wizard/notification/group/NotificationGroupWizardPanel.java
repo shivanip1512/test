@@ -1,113 +1,60 @@
 package com.cannontech.dbeditor.wizard.notification.group;
 
+import java.awt.Dimension;
+
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.dbeditor.editor.notification.group.GroupNotificationEditorPanel;
 
-/**
- * Insert the type's description here.
- * Creation date: (11/16/00 12:50:47 PM)
- * @author: 
- */
-public class NotificationGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel 
-{
-	//private GroupNameTypePanel groupGroupNameTypePanel;
-	private GroupNotificationEditorPanel groupNotificationEditorPanel;
-	private GroupPagerSetup groupPagerSetup;
-/**
- * NotificationGroupWizardPanel constructor comment.
- */
-public NotificationGroupWizardPanel() {
-	super();
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/4/2001 11:11:28 AM)
- * @return java.awt.Dimension
- */
-public java.awt.Dimension getActualSize() 
-{
-	setPreferredSize( new java.awt.Dimension(410, 480) );
+public class NotificationGroupWizardPanel extends WizardPanel {
+    private GroupNotificationEditorPanel groupNotificationEditorPanel;
+    private GroupPagerSetup groupPagerSetup;
 
-	return getPreferredSize();
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/16/00 4:23:02 PM)
- * @return com.cannontech.dbeditor.wizard.notification.group.GroupEmailSetup
- */
-public GroupNotificationEditorPanel getGroupNotificationEditorPanel() 
-{
-	if( groupNotificationEditorPanel == null )
-		groupNotificationEditorPanel = new GroupNotificationEditorPanel();
-		
-	return groupNotificationEditorPanel;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/16/00 4:23:02 PM)
- * @return com.cannontech.dbeditor.wizard.notification.group.GroupPagerSetup
- */
-public GroupPagerSetup getGroupPagerSetup() 
-{
-	if( groupPagerSetup == null )
-		groupPagerSetup = new GroupPagerSetup();
+    public NotificationGroupWizardPanel() {
+        super();
+    }
 
-	return groupPagerSetup;
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-protected String getHeaderText() {
-	return "Notification Group Setup";
-}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.common.gui.util.InputPanel
- * @param currentInputPanel com.cannontech.common.gui.util.InputPanel
- */
-protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.cannontech.common.gui.util.DataInputPanel currentInputPanel) 
-{
-	if( currentInputPanel == null )
-	{
-/*		return getGroupNameTypePanel();
-	}
-	else if( currentInputPanel == getGroupNameTypePanel() )
-	{*/
-		return getGroupNotificationEditorPanel();
+    @Override
+    public Dimension getActualSize() {
+        setPreferredSize(new Dimension(410, 480));
 
-		/*
-		//Depending on the group type selected
-		int type = getGroupNameTypePanel().getSelectedType();
+        return getPreferredSize();
+    }
 
-		switch( type )
-		{
-			case GroupNameTypePanel.EMAIL_TYPE:
-				return getGroupEmailSetup();
+    public GroupNotificationEditorPanel getGroupNotificationEditorPanel() {
+        if (groupNotificationEditorPanel == null) {
+            groupNotificationEditorPanel = new GroupNotificationEditorPanel();
+        }
 
-			case GroupNameTypePanel.PAGER_TYPE:
-				//getPointStatusSettingsPanel().setValue(null);
-				return getGroupPagerSetup();
+        return groupNotificationEditorPanel;
+    }
 
-			default:
-				throw new Error( getClass() + "::"+ "getNextInputPanel() - Unrecognized point type:  " + type );
-		}
-		*/
-	}
-	else if( currentInputPanel == getGroupNotificationEditorPanel() )/* &&
-			 (getGroupNameTypePanel().getSelectedType() == GroupNameTypePanel.PAGER_TYPE) )*/
-	{
-		return getGroupPagerSetup();
-	}
-	else
-		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
-}
-/**
- * This method was created in VisualAge.
- * @return boolean
- * @param currentPanel com.cannontech.common.gui.util.DataInputPanel
- */
-protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
-{
-	return ( currentPanel == getGroupNotificationEditorPanel() );
-}
+    public GroupPagerSetup getGroupPagerSetup() {
+        if (groupPagerSetup == null) {
+            groupPagerSetup = new GroupPagerSetup();
+        }
+
+        return groupPagerSetup;
+    }
+
+    @Override
+    protected String getHeaderText() {
+        return "Notification Group Setup";
+    }
+
+    @Override
+    protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel) {
+        if (currentInputPanel == null) {
+            return getGroupNotificationEditorPanel();
+        } else if (currentInputPanel == getGroupNotificationEditorPanel()) {
+            return getGroupPagerSetup();
+        } else {
+            throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
+        }
+    }
+
+    @Override
+    protected boolean isLastInputPanel(DataInputPanel currentPanel) {
+        return (currentPanel == getGroupNotificationEditorPanel());
+    }
 }
