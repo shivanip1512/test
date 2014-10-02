@@ -48,15 +48,17 @@ public interface RfnGatewayService {
                                        throws NetworkManagerCommunicationException, GatewayUpdateException;
     
     /**
-     * Update the gateway. If the name or location are updated, they will be stored in the Yukon database, but changes
-     * will not propagate back to Network Manager. All other changes will be sent back to Network Manager and updated in
-     * Yukon's cache.
+     * Update the gateway. If the name or location are updated, they
+     * will be stored in the Yukon database, but changes will not propagate back to Network Manager.
+     * All other changes will be sent back to Network Manager and updated in Yukon's cache. Any null
+     * parameters will not be updated.
      * 
      * @return true if the gateway was updated successfully.
      * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
-     * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
+     * @throws NetworkManagerCommunicationException if there is a communication error between Yukon
+     *             and Network Manager.
      */
-    public boolean updateGateway(RfnGateway gateway);
+    public boolean updateGateway(RfnGateway gateway) throws NetworkManagerCommunicationException;
     
     /**
      * Delete the gateway. This will attempt to delete the gateway in Network Manager as well as Yukon.

@@ -8,10 +8,12 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 public class RfnGateway extends RfnDevice implements Locatable {
     private RfnGatewayData gatewayData;
     private PaoLocation paoLocation;
+    private String name;
     
-    public RfnGateway(YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData gatewayData) {
+    public RfnGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData gatewayData) {
         super(pao, rfnIdentifier);
         this.gatewayData = gatewayData;
+        this.name = name;
     }
     
     public RfnGatewayData getData() {
@@ -25,5 +27,10 @@ public class RfnGateway extends RfnDevice implements Locatable {
     
     public void setLocation(PaoLocation paoLocation) {
         this.paoLocation = paoLocation;
+    }
+    
+    @Override
+    public String getName() {
+        return name;
     }
 }

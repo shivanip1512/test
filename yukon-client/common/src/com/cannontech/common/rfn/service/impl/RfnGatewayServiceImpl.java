@@ -1,6 +1,5 @@
 package com.cannontech.common.rfn.service.impl;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +10,6 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -46,6 +44,7 @@ import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 
 public class RfnGatewayServiceImpl implements RfnGatewayService {
 
@@ -53,6 +52,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoDao paoDao;
     
     private RfnGatewayDataCache dataCache;
     private ConnectionFactory connectionFactory;
@@ -92,20 +92,20 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         // Get all base RfnDevices - new method RfnDeviceDao.getDevicesByPaoType
         List<RfnDevice> gateways = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
         for (RfnDevice gwDevice : gateways) {
+            // Get PAO name
+            String name = paoDao.getYukonPAOName(gwDevice.getPaoIdentifier().getPaoId());
             // Get RfnGatewayData from cache
             try {
                 RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
                 RfnGateway rfnGateway =
-                    new RfnGateway(gwDevice.getPaoIdentifier(),
+                    new RfnGateway(name, gwDevice.getPaoIdentifier(),
                                    gwDevice.getRfnIdentifier(),
                                    gatewayData);
                 // Get PaoLocation from PaoLocationDao
-                try {
-                    PaoLocation gatewayLoc =
-                        paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
+                PaoLocation gatewayLoc =
+                    paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
+                if (gatewayLoc != null) {
                     rfnGateway.setLocation(gatewayLoc);
-                } catch (EmptyResultDataAccessException e) {
-                    // No location found for gateway.
                 }
                 rfnGateways.add(rfnGateway);
             } catch (NetworkManagerCommunicationException e) {
@@ -119,25 +119,19 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier)
             throws NetworkManagerCommunicationException {
         // Get base RfnDevice via RfnDeviceDao.getDeviceForId
-        RfnDevice gwDevice;
-        try {
-            gwDevice = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
-        } catch (NotFoundException e) {
-            throw new IllegalArgumentException("No " + PaoType.RFN_GATEWAY.getPaoTypeName()
-                                               + " device found for " + paoIdentifier, e);
-        }
+        RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
+        // Get PAO name
+        String name = paoDao.getYukonPAOName(paoIdentifier.getPaoId());
         // Get RfnGatewayData from cache
         RfnGatewayData gatewayData = dataCache.get(paoIdentifier);
-        RfnGateway rfnGateway = new RfnGateway(gwDevice.getPaoIdentifier(),
+        RfnGateway rfnGateway = new RfnGateway(name, gwDevice.getPaoIdentifier(),
                                                gwDevice.getRfnIdentifier(),
                                                gatewayData);
         // Get PaoLocation from PaoLocationDao
-        try {
-            PaoLocation gatewayLoc =
-                paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
+        PaoLocation gatewayLoc =
+            paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
+        if (gatewayLoc != null) {
             rfnGateway.setLocation(gatewayLoc);
-        } catch (EmptyResultDataAccessException e) {
-            // No location found for gateway.
         }
         return rfnGateway;
     }
@@ -180,20 +174,77 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public boolean updateGateway(RfnGateway gateway) {
-        //TODO: Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
+    public boolean updateGateway(RfnGateway gateway) throws NetworkManagerCommunicationException {
+        // Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
+        PaoIdentifier paoIdentifier = gateway.getPaoIdentifier();
+        RfnGateway existingGateway = getGatewayByPaoId(paoIdentifier);
+        RfnGatewayData existingGwData = existingGateway.getData();
+        RfnGatewayData newGwData = gateway.getData();
+        GatewaySaveData editData = new GatewaySaveData();
+        boolean sendGatewayEditRequest = false;
+        if (newGwData.getIpAddress() != null && !newGwData.getIpAddress().equals(existingGwData.getIpAddress())) {
+            editData.setIpAddress(newGwData.getIpAddress());
+            sendGatewayEditRequest = true;
+        }
+        if (newGwData.getUser() != null && !newGwData.getUser().equals(existingGwData.getUser())) {
+            editData.setUser(newGwData.getUser());
+            sendGatewayEditRequest = true;
+        }
+        if (newGwData.getAdmin() != null && !newGwData.getAdmin().equals(existingGwData.getAdmin())) {
+            editData.setAdmin(newGwData.getAdmin());
+            sendGatewayEditRequest = true;
+        }
+        if (newGwData.getSuperAdmin() != null && !newGwData.getSuperAdmin().equals(existingGwData.getSuperAdmin())) {
+            editData.setSuperAdmin(newGwData.getSuperAdmin());
+            sendGatewayEditRequest = true;
+        }
         
-        //TODO: If necessary, send GatewayUpdateRequest on yukon.qr.obj.common.rfn.GatewayUpdateRequest queue
-        //TODO: If necessary, parse GatewayUpdateResponse on temp queue
-        //TODO: Update yukon database, cache
-        GatewayEditRequest request = new GatewayEditRequest();
-        return false;
+        
+        // If necessary, send GatewayEditRequest on yukon.qr.obj.common.rfn.GatewayUpdateRequest queue
+        if(sendGatewayEditRequest) {
+            GatewayEditRequest request = new GatewayEditRequest();
+            request.setRfnIdentifier(existingGateway.getRfnIdentifier());
+            request.setData(editData);
+            
+            log.debug("Sending gateway edit request: " + request);
+            BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
+            updateRequestTemplate.send(request, replyHandler);
+            
+            // Wait for the response
+            GatewayUpdateResponse response;
+            try {
+                response = replyHandler.waitForCompletion();
+                log.debug("Gateway edit response: " + response);
+            } catch (ExecutionException e) {
+                throw new NetworkManagerCommunicationException("Gateway edit failed due to a communication error.", e);
+            }
+            
+            // Parse GatewayUpdateResponse
+            if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
+                // Force the data cache to update
+                dataCache.remove(paoIdentifier);
+                // Note: for lazy loading, comment out this line.
+                dataCache.get(paoIdentifier);
+            } else {
+                log.info("Edit gateway " + paoIdentifier + " result: " + response.getResult());
+                return false;
+            }
+        }
+        
+        // Update yukon database
+        if (gateway.getName() != null && !gateway.getName().equals(existingGateway.getName())) {
+            deviceDao.changeName(existingGateway, gateway.getName());
+        }
+        if (gateway.getLocation() != null && !gateway.getLocation().equals(existingGateway.getLocation())) {
+            paoLocationDao.save(gateway.getLocation());
+        }
+        return true;
     }
 
     @Override
     public boolean deleteGateway(PaoIdentifier paoIdentifier)
             throws NetworkManagerCommunicationException {
-        RfnDevice gwDevice = rfnDeviceDao.getDevice(paoIdentifier);
+        RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         GatewayDeleteRequest request = new GatewayDeleteRequest();
         request.setRfnIdentifier(gwDevice.getRfnIdentifier());
 
@@ -204,13 +255,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         try {
             // Parse GatewayUpdateResponse on temp queue
             GatewayUpdateResponse response = replyHandler.waitForCompletion();
-            switch (response.getResult()) {
-            case SUCCESSFUL:
+            if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
                 // Delete from yukon database, cache - DeviceDao.removeDevice()
                 deviceDao.removeDevice(gwDevice);
                 dataCache.remove(paoIdentifier);
                 return true;
-            default:
+            } else {
                 log.info("Delete gateway " + paoIdentifier + " result: " + response.getResult());
                 return false;
             }

@@ -79,7 +79,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             RfnDevice rfnDevice= jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
             return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Unknown rfn meter Id " + paoId + ". RfnAddress may be empty.");
+            throw new NotFoundException("Unknown rfn device Id " + paoId + ". RfnAddress may be empty.");
         }
     }
     
