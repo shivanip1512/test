@@ -7,14 +7,6 @@ import com.cannontech.common.model.DesignationCodeDto;
 public interface DesignationCodeDao {
 
     /**
-     * Fetch a specific Designation Code
-     *
-     * @param id ID of the Designation Code we want
-     * @return A DesignationCodeDto
-     */
-    public DesignationCodeDto getServiceCompanyDesignationCode(int id);
-
-    /**
      * Fetch all of the Designation Codes serviced by a specific Service Company
      *
      * @param serviceCompanyId ID of the Service Company we are searching by

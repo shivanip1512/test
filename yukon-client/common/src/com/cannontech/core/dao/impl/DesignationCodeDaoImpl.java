@@ -75,17 +75,6 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao {
         designationCodeTemplate.setPrimaryKeyValidOver(0);
     }
 
-    // CRUD
-    @Override
-    public DesignationCodeDto getServiceCompanyDesignationCode(int id) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM ServiceCompanyDesignationCode");
-        sql.append("WHERE DesignationCodeID").eq(id);
-
-        return yukonJdbcTemplate.queryForObject(sql, new DesignationCodeDtoRowMapper());
-    }
-
     @Override
     public List<DesignationCodeDto> getDesignationCodesByServiceCompanyId(int serviceCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

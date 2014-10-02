@@ -3,12 +3,7 @@ package com.cannontech.stars.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.TimeZone;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -122,15 +117,17 @@ public class ServletUtils {
 
     // this static initializer sets all the simpledateformat to lenient
     static {
-        for (int i = 0; i < timeFormat.length; i++)
+        for (int i = 0; i < timeFormat.length; i++) {
             timeFormat[i].setLenient(true);
+        }
     }
 
     public static String getApplianceDescription(StarsEnrollmentPrograms categories, StarsAppliance  appliance) {
         for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
             StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
-            if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID())
+            if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
                 return category.getDescription();
+            }
         }
         
         return "(none)";
@@ -216,7 +213,8 @@ public class ServletUtils {
 
         return pin;
     }
-    
+
+    @SuppressWarnings("ucd")
     public static String getOneLineAddress(StarsCustomerAddress starsAddr) {
 		if (starsAddr == null){
 		    return "(none)";
@@ -243,39 +241,6 @@ public class ServletUtils {
 	}
     
 
-    public static TimeZone getTimeZone(String timeZoneStr) {
-        if (timeZoneStr.equalsIgnoreCase("AST")) {
-            return TimeZone.getTimeZone("US/Alaska");
-        } else if (timeZoneStr.equalsIgnoreCase("PST")) {
-            return TimeZone.getTimeZone("US/Pacific");
-        } else if (timeZoneStr.equalsIgnoreCase("MST")) {
-            return TimeZone.getTimeZone("US/Mountain");
-        } else if (timeZoneStr.equalsIgnoreCase("CST")) {
-            return TimeZone.getTimeZone("US/Central");
-        } else if (timeZoneStr.equalsIgnoreCase("EST")) {
-            return TimeZone.getTimeZone("US/Eastern");
-        } else {
-            return null;
-        }
-    }
-
-    public static void removeTransientAttributes(HttpSession session) {
-        @SuppressWarnings("unchecked")
-        Enumeration<String> attributeEnum = session.getAttributeNames();
-        List<String> attToBeRemoved = new ArrayList<String>();
-
-        while (attributeEnum.hasMoreElements()) {
-            String attName = attributeEnum.nextElement();
-            if (attName.startsWith(ServletUtils.TRANSIENT_ATT_LEADING)) {
-                attToBeRemoved.add(attName);
-            }
-        }
-
-        for (int i = 0; i < attToBeRemoved.size(); i++) {
-            session.removeAttribute(attToBeRemoved.get(i));
-        }
-    }
-
     // Return image names: large icon, small icon, saving icon, control icon,
     // environment icon
     public static String[] getImageNames(String imageStr) {
@@ -293,6 +258,7 @@ public class ServletUtils {
     }
     
     // Return program display names: display name, short name (used in enrollment page)
+    @SuppressWarnings("ucd")
     public static String[] getProgramDisplayNames(StarsEnrLMProgram starsProg) {
         String[] names = StarsUtils.splitString( starsProg.getStarsWebConfig().getAlternateDisplayName(), "," );
         String[] dispNames = new String[2];
@@ -345,29 +311,6 @@ public class ServletUtils {
 
         return null;
     }
-    
-    public static void saveRequest(HttpServletRequest req, HttpSession session, String[] params) {
-        Properties savedReq = new Properties();
-        for (int i = 0; i < params.length; i++) {
-            if (req.getParameter(params[i]) != null) {
-                savedReq.setProperty( params[i], req.getParameter(params[i]) );
-            }
-        }
-        
-        session.setAttribute( ATT_LAST_SUBMITTED_REQUEST, savedReq );
-    }
-
-    public static void newEnergyCompanySaveRequest(HttpServletRequest req, HttpSession session,
-                                   String[] params) {
-        Properties savedReq = new Properties();
-        for (int i = 0; i < params.length; i++) {
-            if (req.getParameter(params[i]) != null) {
-                savedReq.setProperty(params[i], req.getParameter(params[i]));
-            }
-        }
-
-        session.setAttribute(ATT_LAST_SUBMITTED_REQUEST, savedReq);
-    }
 
     public static ContactNotification getContactNotification(StarsCustomerContact contact, int notifCatID) {
         for (int i = 0; i < contact.getContactNotificationCount(); i++) {
@@ -380,33 +323,26 @@ public class ServletUtils {
         return null;
     }
 
-    public static ContactNotification createContactNotification(String value, int notifCatID) {
-        if (value != null && value.trim().length() > 0) {
-            ContactNotification contNotif = new ContactNotification();
-            contNotif.setNotifCatID(notifCatID);
-            contNotif.setNotification(value);
-            return contNotif;
-        }
-        return null;
-    }
-
     @Deprecated
     public static StarsYukonUser getStarsYukonUser(final HttpSession session) {
         return (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
     }
 
+    @SuppressWarnings("ucd")
     public static StarsEnergyCompanySettings removeEnergyCompanySettings(final HttpSession session) {
         StarsEnergyCompanySettings settings = (StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
         session.removeAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
         return settings;
     }
 
+    @SuppressWarnings("ucd")
     public static String removeErrorMessage(final HttpSession session) {
         String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
         session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
         return errorMsg;
     }
 
+    @SuppressWarnings("ucd")
     public static String removeConfirmMessage(final HttpSession session) {
         String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
         session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
@@ -442,6 +378,7 @@ public class ServletUtils {
      * @param format
      * @return
      */
+    @SuppressWarnings("ucd")
     public static String formatInstant(Instant instant, SimpleDateFormat format) {
         return formatDate(instant.toDate(), format);
     }
@@ -452,8 +389,9 @@ public class ServletUtils {
      * @return
      */
     public static String forceNotEmpty(String str) {
-        if (str == null || str.trim().equals(""))
+        if (str == null || str.trim().equals("")) {
             return "&nbsp;";
+        }
         return str;
     }
     
@@ -462,34 +400,35 @@ public class ServletUtils {
      * @param starsAddr
      * @return
      */
+    @SuppressWarnings("ucd")
     public static String formatAddress(StarsCustomerAddress starsAddr) {
-        if (starsAddr == null) return "";
+        if (starsAddr == null) {
+            return "";
+        }
         
         StringBuffer sBuf = new StringBuffer();
-        if (starsAddr.getStreetAddr1().trim().length() > 0)
+        if (starsAddr.getStreetAddr1().trim().length() > 0) {
             sBuf.append( starsAddr.getStreetAddr1() ).append( "<br>" );
-        if (starsAddr.getStreetAddr2().trim().length() > 0)
+        }
+        if (starsAddr.getStreetAddr2().trim().length() > 0) {
             sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
-        if (starsAddr.getCity().trim().length() > 0)
+        }
+        if (starsAddr.getCity().trim().length() > 0) {
             sBuf.append( starsAddr.getCity() ).append( ", " );
-        if (starsAddr.getState().trim().length() > 0)
+        }
+        if (starsAddr.getState().trim().length() > 0) {
             sBuf.append( starsAddr.getState() ).append( " " );
-        if (starsAddr.getZip().trim().length() > 0)
+        }
+        if (starsAddr.getZip().trim().length() > 0) {
             sBuf.append( starsAddr.getZip() );
+        }
         
         return sBuf.toString();
     }
     
+    @SuppressWarnings("ucd")
     public static String hideUnsetNumber(int num, int num_unset) {
         return (num == num_unset)? "" : String.valueOf(num);
-    }
-
-    /**
-     * Generate a bit of HTML which will trigger a custom event "eventName" on the document
-     * object.
-     */
-    public static void dialogFormSuccess(HttpServletResponse response, String eventName) {
-        dialogFormSuccess(response, eventName, null);
     }
 
     /**

@@ -34,13 +34,6 @@ public interface DeviceGroupUiService {
     public List<DeviceGroup> getGroups(Predicate<DeviceGroup> deviceGroupPredicate);
 
     /**
-     * Get a list of up to maxRecordCount DisplayablePao objects for the specified group.
-     * @param group
-     * @return
-     */
-    public List<DisplayablePao> getDevicesByGroup(DeviceGroup group, int maxRecordCount);
-
-    /**
      * Get a list of up to maxRecordCount DisplayablePao objects for the direct children of the specified group.
      * @param group
      * @return

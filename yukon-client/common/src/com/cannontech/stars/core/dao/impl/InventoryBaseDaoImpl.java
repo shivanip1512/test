@@ -488,29 +488,6 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     }
 
     @Override
-    public List<PaoIdentifier> getPaosNotOnAnAccount(Collection<YukonEnergyCompany> yecList) {
-
-        List<Integer> ecIdList = Lists.newArrayList();
-        for (YukonEnergyCompany yec : yecList) {
-            ecIdList.add(yec.getEnergyCompanyId());
-        }
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PAObjectID, ypo.Type");
-        sql.append("FROM InventoryBase ib");
-        sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
-        sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
-        sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
-        sql.append("WHERE etim.EnergyCompanyId").in(ecIdList);
-        sql.append("AND ib.AccountId = 0");
-        sql.append("AND yle.YukonDefinitionId").eq_k(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
-
-        List<PaoIdentifier> paoList = yukonJdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
-
-        return paoList;
-    }
-
-    @Override
     public InventoryBase findById(int inventoryId) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();

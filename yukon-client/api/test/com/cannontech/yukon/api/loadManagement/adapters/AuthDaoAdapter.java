@@ -15,11 +15,6 @@ public class AuthDaoAdapter implements AuthDao {
     }
 
     @Override
-    public boolean isAdminUser(LiteYukonUser user) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
     public boolean userHasAccessPAO(LiteYukonUser user, int paoID) {
         throw new UnsupportedOperationException("not implemented");
     }

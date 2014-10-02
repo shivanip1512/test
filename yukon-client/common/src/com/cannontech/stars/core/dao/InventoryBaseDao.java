@@ -93,12 +93,6 @@ public interface InventoryBaseDao {
     public List<PaoIdentifier> getPaosNotInInventory();
 
     /**
-     * Method to get a list of paos that are associated with an inventory object and are NOT
-     * on an account
-     */
-    public List<PaoIdentifier> getPaosNotOnAnAccount(Collection<YukonEnergyCompany> yecList);
-
-    /**
      * Returns a list of DisplayableLmHardware's of the specified LMHardwareClass on this account.
      */
     public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId,HardwareClass lmHardwareClass);

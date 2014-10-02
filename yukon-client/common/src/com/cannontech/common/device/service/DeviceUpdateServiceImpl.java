@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -83,12 +82,12 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    
+
     private final Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
-    
+
     @Override
     public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
-    
+
         if (!dlcAddressRangeService.isEnforcedAddress(device.getPaoIdentifier().getPaoType(), newAddress)) {
             throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
         }
@@ -115,30 +114,22 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     }
 
     @Override
-    public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException {
-    
-        if (StringUtils.isBlank(newMeterNumber)) {
-            throw new IllegalArgumentException("Blank meter number.");
-        }
-        
-        deviceDao.changeMeterNumber(device, newMeterNumber);
-    }
-    
-    @Override
     public void routeDiscovery(final YukonDevice device, List<Integer> routeIds, final LiteYukonUser liteYukonUser) {
-        
+
         // callback to set routeId and do putconfig when route is discovered
-        SimpleCallback<Integer> routeFoundCallback = new SimpleCallback<Integer> () {
-            
+        SimpleCallback<Integer> routeFoundCallback = new SimpleCallback<Integer>() {
+
             @Override
             public void handle(Integer routeId) throws Exception {
-                
+
                 if (routeId == null) {
-                    
-                    log.warn("Route was not found for device '" + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + "' (" + device.getPaoIdentifier() + ").");
-                
+
+                    log.warn("Route was not found for device '"
+                        + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + "' ("
+                        + device.getPaoIdentifier() + ").");
+
                 } else {
-                    
+
                     // update route
                     changeRoute(device, routeId);
 
@@ -149,30 +140,30 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                         configCmd.setDevice(new SimpleDevice(device.getPaoIdentifier()));
                         configCmd.setCommandCallback(new CommandCallbackBase("putconfig emetcon intervals"));
 
-                        CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
-                        };
-                        
-                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, DeviceRequestType.ROUTE_DISCOVERY_PUTCONFIG_COMMAND, liteYukonUser);
+                        CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback =
+                            new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+                            };
+
+                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback,
+                            DeviceRequestType.ROUTE_DISCOVERY_PUTCONFIG_COMMAND, liteYukonUser);
                     }
                 }
             }
         };
-        
+
         // start route discovery
         routeDiscoveryService.routeDiscovery(device, routeIds, routeFoundCallback, liteYukonUser);
     }
-    
+
     @Override
     @Transactional
-    public SimpleDevice changeDeviceType(YukonDevice currentDevice,
-            PaoDefinition newDefinition) {
-        
+    public SimpleDevice changeDeviceType(YukonDevice currentDevice, PaoDefinition newDefinition) {
+
         DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getPaoIdentifier().getPaoId());
-        
+
         // Load the device to change
         try {
-            Transaction<?> t = Transaction.createTransaction(Transaction.RETRIEVE,
-                                                          yukonPAObject);
+            Transaction<?> t = Transaction.createTransaction(Transaction.RETRIEVE, yukonPAObject);
 
             yukonPAObject = (DeviceBase) t.execute();
         } catch (TransactionException e) {
@@ -181,36 +172,36 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         // Change the device's type
         DeviceBase changedDevice = this.changeDeviceType(yukonPAObject, newDefinition);
-        
+
         // Save the changes
         try {
             Transaction<?> t = Transaction.createTransaction(Transaction.UPDATE, changedDevice);
             t.execute();
-        } catch(TransactionException e) {
+        } catch (TransactionException e) {
             throw new PersistenceException("Could not save device type change", e);
         }
-        
-        //meters with a device config should only retain the config if it's appropriate for the new type
+
+        // meters with a device config should only retain the config if it's appropriate for the new type
         YukonDevice device = deviceDao.getYukonDevice(changedDevice.getPAObjectID());
         LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
         if (config != null) {
-            boolean configSupported = 
-                deviceConfigurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType()); 
+            boolean configSupported =
+                deviceConfigurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType());
             if (!configSupported) {
                 try {
                     deviceConfigurationService.unassignConfig(device);
-                } catch(InvalidDeviceTypeException e) {
+                } catch (InvalidDeviceTypeException e) {
                     log.error("Unable to remove device config on type change.", e);
                 }
             }
         }
-        
+
         DBChangeMsg[] changeMsgs = changedDevice.getDBChangeMsgs(DbChangeType.UPDATE);
         // Send DBChangeMsgs
         for (DBChangeMsg msg : changeMsgs) {
             dbChangeManager.processDbChange(msg);
         }
-        
+
         return new SimpleDevice(changedDevice.getDevice().getDeviceID(), changedDevice.getPaoType());
     }
 
@@ -225,15 +216,14 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         try {
             oldDevice = (DeviceBase) CtiUtilities.copyObject(currentDevice);
 
-            Transaction t = Transaction.createTransaction(Transaction.DELETE_PARTIAL,
-                                                          ((DBPersistent) currentDevice));
+            Transaction t = Transaction.createTransaction(Transaction.DELETE_PARTIAL, ((DBPersistent) currentDevice));
 
             currentDevice = (DeviceBase) t.execute();
 
         } catch (Exception e) {
             CTILogger.error(e);
-            CTILogger.info("*** An exception occured when trying to change type of "
-                           + currentDevice + ", action aborted.");
+            CTILogger.info("*** An exception occured when trying to change type of " + currentDevice
+                + ", action aborted.");
 
             return currentDevice;
         }
@@ -252,50 +242,49 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         newDevice.getPAOExclusionVector().addAll(oldDevice.getPAOExclusionVector());
 
         if (newDevice instanceof CarrierBase && oldDevice instanceof CarrierBase) {
-            ((CarrierBase) newDevice).getDeviceCarrierSettings()
-            .setAddress(((CarrierBase) oldDevice).getDeviceCarrierSettings()
-                        .getAddress());
+            ((CarrierBase) newDevice).getDeviceCarrierSettings().setAddress(
+                ((CarrierBase) oldDevice).getDeviceCarrierSettings().getAddress());
 
-            ((CarrierBase) newDevice).getDeviceRoutes()
-            .setRouteID(((CarrierBase) oldDevice).getDeviceRoutes()
-                        .getRouteID());
+            ((CarrierBase) newDevice).getDeviceRoutes().setRouteID(
+                ((CarrierBase) oldDevice).getDeviceRoutes().getRouteID());
 
         } else if (newDevice instanceof IGroupRoute && oldDevice instanceof IGroupRoute) {
             ((IGroupRoute) newDevice).setRouteID(((IGroupRoute) oldDevice).getRouteID());
         } else if (newDevice instanceof IDLCBase && oldDevice instanceof IDLCBase) {
-            ((IDLCBase) newDevice).getDeviceIDLCRemote()
-            .setAddress(((IDLCBase) oldDevice).getDeviceIDLCRemote()
-                        .getAddress());
+            ((IDLCBase) newDevice).getDeviceIDLCRemote().setAddress(
+                ((IDLCBase) oldDevice).getDeviceIDLCRemote().getAddress());
         }
 
         if (newDevice instanceof RemoteBase && oldDevice instanceof RemoteBase) {
-            ((RemoteBase) newDevice).getDeviceDirectCommSettings()
-            .setPortID(((RemoteBase) oldDevice).getDeviceDirectCommSettings()
-                       .getPortID());
+            ((RemoteBase) newDevice).getDeviceDirectCommSettings().setPortID(
+                ((RemoteBase) oldDevice).getDeviceDirectCommSettings().getPortID());
         }
 
         if (newDevice instanceof IDeviceMeterGroup && oldDevice instanceof IDeviceMeterGroup) {
             ((IDeviceMeterGroup) newDevice).setDeviceMeterGroup(((IDeviceMeterGroup) oldDevice).getDeviceMeterGroup());
         }
-        
+
         if (newDevice instanceof RfnBase && oldDevice instanceof RfnBase) {
             RfnAddress rfnAddress = (((RfnBase) oldDevice).getRfnAddress());
             List<RfnManufacturerModel> rfnManufacturerModels = RfnManufacturerModel.getForType(newDefinition.getType());
-            
+
             Map<String, RfnManufacturerModel> models =
-                Maps.uniqueIndex(rfnManufacturerModels,
-                                 new Function<RfnManufacturerModel, String>() {
-                                     @Override
-                                    public String apply(RfnManufacturerModel from) {
-                                         return from.getModel();
-                                     }
-                                 });
-            
-            /* For RFN-410fD the we can choose from 2 models FocusAXR-SD and FocusAXD-SD.
-             * If RFN-420fD is changed to RFN-410fD model should remain the same as the model on RFN-420fD which is FocusAXR-SD*/
-            if(!models.containsKey(rfnAddress.getModel())){
-                // update model only if the model for the new device is not a valid model choice for the old device
-                rfnAddress.setModel(rfnManufacturerModels.get(0).getModel());   
+                Maps.uniqueIndex(rfnManufacturerModels, new Function<RfnManufacturerModel, String>() {
+                    @Override
+                    public String apply(RfnManufacturerModel from) {
+                        return from.getModel();
+                    }
+                });
+
+            /*
+             * For RFN-410fD the we can choose from 2 models FocusAXR-SD and FocusAXD-SD.
+             * If RFN-420fD is changed to RFN-410fD model should remain the same as the model on RFN-420fD
+             * which is FocusAXR-SD
+             */
+            if (!models.containsKey(rfnAddress.getModel())) {
+                // update model only if the model for the new device is not a valid model choice for the old
+                // device
+                rfnAddress.setModel(rfnManufacturerModels.get(0).getModel());
             }
             ((RfnBase) newDevice).setRfnAddress(rfnAddress);
         }
@@ -308,32 +297,29 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             ((CapBankController) newDevice).setDeviceCBC(((CapBankController) oldDevice).getDeviceCBC());
         }
 
-        if (newDevice instanceof CapBankController702x
-                && oldDevice instanceof CapBankController702x) {
+        if (newDevice instanceof CapBankController702x && oldDevice instanceof CapBankController702x) {
             ((CapBankController702x) newDevice).setDeviceAddress(((CapBankController702x) oldDevice).getDeviceAddress());
             ((CapBankController702x) newDevice).setDeviceCBC(((CapBankController702x) oldDevice).getDeviceCBC());
         }
-        
-        if (newDevice instanceof CapBankControllerDNP
-                && oldDevice instanceof CapBankControllerDNP) {
+
+        if (newDevice instanceof CapBankControllerDNP && oldDevice instanceof CapBankControllerDNP) {
             ((CapBankControllerDNP) newDevice).setDeviceAddress(((CapBankControllerDNP) oldDevice).getDeviceAddress());
             ((CapBankControllerDNP) newDevice).setDeviceCBC(((CapBankControllerDNP) oldDevice).getDeviceCBC());
         }
-        
-        if (newDevice instanceof MCTBase && oldDevice instanceof MCTBase ) {
-            ((MCTBase)newDevice).setDeviceLoadProfile(((MCTBase)oldDevice).getDeviceLoadProfile());
-            ((MCTBase)newDevice).setConfigMapping(((MCTBase)oldDevice).getConfigMapping());
 
-            if ( newDevice instanceof MCT400SeriesBase && oldDevice instanceof MCT400SeriesBase &&
-                    (DeviceTypesFuncs.isMCT410(newDevice.getPaoType()) && 
-                     DeviceTypesFuncs.isMCT410(oldDevice.getPaoType()))) {
-                ((MCT400SeriesBase) newDevice).setDeviceMCT400Series(((MCT400SeriesBase)oldDevice).getDeviceMCT400Series());
+        if (newDevice instanceof MCTBase && oldDevice instanceof MCTBase) {
+            ((MCTBase) newDevice).setDeviceLoadProfile(((MCTBase) oldDevice).getDeviceLoadProfile());
+            ((MCTBase) newDevice).setConfigMapping(((MCTBase) oldDevice).getConfigMapping());
+
+            if (newDevice instanceof MCT400SeriesBase
+                && oldDevice instanceof MCT400SeriesBase
+                && (DeviceTypesFuncs.isMCT410(newDevice.getPaoType()) && DeviceTypesFuncs.isMCT410(oldDevice.getPaoType()))) {
+                ((MCT400SeriesBase) newDevice).setDeviceMCT400Series(((MCT400SeriesBase) oldDevice).getDeviceMCT400Series());
             }
         }
 
         try {
-            Transaction t = Transaction.createTransaction(Transaction.ADD_PARTIAL,
-                                                          ((DBPersistent) newDevice));
+            Transaction t = Transaction.createTransaction(Transaction.ADD_PARTIAL, ((DBPersistent) newDevice));
             newDevice = (DeviceBase) t.execute();
 
             this.removePoints(oldDevice, newDefinition);
@@ -347,27 +333,29 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         return newDevice;
     }
-    
+
     /**
      * Helper method to remove unsupported points from a device that is being
      * changed into another device type
+     * 
      * @param device - Device to change type
      * @param newDefinition - Definition of new device type
      * @throws TransactionException
      */
-    private void removePoints(DeviceBase device, PaoDefinition newDefinition)
-    throws TransactionException {
+    private void removePoints(DeviceBase device, PaoDefinition newDefinition) throws TransactionException {
 
-    	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<PointIdentifier> removeTemplates = paoDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
+        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        Set<PointIdentifier> removeTemplates =
+            paoDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
 
         SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointIdentifier identifier : removeTemplates) {
             LitePoint litePoint = pointService.getPointForPao(meter, identifier);
 
-            log.debug("Remove point: deviceId=" + device.getPAObjectID() + litePoint.getPointName() + " type=" + litePoint.getPointType() + " offset=" + litePoint.getPointOffset());
-            
+            log.debug("Remove point: deviceId=" + device.getPAObjectID() + litePoint.getPointName() + " type="
+                + litePoint.getPointType() + " offset=" + litePoint.getPointOffset());
+
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
             Transaction<?> t = Transaction.createTransaction(Transaction.DELETE, point);
             t.execute();
@@ -377,19 +365,20 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     /**
      * Helper method to add supported points to a device that is being changed
      * into another device type
+     * 
      * @param device - Device to change type
      * @param newDefinition - Definition of new device type
      * @throws TransactionException
      */
-    private void addPoints(DeviceBase device, PaoDefinition newDefinition)
-    throws TransactionException {
+    private void addPoints(DeviceBase device, PaoDefinition newDefinition) throws TransactionException {
 
-    	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         Set<PointTemplate> addTemplates = paoDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
         for (PointTemplate template : addTemplates) {
-        	
-        	log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type=" + template.getPointType().getPointTypeId() + " offset=" + template.getOffset());
-        	
+
+            log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type="
+                + template.getPointType().getPointTypeId() + " offset=" + template.getOffset());
+
             PointBase point = pointCreationService.createPoint(yukonDevice.getPaoIdentifier(), template);
 
             Transaction<?> t = Transaction.createTransaction(Transaction.INSERT, point);
@@ -401,27 +390,27 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     /**
      * Helper method to transfer supported points from a device that is being
      * changed into another device type
+     * 
      * @param device - Device to change type
      * @param newDefinition - Definition of new device type
      * @throws TransactionException
      */
-    private void transferPoints(DeviceBase device, PaoDefinition newDefinition)
-    throws TransactionException {
+    private void transferPoints(DeviceBase device, PaoDefinition newDefinition) throws TransactionException {
 
-    	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Iterable<PointTemplateTransferPair> transferTemplates = paoDefinitionService.getPointTemplatesToTransfer(yukonDevice,
-                                                                                newDefinition);
+        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        Iterable<PointTemplateTransferPair> transferTemplates =
+            paoDefinitionService.getPointTemplatesToTransfer(yukonDevice, newDefinition);
 
         SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointTemplateTransferPair pair : transferTemplates) {
-        	
-        	log.debug("Transfer point: deviceId=" + device.getPAObjectID() +
-        			" oldType=" + pair.oldDefinitionTemplate.getPointType().getPointTypeId() + 
-        			" old offset=" + pair.oldDefinitionTemplate.getOffset() + 
-        			" new type=" + pair.newDefinitionTemplate.getPointType().getPointTypeId() +
-        			" new offset=" + pair.newDefinitionTemplate.getOffset());
-            
+
+            log.debug("Transfer point: deviceId=" + device.getPAObjectID() + " oldType="
+                + pair.oldDefinitionTemplate.getPointType().getPointTypeId() + " old offset="
+                + pair.oldDefinitionTemplate.getOffset() + " new type="
+                + pair.newDefinitionTemplate.getPointType().getPointTypeId() + " new offset="
+                + pair.newDefinitionTemplate.getOffset());
+
             LitePoint litePoint = pointService.getPointForPao(meter, pair.oldDefinitionTemplate);
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
 

@@ -1,7 +1,6 @@
 package com.cannontech.common.device.groups.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -110,14 +109,6 @@ public class DeviceGroupUiServiceImpl implements DeviceGroupUiService {
 
         List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(childDevices);
         return displayableDevices;
-    }
-
-    @Override
-    public List<DisplayablePao> getDevicesByGroup(DeviceGroup group, int maxRecordCount) {
-
-        Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singleton(group), maxRecordCount);
-        List<DisplayablePao> result = paoLoadingService.getDisplayableDevices(devices);
-        return result;
     }
 
     @Autowired

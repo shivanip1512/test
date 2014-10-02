@@ -14,8 +14,6 @@ public interface AccountSiteDao {
     
     public AccountSite getByAccountSiteId(int accountSiteId);
     
-    public AccountSite getByAddressId(int addressId);
-    
     public List<AccountSite> getAll();
 
 }

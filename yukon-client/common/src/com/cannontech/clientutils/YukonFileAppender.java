@@ -27,7 +27,7 @@ import com.cannontech.common.util.CtiUtilities;
  * @author dharrington
  *
  */
-
+@SuppressWarnings("ucd")
 public class YukonFileAppender extends AppenderSkeleton {
 
     /**

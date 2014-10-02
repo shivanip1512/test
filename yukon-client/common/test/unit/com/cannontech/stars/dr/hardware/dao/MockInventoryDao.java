@@ -158,11 +158,6 @@ public class MockInventoryDao implements InventoryDao {
     }
 
     @Override
-    public HardwareType getHardTypeByInventoryId(int inventoryId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(String inWarehouseMsg) {
         throw new MethodNotImplementedException();
     }
@@ -196,17 +191,7 @@ public class MockInventoryDao implements InventoryDao {
     }
 
     @Override
-    public LiteLmHardware getLiteLmHardwareByInventoryId(int inventoryId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public LiteLmHardware getLiteLmHardwareByInventory(YukonInventory inventory) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<LiteLmHardware> getLiteLmHardwareByInventory(List<InventoryIdentifier> inventory) {
         throw new MethodNotImplementedException();
     }
 

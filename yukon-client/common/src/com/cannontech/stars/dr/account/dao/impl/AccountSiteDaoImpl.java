@@ -110,14 +110,6 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public AccountSite getByAddressId(int addressId) {
-        String sql = selectSql + " WHERE StreetAddressID = ?";
-        AccountSite accountSite = yukonJdbcTemplate.queryForObject(sql, rowMapper, addressId);
-        return accountSite;
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<AccountSite> getAll() {
         List<AccountSite> list = yukonJdbcTemplate.query(selectSql, rowMapper);
         return list;

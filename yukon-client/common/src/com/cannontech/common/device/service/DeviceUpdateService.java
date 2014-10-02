@@ -31,8 +31,6 @@ public interface DeviceUpdateService {
     
     public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException;
     
-    public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException;
-    
     public void routeDiscovery(YukonDevice device, List<Integer> routeIds, LiteYukonUser liteYukonUser);
     
     /**

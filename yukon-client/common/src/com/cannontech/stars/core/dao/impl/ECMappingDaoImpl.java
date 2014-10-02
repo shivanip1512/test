@@ -84,30 +84,6 @@ public class ECMappingDaoImpl implements ECMappingDao {
     }
 
     @Override
-    public LiteStarsEnergyCompany getContactEC(int contactId) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EnergyCompanyId");
-        sql.append("FROM ECToAccountMapping");
-        sql.append("WHERE AccountId = ");
-        sql.append("    (SELECT AccountId");
-        sql.append("     FROM CustomerAccount");
-        sql.append("     WHERE CustomerId = ");
-        sql.append("        (SELECT CustomerId");
-        sql.append("         FROM Customer");
-        sql.append("         WHERE PrimaryContactId = ?");
-        sql.append("         OR CustomerId = ");
-        sql.append("            (SELECT CustomerId");
-        sql.append("             FROM CustomerAdditionalContact");
-        sql.append("             WHERE ContactId = ?)))");
-        
-        
-        int energyCompanyId = yukonJdbcTemplate.queryForInt(sql.toString(), contactId, contactId);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        return energyCompany;
-    }
-    
-    @Override
     @Transactional    
     public void updateECToAccountMapping(int accountId, int energyCompanyId) {
         String sql = "UPDATE ECToAccountMapping SET EnergyCompanyId = ? WHERE AccountId = ?";

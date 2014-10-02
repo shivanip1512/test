@@ -25,18 +25,6 @@ public interface DRGroupDeviceMappingDao {
     List<String> getSerialNumbersForLoadGroups(Iterable<Integer> loadGroupIds);
     
     /**
-     * Returns The set of device ids associated with the specified load group, program, scenario or
-     * control area.
-     */
-    Set<Integer> getDeviceIdsForGrouping(PaoIdentifier paoIdentifier);
-    
-    /**
-     * Returns A set of all YukonPaos associated with the specified load group, program scenario or 
-     * control area.
-     */
-    Set<YukonPao> getDevicesForGrouping(PaoIdentifier paoIdentifier);
-    
-    /**
      * Returns A set of ids for the load groups in control area, scenario, load program, or load group
      * specified by the paoIdentifier.
      * @throws IllegalArgumentException If the paoIdentifier is not a DR grouping.

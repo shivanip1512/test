@@ -133,11 +133,6 @@ public interface InventoryDao {
     public HardwareType getHardwareTypeById(int hardwareTypeId);
     
     /**
-     * Returns the HardwareType enum entry for the give inventory id.
-     */
-    public HardwareType getHardTypeByInventoryId(int inventoryId);
-
-    /**
      * Returns a list of zigbee devices that are attached to an account but
      * are not currently in the 'Connected' state, and thier point values.
      * @param MessageSourceAccessor
@@ -184,11 +179,7 @@ public interface InventoryDao {
      */
     public String getMeterNumberForDevice(int deviceId);
 
-    public LiteLmHardware getLiteLmHardwareByInventoryId(int inventoryId);
-
     public LiteLmHardware getLiteLmHardwareByInventory(YukonInventory inventory);
-
-    public List<LiteLmHardware> getLiteLmHardwareByInventory(List<InventoryIdentifier> inventory);
 
     public List<LiteLmHardware> getLiteLmHardwareByPaos(List<PaoIdentifier> paos);
 

@@ -22,9 +22,4 @@ public interface AssetAvailabilityPingService {
      * Get the latest read result for the DR grouping specified by the paoId.
      */
     public AssetAvailabilityReadResult getReadResult(int paoId);
-    
-    /**
-     * Determines if there is an active (incomplete) ping result for the DR grouping specified by the paoId.
-     */
-    public boolean hasReadResult(int paoId);
 }

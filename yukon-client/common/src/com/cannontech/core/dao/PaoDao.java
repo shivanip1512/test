@@ -20,28 +20,31 @@ public interface PaoDao {
 
     /**
      * Checks for existence of a unique pao with the given name and type.
+     * 
      * @param paoName the name of the pao
      * @param paoType the type of the pao
      * @return A PaoIdentifier representing the PaoId and
-     * PaoType of the unique Pao if it exists or <code>null</code> if the object
-     * doesn't exist.
+     *         PaoType of the unique Pao if it exists or <code>null</code> if the object
+     *         doesn't exist.
      */
     public YukonPao findYukonPao(String paoName, PaoType paoType);
 
     /**
      * Checks for existence of a unique pao with the given name, category, and class.
+     * 
      * @param paoName the name of the pao
      * @param paoClass the class of the pao
      * @param paoCategory the category of the pao
      * @return A PaoIdentifier representing the PaoId and
-     * PaoType of the unique Pao if it exists or <code>null</code> if the object
-     * doesn't exist.
+     *         PaoType of the unique Pao if it exists or <code>null</code> if the object
+     *         doesn't exist.
      */
     public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass);
 
     /**
      * Queries the database to return a PaoIdentifier for a unique pao that is assumed
      * to exist.
+     * 
      * @param paoName The name of the Pao.
      * @param paoType The type of the Pao.
      * @return A PaoIdentifier representing the PaoId and PaoType of the pao specified.
@@ -52,6 +55,7 @@ public interface PaoDao {
     /**
      * Queries the database to return a PaoIdentifier for a unique pao that is assumed
      * to exist.
+     * 
      * @param paoName The name of the Pao.
      * @param paoCategory The category of the Pao.
      * @param paoClass The class of the Pao.
@@ -63,6 +67,7 @@ public interface PaoDao {
     /**
      * Retrieves the YukonPao object along with related data
      * like port, address and route info
+     * 
      * @param paoID
      * @return
      */
@@ -77,6 +82,7 @@ public interface PaoDao {
      * Helper method to return a paobject that exist for the paoName, category, paoClass.
      * These are the three fields that make up Unique Index Indx_PAO
      * Returns null if no object exists, otherwise returns the liteYukonPaobject that was found.
+     * 
      * @param paoName
      * @param category
      * @param paoClass
@@ -97,12 +103,14 @@ public interface PaoDao {
 
     /**
      * Returns the next unused pa object id
+     * 
      * @return
      */
     public int getNextPaoId();
 
     /**
      * This method was created in VisualAge.
+     * 
      * @return String
      */
     public String getYukonPAOName(int paoID);
@@ -114,18 +122,21 @@ public interface PaoDao {
     public LiteYukonPAObject[] getRoutesByType(PaoType... routeTypes);
 
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
+
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address);
+
     public List<PaoIdentifier> getPaosByAddressRange(int startAddress, int endAddress);
 
-    public List<LiteYukonPAObject> searchByName(String name, PaoClass paoClass);
-
     public Map<Integer, PaoIdentifier> findPaoIdentifiersByCarrierAddress(Iterable<Integer> carrierAddresses);
+
     public Map<String, PaoIdentifier> findPaoIdentifiersByMeterNumber(Iterable<String> meterNumbers);
+
     public Map<String, PaoIdentifier> findPaoIdentifiersByName(Iterable<String> names);
 
     /**
      * Searches known routes for matching name.
      * Returns route's paoId if found, null otherwise.
+     * 
      * @param routeName
      * @return
      */
@@ -142,11 +153,12 @@ public interface PaoDao {
 
     /**
      * Returns the count of the disabled devices in a group
+     * 
      * @param deviceGroup
      * @return
      */
     public int getDisabledDeviceCount(DeviceGroup deviceGroup);
 
-    public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag...paoTags);
+    public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag... paoTags);
 
 }

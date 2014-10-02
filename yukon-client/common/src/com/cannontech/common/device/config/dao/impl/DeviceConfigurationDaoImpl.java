@@ -354,25 +354,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
-    public DeviceConfigCategory getDeviceConfigCategory(int configId, CategoryType categoryType) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DCC.DeviceConfigCategoryId");
-        sql.append("FROM DeviceConfigCategory DCC");
-        sql.append("    JOIN DeviceConfigCategoryMap DCM ON DCC.DeviceConfigCategoryId = DCM.DeviceConfigCategoryId");
-        sql.append("WHERE DCM.DeviceConfigurationId").eq(configId);
-        sql.append("    AND DCC.CategoryType").eq(categoryType.value());
-        
-        try {
-            int categoryId = jdbcTemplate.queryForInt(sql);
-            
-            return getDeviceConfigCategory(categoryId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("No category of type " + categoryType.value() + " exists for config with id " +
-                                        configId);
-        }
-    }
-    
-    @Override
     public DeviceConfiguration getDeviceConfiguration(int configId) throws NotFoundException {
         // Find the items for the configuration.
         ItemByCategoryRowMapper itemByCategoryRowMapper = getItemsForConfiguration(configId);

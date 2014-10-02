@@ -79,14 +79,6 @@ public interface DeviceConfigurationDao {
     public DeviceConfigCategory getDeviceConfigCategory(int categoryId);
     
     /**
-     * Retrieve a category from the database
-     * @param configId the identifier of the config whose category we're retrieving
-     * @param categoryType the type of category being retrieved
-     * @return the populated category object identified by the parameters.
-     */
-    public DeviceConfigCategory getDeviceConfigCategory(int configId, CategoryType categoryType);
-    
-    /**
      * Get the pao types supported by a configuration.
      * @param deviceConfigurationId the configuration id of the device configuration
      * @return a set containing the supported pao types (if any exist) for the specified configuration. Returns an 

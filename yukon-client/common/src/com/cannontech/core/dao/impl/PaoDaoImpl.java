@@ -119,8 +119,8 @@ public final class PaoDaoImpl implements PaoDao {
         sql.append("SELECT PAObjectID, Type");
         sql.append("FROM YukonPAObject");
         sql.append("WHERE PaoName").eq(paoName);
-        sql.append(    "AND Category").eq(paoCategory);
-        sql.append(    "AND PaoClass").eq(paoClass);
+        sql.append("AND Category").eq(paoCategory);
+        sql.append("AND PaoClass").eq(paoClass);
 
         PaoIdentifier paoIdentifier = jdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
 
@@ -178,8 +178,8 @@ public final class PaoDaoImpl implements PaoDao {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
             sql.append("WHERE UPPER(y.PAOName) = UPPER(").appendArgument(paoName).append(")");
-            sql.append(    "AND y.Category").eq_k(paoType.getPaoCategory());
-            sql.append(    "AND y.PAOClass").eq_k(paoType.getPaoClass());
+            sql.append("AND y.Category").eq_k(paoType.getPaoCategory());
+            sql.append("AND y.PAOClass").eq_k(paoType.getPaoClass());
             LiteYukonPAObject pao = jdbcTemplate.queryForObject(sql, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -270,7 +270,8 @@ public final class PaoDaoImpl implements PaoDao {
     public LiteYukonPAObject[] getAllLiteRoutes() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT y.PAObjectID, y.Category, y.PAOName, y.Type, y.PAOClass, y.Description, y.DisableFlag,");
-        sql.append(    "null as PortId, null as Address, null as RouteId"); // needed for the mapper, always null for routes
+        sql.append("null as PortId, null as Address, null as RouteId"); // needed for the mapper, always null
+                                                                        // for routes
         sql.append("FROM  YukonPAObject y");
         sql.append("WHERE Category").eq(PaoCategory.ROUTE);
         sql.append("ORDER BY y.PAOName");
@@ -437,17 +438,6 @@ public final class PaoDaoImpl implements PaoDao {
         };
 
         return template.query(sqlGenerator, paoIds, RowMapper.PAO_IDENTIFIER);
-    }
-
-    @Override
-    public List<LiteYukonPAObject> searchByName(final String name, final PaoClass paoClass) {
-
-        SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
-        sql.append("where YPO.PAOClass").eq_k(paoClass);
-        sql.append("and upper(PointName) like").appendArgument("%" + name.toUpperCase() + "%");
-
-        List<LiteYukonPAObject> paoList = jdbcTemplate.query(sql, litePaoRowMapper);
-        return paoList;
     }
 
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {

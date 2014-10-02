@@ -43,19 +43,6 @@ public class MockDrGroupDeviceMappingDao implements DRGroupDeviceMappingDao {
     public Set<Integer> getLoadGroupIdsForDrGroup(PaoIdentifier paoIdentifier) {
         return Sets.newHashSet(drGroupToLoadGroupMap.get(paoIdentifier));
     }
-    
-    /*
-     * Unimplemented methods:
-     */
-    @Override
-    public Set<Integer> getDeviceIdsForGrouping(PaoIdentifier paoIdentifier) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public Set<YukonPao> getDevicesForGrouping(PaoIdentifier paoIdentifier) {
-        throw new MethodNotImplementedException();
-    }
 
     @Override
     public Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao) {

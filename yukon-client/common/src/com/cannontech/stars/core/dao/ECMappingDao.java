@@ -38,14 +38,6 @@ public interface ECMappingDao {
      */
     int getEnergyCompanyIdForInventoryId(int inventoryId);
 
-
-    /**
-     * Gets the energy company for a given contact id
-     * @param contactId - Id of contact to get ec for
-     * @return Energy company
-     */
-    LiteStarsEnergyCompany getContactEC(int contactId);
-
     /**
      * Returns all the substationIds associated to the given energyCompanyId
      */

@@ -102,21 +102,6 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
         return recentResultsCache.getResult(resultId);
     }
     
-    @Override
-    public boolean hasReadResult(int paoId) {
-        String resultId = paoIdToResultIdMap.get(paoId);
-        if(resultId == null) {
-            return false;
-        } else {
-            AssetAvailabilityReadResult result = recentResultsCache.getResult(resultId);
-            if(result == null || result.isComplete()) {
-                paoIdToResultIdMap.remove(paoId); //remove old mapping
-                return false;
-            }
-            return true;
-        }
-    }
-    
     private DeviceAttributeReadError getBadRelayError(int relay) {
         MessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.modules.dr.assetAvailability.pingError.badRelay", relay);
         return new DeviceAttributeReadError(DeviceAttributeReadErrorType.NO_POINT, resolvable);

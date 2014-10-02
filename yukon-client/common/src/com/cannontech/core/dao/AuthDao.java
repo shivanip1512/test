@@ -9,14 +9,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface AuthDao {
 
     /**
-     * Return true if username_ is the admin user.
-     *
-     * @param username_
-     * @return
-     */
-    public boolean isAdminUser(LiteYukonUser user);
-
-    /**
      * Return true if the use has access to the given PAOid.
      * By default, the given user has access to ALL PAOS (backwards compatability)
      *

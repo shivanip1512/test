@@ -503,22 +503,6 @@ public final class CtiUtilities {
         return (s == null || FALSE_STRING.equalsIgnoreCase(s));
     }
 
-    /**
-     * Returns true of the given id is in the given array
-     */
-    public static final boolean isInSet(Integer[] idSet, int id) {
-        if (idSet == null) {
-            return false;
-        }
-
-        for (int i = 0; i < idSet.length; i++) {
-            if (idSet[i] == id) {
-                return true;
-            }
-        }
-
-        return false;
-    }
     public static final void showHelp(String helpFileName) {
         try {
             // prepend classpath prefix to helpFile
@@ -855,10 +839,6 @@ public final class CtiUtilities {
     public final static int itemsPerPage(Integer specifiedItemsPerPage) {
         return specifiedItemsPerPage == null
                 ? DEFAULT_ITEMS_PER_PAGE : Math.min(MAX_ITEMS_PER_PAGE, specifiedItemsPerPage);
-    }
-
-    public final static double calculatePercentage(int count, int total) {
-        return ((double)count / total) * 100;
     }
 
     /**

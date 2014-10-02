@@ -37,14 +37,6 @@ public class AuthDaoImpl implements AuthDao {
     @Autowired private RolePropertyDao rolePropertyDao;
 
     @Override
-    public boolean isAdminUser(LiteYukonUser user) {
-        if (user != null && user.getUserID() == UserUtils.USER_ADMIN_ID) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public boolean userHasAccessPAO(LiteYukonUser user, int paoId) {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
         Set<Integer> permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
