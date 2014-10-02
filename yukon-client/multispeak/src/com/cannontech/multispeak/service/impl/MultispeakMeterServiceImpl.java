@@ -1750,7 +1750,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup", mspVendor.getCompanyName());
             return errorObject;
         }
-        return null;
+        return new ErrorObject();
     }
 
     /**
