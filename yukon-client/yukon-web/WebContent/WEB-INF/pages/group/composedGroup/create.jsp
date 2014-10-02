@@ -25,7 +25,7 @@
             </c:forEach>
         </form:select>
         <i:inline key=".matchSentence.suffix"/>
-        <cti:icon icon="icon-help"  classes="cp fn" popup="#instructions" data-popup-toggle="true"/>
+        <cti:icon icon="icon-help"  classes="cp fn" data-popup="#instructions" data-popup-toggle="true"/>
         <cti:msg2 var="title" key=".instructions.title"/>
         <div id="instructions" class="dn" data-title="${title}" data-width="600">
             <i:inline key=".instructions"/>
