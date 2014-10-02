@@ -46,6 +46,9 @@ public abstract class AbstractLuceneSearcher<E> {
     }
 
     protected final SearchResults<E> doSearch(final Query query, final int start, final int count) throws IOException {
+        // We can't use count here because Lucene will just give us the first number of items. Here we are
+        // paging the results so we need enough items to populate the current 
+        // page. Hence (count + start) instead of just count
         int maxResults = CtiUtilities.addNoOverflow(count, start);
         final SearchResults<E> result =
             getIndexManager().getSearchTemplate().doCallBackSearch(query,
