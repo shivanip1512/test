@@ -53,10 +53,11 @@ public class AdaResultsHelperTest {
         for (DeviceArchiveData data : datas) {
             AdaDevice device = new AdaDevice();
             device.setData(data);
+            devices.add(device);
         }
         
         AdaResultsHelper.buildBars(analysis, barWidth, devices);
-        List<ReadSequence> timeline = datas.get(0).getTimeline();
+        List<ReadSequence> timeline = devices.get(0).getData().getTimeline();
         Assert.assertEquals(1, timeline.size());
         Assert.assertEquals(400, timeline.get(0).getWidth());
         Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
@@ -75,10 +76,11 @@ public class AdaResultsHelperTest {
         for (DeviceArchiveData data : datas) {
             AdaDevice device = new AdaDevice();
             device.setData(data);
+            devices.add(device);
         }
         
         AdaResultsHelper.buildBars(analysis, barWidth, devices);
-        timeline = datas.get(0).getTimeline();
+        timeline = devices.get(0).getData().getTimeline();
         Assert.assertEquals(2, timeline.size());
         Assert.assertEquals(100, timeline.get(0).getWidth());
         Assert.assertEquals(300, timeline.get(1).getWidth());
@@ -99,10 +101,11 @@ public class AdaResultsHelperTest {
         for (DeviceArchiveData data : datas) {
             AdaDevice device = new AdaDevice();
             device.setData(data);
+            devices.add(device);
         }
         
         AdaResultsHelper.buildBars(analysis, barWidth, devices);
-        timeline = datas.get(0).getTimeline();
+        timeline = devices.get(0).getData().getTimeline();
         Assert.assertEquals(3, timeline.size());
         Assert.assertEquals(100, timeline.get(0).getWidth());
         Assert.assertEquals(100, timeline.get(1).getWidth());
@@ -125,10 +128,11 @@ public class AdaResultsHelperTest {
         for (DeviceArchiveData data : datas) {
             AdaDevice device = new AdaDevice();
             device.setData(data);
+            devices.add(device);
         }
         
         AdaResultsHelper.buildBars(analysis, barWidth, devices);
-        timeline = datas.get(0).getTimeline();
+        timeline = devices.get(0).getData().getTimeline();
         Assert.assertEquals(3, timeline.size());
         Assert.assertEquals(200, timeline.get(0).getWidth());
         Assert.assertEquals(100, timeline.get(1).getWidth());
@@ -151,10 +155,11 @@ public class AdaResultsHelperTest {
         for (DeviceArchiveData data : datas) {
             AdaDevice device = new AdaDevice();
             device.setData(data);
+            devices.add(device);
         }
         
         AdaResultsHelper.buildBars(analysis, barWidth, devices);
-        timeline = datas.get(0).getTimeline();
+        timeline = devices.get(0).getData().getTimeline();
         Assert.assertEquals(2, timeline.size());
         Assert.assertEquals(300, timeline.get(0).getWidth());
         Assert.assertEquals(100, timeline.get(1).getWidth());
@@ -175,10 +180,11 @@ public class AdaResultsHelperTest {
         for (DeviceArchiveData data : datas) {
             AdaDevice device = new AdaDevice();
             device.setData(data);
+            devices.add(device);
         }
         
         AdaResultsHelper.buildBars(analysis, barWidth, devices);
-        timeline = datas.get(0).getTimeline();
+        timeline = devices.get(0).getData().getTimeline();
         Assert.assertEquals(2, timeline.size());
         Assert.assertEquals(200, timeline.get(0).getWidth());
         Assert.assertEquals(200, timeline.get(1).getWidth());
@@ -199,10 +205,11 @@ public class AdaResultsHelperTest {
         for (DeviceArchiveData data : datas) {
             AdaDevice device = new AdaDevice();
             device.setData(data);
+            devices.add(device);
         }
         
         AdaResultsHelper.buildBars(analysis, barWidth, devices);
-        timeline = datas.get(0).getTimeline();
+        timeline = devices.get(0).getData().getTimeline();
         Assert.assertEquals(3, timeline.size());
         Assert.assertEquals(100, timeline.get(0).getWidth());
         Assert.assertEquals(200, timeline.get(1).getWidth());
