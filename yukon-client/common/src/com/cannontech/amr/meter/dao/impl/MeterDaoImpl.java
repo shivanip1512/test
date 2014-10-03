@@ -1,5 +1,6 @@
 package com.cannontech.amr.meter.dao.impl;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -28,11 +29,12 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.impl.SimpleMeterRowMapper;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.system.GlobalSettingType;
@@ -44,46 +46,61 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MeterDaoImpl implements MeterDao {
+    
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private PaoDao paoDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    @Autowired private MeterRowMapper meterRowMapper;
+    
+    private YukonRowMapper<SimpleMeter> simpleMeterMapper = new YukonRowMapper<SimpleMeter>() {
 
+        @Override
+        public SimpleMeter mapRow(YukonResultSet rs) throws SQLException {
+            
+            PaoIdentifier paoIdentifier = rs.getPaoIdentifier("paobjectId",  "type");
+            String meterNumber = rs.getString("meterNumber");
+            
+            SimpleMeter simpleMeter = new SimpleMeter(paoIdentifier, meterNumber);       
+            return simpleMeter;
+        }
+    };
+    
     @Override
     @Transactional
-    public void update(YukonMeter newMeterInfo) {
+    public void update(YukonMeter meter) {
         // Update the meter's name and the meter's type
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE yukonPaobject").set("paoName", newMeterInfo.getName(), "type", newMeterInfo.getPaoType());
-        sql.append("WHERE paobjectId").eq(newMeterInfo.getDeviceId());
+        sql.append("UPDATE yukonPaobject").set("paoName", meter.getName(), "type", meter.getPaoType());
+        sql.append("WHERE paobjectId").eq(meter.getDeviceId());
         jdbcTemplate.update(sql);
-
+        
         // Update the meter's meter number
         sql = new SqlStatementBuilder();
-        sql.append("UPDATE deviceMeterGroup").set("meterNumber", newMeterInfo.getMeterNumber());
-        sql.append("WHERE deviceId").eq(newMeterInfo.getDeviceId());
+        sql.append("UPDATE deviceMeterGroup").set("meterNumber", meter.getMeterNumber());
+        sql.append("WHERE deviceId").eq(meter.getDeviceId());
         jdbcTemplate.update(sql);
-
-        if (newMeterInfo instanceof PlcMeter) {
+        
+        if (meter instanceof PlcMeter) {
             // Update the meter's address
             sql = new SqlStatementBuilder();
-            sql.append("UPDATE deviceCarrierSettings").set("address", ((PlcMeter) newMeterInfo).getAddress());
-            sql.append("WHERE deviceId").eq(newMeterInfo.getDeviceId());
+            sql.append("UPDATE deviceCarrierSettings").set("address", ((PlcMeter) meter).getAddress());
+            sql.append("WHERE deviceId").eq(meter.getDeviceId());
             jdbcTemplate.update(sql);
-
+            
             // Update the meter's route
             sql = new SqlStatementBuilder();
-            sql.append("UPDATE deviceRoutes").set("routeId", ((PlcMeter) newMeterInfo).getRouteId());
-            sql.append("WHERE deviceId").eq(newMeterInfo.getDeviceId());
+            sql.append("UPDATE deviceRoutes").set("routeId", ((PlcMeter) meter).getRouteId());
+            sql.append("WHERE deviceId").eq(meter.getDeviceId());
             jdbcTemplate.update(sql);
         }
-
-        sendDBChangeMessage(newMeterInfo);
+        
+        sendDBChangeMessage(meter);
     }
-
+    
     @Override
-    public YukonMeter getForId(Integer id) {
+    public YukonMeter getForId(int id) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(meterRowMapper.getSql());
@@ -93,40 +110,55 @@ public class MeterDaoImpl implements MeterDao {
             throw new NotFoundException("Unknown meter id " + id);
         }
     }
-
+    
+    @Override
+    public List<SimpleMeter> getAllSimpleMeters() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append("JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceId");
+        
+        List<SimpleMeter> meters = jdbcTemplate.query(sql, simpleMeterMapper);
+        
+        return meters;
+    }
+    
     @Override
     public SimpleMeter getSimpleMeterForId(int id) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
         sql.append("FROM YukonPaObject ypo");
         sql.append("JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceId");
         sql.append("where ypo.PaobjectId").eq(id);
-
-        SimpleMeter yukonMeter = jdbcTemplate.queryForObject(sql, new SimpleMeterRowMapper());
+        
+        SimpleMeter yukonMeter = jdbcTemplate.queryForObject(sql, simpleMeterMapper);
+        
         return yukonMeter;
     }
-
+    
     @Override
     public PlcMeter getPlcMeterForId(int id) {
         YukonMeter meter = getForId(id);
         if (meter instanceof PlcMeter) {
             return (PlcMeter) meter;
         }
-
+        
         throw new NotFoundException("Unknown Plc meter id " + id);
     }
-
+    
     @Override
     public RfnMeter getRfnMeterForId(int id) throws NotFoundException {
-
+        
         YukonMeter meter = getForId(id);
         if (meter instanceof RfnMeter) {
             return (RfnMeter) meter;
         }
-
+        
         throw new NotFoundException("Unknown RFN meter id " + id);
     }
-
+    
     @Override
     public YukonMeter getForMeterNumber(String meterNumber) {
         try {
@@ -139,7 +171,7 @@ public class MeterDaoImpl implements MeterDao {
             throw new NotFoundException("Unknown meter number " + meterNumber);
         }
     }
-
+    
     @Override
     public YukonMeter getForPaoName(String paoName) {
         try {
@@ -153,7 +185,7 @@ public class MeterDaoImpl implements MeterDao {
             throw new NotFoundException("Unknown pao name " + paoName);
         }
     }
-
+    
     @Override
     public YukonMeter findForPaoName(String paoName) {
         try {
@@ -162,16 +194,16 @@ public class MeterDaoImpl implements MeterDao {
             return null;
         }
     }
-
+    
     @Override
     public String getFormattedDeviceName(YukonMeter device) throws IllegalArgumentException {
         MeterDisplayFieldEnum meterDisplayFieldEnum =
             globalSettingDao.getEnum(GlobalSettingType.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
-
+            
         String formattedName = new DisplayableMeter(device, meterDisplayFieldEnum).getName();
         return formattedName;
     }
-
+    
     @Override
     public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
         return new PaoLoader<DisplayablePao>() {
@@ -179,33 +211,33 @@ public class MeterDaoImpl implements MeterDao {
             public Map<PaoIdentifier, DisplayablePao> getForPaos(Iterable<PaoIdentifier> identifiers) {
                 MeterDisplayFieldEnum meterDisplayFieldEnum =
                     globalSettingDao.getEnum(GlobalSettingType.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
-
+                
                 List<YukonMeter> metersForYukonDevices = getMetersForPaoIdentifiers(identifiers);
-
+                
                 Map<PaoIdentifier, DisplayablePao> result =
                     Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
-
+                
                 for (YukonMeter meter : metersForYukonDevices) {
                     DisplayableMeter displayableMeter = new DisplayableMeter(meter, meterDisplayFieldEnum);
                     result.put(meter.getPaoIdentifier(), displayableMeter);
                 }
-
+                
                 return result;
             }
         };
     }
-
+    
     @Override
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
         return new PaoLoader<DeviceCollectionReportDevice>() {
             @Override
             public Map<PaoIdentifier, DeviceCollectionReportDevice> getForPaos(Iterable<PaoIdentifier> identifiers) {
-
+                
                 List<YukonMeter> metersForYukonDevices = getMetersForPaoIdentifiers(identifiers);
-
+                
                 Map<PaoIdentifier, DeviceCollectionReportDevice> result =
                     Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
-
+                
                 for (YukonMeter meter : metersForYukonDevices) {
                     PaoIdentifier paoIdentifier = meter.getPaoIdentifier();
                     DeviceCollectionReportDevice dcrd = new DeviceCollectionReportDevice(paoIdentifier);
@@ -215,21 +247,21 @@ public class MeterDaoImpl implements MeterDao {
                     dcrd.setRoute(meter.getRoute());
                     result.put(paoIdentifier, dcrd);
                 }
-
+                
                 return result;
             }
         };
     }
-
+    
     @Override
     public List<YukonMeter> getMetersForYukonPaos(Iterable<? extends YukonPao> identifiers) {
         List<YukonMeter> result = getMetersForPaoIdentifiers(identifiers);
         return Collections.unmodifiableList(result);
     }
-
+    
     private <I extends YukonPao> List<YukonMeter> getMetersForPaoIdentifiers(Iterable<I> identifiers) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-
+        
         SqlFragmentGenerator<I> sqlGenerator = new SqlFragmentGenerator<I>() {
             @Override
             public SqlFragmentSource generate(List<I> subList) {
@@ -241,43 +273,42 @@ public class MeterDaoImpl implements MeterDao {
         };
         return template.query(sqlGenerator, identifiers, meterRowMapper);
     }
-
+    
     @Override
     public List<YukonMeter> getMetersForMeterNumbers(final List<String> meterNumbers) {
         if (meterNumbers.size() == 0) {
             return Collections.emptyList();
         }
-
+        
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-
+        
         SqlFragmentGenerator<String> fragmentGenerator = new SqlFragmentGenerator<String>() {
             @Override
             public SqlFragmentSource generate(List<String> subList) {
-
+                
                 List<String> subListUppercase = Lists.transform(subList, new Function<String, String>() {
                     @Override
                     public String apply(String str) {
                         return str.toUpperCase();
                     }
                 });
-
+                
                 SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
                 sql.append("WHERE UPPER(dmg.MeterNumber) IN (").appendArgumentList(subListUppercase).append(")");
                 return sql;
             }
         };
         List<YukonMeter> meters = template.query(fragmentGenerator, meterNumbers, meterRowMapper);
-
+        
         return meters;
     }
-
+    
     @Override
     public int getMeterCount() {
         SqlStatementBuilder sql = new SqlStatementBuilder("SELECT COUNT(*) FROM DeviceMeterGroup");
-
         return jdbcTemplate.queryForInt(sql);
     }
-
+    
     @Override
     public Comparator<YukonMeter> getMeterComparator() {
         final NaturalOrderComparator naturalOrderComparator = new NaturalOrderComparator();
@@ -290,7 +321,7 @@ public class MeterDaoImpl implements MeterDao {
             }
         };
     }
-
+    
     @Override
     public List<Integer> getMetersWithDisconnectCollarAddress(Iterable<Integer> ids) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
@@ -306,10 +337,11 @@ public class MeterDaoImpl implements MeterDao {
         List<Integer> deviceIds = template.query(sqlGenerator, ids, RowMapper.INTEGER);
         return deviceIds;
     }
-
+    
     private void sendDBChangeMessage(YukonMeter meter) {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject) dbPersistentDao.retrieveDBPersistent(liteYukonPAO);
         dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
     }
+    
 }

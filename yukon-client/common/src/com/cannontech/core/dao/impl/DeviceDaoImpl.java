@@ -13,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
@@ -53,7 +54,7 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
-    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private IDatabaseCache cache;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private MeterDao meterDao;
@@ -199,31 +200,25 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
 
     @Override
-    public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID) {
-        List<LiteDeviceMeterNumber> allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
-
-        LiteDeviceMeterNumber ldmn = null;
-        for (int i = 0; i < allDevMtrGrps.size(); i++) {
-            ldmn = allDevMtrGrps.get(i);
-            if (ldmn.getDeviceID() == deviceID) {
-                return ldmn;
-            }
+    public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceId) {
+        
+        SimpleMeter meter = cache.getAllMeters().get(deviceId);
+        if (meter != null) {
+            return new LiteDeviceMeterNumber(deviceId, meter.getMeterNumber(), meter.getPaoIdentifier().getPaoType());
         }
+        
         return null;
     }
 
     @Override
     public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNumber) {
-        List<LiteDeviceMeterNumber> allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
-
-        LiteDeviceMeterNumber ldmn = null;
-        for (int i = 0; i < allDevMtrGrps.size(); i++) {
-            ldmn = allDevMtrGrps.get(i);
-            if (ldmn.getMeterNumber().equalsIgnoreCase(meterNumber)) {
-                LiteYukonPAObject lPao = databaseCache.getAllPAOsMap().get(new Integer(ldmn.getDeviceID()));
-                return lPao;
+        
+        for (SimpleMeter meter : cache.getAllMeters().values()) {
+            if (meter.getMeterNumber().equalsIgnoreCase(meterNumber)) {
+                return cache.getAllPaosMap().get(meter.getPaoIdentifier().getPaoId());
             }
         }
+        
         return null;
     }
 
@@ -246,7 +241,7 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName) {
-        List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
+        List<LiteYukonPAObject> allDevices = cache.getAllDevices();
 
         LiteYukonPAObject lPao = null;
         for (int i = 0; i < allDevices.size(); i++) {
@@ -260,7 +255,7 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType) {
-        List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
+        List<LiteYukonPAObject> allDevices = cache.getAllDevices();
         for (Object obj : allDevices) {
             LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
             boolean foundMatch = true;
@@ -277,13 +272,13 @@ public final class DeviceDaoImpl implements DeviceDao {
     
     @Override
     public List<Integer> getDevicesByPort(int portId) {
-        List<Integer> devices = databaseCache.getDevicesByCommPort(portId);
+        List<Integer> devices = cache.getDevicesByCommPort(portId);
         return devices;
     }
 
     @Override
     public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-        List<Integer> devicesByAddress = databaseCache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
+        List<Integer> devicesByAddress = cache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
         return devicesByAddress;
     }
 
