@@ -159,7 +159,7 @@ public interface IDatabaseCache {
 
     void releaseAllContacts();
 
-    void releaseAllDeviceMeterGroups();
+    void releaseAllMeters();
 
     void releaseAllYukonImages();
 

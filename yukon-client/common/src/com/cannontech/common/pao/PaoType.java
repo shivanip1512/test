@@ -17,6 +17,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Sets;
 
 public enum PaoType implements DatabaseRepresentationSource {
     
@@ -66,12 +67,12 @@ public enum PaoType implements DatabaseRepresentationSource {
     IPC410FL(DeviceTypes.IPC410FL, "IPC-410fL", PaoCategory.DEVICE, PaoClass.METER),
     
     DAVISWEATHER(DeviceTypes.DAVISWEATHER, "DAVIS WEATHER", PaoCategory.DEVICE, PaoClass.IED),
-
+    
     DCT_501(DeviceTypes.DCT_501, "DCT-501", PaoCategory.DEVICE, PaoClass.CARRIER),
     LCR3102(DeviceTypes.LCR3102, "LCR-3102", PaoCategory.DEVICE, PaoClass.CARRIER),
     LMT_2(DeviceTypes.LMT_2, "LMT-2", PaoCategory.DEVICE, PaoClass.CARRIER),
     ZIGBEE_ENDPOINT(DeviceTypes.ZIGBEE_ENDPOINT, "ZigBee Endpoint", PaoCategory.DEVICE, PaoClass.CARRIER),
-
+    
     MCTBROADCAST(DeviceTypes.MCTBROADCAST, "MCT Broadcast", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT210(DeviceTypes.MCT210, "MCT-210", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT213(DeviceTypes.MCT213, "MCT-213", PaoCategory.DEVICE, PaoClass.CARRIER),
@@ -104,7 +105,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     MCT440_2132B(DeviceTypes.MCT440_2132B, "MCT-440-2132B", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT440_2133B(DeviceTypes.MCT440_2133B, "MCT-440-2133B", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT470(DeviceTypes.MCT470, "MCT-470", PaoCategory.DEVICE, PaoClass.CARRIER),
-
+    
     RFN410FL(DeviceTypes.RFN410FL, "RFN-410fL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FX(DeviceTypes.RFN410FX, "RFN-410fX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FD(DeviceTypes.RFN410FD, "RFN-410fD", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -113,28 +114,25 @@ public enum PaoType implements DatabaseRepresentationSource {
     RFN420FD(DeviceTypes.RFN420FD, "RFN-420fD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420FRX(DeviceTypes.RFN420FRX, "RFN-420fRX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420FRD(DeviceTypes.RFN420FRD, "RFN-420fRD", PaoCategory.DEVICE, PaoClass.RFMESH),
-
+    
     RFN410CL(DeviceTypes.RFN410CL, "RFN-410cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420CL(DeviceTypes.RFN420CL, "RFN-420cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420CD(DeviceTypes.RFN420CD, "RFN-420cD", PaoCategory.DEVICE, PaoClass.RFMESH),
-
+    
     RFN430A3D(DeviceTypes.RFN430A3D, "RFN-430A3D", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430A3T(DeviceTypes.RFN430A3T, "RFN-430A3T", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430A3K(DeviceTypes.RFN430A3K, "RFN-430A3K", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430A3R(DeviceTypes.RFN430A3R, "RFN-430A3R", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430KV(DeviceTypes.RFN430KV, "RFN-430KV", PaoCategory.DEVICE, PaoClass.RFMESH),
-
+    
     RFN430SL0(DeviceTypes.RFN430SL0, "RFN-430SL0", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430SL1(DeviceTypes.RFN430SL1, "RFN-430SL1", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430SL2(DeviceTypes.RFN430SL2, "RFN-430SL2", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430SL3(DeviceTypes.RFN430SL3, "RFN-430SL3", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430SL4(DeviceTypes.RFN430SL4, "RFN-430SL4", PaoCategory.DEVICE, PaoClass.RFMESH),
     
-//    RFN440_2131T(DeviceTypes.RFN440_2131T, "RFN-440-2131T", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN440_2131TD(DeviceTypes.RFN440_2131TD, "RFN-440-2131TD", PaoCategory.DEVICE, PaoClass.RFMESH),
-//    RFN440_2132T(DeviceTypes.RFN440_2132T, "RFN-440-2132T", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN440_2132TD(DeviceTypes.RFN440_2132TD, "RFN-440-2132TD", PaoCategory.DEVICE, PaoClass.RFMESH),
-//    RFN440_2133T(DeviceTypes.RFN440_2133T, "RFN-440-2133T", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN440_2133TD(DeviceTypes.RFN440_2133TD, "RFN-440-2133TD", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFWMETER(DeviceTypes.RFWMETER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -152,7 +150,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     RTUILEX(DeviceTypes.RTUILEX, "RTU-ILEX", PaoCategory.DEVICE, PaoClass.RTU),
     RTU_MODBUS(DeviceTypes.RTU_MODBUS, "RTU-MODBUS", PaoCategory.DEVICE, PaoClass.RTU),
     RTUWELCO(DeviceTypes.RTUWELCO, "RTU-WELCO", PaoCategory.DEVICE, PaoClass.RTU),
-
+    
     LM_GROUP_DIGI_SEP(DeviceTypes.LM_GROUP_DIGI_SEP, "DIGI SEP GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_ECOBEE(DeviceTypes.LM_GROUP_ECOBEE, "ECOBEE GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON, "EMETCON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
@@ -179,7 +177,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     CAPBANK(DeviceTypes.CAPBANK, "CAP BANK", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CAPBANKCONTROLLER(DeviceTypes.CAPBANKCONTROLLER, "CBC Versacom", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_EXPRESSCOM(DeviceTypes.CBC_EXPRESSCOM, "CBC Expresscom", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
-
+    
     CBC_7010(DeviceTypes.CBC_7010, "CBC 7010", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_7020(DeviceTypes.CBC_7020, "CBC 7020", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_7022(DeviceTypes.CBC_7022, "CBC 7022", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
@@ -192,7 +190,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     CBC_DNP(DeviceTypes.CBC_DNP, "CBC DNP", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_FP_2800(DeviceTypes.CBC_FP_2800, "CBC FP-2800", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     DNP_CBC_6510(DeviceTypes.DNP_CBC_6510, "CBC 6510", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
-
+    
     CAP_CONTROL_SUBBUS(CapControlTypes.CAP_CONTROL_SUBBUS, CapControlType.SUBBUS.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_FEEDER(CapControlTypes.CAP_CONTROL_FEEDER, CapControlType.FEEDER.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, CapControlType.AREA.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
@@ -201,10 +199,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, CapControlType.LTC.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     GANG_OPERATED(CapControlTypes.GANG_OPERATED_REGULATOR, CapControlType.GO_REGULATOR.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     PHASE_OPERATED(CapControlTypes.PHASE_OPERATED_REGULATOR, CapControlType.PO_REGULATOR.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-
+    
     FAULT_CI(DeviceTypes.FAULT_CI, "Faulted Circuit Indicator", PaoCategory.DEVICE, PaoClass.GRID),
     NEUTRAL_MONITOR(DeviceTypes.NEUTRAL_MONITOR, "Capacitor Bank Neutral Monitor", PaoCategory.DEVICE, PaoClass.GRID),
-
+    
     ROUTE_CCU(2000, "CCU", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_TCU(2001, "TCU", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_LCU(2002, "LCU", PaoCategory.ROUTE, PaoClass.ROUTE),
@@ -217,7 +215,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     ROUTE_SNPP_TERMINAL(2009, "SNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_TNPP_TERMINAL(2011, "TNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_RDS_TERMINAL(2012, "RDS Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
-
+    
     LOCAL_DIRECT(3000, "Local Direct", PaoCategory.PORT, PaoClass.PORT),
     LOCAL_SHARED(3001, "Local Serial Port", PaoCategory.PORT, PaoClass.PORT),
     LOCAL_RADIO(3002, "Local Radio", PaoCategory.PORT, PaoClass.PORT),
@@ -230,14 +228,14 @@ public enum PaoType implements DatabaseRepresentationSource {
     TSERVER_DIALUP(3007, "Terminal Server Dialup", PaoCategory.PORT, PaoClass.PORT),
     LOCAL_DIALBACK(3008, "Local Dialback", PaoCategory.PORT, PaoClass.PORT),
     DIALOUT_POOL(3009, "Dialout Pool", PaoCategory.PORT, PaoClass.PORT),
-
+    
     SCRIPT(DeviceTypes.SCRIPT, "Script", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
     SIMPLE_SCHEDULE(DeviceTypes.SIMPLE_SCHEDULE, "Simple", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
     SYSTEM(DeviceTypes.SYSTEM, "SYSTEM", PaoCategory.DEVICE, PaoClass.SYSTEM),
     VIRTUAL_SYSTEM(DeviceTypes.VIRTUAL_SYSTEM, "VIRTUAL SYSTEM", PaoCategory.DEVICE, PaoClass.VIRTUAL),
-
+    
     WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
-
+    
     RFN_1200(DeviceTypes.RFN_1200, "RFN-1200", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "ecobee Smart Si", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
@@ -248,10 +246,12 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final PaoCategory paoCategory;
     private final PaoClass paoClass;
     private final static Logger log = YukonLogManager.getLogger(PaoType.class);
-
+    
     private final static ImmutableMap<Integer, PaoType> lookupById;
     private final static ImmutableMap<String, PaoType> lookupByDbString;
     private final static ImmutableSet<PaoType> meterTypes;
+    private final static ImmutableSet<PaoType> rfTypes;
+    private final static ImmutableSet<PaoType> rfMeterTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
     private final static ImmutableSet<PaoType> mctTypes;
     private final static ImmutableSet<PaoType> iedTypes;
@@ -270,7 +270,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> routableTypes;
     
     public final static int INVALID = -1;
-
+    
     static {
         try {
             ImmutableMap.Builder<Integer, PaoType> idBuilder = ImmutableMap.builder();
@@ -299,36 +299,36 @@ public enum PaoType implements DatabaseRepresentationSource {
             LM_ECOBEE_PROGRAM);
         
         cbcTypes = ImmutableSet.of(
-                CAPBANKCONTROLLER,
-                CBC_7010,
-                CBC_7011,
-                CBC_7012,
-                CBC_7020,
-                CBC_7022,
-                CBC_7023,
-                CBC_7024,
-                CBC_8020,
-                CBC_8024,
-                CBC_DNP,
-                CBC_EXPRESSCOM,
-                CBC_FP_2800,
-                DNP_CBC_6510);
-
+            CAPBANKCONTROLLER,
+            CBC_7010,
+            CBC_7011,
+            CBC_7012,
+            CBC_7020,
+            CBC_7022,
+            CBC_7023,
+            CBC_7024,
+            CBC_8020,
+            CBC_8024,
+            CBC_DNP,
+            CBC_EXPRESSCOM,
+            CBC_FP_2800,
+            DNP_CBC_6510);
+        
         ccuTypes = ImmutableSet.of(
             CCU710A,
             CCU711,
             CCU721);
-
+        
         tcuTypes = ImmutableSet.of(
             TCU5000,
             TCU5500);
-
+        
         lcuTypes = ImmutableSet.of(
             LCU415,
             LCU_ER,
             LCU_T3026,
             LCULG);
-
+        
         repeaterTypes = ImmutableSet.of(
             REPEATER,
             REPEATER_800,
@@ -336,87 +336,116 @@ public enum PaoType implements DatabaseRepresentationSource {
             REPEATER_850,
             REPEATER_902,
             REPEATER_921);
-
+        
         meterTypes = ImmutableSet.of(
-                ALPHA_A1,
-                ALPHA_A3,
-                ALPHA_PPLUS,
-                DR_87,
-                FOCUS,
-                FULCRUM,
-                IPC410FL,
-                IPC420FD,
-                IPC430S4E,
-                IPC430SL,
-                KV,
-                KVII,
-                LANDISGYRS4,
-                MCT210,
-                MCT213,
-                MCT240,
-                MCT248,
-                MCT250,
-                MCT310,
-                MCT310CT,
-                MCT310ID,
-                MCT310IDL,
-                MCT310IL,
-                MCT310IM,
-                MCT318,
-                MCT318L,
-                MCT360,
-                MCT370,
-                MCT410CL,
-                MCT410FL,
-                MCT410GL,
-                MCT410IL,
-                MCT420CD,
-                MCT420CL,
-                MCT420FD,
-                MCT420FL,
-                MCT430A,
-                MCT430A3,
-                MCT430S4,
-                MCT430SL,
-                MCT440_2131B,
-                MCT440_2132B,
-                MCT440_2133B,
-                MCT470,
-                MCTBROADCAST,
-                QUANTUM,
-                RFN410CL,
-                RFN410FD,
-                RFN410FL,
-                RFN410FX,
-                RFN420CD,
-                RFN420CL,
-                RFN420FD,
-                RFN420FL,
-                RFN420FRD,
-                RFN420FRX,
-                RFN420FX,
-                RFN430A3D,
-                RFN430A3K,
-                RFN430A3R,
-                RFN430A3T,
-                RFN430KV,
-                RFN430SL0,
-                RFN430SL1,
-                RFN430SL2,
-                RFN430SL3,
-                RFN430SL4,
-//                RFN440_2131T,
-                RFN440_2131TD,
-//                RFN440_2132T,
-                RFN440_2132TD,
-//                RFN440_2133T,
-                RFN440_2133TD,
-                RFWMETER,
-                SENTINEL,
-                SIXNET,
-                TRANSDATA_MARKV,
-                VECTRON,
-                RFN_1200);
+            ALPHA_A1,
+            ALPHA_A3,
+            ALPHA_PPLUS,
+            DR_87,
+            FOCUS,
+            FULCRUM,
+            IPC410FL,
+            IPC420FD,
+            IPC430S4E,
+            IPC430SL,
+            KV,
+            KVII,
+            LANDISGYRS4,
+            MCT210,
+            MCT213,
+            MCT240,
+            MCT248,
+            MCT250,
+            MCT310,
+            MCT310CT,
+            MCT310ID,
+            MCT310IDL,
+            MCT310IL,
+            MCT310IM,
+            MCT318,
+            MCT318L,
+            MCT360,
+            MCT370,
+            MCT410CL,
+            MCT410FL,
+            MCT410GL,
+            MCT410IL,
+            MCT420CD,
+            MCT420CL,
+            MCT420FD,
+            MCT420FL,
+            MCT430A,
+            MCT430A3,
+            MCT430S4,
+            MCT430SL,
+            MCT440_2131B,
+            MCT440_2132B,
+            MCT440_2133B,
+            MCT470,
+            MCTBROADCAST,
+            QUANTUM,
+            RFN410CL,
+            RFN410FD,
+            RFN410FL,
+            RFN410FX,
+            RFN420CD,
+            RFN420CL,
+            RFN420FD,
+            RFN420FL,
+            RFN420FRD,
+            RFN420FRX,
+            RFN420FX,
+            RFN430A3D,
+            RFN430A3K,
+            RFN430A3R,
+            RFN430A3T,
+            RFN430KV,
+            RFN430SL0,
+            RFN430SL1,
+            RFN430SL2,
+            RFN430SL3,
+            RFN430SL4,
+            RFN440_2131TD,
+            RFN440_2132TD,
+            RFN440_2133TD,
+            RFWMETER,
+            SENTINEL,
+            SIXNET,
+            TRANSDATA_MARKV,
+            VECTRON,
+            RFN_1200);
+        
+        rfTypes = ImmutableSet.of(
+            RFN410CL,
+            RFN410FD,
+            RFN410FL,
+            RFN410FX,
+            RFN420CD,
+            RFN420CL,
+            RFN420FD,
+            RFN420FL,
+            RFN420FRD,
+            RFN420FRX,
+            RFN420FX,
+            RFN430A3D,
+            RFN430A3K,
+            RFN430A3R,
+            RFN430A3T,
+            RFN430KV,
+            RFN430SL0,
+            RFN430SL1,
+            RFN430SL2,
+            RFN430SL3,
+            RFN430SL4,
+            RFN440_2131TD,
+            RFN440_2132TD,
+            RFN440_2133TD,
+            RFWMETER,
+            RFN_1200,
+            LCR6200_RFN,
+            LCR6600_RFN);
+        
+        rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
         mctTypes = ImmutableSet.of(
             MCT213,
@@ -484,12 +513,12 @@ public enum PaoType implements DatabaseRepresentationSource {
             RTUILEX,
             RTUWELCO,
             RTM);
-
+        
         ionTypes = ImmutableSet.of(
             ION_7330,
             ION_7700,
             ION_8300);
-
+        
         portTypes = ImmutableSet.of(
             LOCAL_DIRECT,
             LOCAL_SHARED,
@@ -513,7 +542,7 @@ public enum PaoType implements DatabaseRepresentationSource {
         rfLcrTypes = ImmutableSet.of(
             LCR6200_RFN,
             LCR6600_RFN);
-
+        
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
             if (paoType.isCapControl()) {
@@ -731,6 +760,18 @@ public enum PaoType implements DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getMctTypes() {
         return mctTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getRfMeterTypes() {
+        return rfMeterTypes;
+    }
+    
+    public boolean isRfMeter() {
+        return rfMeterTypes.contains(this);
+    }
+    
+    public boolean hasMeterNumber() {
+        return this.isMct() || this.isIed() || this.isRfMeter();
     }
     
     public static ImmutableSet<PaoType> getIedTypes() {

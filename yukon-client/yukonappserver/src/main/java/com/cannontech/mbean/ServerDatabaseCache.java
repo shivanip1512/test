@@ -29,7 +29,6 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
@@ -975,7 +974,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
      */
     @Override
     public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg, boolean noObjectNeeded) {
-        String objectType = dbChangeMsg.getObjectType();
         String dbCategory = dbChangeMsg.getCategory();
         DbChangeType dbChangeType = dbChangeMsg.getDbChangeType();
         int database = dbChangeMsg.getDatabase();
@@ -987,18 +985,15 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             retLBase = handlePointChange(dbChangeType, id, noObjectNeeded);
         } else if (database == DBChangeMsg.CHANGE_PAO_DB) {
             retLBase = handleYukonPAOChange(dbChangeType, id);
-
-            // if any device changes,
-            // reload all the DeviceMeterGroup data (may be inefficient!!)
+            
             if (dbCategory.equalsIgnoreCase(PaoCategory.DEVICE.getDbString())) {
                 allDevices = null;
                 allMCTs = null;
                 allUnusedCCDevices = null;
                 allLoadManagement = null; // PAOGroups are here, oops!
                 
-                // Verify that this a device that even cares about DeviceMeterGroups
-                if (DeviceTypesFuncs.usesDeviceMeterGroup(PaoType.getForDbString(objectType))) {
-                    handleDeviceMeterGroupChange(dbChangeType, id);
+                if (PaoType.getForDbString(dbChangeMsg.getObjectType()).hasMeterNumber()) {
+                    handleMeterNumberChange(dbChangeType, id);
                 }
             } else if (dbCategory.equalsIgnoreCase(PaoCategory.LOADMANAGEMENT.getDbString())) {
                 allLoadManagement = null;
@@ -1093,10 +1088,10 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return retLBase;
     }
     
-    private synchronized void handleDeviceMeterGroupChange(DbChangeType type, int id) {
+    private synchronized void handleMeterNumberChange(DbChangeType type, int id) {
         
         if (id == 0) { // A force reload of all devicemetergroups was sent.
-            releaseAllDeviceMeterGroups();
+            releaseAllMeters();
         }
         
         if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
@@ -1105,19 +1100,19 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         } else if (type == DbChangeType.DELETE) {
             allMeters.remove(id);
         } else {
-            releaseAllDeviceMeterGroups();
+            releaseAllMeters();
         }
     }
     
     private synchronized LiteBase handleGraphDefinitionChange(DbChangeType dbChangeType, int id) {
         boolean alreadyAdded = false;
         LiteBase lBase = null;
-
+        
         // if the storage is not already loaded, we must not care about it
         if (allGraphDefinitions == null) {
             return lBase;
         }
-
+        
         switch (dbChangeType) {
         case ADD:
             for (int i = 0; i < allGraphDefinitions.size(); i++) {
@@ -1895,7 +1890,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     }
 
     @Override
-    public synchronized void releaseAllDeviceMeterGroups() {
+    public synchronized void releaseAllMeters() {
         allMeters = null;
     }
 

@@ -235,11 +235,7 @@ public final class DeviceTypesFuncs {
             return false;
         }
     }
-
-    public final static boolean usesDeviceMeterGroup(PaoType paoType) {
-        return paoType.isMct() || paoType.isIed() || paoType.isRfn();
-    }
-
+    
     @Deprecated
     /** use ChangeDeviceTypeService */
     public static ICapBankController changeCBCType(PaoType newType, ICapBankController val) {

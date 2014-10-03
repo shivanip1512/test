@@ -10,7 +10,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -66,7 +65,7 @@ public class DeviceMeterGroupModel extends DBTreeModel {
                 return false;
             }
         }
-        return DeviceTypesFuncs.usesDeviceMeterGroup(paoType);
+        return paoType.hasMeterNumber();
     }
 
     @Override
