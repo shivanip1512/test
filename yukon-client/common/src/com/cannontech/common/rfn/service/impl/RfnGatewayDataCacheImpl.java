@@ -26,6 +26,10 @@ import com.google.common.cache.AbstractLoadingCache;
 import com.google.common.cache.LoadingCache;
 
 public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
+    
+    private static final String gatewayDataRequestCparm = "RFN_GATEWAY_DATA_REQUEST";
+    private static final String gatewayDataRequestQueue = "yukon.qr.obj.common.rfn.GatewayDataRequest";
+    
     //Autowired in constructor
     private ConnectionFactory connectionFactory;
     private ConfigurationSource configurationSource;
@@ -45,8 +49,8 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
     @PostConstruct
     public void init() {
-        requestTemplate = new RequestReplyTemplateImpl<GatewayDataResponse>("RFN_GATEWAY_DATA_REQUEST", configurationSource,
-                connectionFactory, "yukon.qr.obj.common.rfn.GatewayDataRequest", false);
+        requestTemplate = new RequestReplyTemplateImpl<GatewayDataResponse>(gatewayDataRequestCparm, configurationSource,
+                connectionFactory, gatewayDataRequestQueue, false);
     }
     
     @Override

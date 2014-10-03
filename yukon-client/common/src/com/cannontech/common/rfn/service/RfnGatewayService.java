@@ -21,16 +21,23 @@ import com.cannontech.common.rfn.model.RfnGateway;
 public interface RfnGatewayService {
     
     /**
-     * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not cached, a request will be
-     * sent to Network Manager.
+     * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not
+     * cached, a request will be sent to Network Manager. The request for gateway data from Network
+     * Manager is a blocking request. Any failure to retrieve gateway data from Network Manager will
+     * cause a NetworkManagerCommunicationException to be thrown.
+     * 
+     * @throws NetworkManagerCommunicationException if there is a communication error betweek Yukon
+     *             and Network Manager.
      */
-    public Set<RfnGateway> getAllGateways();
+    public Set<RfnGateway> getAllGateways() throws NetworkManagerCommunicationException;
     
     /**
-     * Retrieves the specified gateway. If the gateway data is not cached, a request will be sent to Network Manager.
+     * Retrieves the specified gateway. If the gateway data is not cached, a request will be sent to
+     * Network Manager. The request for gateway data from Network Manager is a blocking request.
      * 
      * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
-     * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
+     * @throws NetworkManagerCommunicationException if there is a communication error between Yukon
+     *             and Network Manager.
      */
     public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
@@ -48,10 +55,10 @@ public interface RfnGatewayService {
                                        throws NetworkManagerCommunicationException, GatewayUpdateException;
     
     /**
-     * Update the gateway. If the name or location are updated, they
-     * will be stored in the Yukon database, but changes will not propagate back to Network Manager.
-     * All other changes will be sent back to Network Manager and updated in Yukon's cache. Any null
-     * parameters will not be updated.
+     * Update the gateway. If the name or location are updated, they will be stored in the Yukon
+     * database, but changes will not propagate back to Network Manager. All other changes will be
+     * sent back to Network Manager and updated in Yukon's cache. Any null parameters will not be
+     * updated. This is a blocking operation.
      * 
      * @return true if the gateway was updated successfully.
      * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.

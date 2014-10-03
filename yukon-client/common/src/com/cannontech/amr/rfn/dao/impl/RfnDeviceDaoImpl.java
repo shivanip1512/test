@@ -71,9 +71,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public RfnDevice getDeviceForId(int paoId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("FROM YukonPaobject pao JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
-        sql.append("WHERE rfn.DeviceId").eq(paoId);
+        sql.append("select pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("from YukonPaobject pao");
+        sql.append(  "join RfnAddress rfn on rfn.DeviceId = pao.PaobjectId");
+        sql.append("where rfn.DeviceId").eq(paoId);
         
         try {
             RfnDevice rfnDevice= jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
@@ -103,8 +104,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT SerialNumber, Manufacturer, Model, DeviceId");
-                sql.append("FROM RfnAddress WHERE DeviceId").in(subList);
+                sql.append("select SerialNumber, Manufacturer, Model, DeviceId");
+                sql.append("from RfnAddress");
+                sql.append("where DeviceId").in(subList);
                 return sql;
             }
         };
@@ -142,7 +144,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         }
         /* If there is a row in RfnAddress for this device, update it, otherwise insert it. */
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO RfnAddress");
+        sql.append("insert into RfnAddress");
         sql.values(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier().getSensorSerialNumber(), device.getRfnIdentifier().getSensorManufacturer(), device.getRfnIdentifier().getSensorModel());
 
         try {
@@ -168,7 +170,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     private void deleteRfnAddress(RfnDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM RfnAddress");
+        sql.append("delete from RfnAddress");
         sql.append("where DeviceId").eq(device.getPaoIdentifier().getPaoId());
         
         jdbcTemplate.update(sql);
@@ -181,9 +183,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public List<RfnDevice> getDevicesByPaoType(PaoType paoType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("FROM YukonPaObject ypo JOIN RfnAddress rfn ON ypo.PAObjectID = rfn.DeviceId");
-        sql.append("WHERE ypo.Type").eq(paoType);
+        sql.append("select ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("from YukonPaObject ypo");
+        sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+        sql.append("where ypo.Type").eq(paoType);
         try {
             return jdbcTemplate.query(sql, rfnDeviceRowMapper);
         } catch (EmptyResultDataAccessException e) {

@@ -50,6 +50,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayServiceImpl.class);
     
+    private static final String gatewayUpdateRequestCparm = "RFN_GATEWAY_UPDATE_REQUEST";
+    private static final String gatewayActionRequestCparm = "RFN_GATEWAY_ACTION_REQUEST";
+    
+    private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
+    private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
+    
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
@@ -80,37 +86,33 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @PostConstruct
     public void init() {
-        updateRequestTemplate = new RequestReplyTemplateImpl<GatewayUpdateResponse>("RFN_GATEWAY_UPDATE_REQUEST", 
-                configurationSource, connectionFactory, "yukon.qr.obj.common.rfn.GatewayUpdateRequest", false);
-        actionRequestTemplate = new RequestReplyTemplateImpl<GatewayActionResponse>("RFN_GATEWAY_ACTION_REQUEST",
-                configurationSource, connectionFactory, "yukon.qr.obj.common.rfn.GatewayActionRequest", false);
+        updateRequestTemplate = new RequestReplyTemplateImpl<GatewayUpdateResponse>(gatewayUpdateRequestCparm, 
+                configurationSource, connectionFactory, gatewayUpdateRequestQueue, false);
+        actionRequestTemplate = new RequestReplyTemplateImpl<GatewayActionResponse>(gatewayActionRequestCparm,
+                configurationSource, connectionFactory, gatewayActionRequestQueue, false);
     }
     
     @Override
-    public Set<RfnGateway> getAllGateways() {
+    public Set<RfnGateway> getAllGateways() throws NetworkManagerCommunicationException {
         Set<RfnGateway> rfnGateways = new HashSet<RfnGateway>();
         // Get all base RfnDevices - new method RfnDeviceDao.getDevicesByPaoType
         List<RfnDevice> gateways = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
         for (RfnDevice gwDevice : gateways) {
             // Get PAO name
             String name = paoDao.getYukonPAOName(gwDevice.getPaoIdentifier().getPaoId());
-            // Get RfnGatewayData from cache
-            try {
-                RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
-                RfnGateway rfnGateway =
-                    new RfnGateway(name, gwDevice.getPaoIdentifier(),
-                                   gwDevice.getRfnIdentifier(),
-                                   gatewayData);
-                // Get PaoLocation from PaoLocationDao
-                PaoLocation gatewayLoc =
-                    paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
-                if (gatewayLoc != null) {
-                    rfnGateway.setLocation(gatewayLoc);
-                }
-                rfnGateways.add(rfnGateway);
-            } catch (NetworkManagerCommunicationException e) {
-                log.warn("caught exception in getAllGateways", e);
+            // Get RfnGatewayData from cache, this is a blocking call.
+            RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
+            RfnGateway rfnGateway =
+                new RfnGateway(name, gwDevice.getPaoIdentifier(),
+                               gwDevice.getRfnIdentifier(),
+                               gatewayData);
+            // Get PaoLocation from PaoLocationDao
+            PaoLocation gatewayLoc =
+                paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
+            if (gatewayLoc != null) {
+                rfnGateway.setLocation(gatewayLoc);
             }
+            rfnGateways.add(rfnGateway);
         }
         return rfnGateways;
     }
