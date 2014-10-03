@@ -107,7 +107,7 @@ import com.google.common.collect.Lists;
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache {
     // stores a soft reference to the cache
     private static ServerDatabaseCache cache;
-
+    
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     @Autowired private MeterDao meterDao;
@@ -115,15 +115,15 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
     @Autowired private CommandDao commandDao;
-
+    
     private String databaseAlias = CtiUtilities.getDatabaseAlias();
-
+    
     private Map<Integer, LiteYukonPAObject> allLitePaos;
     private Map<Integer, SimpleMeter> allMeters;
     
     private List<LitePoint> allSystemPoints = null;
     private List<LiteNotificationGroup> allNotificationGroups = null;
-
+    
     private List<LiteAlarmCategory> allAlarmCategories = null;
     private List<LiteGraphDefinition> allGraphDefinitions = null;
     private List<LiteYukonPAObject> allMCTs = null;
@@ -137,20 +137,19 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private List<LiteYukonPAObject> allLMScenarios = null;
     private List<LiteLMProgScenario> allLMScenarioProgs = null;
     private List<LiteLMPAOExclusion> allLMPAOExclusions = null;
-
+    
     private List<LiteTag> allTags = null;
-
+    
     private List<LiteSeasonSchedule> allSeasonSchedules = null;
     private List<LiteTOUSchedule> allTOUSchedules = null;
     private List<LiteTOUDay> allTOUDays = null;
-
+    
     private List<LiteYukonRole> allYukonRoles = null;
     private List<LiteYukonRoleProperty> allYukonRoleProperties = null;
     private List<LiteYukonGroup> allYukonGroups = null;
-
-    private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap =
-        null;
-
+    
+    private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap = null;
+    
     // lists that are created by the joining/parsing of existing lists
     private List<LiteYukonPAObject> allUnusedCCDevices = null;
     private List<LiteYukonPAObject> allCapControlFeeders = null;
@@ -165,7 +164,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<>(1000, .75f, 30);
     private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<>(1000, .75f, 30);
-
+    
     // derived from allYukonUsers,allYukonRoles,allYukonGroups
     // see type info in IDatabaseCache
     private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands = null;
@@ -173,18 +172,16 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private Map<Integer, LiteYukonPAObject> allRoutes = null;
     private Map<Integer, LiteStateGroup> allStateGroupMap = null;
     private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
-
+    
     private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<>(1000, .75f, 30);
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
     private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
-
-    private LiteYukonPAObject pao;
-
+    
     @Override
     public synchronized DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType) {
         return newItem.getDBChangeMsgs(dbChangeType);
     }
-
+    
     @Override
     public synchronized List<LiteAlarmCategory> getAllAlarmCategories() {
         if (allAlarmCategories != null) {
@@ -998,11 +995,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allMCTs = null;
                 allUnusedCCDevices = null;
                 allLoadManagement = null; // PAOGroups are here, oops!
-
-                // we should not have to return the DeviceMeterGroup since
-                // the liteObject that was edited/added was actually a Device
-                // retLBase = handleDeviceMeterGroupChange( dbType, id);
-
+                
                 // Verify that this a device that even cares about DeviceMeterGroups
                 if (DeviceTypesFuncs.usesDeviceMeterGroup(PaoType.getForDbString(objectType))) {
                     handleDeviceMeterGroupChange(dbChangeType, id);
@@ -1820,7 +1813,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }else if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
             lBase = allLitePaos.get(id);
             if (lBase == null) {
-                pao = paoDao.getLiteYukonPAO(id);
+                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
                 allLitePaos.put(pao.getLiteID(), pao);
                 lBase = pao;
             }
