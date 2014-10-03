@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
-import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -74,16 +73,6 @@ public interface MspObjectDao {
      */
     public Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor);
 
-
-    /**
-     * Retrieves msp meters from the mspVendor.
-     * Lists of msp meters are given to the callback as they are retrieved in chunks from the vendor.
-     * @param mspVendor
-     * @param callback
-     * @throws Exception
-     */
-    public void getAllMspMeters(MultispeakVendor mspVendor, SimpleCallback<List<Meter>> callback) throws Exception;
-    
     /**
      * Retrieves msp ServiceLocation objects from the mspVendor.
      * Lists of msp ServiceLocation objects are given to the callback as they are retrieved in chunks from the vendor.

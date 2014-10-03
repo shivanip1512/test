@@ -11,11 +11,12 @@ public class MeterReadFactory {
     /**
      * Factory method to create a billable device for the given category and
      * type
+     * 
      * @param category - device category
      * @param type - device type
      * @return a new instance of the billable device type
      */
-    public static MeterReadBase createMeterReadObject(PaoType paoType, String meterNumber) {
+    private static MeterReadBase createMeterReadObject(PaoType paoType, String meterNumber) {
         MeterReadBase meterReadObject = null;
 
         switch (paoType) {
@@ -27,7 +28,7 @@ public class MeterReadFactory {
         case MCT250:
             meterReadObject = new MCT2XX();
             break;
-            
+
         case MCT310:
         case MCT310CT:
         case MCT310ID:
@@ -73,12 +74,13 @@ public class MeterReadFactory {
             break;
         }
 
-        if (meterReadObject != null)
+        if (meterReadObject != null) {
             meterReadObject.setMeterNumber(meterNumber);
-        
+        }
+
         return meterReadObject;
     }
-    
+
     public static MeterReadBase createMeterReadObject(YukonMeter meter) {
         return createMeterReadObject(meter.getPaoIdentifier().getPaoType(), meter.getMeterNumber());
     }

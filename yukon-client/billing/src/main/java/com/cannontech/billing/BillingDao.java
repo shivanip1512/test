@@ -42,14 +42,12 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Class used to retrieve billing data
- */
 public class BillingDao {
 
     /**
      * Retrieves billing data from the database and returns a list of
      * BillableDevices which contain all of the billing data
+     * 
      * @param defaults - Information about the billing data to be retrieved
      * @param multiplier - Reading value multiplier
      * @return A list of BillableDevices
@@ -57,7 +55,6 @@ public class BillingDao {
     public static List<BillableDevice> retrieveBillingData(final BillingFileDefaults defaults) {
 
         long timer = System.currentTimeMillis();
-
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT");
@@ -115,22 +112,20 @@ public class BillingDao {
 
         YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
-
-        final List<BillableDevice> deviceList = new ArrayList<BillableDevice>();
-        jdbcTemplate.query(sql, new ResultSetExtractor() {
+        final List<BillableDevice> deviceList = new ArrayList<>();
+        jdbcTemplate.query(sql, new ResultSetExtractor<Object>() {
             @Override
             public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
 
                 Map<String, String> accountNumberMap = null;
-                if (defaults.getFormatID() == FileFormatTypes.CADP ||
-                        defaults.getFormatID() == FileFormatTypes.CADPXL2 ) {
+                if (defaults.getFormatID() == FileFormatTypes.CADP || defaults.getFormatID() == FileFormatTypes.CADPXL2) {
                     accountNumberMap = retrieveAccountNumbers();
                 }
 
-                Map<String, Integer> meterPositionNumberMap = new HashMap<String, Integer>();
-                Hashtable<Integer, Double> pointIdMultiplierHashTable = new Hashtable<Integer, Double>();
+                Map<String, Integer> meterPositionNumberMap = new HashMap<>();
+                Hashtable<Integer, Double> pointIdMultiplierHashTable = new Hashtable<>();
                 if (defaults.isRemoveMultiplier()) {
-                    //Don't do all the work against the point tables if we don't need to 
+                    // Don't do all the work against the point tables if we don't need to
                     pointIdMultiplierHashTable = retrievePointIDMultiplierHashTable();
                 }
 
@@ -151,7 +146,8 @@ public class BillingDao {
                     double multiplier = 1;
                     if (defaults.isRemoveMultiplier()) {
                         Double pointIdMult = pointIdMultiplierHashTable.get(new Integer(currentPointID));
-                        if ( pointIdMult != null) {	//Possibility that status points might be returned...which don't have multipliers!
+                        if (pointIdMult != null) { // Possibility that status points might be returned...which
+                                                   // don't have multipliers!
                             multiplier = pointIdMult;
                         }
                     }
@@ -166,7 +162,7 @@ public class BillingDao {
 
                     int pointType = PointTypes.getType(ptType);
                     PointIdentifier pointIdentifier = new PointIdentifier(PointType.getForId(pointType), ptOffset);
-                    java.util.Date tsDate = new java.util.Date(ts.getTime());
+                    Date tsDate = new Date(ts.getTime());
 
                     String accountNumber = (accountNumberMap == null ? paoName : accountNumberMap.get(meterNumber));
 
@@ -177,22 +173,14 @@ public class BillingDao {
 
                             if (device != null) {
 
-                                if( (device.isEnergy(pointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
-                                        (device.isDemand(pointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+                                if ((device.isEnergy(pointIdentifier) && !tsDate.before(defaults.getEnergyStartDate()))
+                                    || (device.isDemand(pointIdentifier) && !tsDate.before(defaults.getDemandStartDate()))) {
 
-                                    DeviceData meterData = new DeviceData(meterNumber,
-                                                                          getMeterPositionNumber(meterPositionNumberMap,
-                                                                                                 accountNumber),
-                                                                                                 String.valueOf(address),
-                                                                                                 accountNumber,
-                                                                                                 paoName);
-                                    device.populate(pointIdentifier,
-                                                    ts,
-                                                    reading,
-                                                    unitOfMeasure,
-                                                    pointName,
-                                                    meterData);
-                                }                                    
+                                    DeviceData meterData =
+                                        new DeviceData(meterNumber, getMeterPositionNumber(meterPositionNumberMap,
+                                            accountNumber), String.valueOf(address), accountNumber, paoName);
+                                    device.populate(pointIdentifier, ts, reading, unitOfMeasure, pointName, meterData);
+                                }
 
                             }
 
@@ -201,21 +189,13 @@ public class BillingDao {
 
                             if (device != null) {
 
-                                if( (device.isEnergy(pointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
-                                        (device.isDemand(pointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+                                if ((device.isEnergy(pointIdentifier) && !tsDate.before(defaults.getEnergyStartDate()))
+                                    || (device.isDemand(pointIdentifier) && !tsDate.before(defaults.getDemandStartDate()))) {
 
-                                    DeviceData meterData = new DeviceData(meterNumber,
-                                                                          getMeterPositionNumber(meterPositionNumberMap,
-                                                                                                 accountNumber),
-                                                                                                 String.valueOf(address),
-                                                                                                 accountNumber,
-                                                                                                 paoName);
-                                    device.populate(pointIdentifier,
-                                                    ts,
-                                                    reading,
-                                                    unitOfMeasure,
-                                                    pointName,
-                                                    meterData);
+                                    DeviceData meterData =
+                                        new DeviceData(meterNumber, getMeterPositionNumber(meterPositionNumberMap,
+                                            accountNumber), String.valueOf(address), accountNumber, paoName);
+                                    device.populate(pointIdentifier, ts, reading, unitOfMeasure, pointName, meterData);
 
                                     lastDeviceID = currentDeviceID;
                                     deviceList.add(device);
@@ -229,18 +209,19 @@ public class BillingDao {
         });
 
         CTILogger.info("@" + BillingDao.class.toString() + " Data Collection : Took "
-                       + (System.currentTimeMillis() - timer));
+            + (System.currentTimeMillis() - timer));
         return deviceList;
     }
 
     /**
      * Returns a hashtable of pointid as key and multiplier as value. Collects
      * the pointid/multiplier from the database.
+     * 
      * @return java.util.Hashtable
      */
-    public static Hashtable<Integer, Double> retrievePointIDMultiplierHashTable() {
+    private static Hashtable<Integer, Double> retrievePointIDMultiplierHashTable() {
 
-        Hashtable<Integer, Double> multiplierHashTable = new Hashtable<Integer, Double>();
+        Hashtable<Integer, Double> multiplierHashTable = new Hashtable<>();
 
         String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER FROM POINTACCUMULATOR ACC");
 
@@ -251,32 +232,31 @@ public class BillingDao {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
             if (conn == null) {
-                com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
+                CTILogger.info(":  Error getting database connection.");
                 return null;
-            } else {
-                pstmt = conn.prepareStatement(sql.toString());
-                rset = pstmt.executeQuery();
+            }
+            pstmt = conn.prepareStatement(sql.toString());
+            rset = pstmt.executeQuery();
 
-                while (rset.next()) {
-                    Integer pointID = new Integer(rset.getInt(1));
-                    Double multiplier = new Double(rset.getDouble(2));
-                    multiplierHashTable.put(pointID, multiplier);
-                }
+            while (rset.next()) {
+                Integer pointID = new Integer(rset.getInt(1));
+                Double multiplier = new Double(rset.getDouble(2));
+                multiplierHashTable.put(pointID, multiplier);
+            }
 
-                sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER FROM POINTANALOG ANA");
-                pstmt = conn.prepareStatement(sql.toString());
-                rset = pstmt.executeQuery();
+            sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER FROM POINTANALOG ANA");
+            pstmt = conn.prepareStatement(sql.toString());
+            rset = pstmt.executeQuery();
 
-                while (rset.next()) {
-                    Integer pointID = new Integer(rset.getInt(1));
-                    Double multiplier = new Double(rset.getDouble(2));
-                    multiplierHashTable.put(pointID, multiplier);
-                }
+            while (rset.next()) {
+                Integer pointID = new Integer(rset.getInt(1));
+                Double multiplier = new Double(rset.getDouble(2));
+                multiplierHashTable.put(pointID, multiplier);
             }
         } catch (SQLException e) {
             CTILogger.error(e);
         } finally {
-            SqlUtils.close(rset, pstmt, conn );
+            SqlUtils.close(rset, pstmt, conn);
         }
 
         return multiplierHashTable;
@@ -286,11 +266,12 @@ public class BillingDao {
      * Returns a hashtable of meternumber as key and account number as value.
      * Collects the meterNumber/Account number set from the file
      * meterAndAccountNumbers.txt
+     * 
      * @return Hashtable (key: meterNumber, value: account number)
      */
-    public static Map<String, String> retrieveAccountNumbers() {
+    private static Map<String, String> retrieveAccountNumbers() {
 
-        Vector<String> linesInFile = new Vector<String>();
+        Vector<String> linesInFile = new Vector<>();
         Map<String, String> accountNumberHashTable = null;
 
         try {
@@ -306,7 +287,7 @@ public class BillingDao {
                     tempLineString = readBuffer.readLine();
                 }
             } catch (IOException ioe) {
-            	CTILogger.error(ioe);
+                CTILogger.error(ioe);
             }
         } catch (FileNotFoundException fnfe) {
 
@@ -320,7 +301,7 @@ public class BillingDao {
         if (linesInFile != null) {
             Collections.sort(linesInFile);
             int hashCapacity = (linesInFile.size() + 1);
-            accountNumberHashTable = new HashMap<String, String>(hashCapacity);
+            accountNumberHashTable = new HashMap<>(hashCapacity);
 
             for (int i = 0; i < linesInFile.size(); i++) {
                 String line = linesInFile.get(i);
@@ -336,6 +317,7 @@ public class BillingDao {
 
     /**
      * Helper method to get the where clase for device meter group
+     * 
      * @param defaults - Information about the billing data to be retrieved
      * @return String where clause
      */
@@ -343,10 +325,11 @@ public class BillingDao {
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
 
         SqlStatementBuilder where = new SqlStatementBuilder(" AND ");
-        
+
         List<String> deviceGroupNames = defaults.getDeviceGroups();
         Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
-        SqlFragmentSource deviceGroupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, "YPO.PAOBJECTID");
+        SqlFragmentSource deviceGroupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, "YPO.PAOBJECTID");
         where.appendFragment(deviceGroupSqlWhereClause);
 
         return where;
@@ -358,13 +341,13 @@ public class BillingDao {
      * for the given account. If the map contains the account number, the value
      * is incremented and then returned, if the map does not contain the account
      * number, it is added and a value of one is inserted and returned.
+     * 
      * @param meterPositionNumberMap - Map containing key: account number and
-     *            value: meter position
+     *        value: meter position
      * @param accountNumber - Account number to get the meter position for
      * @return String representing the meter position number
      */
-    private static String getMeterPositionNumber(Map<String, Integer> meterPositionNumberMap,
-            String accountNumber) {
+    private static String getMeterPositionNumber(Map<String, Integer> meterPositionNumberMap, String accountNumber) {
 
         Integer meterPositionNumber = new Integer(1);
 
@@ -380,16 +363,7 @@ public class BillingDao {
 
     public static void main(String[] args) {
 
-        BillingFileDefaults bfd = new BillingFileDefaults(1,
-                                                          30,
-                                                          30,
-                                                          "",
-                                                          1,
-                                                          "",
-                                                          true,
-                                                          "",
-                                                          new Date(),
-                                                          true);
+        BillingFileDefaults bfd = new BillingFileDefaults(1, 30, 30, "", 1, "", true, "", new Date(), true);
 
         List<BillableDevice> deviceList = BillingDao.retrieveBillingData(bfd);
 

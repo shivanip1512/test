@@ -29,15 +29,6 @@ public interface BillableDevice {
 
     /**
      * Method to add a piece of data to this device (meternumber, accountnumber,
-     * etc...). Adds data to channel one and electric type
-     * @param field - The name of the field to store the data as
-     * @param type - The type to add the data to. 
-     * @param data - The data to be stored
-     */
-    public void addData(BillableField field, ReadingType type, String data);
-
-    /**
-     * Method to add a piece of data to this device (meternumber, accountnumber,
      * etc...).
      * @param channel - The channel to add the data to.
      * @param type - The type to add the data to.
