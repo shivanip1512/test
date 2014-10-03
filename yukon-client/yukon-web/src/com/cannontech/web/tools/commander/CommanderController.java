@@ -77,16 +77,10 @@ public class CommanderController {
     
     private static final String keyBase = "yukon.web.modules.tools.commander";
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
-    private static final Comparator<CommandRequest> requestSorter = new Comparator<CommandRequest>() {
+    private static final Comparator<CommandRequest> onTimestamp = new Comparator<CommandRequest>() {
         @Override
         public int compare(CommandRequest o1, CommandRequest o2) {
-            if (o1.getTimestamp() == o2.getTimestamp()) {
-                return 0;
-            } else if (o1.getTimestamp() < o2.getTimestamp()) {
-                return -1;
-            } else {
-                return 1;
-            }
+            return Long.compare(o1.getTimestamp(), o2.getTimestamp());
         }
     };
     
@@ -96,7 +90,7 @@ public class CommanderController {
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
         List<CommandRequest> requests = new ArrayList<>(commanderService.getRequests(user).values());
-        Collections.sort(requests, requestSorter);
+        Collections.sort(requests, onTimestamp);
         model.addAttribute("requests", requests);
         
         // Check cookie for last target of command execution
