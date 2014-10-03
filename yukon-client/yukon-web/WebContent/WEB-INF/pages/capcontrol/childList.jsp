@@ -122,7 +122,7 @@
 								<x:outputText value="Assigned Substation Buses" />
 							</f:facet>
 							<x:outputText
-								value="#{databaseCache.allPAOsMap[subBus.substationBusID]}" />
+								value="#{databaseCache.allPaosMap[subBus.substationBusID]}" />
 						</h:column>
 
 						<h:column>
@@ -283,7 +283,7 @@
 								<x:outputText value="Assigned Feeders" />
 							</f:facet>
 							<x:outputText
-								value="#{databaseCache.allPAOsMap[feeder.feederID]}" />
+								value="#{databaseCache.allPaosMap[feeder.feederID]}" />
 						</h:column>
 
 						<h:column>
@@ -443,7 +443,7 @@
 								<x:outputText value="Assigned CapBanks" />
 							</f:facet>
 							<x:outputText
-								value="#{databaseCache.allPAOsMap[capBank.deviceID]}" />
+								value="#{databaseCache.allPaosMap[capBank.deviceID]}" />
 						</h:column>
 
 						<h:column>

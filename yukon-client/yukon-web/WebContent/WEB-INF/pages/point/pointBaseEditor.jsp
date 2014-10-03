@@ -13,7 +13,7 @@
 			        <x:outputText id="Point_Type" value="#{ptEditorForm.pointBase.point.pointType} (id: #{ptEditorForm.pointBase.point.pointID})" styleClass="staticLabel"/>
 			
 					<x:outputLabel for="Parent" value="Parent: "/>
-			        <x:outputText  id = "Parent" value="#{databaseCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
+			        <x:outputText  id = "Parent" value="#{databaseCache.allPaosMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
 					
 					<x:outputLabel for="Point_Name" value="Point Name: "/>
 					<x:inputText id="Point_Name" value="#{ptEditorForm.pointBase.point.pointName}" required="true" maxlength="60" styleClass="char32Label" />
