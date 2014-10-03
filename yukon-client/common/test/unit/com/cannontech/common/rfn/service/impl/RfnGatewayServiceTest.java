@@ -2,8 +2,10 @@ package com.cannontech.common.rfn.service.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.easymock.EasyMock;
@@ -35,7 +37,8 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class RfnGatewayServiceTest {
     private RfnGatewayServiceImpl service;
@@ -50,6 +53,8 @@ public class RfnGatewayServiceTest {
     private final String gatewayName = "Test Gateway";
     private final PaoIdentifier gatewayPaoId = new PaoIdentifier(100, PaoType.RFN_GATEWAY);
     private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "CPS", "RF_GATEWAY");
+    
+    private Map<Integer, LiteYukonPAObject> paos;
     
     @Before
     public void init() {
@@ -72,6 +77,11 @@ public class RfnGatewayServiceTest {
         location.setLatitude(1.0);
         location.setLongitude(2.0);
         location.setPaoIdentifier(gatewayPaoId);
+        
+        paos = new HashMap<Integer, LiteYukonPAObject>();
+        LiteYukonPAObject gwPao = new LiteYukonPAObject(gatewayPaoId.getPaoId());
+        gwPao.setPaoName(name);
+        paos.put(gatewayPaoId.getPaoId(), gwPao);
     }
     
     private static RfnGatewayData createEmptyRfnGatewayData(RfnIdentifier rfnIdentifier) {
@@ -104,11 +114,15 @@ public class RfnGatewayServiceTest {
             .andReturn(rfnDevices);
         EasyMock.replay(rfnDeviceDao);
         
-        PaoDao paoDao = EasyMock.createStrictMock(PaoDao.class);
-        // Expecting a call to retrieve PAO name.
-        EasyMock.expect(paoDao.getYukonPAOName(gatewayPaoId.getPaoId())).andReturn(name);
-        EasyMock.expect(paoDao.getYukonPAOName(paoIdentifier.getPaoId())).andReturn("GW2");
-        EasyMock.replay(paoDao);
+        // Add another second gateway PAO to the map.
+        LiteYukonPAObject gwPao = new LiteYukonPAObject(paoIdentifier.getPaoId());
+        gwPao.setPaoName("GW2");
+        paos.put(paoIdentifier.getPaoId(), gwPao);
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
+        // Expecting a call to retrieve PAO name for each gateway.
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
 
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
 
@@ -120,7 +134,7 @@ public class RfnGatewayServiceTest {
 
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
-        ReflectionTestUtils.setField(service, "paoDao", paoDao);
+        ReflectionTestUtils.setField(service, "cache", cache);
         Assert.assertEquals("Expecting 2 gateways", 2, service.getAllGateways().size());
     }
     
@@ -131,10 +145,10 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(createRfnDevice(gatewayPaoId, gatewayRfnId));
         EasyMock.replay(rfnDeviceDao);
         
-        PaoDao paoDao = EasyMock.createStrictMock(PaoDao.class);
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
         // Expecting a call to retrieve PAO name.
-        EasyMock.expect(paoDao.getYukonPAOName(gatewayPaoId.getPaoId())).andReturn(name);
-        EasyMock.replay(paoDao);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
         
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
         PaoLocation paoLocation = new PaoLocation();
@@ -152,7 +166,7 @@ public class RfnGatewayServiceTest {
         
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
-        ReflectionTestUtils.setField(service, "paoDao", paoDao);
+        ReflectionTestUtils.setField(service, "cache", cache);
         RfnGateway rfnGateway = service.getGatewayByPaoId(gatewayPaoId);
         Assert.assertEquals("PaoIdentifier does not match", gatewayPaoId, rfnGateway.getPaoIdentifier());
         Assert.assertEquals("RfnIdentifier does not match", gatewayRfnId, rfnGateway.getRfnIdentifier());
@@ -178,10 +192,10 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(createRfnDevice(gatewayPaoId, gatewayRfnId));
         EasyMock.replay(rfnDeviceDao);
         
-        PaoDao paoDao = EasyMock.createStrictMock(PaoDao.class);
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
         // Expecting a call to retrieve PAO name.
-        EasyMock.expect(paoDao.getYukonPAOName(gatewayPaoId.getPaoId())).andReturn(name);
-        EasyMock.replay(paoDao);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
         
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
         
@@ -192,7 +206,7 @@ public class RfnGatewayServiceTest {
         
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
-        ReflectionTestUtils.setField(service, "paoDao", paoDao);
+        ReflectionTestUtils.setField(service, "cache", cache);
         service.getGatewayByPaoId(gatewayPaoId);
     }
     
@@ -268,10 +282,10 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(gwDevice);
         EasyMock.replay(rfnDeviceDao);
         
-        PaoDao paoDao = EasyMock.createStrictMock(PaoDao.class);
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
         // Expecting a call to retrieve PAO name.
-        EasyMock.expect(paoDao.getYukonPAOName(gatewayPaoId.getPaoId())).andReturn(name);
-        EasyMock.replay(paoDao);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
         
         RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
         // Expecting call to retrieve gateway data.
@@ -295,7 +309,7 @@ public class RfnGatewayServiceTest {
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
-        ReflectionTestUtils.setField(service, "paoDao", paoDao);
+        ReflectionTestUtils.setField(service, "cache", cache);
         
         RfnGatewayData rfnGatewayData = createEmptyRfnGatewayData(gatewayRfnId);
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
@@ -312,10 +326,10 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(gwDevice);
         EasyMock.replay(rfnDeviceDao);
         
-        PaoDao paoDao = EasyMock.createStrictMock(PaoDao.class);
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
         // Expecting a call to retrieve PAO name.
-        EasyMock.expect(paoDao.getYukonPAOName(gatewayPaoId.getPaoId())).andReturn(name);
-        EasyMock.replay(paoDao);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
         
         RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
         // Expecting call to retrieve gateway data.
@@ -344,7 +358,7 @@ public class RfnGatewayServiceTest {
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
-        ReflectionTestUtils.setField(service, "paoDao", paoDao);
+        ReflectionTestUtils.setField(service, "cache", cache);
         
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.REPLY);
@@ -371,10 +385,10 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(gwDevice);
         EasyMock.replay(rfnDeviceDao);
         
-        PaoDao paoDao = EasyMock.createStrictMock(PaoDao.class);
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
         // Expecting a call to retrieve PAO name.
-        EasyMock.expect(paoDao.getYukonPAOName(gatewayPaoId.getPaoId())).andReturn(name);
-        EasyMock.replay(paoDao);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
         
         RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
         // Expecting call to retrieve gateway data.
@@ -398,7 +412,7 @@ public class RfnGatewayServiceTest {
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
-        ReflectionTestUtils.setField(service, "paoDao", paoDao);
+        ReflectionTestUtils.setField(service, "cache", cache);
         
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.REPLY);
@@ -426,10 +440,10 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(gwDevice);
         EasyMock.replay(rfnDeviceDao);
         
-        PaoDao paoDao = EasyMock.createStrictMock(PaoDao.class);
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
         // Expecting a call to retrieve PAO name.
-        EasyMock.expect(paoDao.getYukonPAOName(gatewayPaoId.getPaoId())).andReturn(name);
-        EasyMock.replay(paoDao);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
         
         RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
         // Expecting call to retrieve gateway data.
@@ -453,7 +467,7 @@ public class RfnGatewayServiceTest {
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
-        ReflectionTestUtils.setField(service, "paoDao", paoDao);
+        ReflectionTestUtils.setField(service, "cache", cache);
         
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.EXCEPTION);

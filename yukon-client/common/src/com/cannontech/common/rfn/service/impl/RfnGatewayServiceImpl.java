@@ -43,8 +43,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class RfnGatewayServiceImpl implements RfnGatewayService {
 
@@ -58,7 +57,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private PaoDao paoDao;
+    @Autowired private IDatabaseCache cache;
     
     private RfnGatewayDataCache dataCache;
     private ConnectionFactory connectionFactory;
@@ -99,7 +98,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         List<RfnDevice> gateways = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
         for (RfnDevice gwDevice : gateways) {
             // Get PAO name
-            String name = paoDao.getYukonPAOName(gwDevice.getPaoIdentifier().getPaoId());
+            String name = cache.getAllPaosMap().get(gwDevice.getPaoIdentifier().getPaoId()).getPaoName();
             // Get RfnGatewayData from cache, this is a blocking call.
             RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
             RfnGateway rfnGateway =
@@ -123,7 +122,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         // Get base RfnDevice via RfnDeviceDao.getDeviceForId
         RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         // Get PAO name
-        String name = paoDao.getYukonPAOName(paoIdentifier.getPaoId());
+        String name = cache.getAllPaosMap().get(gwDevice.getPaoIdentifier().getPaoId()).getPaoName();
         // Get RfnGatewayData from cache
         RfnGatewayData gatewayData = dataCache.get(paoIdentifier);
         RfnGateway rfnGateway = new RfnGateway(name, gwDevice.getPaoIdentifier(),
