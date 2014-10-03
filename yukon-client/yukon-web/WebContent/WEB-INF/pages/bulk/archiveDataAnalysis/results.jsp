@@ -1,9 +1,9 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="tools" page="bulk.analysis.results">
 
@@ -114,9 +114,10 @@
         <table class="compact-results-table">
             <thead>
                 <tr>
-                    <th><i:inline key=".deviceName"/></th>
-                    <th><i:inline key=".deviceType"/></th>
-                    <th><i:inline key=".holes"/></th>
+                    <tags:sort column="${nameCol}"/>
+                    <tags:sort column="${typeCol}"/>
+                    <tags:sort column="${meterNumberCol}"/>
+                    <tags:sort column="${intervalsCol}"/>
                     <th><i:inline key=".timeline" arguments="${intervals}"/></th>
                 </tr>
             </thead>
@@ -124,10 +125,16 @@
             <tbody>
                 <c:forEach items="${result.searchResult.resultList}" var="row">
                     <tr>
-                        <td><cti:deviceName deviceId="${row.id.paoId}"/></td>
-                        <td><cti:formatObject value="${row.id.paoType}"/></td>
-                        <td>${row.holeCount}</td>
-                        <td><amr:analysisResult data="${row}" width="${barWidth}"/></td>
+                        <td><cti:deviceName deviceId="${row.paoIdentifier.paoId}"/></td>
+                        <td><i:inline key="${row.paoIdentifier.paoType}"/></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty row.meterNumber}">${row.meterNumber}</c:when>
+                                <c:otherwise><i:inline key="yukon.web.defaults.na"/></c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>${row.missingIntervals}</td>
+                        <td><amr:analysisResult data="${row.data}" width="${barWidth}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>

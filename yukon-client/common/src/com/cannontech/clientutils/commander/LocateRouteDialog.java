@@ -30,6 +30,8 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
 	private javax.swing.JLabel ivjDeviceLabel = null;
 	private javax.swing.JTextField ivjDeviceNameTextField = null;
 	
+	PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+	
 	private LiteYukonPAObject[] allRoutes;
 	/**
 	 * ClearPrintButtonPanel constructor comment.
@@ -326,7 +328,7 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
                         LiteYukonPAObject route = (LiteYukonPAObject) getRouteComboBox().getItemAt(i);
                         
                         if (liteBase.equals(route)) {
-                            route.retrieve(CtiUtilities.getDatabaseAlias());
+                            route = paoDao.getLiteYukonPAO(route.getLiteID());
                             getRouteComboBox().update(getRouteComboBox().getGraphics());
                             break;
                         }

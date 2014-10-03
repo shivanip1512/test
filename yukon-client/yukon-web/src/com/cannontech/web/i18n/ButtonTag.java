@@ -58,8 +58,8 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     }
 
     public void setLabel(String label) {
-		this.label = label;
-	}
+        this.label = label;
+    }
     
     public void setNameKey(String nameKey) {
         this.nameKey = nameKey;
@@ -82,7 +82,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     }
     
     public void setIcon(String icon) {
-    	this.icon = icon;
+        this.icon = icon;
     }
 
     public void setType(String type) {
@@ -115,21 +115,20 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
 
     @Override
     public void doTag() throws JspException, IOException, NoSuchMessageException {
-    	
-    	RenderMode mode = renderMode == null ? RenderMode.BUTTON : RenderMode.getByValue(renderMode);
-    	
+        
+        RenderMode mode = renderMode == null ? RenderMode.BUTTON : RenderMode.getByValue(renderMode);
+        
         MessageScope scope = MessageScopeHelper.forRequest(getRequest());
         try {
             scope.pushScope("." + nameKey, "components.button." + nameKey);
-
-
+            
             /* Button Text */
             String labelText = "";
             boolean override = false;
             /* Allow localizers to override the complete button text for any specific button.
              * This means the dialogButton attribute's appending of ellipsis feature will not be respected. */
             labelText = getLocalMessage(scope, ".label.override");
-
+            
             if (StringUtils.isBlank(labelText)) {
                 labelText = getLocalMessage(scope, ".label");
                 if (StringUtils.isNotBlank(labelText)) {
@@ -138,7 +137,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             } else {
                 override = true;
             }
-
+            
             if (StringUtils.isBlank(label) && StringUtils.isBlank(labelText) && (mode == RenderMode.BUTTON || mode == RenderMode.LABELED_IMAGE)) {
                 throw new RuntimeException("the label attribute or nameKey (<nameKey>.label) is required for renderMode: " + renderMode);
             }
@@ -147,7 +146,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (StringUtils.isNotBlank(label)) {
                 labelText = label;
             }
-
+            
             if (dialogButton && !override) {
                 String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
                 labelText += ellipsis;
@@ -164,7 +163,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                     && StringUtils.isBlank(icon)) {
                 throw new RuntimeException("'icon' is required when renderMode is 'image' or 'labeledImage'");
             }
-
+            
             /* Title */
             String hoverText = null;
             if (StringUtils.isNotBlank(title)) {
@@ -175,7 +174,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                     hoverText = StringEscapeUtils.escapeHtml4(hoverText);
                 }
             }
-
+            
             /* Class */
             StringBuilder classes = new StringBuilder().append("button");
             if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) {
@@ -226,9 +225,9 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                     out.write(" data-busy");
                 }
             }
-
+            
             out.write(">");
-
+            
             boolean hasImage = StringUtils.isNotBlank(icon);
             
             /* icon order matters here */
@@ -238,7 +237,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (hasImage) {
                 out.write("<i class=\"icon " + icon + "\"></i>");
             }
-
+            
             if (mode != RenderMode.IMAGE 
                     && mode != RenderMode.BUTTON_IMAGE
                     && !StringUtils.isBlank(labelText)) {
@@ -246,9 +245,9 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 out.write(labelText);
                 out.write("</span>");
             }
-
+            
             out.write("</button>");
-
+            
         } finally {
             scope.popScope();
         }

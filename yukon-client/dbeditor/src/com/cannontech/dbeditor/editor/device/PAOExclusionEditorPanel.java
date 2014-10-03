@@ -12,6 +12,7 @@ import com.cannontech.common.gui.util.AddRemovePanel;
 import com.cannontech.common.gui.util.AddRemovePanelListener;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -321,7 +322,7 @@ public class PAOExclusionEditorPanel extends DataInputPanel implements AddRemove
 
             for (PAOExclusion currPaoExclusion : currExcluded) {
                 for (LiteYukonPAObject litePAO : paos) {
-                    if (litePAO.getYukonID() == currPaoExclusion.getExcludedPaoID() && litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID()) {
+                    if (litePAO.getYukonID() == currPaoExclusion.getExcludedPaoID() && litePAO.getLiteID() != PaoUtils.LITEPAOBJECT_NONE.getLiteID()) {
                         assignedPAOs.addElement(litePAO);
                         break;
                     }
@@ -333,7 +334,7 @@ public class PAOExclusionEditorPanel extends DataInputPanel implements AddRemove
                 // be sure we have a pao that is similar to ourself by category AND that it is not our self!
                 if (litePAO.getPaoType().isTransmitter() && 
                         litePAO.getYukonID() != pao.getPAObjectID().intValue()) {
-                    if (!assignedPAOs.contains(litePAO) && litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID()) {
+                    if (!assignedPAOs.contains(litePAO) && litePAO.getLiteID() != PaoUtils.LITEPAOBJECT_NONE.getLiteID()) {
 
                         if (deviceType.isCcu() && litePAO.getPaoType().isCcu()) {
                             availablePAOs.addElement(litePAO);

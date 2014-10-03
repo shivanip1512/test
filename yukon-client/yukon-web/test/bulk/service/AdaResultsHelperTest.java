@@ -1,13 +1,13 @@
 package bulk.service;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Period;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.cannontech.common.bulk.model.Analysis;
@@ -18,7 +18,8 @@ import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.web.bulk.service.AdaResultsHelper;
+import com.cannontech.web.bulk.ada.model.AdaDevice;
+import com.cannontech.web.bulk.ada.service.AdaResultsHelper;
 import com.google.common.collect.Lists;
 
 public class AdaResultsHelperTest {
@@ -44,12 +45,18 @@ public class AdaResultsHelperTest {
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
         
         // device archive data
-        List<DeviceArchiveData> data = Lists.newArrayList();
-        data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
+        List<DeviceArchiveData> datas = Lists.newArrayList();
+        datas.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
         // test
-        AdaResultsHelper.buildBars(analysis, barWidth, data);
-        List<ReadSequence> timeline = data.get(0).getTimeline();
+        List<AdaDevice> devices = new ArrayList<>();
+        for (DeviceArchiveData data : datas) {
+            AdaDevice device = new AdaDevice();
+            device.setData(data);
+        }
+        
+        AdaResultsHelper.buildBars(analysis, barWidth, devices);
+        List<ReadSequence> timeline = datas.get(0).getTimeline();
         Assert.assertEquals(1, timeline.size());
         Assert.assertEquals(400, timeline.get(0).getWidth());
         Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
@@ -60,12 +67,18 @@ public class AdaResultsHelperTest {
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
-        data = Lists.newArrayList();
-        data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
+        datas = Lists.newArrayList();
+        datas.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
         // test
-        AdaResultsHelper.buildBars(analysis, barWidth, data);
-        timeline = data.get(0).getTimeline();
+        devices = new ArrayList<>();
+        for (DeviceArchiveData data : datas) {
+            AdaDevice device = new AdaDevice();
+            device.setData(data);
+        }
+        
+        AdaResultsHelper.buildBars(analysis, barWidth, devices);
+        timeline = datas.get(0).getTimeline();
         Assert.assertEquals(2, timeline.size());
         Assert.assertEquals(100, timeline.get(0).getWidth());
         Assert.assertEquals(300, timeline.get(1).getWidth());
@@ -78,12 +91,18 @@ public class AdaResultsHelperTest {
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
-        data = Lists.newArrayList();
-        data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
+        datas = Lists.newArrayList();
+        datas.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
         // test
-        AdaResultsHelper.buildBars(analysis, barWidth, data);
-        timeline = data.get(0).getTimeline();
+        devices = new ArrayList<>();
+        for (DeviceArchiveData data : datas) {
+            AdaDevice device = new AdaDevice();
+            device.setData(data);
+        }
+        
+        AdaResultsHelper.buildBars(analysis, barWidth, devices);
+        timeline = datas.get(0).getTimeline();
         Assert.assertEquals(3, timeline.size());
         Assert.assertEquals(100, timeline.get(0).getWidth());
         Assert.assertEquals(100, timeline.get(1).getWidth());
@@ -98,12 +117,18 @@ public class AdaResultsHelperTest {
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_PRESENT, 2L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
-        data = Lists.newArrayList();
-        data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
+        datas = Lists.newArrayList();
+        datas.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
         // test
-        AdaResultsHelper.buildBars(analysis, barWidth, data);
-        timeline = data.get(0).getTimeline();
+        devices = new ArrayList<>();
+        for (DeviceArchiveData data : datas) {
+            AdaDevice device = new AdaDevice();
+            device.setData(data);
+        }
+        
+        AdaResultsHelper.buildBars(analysis, barWidth, devices);
+        timeline = datas.get(0).getTimeline();
         Assert.assertEquals(3, timeline.size());
         Assert.assertEquals(200, timeline.get(0).getWidth());
         Assert.assertEquals(100, timeline.get(1).getWidth());
@@ -118,12 +143,18 @@ public class AdaResultsHelperTest {
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_PRESENT, 3L));
-        data = Lists.newArrayList();
-        data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
+        datas = Lists.newArrayList();
+        datas.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
         // test
-        AdaResultsHelper.buildBars(analysis, barWidth, data);
-        timeline = data.get(0).getTimeline();
+        devices = new ArrayList<>();
+        for (DeviceArchiveData data : datas) {
+            AdaDevice device = new AdaDevice();
+            device.setData(data);
+        }
+        
+        AdaResultsHelper.buildBars(analysis, barWidth, devices);
+        timeline = datas.get(0).getTimeline();
         Assert.assertEquals(2, timeline.size());
         Assert.assertEquals(300, timeline.get(0).getWidth());
         Assert.assertEquals(100, timeline.get(1).getWidth());
@@ -136,12 +167,18 @@ public class AdaResultsHelperTest {
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
-        data = Lists.newArrayList();
-        data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
+        datas = Lists.newArrayList();
+        datas.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
         // test
-        AdaResultsHelper.buildBars(analysis, barWidth, data);
-        timeline = data.get(0).getTimeline();
+        devices = new ArrayList<>();
+        for (DeviceArchiveData data : datas) {
+            AdaDevice device = new AdaDevice();
+            device.setData(data);
+        }
+        
+        AdaResultsHelper.buildBars(analysis, barWidth, devices);
+        timeline = datas.get(0).getTimeline();
         Assert.assertEquals(2, timeline.size());
         Assert.assertEquals(200, timeline.get(0).getWidth());
         Assert.assertEquals(200, timeline.get(1).getWidth());
@@ -154,12 +191,18 @@ public class AdaResultsHelperTest {
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_PRESENT, 2L));
         archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
-        data = Lists.newArrayList();
-        data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
+        datas = Lists.newArrayList();
+        datas.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
         // test
-        AdaResultsHelper.buildBars(analysis, barWidth, data);
-        timeline = data.get(0).getTimeline();
+        devices = new ArrayList<>();
+        for (DeviceArchiveData data : datas) {
+            AdaDevice device = new AdaDevice();
+            device.setData(data);
+        }
+        
+        AdaResultsHelper.buildBars(analysis, barWidth, devices);
+        timeline = datas.get(0).getTimeline();
         Assert.assertEquals(3, timeline.size());
         Assert.assertEquals(100, timeline.get(0).getWidth());
         Assert.assertEquals(200, timeline.get(1).getWidth());

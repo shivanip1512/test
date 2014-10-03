@@ -6,19 +6,19 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.tools.bulk.analysis.list">
+<cti:msgScope paths="modules.tools.bulk.analysis">
 
 <table class="compact-results-table">
     <thead>
         <tr>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.runDate"/></th>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.attribute"/></th>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.numberOfDevices"/></th>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.range"/></th>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.interval"/></th>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.pointQuality"/></th>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.status"/></th>
-            <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.actions"/></th>
+            <th><i:inline key=".list.runDate"/></th>
+            <th><i:inline key=".attribute"/></th>
+            <th><i:inline key=".list.numberOfDevices"/></th>
+            <th><i:inline key=".list.range"/></th>
+            <th><i:inline key=".interval"/></th>
+            <th><i:inline key=".pointQuality"/></th>
+            <th><i:inline key=".list.status"/></th>
+            <th><i:inline key=".list.actions"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>
@@ -44,10 +44,10 @@
                     <td>
                         <c:choose>
                             <c:when test="${analysis.excludeBadPointQualities}">
-                                <i:inline key="yukon.web.modules.tools.bulk.analysis.list.normalOnly"/>
+                                <i:inline key=".list.normalOnly"/>
                             </c:when>
                             <c:otherwise>
-                                <i:inline key="yukon.web.modules.tools.bulk.analysis.list.allQualities"/>
+                                <i:inline key=".list.allQualities"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -60,14 +60,14 @@
                                         <cti:param name="resultsId" value="${analysis.statusId}"/>
                                         <cti:param name="analysisId" value="${analysis.analysisId}"/>
                                     </cti:url>
-                                    <cti:link href="${analysisProgressUrl}" key="${analysis.status.formatKey}"/>
+                                    <a href="${analysisProgressUrl}"><i:inline key="${analysis.status.formatKey}"/></a>
                                 </c:when>
                                 <c:when test="${analysis.reading}">
                                     <cti:url var="readProgressUrl" value="/bulk/archiveDataAnalysis/read/readResults">
                                         <cti:param name="resultId" value="${analysis.statusId}"/>
                                         <cti:param name="analysisId" value="${analysis.analysisId}"/>
                                     </cti:url>
-                                    <cti:link href="${readProgressUrl}" key="${analysis.status.formatKey}"/>
+                                    <a href="${readProgressUrl}"><i:inline key="${analysis.status.formatKey}"/></a>
                                 </c:when>
                                 <c:when test="${analysis.done}">
                                     <i:inline key="${analysis.status}"/>
@@ -107,7 +107,7 @@
                             </cti:url>
                             <cti:button id="delete-result-${analysis.analysisId}" nameKey="remove" renderMode="image" 
                                     icon="icon-cross" href="${deleteUrl}"/>
-                            <d:confirm on="#delete-result-${analysis.analysisId}" nameKey="deleteConfirmation" 
+                            <d:confirm on="#delete-result-${analysis.analysisId}" nameKey="list.deleteConfirmation" 
                                     argument="${attribName}"/>
                         </div>
                     </td>

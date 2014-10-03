@@ -88,7 +88,7 @@ public final class YukonImageDaoImpl implements YukonImageDao {
                   return img;
                }
             }
-        }        
+        }
         
         return null;
     }
@@ -110,7 +110,6 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     }
     
     @Override
-    @SuppressWarnings("deprecation")
     public LiteYukonImage add(final int id, final String category, final String name, final Resource resource) throws IOException {
         InputStream in = resource.getInputStream();
         final File temp = File.createTempFile("yukon_image", ".tmp");

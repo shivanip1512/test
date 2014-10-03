@@ -118,7 +118,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     private static final String applicationName = "Commander";
 
     private YC yc;
-    private PaoDefinitionDao paoDefinitionDao;
+    
+    private PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+    private PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean(PaoDefinitionDao.class);
+    private DeviceGroupTreeFactory dgtf = YukonSpringHook.getBean(DeviceGroupTreeFactory.class);
+    private AsyncDynamicDataSource dataSource =  YukonSpringHook.getBean(AsyncDynamicDataSource.class);
     
     private TreeModelEnum[] treeModels = null;
     private static final String YC_TITLE = "Commander";
@@ -1135,7 +1139,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     LiteYukonPAObject route = (LiteYukonPAObject) routeComboBox.getItemAt(i);
 
                     if (liteBase.equals(route)) {
-                        route.retrieve(CtiUtilities.getDatabaseAlias());
+                        route = paoDao.getLiteYukonPAO(route.getLiteID());
                         routeComboBox.update(routeComboBox.getGraphics());
                         break;
                     }
@@ -1196,7 +1200,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         }
         
         // add the group model
-        DeviceGroupTreeFactory dgtf = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
         LiteBaseTreeModel liteBaseDeviceGroupModel = dgtf.getLiteBaseModel(false);
         models.add(liteBaseDeviceGroupModel);
 
@@ -1209,7 +1212,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             
         setRouteModel(); //fill route combo box
 
-        AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
         dataSource.addDBChangeLiteListener(this);
         
         addWindowListener(new WindowAdapter() {
@@ -1220,7 +1222,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         getYC().addObserver(this);
         getTreeViewPanel().getTree().setSelectionInterval(0,0);
         
-        paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
     }
     
     /**

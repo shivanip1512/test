@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk;
+package com.cannontech.web.bulk.ada;
 
 import java.io.IOException;
 import java.util.List;

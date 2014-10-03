@@ -263,7 +263,7 @@
     </bean>
 
     <bean id="meterInformationWidget"
-        class="com.cannontech.web.widget.MeterInformationWidget">
+        class="com.cannontech.web.widget.meterInfo.MeterInformationWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp"/>
         <property name="inputs">
            <set>

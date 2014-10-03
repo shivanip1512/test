@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk;
+package com.cannontech.web.bulk.ada;
 
 import javax.servlet.http.HttpServletRequest;
 

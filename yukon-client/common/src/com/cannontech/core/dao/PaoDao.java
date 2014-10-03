@@ -16,7 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface PaoDao {
 
-    public YukonPao getYukonPao(int paoId);
+    YukonPao getYukonPao(int paoId);
 
     /**
      * Checks for existence of a unique pao with the given name and type.
@@ -24,10 +24,10 @@ public interface PaoDao {
      * @param paoName the name of the pao
      * @param paoType the type of the pao
      * @return A PaoIdentifier representing the PaoId and
-     *         PaoType of the unique Pao if it exists or <code>null</code> if the object
-     *         doesn't exist.
+     * PaoType of the unique Pao if it exists or <code>null</code> if the object
+     * doesn't exist.
      */
-    public YukonPao findYukonPao(String paoName, PaoType paoType);
+    YukonPao findYukonPao(String paoName, PaoType paoType);
 
     /**
      * Checks for existence of a unique pao with the given name, category, and class.
@@ -36,10 +36,10 @@ public interface PaoDao {
      * @param paoClass the class of the pao
      * @param paoCategory the category of the pao
      * @return A PaoIdentifier representing the PaoId and
-     *         PaoType of the unique Pao if it exists or <code>null</code> if the object
-     *         doesn't exist.
+     * PaoType of the unique Pao if it exists or <code>null</code> if the object
+     * doesn't exist.
      */
-    public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass);
+    YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass);
 
     /**
      * Queries the database to return a PaoIdentifier for a unique pao that is assumed
@@ -50,7 +50,7 @@ public interface PaoDao {
      * @return A PaoIdentifier representing the PaoId and PaoType of the pao specified.
      * @throws NotFoundException if no Pao with the specified information exists in the database.
      */
-    public YukonPao getYukonPao(String paoName, PaoType paoType) throws NotFoundException;
+    YukonPao getYukonPao(String paoName, PaoType paoType) throws NotFoundException;
 
     /**
      * Queries the database to return a PaoIdentifier for a unique pao that is assumed
@@ -62,7 +62,7 @@ public interface PaoDao {
      * @return A PaoIdentifier representing the PaoId and PaoType of the pao specified.
      * @throws NotFoundException if no Pao with the specified information exists in the database.
      */
-    public YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) throws NotFoundException;
+    YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) throws NotFoundException;
 
     /**
      * Retrieves the YukonPao object along with related data
@@ -71,12 +71,12 @@ public interface PaoDao {
      * @param paoID
      * @return
      */
-    public LiteYukonPAObject getLiteYukonPAO(int paoID);
+    LiteYukonPAObject getLiteYukonPAO(int paoID);
 
     /**
      * Get a map of LiteYukonPAObjects by their PaoIdentifier.
      */
-    public Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos);
+    Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos);
 
     /**
      * Helper method to return a paobject that exist for the paoName, category, paoClass.
@@ -88,7 +88,7 @@ public interface PaoDao {
      * @param paoClass
      * @return true when no object is found for paoName, category, paoClass (via paoType)
      */
-    public LiteYukonPAObject findUnique(String paoName, PaoType paoType);
+    LiteYukonPAObject findUnique(String paoName, PaoType paoType);
 
     /**
      * Returns a list of lite pao objects by type
@@ -97,29 +97,29 @@ public interface PaoDao {
      * @return
      * @see com.cannontech.database.data.pao.DeviceTypes
      */
-    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(PaoType paoType);
+    List<LiteYukonPAObject> getLiteYukonPAObjectByType(PaoType paoType);
 
-    public List<LiteYukonPAObject> getAllCapControlSubBuses();
+    List<LiteYukonPAObject> getAllCapControlSubBuses();
 
     /**
      * Returns the next unused pa object id
      * 
      * @return
      */
-    public int getNextPaoId();
+    int getNextPaoId();
 
     /**
      * This method was created in VisualAge.
      * 
      * @return String
      */
-    public String getYukonPAOName(int paoID);
+    String getYukonPAOName(int paoID);
 
-    public Map<Integer, String> getYukonPAONames(Iterable<Integer> ids);
+    Map<Integer, String> getYukonPAONames(Iterable<Integer> ids);
 
-    public LiteYukonPAObject[] getAllLiteRoutes();
+    LiteYukonPAObject[] getAllLiteRoutes();
 
-    public LiteYukonPAObject[] getRoutesByType(PaoType... routeTypes);
+    LiteYukonPAObject[] getRoutesByType(PaoType... routeTypes);
 
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
 
@@ -140,16 +140,16 @@ public interface PaoDao {
      * @param routeName
      * @return
      */
-    public Integer getRouteIdForRouteName(String routeName);
+    Integer getRouteIdForRouteName(String routeName);
 
-    public PaoLoader<DisplayablePao> getDisplayablePaoLoader();
+    PaoLoader<DisplayablePao> getDisplayablePaoLoader();
 
-    public List<PaoIdentifier> getPaoIdentifiersForPaoIds(Iterable<Integer> paoIds);
+    List<PaoIdentifier> getPaoIdentifiersForPaoIds(Iterable<Integer> paoIds);
 
     /**
      * Returns true if the name is available for the PAO type's PAO class and PAO category
      */
-    public boolean isNameAvailable(String paoName, PaoType paoType);
+    boolean isNameAvailable(String paoName, PaoType paoType);
 
     /**
      * Returns the count of the disabled devices in a group
@@ -157,8 +157,10 @@ public interface PaoDao {
      * @param deviceGroup
      * @return
      */
-    public int getDisabledDeviceCount(DeviceGroup deviceGroup);
+    int getDisabledDeviceCount(DeviceGroup deviceGroup);
 
-    public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag... paoTags);
+    List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag...paoTags);
+
+    List<LiteYukonPAObject> getAllPaos();
 
 }

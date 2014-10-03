@@ -13,7 +13,7 @@ public class PlcMeter extends YukonMeter {
     private String route = "";
     private int routeId;
     private String address = "";
-
+    
     public PlcMeter(PaoIdentifier paoIdentifier, String meterNumber, String name, boolean disabled,  
             String routeName, int routeId, String address) {
         super(paoIdentifier, meterNumber, name, disabled);

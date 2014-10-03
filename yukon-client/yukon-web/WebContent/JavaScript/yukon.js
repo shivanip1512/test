@@ -652,6 +652,7 @@ yukon.ui = (function () {
             if (popup.is('[title]')) options.title = popup.attr('title');
             
             if (dialog) {
+                if (popup.is('[data-ok-text]')) buttonOptions.okText = popup.data('okText');
                 if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
                 if (popup.is('[data-target]')) buttonOptions.target = popup.data('target');
                 if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');

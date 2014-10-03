@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
@@ -38,7 +40,6 @@ import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
@@ -75,7 +76,6 @@ import com.cannontech.yukon.server.cache.ConfigLoader;
 import com.cannontech.yukon.server.cache.ContactLoader;
 import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
 import com.cannontech.yukon.server.cache.DeviceCommPortLoader;
-import com.cannontech.yukon.server.cache.DeviceMeterGroupLoader;
 import com.cannontech.yukon.server.cache.GearLoader;
 import com.cannontech.yukon.server.cache.GraphDefinitionLoader;
 import com.cannontech.yukon.server.cache.HolidayScheduleLoader;
@@ -92,7 +92,6 @@ import com.cannontech.yukon.server.cache.TagLoader;
 import com.cannontech.yukon.server.cache.YukonGroupLoader;
 import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
 import com.cannontech.yukon.server.cache.YukonImageLoader;
-import com.cannontech.yukon.server.cache.YukonPAOLoader;
 import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
@@ -107,10 +106,11 @@ import com.google.common.collect.Lists;
  */
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache {
     // stores a soft reference to the cache
-    private static ServerDatabaseCache cache = null;
+    private static ServerDatabaseCache cache;
 
-    @Autowired private PointDao pointDao = null;
-    @Autowired private PaoDao paoDao = null;
+    @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private MeterDao meterDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
@@ -118,7 +118,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
-    private List<LiteYukonPAObject> allYukonPAObjects = null;
+    private Map<Integer, LiteYukonPAObject> allLitePaos;
+    private Map<Integer, SimpleMeter> allMeters;
+    
     private List<LitePoint> allSystemPoints = null;
     private List<LiteNotificationGroup> allNotificationGroups = null;
 
@@ -128,7 +130,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private List<LiteHolidaySchedule> allHolidaySchedules = null;
     private List<LiteBaseline> allBaselines = null;
     private List<LiteConfig> allConfigs = null;
-    private List<LiteDeviceMeterNumber> allDeviceMeterGroups = null;
     private List<LitePointLimit> allPointLimits = null;
     private List<LiteYukonImage> allYukonImages = null;
     private volatile List<LiteCICustomer> allCICustomers = null;
@@ -162,11 +163,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private List<LiteYukonPAObject> allLoadManagement = null;
     private List<LiteYukonPAObject> allPorts = null;
     
-    // Maps that are created by the joining/parsing of existing lists
-    // private HashMap allPointidMultiplierHashMap = null;
-    // private Map allPointIDOffsetHashMap = null;
-    // private Map allPointsMap = null;
-    private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
     private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<>(1000, .75f, 30);
     private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<>(1000, .75f, 30);
 
@@ -181,6 +177,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<>(1000, .75f, 30);
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
     private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
+
+    private LiteYukonPAObject pao;
 
     @Override
     public synchronized DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType) {
@@ -288,17 +286,21 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     }
 
     @Override
-    public synchronized List<LiteDeviceMeterNumber> getAllDeviceMeterGroups() {
-        if (allDeviceMeterGroups != null) {
-            return allDeviceMeterGroups;
+    public Map<Integer, SimpleMeter> getAllMeters() {
+        
+        if (allMeters != null) {
+            return allMeters;
         }
-
-        allDeviceMeterGroups = new ArrayList<>();
-        DeviceMeterGroupLoader deviceMeterGroupLoader = new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias);
-        deviceMeterGroupLoader.run();
-        return allDeviceMeterGroups;
+        
+        allMeters = new ConcurrentHashMap<Integer, SimpleMeter>();
+        List<SimpleMeter> allSimpleMeters = meterDao.getAllSimpleMeters();
+        for (SimpleMeter meter : allSimpleMeters) {
+            allMeters.put(meter.getPaoIdentifier().getPaoId(), meter);
+        }
+        
+        return allMeters;
     }
-
+    
     @Override
     public synchronized List<LiteYukonPAObject> getAllDevices() {
         if (allDevices == null) {
@@ -487,7 +489,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllLMPrograms() {
         if (allLMPrograms == null) {
-            // List allDevices = getAllLoadManagement();
             allLMPrograms = new ArrayList<>();
 
             for (int i = 0; i < getAllLoadManagement().size(); i++) {
@@ -557,7 +558,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
         notifLoader.run();
 
-        // allUsedContactNotifications = notifLoader.getAllUsedContactNotifications();
         return allNotificationGroups;
     }
 
@@ -579,26 +579,35 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         if (allSystemPoints != null) {
             return allSystemPoints;
         }
-
+        
         allSystemPoints = new ArrayList<>();
-        // allPointsMap = new HashMap();
         SystemPointLoader systemPointLoader = new SystemPointLoader(allSystemPoints, databaseAlias);
         systemPointLoader.run();
         return allSystemPoints;
     }
 
     @Override
-    public synchronized Map<Integer, LiteYukonPAObject> getAllPAOsMap() {
-        if (allPAOsMap != null) {
-            return allPAOsMap;
+    public synchronized Map<Integer, LiteYukonPAObject> getAllPaosMap() {
+        
+        if (allLitePaos != null) {
+            return allLitePaos;
         }
-
-        releaseAllYukonPAObjects();
-        getAllYukonPAObjects();
-
-        return allPAOsMap;
+        
+        allLitePaos = new ConcurrentHashMap<Integer, LiteYukonPAObject>();
+        
+        List<LiteYukonPAObject> paos = paoDao.getAllPaos();
+        for (LiteYukonPAObject pao : paos) {
+            allLitePaos.put(pao.getLiteID(), pao);
+        }
+        
+        return allLitePaos;
     }
-
+    
+    @Override
+    public synchronized List<LiteYukonPAObject> getAllYukonPAObjects() {
+        return new ArrayList<>(getAllPaosMap().values());
+    }
+    
     @Override
     public synchronized Map<Integer, LiteContactNotification> getAllContactNotifsMap() {
         loadAllContacts();
@@ -727,25 +736,10 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         } finally {
             SqlUtils.close(rset, stmt, conn);
         }
-
+        
         return allUnusedCCDevices;
-
     }
-
-    @Override
-    public synchronized List<LiteYukonPAObject> getAllYukonPAObjects() {
-        if (allYukonPAObjects != null && allPAOsMap != null) {
-            return allYukonPAObjects;
-        }
-
-        allYukonPAObjects = new ArrayList<>();
-        allPAOsMap = new HashMap<Integer, LiteYukonPAObject>();
-        YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap);
-        yukLoader.run();
-
-        return allYukonPAObjects;
-    }
-
+    
     @Override
     public synchronized List<LiteYukonGroup> getAllYukonGroups() {
         if (allYukonGroups == null) {
@@ -1105,63 +1099,23 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
         return retLBase;
     }
-
-    private synchronized LiteBase handleDeviceMeterGroupChange(DbChangeType dbChangeType, int id) {
-        boolean alreadyAdded = false;
-        LiteBase lBase = null;
-
-        // if the storage is not already loaded, we must not care about it
-        if (allDeviceMeterGroups == null) {
-            return lBase;
-        }
-
+    
+    private synchronized void handleDeviceMeterGroupChange(DbChangeType type, int id) {
+        
         if (id == 0) { // A force reload of all devicemetergroups was sent.
             releaseAllDeviceMeterGroups();
-            return lBase;
         }
-
-        switch (dbChangeType) {
-        case ADD:
-            for (int i = 0; i < allDeviceMeterGroups.size(); i++) {
-                if (allDeviceMeterGroups.get(i).getDeviceID() == id) {
-                    alreadyAdded = true;
-                    lBase = allDeviceMeterGroups.get(i);
-                    break;
-                }
-            }
-            if (!alreadyAdded) {
-                LiteDeviceMeterNumber liteDMG = new LiteDeviceMeterNumber(id);
-                liteDMG.retrieve(databaseAlias);
-                allDeviceMeterGroups.add(liteDMG);
-                lBase = liteDMG;
-            }
-            break;
-        case UPDATE:
-            for (int i = 0; i < allDeviceMeterGroups.size(); i++) {
-                if (allDeviceMeterGroups.get(i).getDeviceID() == id) {
-                    allDeviceMeterGroups.get(i).retrieve(databaseAlias);
-                    lBase = allDeviceMeterGroups.get(i);
-
-                    break;
-                }
-            }
-            break;
-        case DELETE:
-            for (int i = 0; i < allDeviceMeterGroups.size(); i++) {
-                if (allDeviceMeterGroups.get(i).getDeviceID() == id) {
-                    lBase = allDeviceMeterGroups.remove(i);
-                    break;
-                }
-            }
-            break;
-        default:
+        
+        if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
+            SimpleMeter meter = meterDao.getSimpleMeterForId(id);
+            allMeters.put(meter.getPaoIdentifier().getPaoId(), meter);
+        } else if (type == DbChangeType.DELETE) {
+            allMeters.remove(id);
+        } else {
             releaseAllDeviceMeterGroups();
-            break;
         }
-
-        return lBase;
     }
-
+    
     private synchronized LiteBase handleGraphDefinitionChange(DbChangeType dbChangeType, int id) {
         boolean alreadyAdded = false;
         LiteBase lBase = null;
@@ -1855,63 +1809,35 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return lBase;
     }
 
-    private synchronized LiteBase handleYukonPAOChange(DbChangeType dbChangeType, int id) {
+    private synchronized LiteBase handleYukonPAOChange(DbChangeType type, int id) {
+        
         LiteBase lBase = null;
-
-        // if the storage is not already loaded, we must not care about it
-        if (allYukonPAObjects == null || allPAOsMap == null) {
-            return lBase;
-        }
-
-        if (id == 0) { // A force reload of all paobjects was sent.
+        
+        if (id == 0) { 
+            // A force reload of all paobjects was sent.
             releaseAllYukonPAObjects();
             return lBase;
-        }
-
-        switch (dbChangeType) {
-        case ADD:
-
-            lBase = allPAOsMap.get(new Integer(id));
+        }else if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
+            lBase = allLitePaos.get(id);
             if (lBase == null) {
-                LiteYukonPAObject ly = new LiteYukonPAObject(id);
-                ly.retrieve(databaseAlias);
-                allYukonPAObjects.add(ly);
-                allPAOsMap.put(new Integer(ly.getYukonID()), ly);
-
-                lBase = ly;
+                pao = paoDao.getLiteYukonPAO(id);
+                allLitePaos.put(pao.getLiteID(), pao);
+                lBase = pao;
             }
-            break;
-
-        case UPDATE:
-
-            LiteYukonPAObject ly = allPAOsMap.get(new Integer(id));
-            ly.retrieve(databaseAlias);
-
-            lBase = ly;
-            break;
-
-        case DELETE:
-            for (int i = 0; i < allYukonPAObjects.size(); i++) {
-                if (allYukonPAObjects.get(i).getYukonID() == id) {
-                    allPAOsMap.remove(new Integer(id));
-                    lBase = allYukonPAObjects.remove(i);
-                    break;
-                }
-            }
-            break;
-        default:
+        } else if (type == DbChangeType.DELETE) {
+            lBase = allLitePaos.remove(id);
+        } else {
             releaseAllYukonPAObjects();
-            break;
         }
-
+        
         return lBase;
     }
-
+    
     @Override
     public synchronized void releaseAllAlarmCategories() {
         allAlarmCategories = null;
     }
-
+    
     /**
      * Drop all the junk we have accumulated.
      * Please be keeping this method in sync
@@ -1919,38 +1845,38 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized void releaseAllCache() {
         
-        allYukonPAObjects = null;
+        allLitePaos = null;
         allSystemPoints = null;
         allStateGroupMap = null;
         allNotificationGroups = null;
         allContactNotifsMap = null;
-
+        
         allAlarmCategories = null;
         allGraphDefinitions = null;
         allMCTs = null;
         allHolidaySchedules = null;
         allBaselines = null;
         allConfigs = null;
-        allDeviceMeterGroups = null;
+        allMeters = null;
         allPointLimits = null;
         allYukonImages = null;
         allCICustomers = null;
         allLMProgramConstraints = null;
         allLMScenarios = null;
         allLMScenarioProgs = null;
-
+        
         allTags = null;
         allSeasonSchedules = null;
         allDeviceTypeCommands = null;
         allTOUSchedules = null;
         allTOUDays = null;
-
+        
         allYukonRoles = null;
         allYukonRoleProperties = null;
         allYukonGroups = null;
-
+        
         allYukonGroupRolePropertiesMap = null;
-
+        
         // lists that are created by the joining/parsing of existing lists
         allUnusedCCDevices = null;
         allCapControlFeeders = null;
@@ -1963,9 +1889,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allLoadManagement = null;
         allPorts = null;
         allRoutes = null;
-
+        
         // Maps that are created by the joining/parsing of existing lists
-        allPAOsMap = null;
         customerCache.clear();
         allContactsMap.clear();
     }
@@ -1978,7 +1903,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public synchronized void releaseAllDeviceMeterGroups() {
-        allDeviceMeterGroups = null;
+        allMeters = null;
     }
 
     @Override
@@ -2073,8 +1998,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public synchronized void releaseAllYukonPAObjects() {
-        allYukonPAObjects = null;
-        allPAOsMap = null;
+        allLitePaos = null;
     }
 
     @Override

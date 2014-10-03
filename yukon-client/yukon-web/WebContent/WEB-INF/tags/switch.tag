@@ -2,8 +2,10 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<%@ attribute name="name" required="true" description="The name of the checkbox input." %>
+<%@ attribute name="name" description="The name of the checkbox input." %>
+<%@ attribute name="path" description="Spring path, used instead of 'name'." %>
 <%@ attribute name="checked" type="java.lang.Boolean" description="If 'true' switch will be on.  Default: false." %>
 
 <%@ attribute name="key" description="i18n key used for accessability text." %> 
@@ -12,13 +14,20 @@
 <%@ attribute name="id" description="The html id attribute of the checkbox input." %>
 
 <cti:default var="checked" value="${false}"/>
+<cti:uniqueIdentifier prefix="checkbox-" var="thisId"/>
+<cti:default var="id" value="${thisId}"/>
 
 <label <c:if test="${not empty pageScope.classes}">classes="${classes}"</c:if>>
     <c:if test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:if>
     <span class="checkbox">
-        <input type="checkbox" name="${name}" 
-                <c:if test="${not empty pageScope.id}">id="${id}"</c:if>
-                <c:if test="${checked}">checked</c:if>>
+        <c:choose>
+            <c:when test="${not empty name}">
+                <input type="checkbox" name="${name}" id="${id}" <c:if test="${checked}">checked</c:if>>
+            </c:when>
+            <c:otherwise>
+                <form:checkbox path="${path}" id="${id}"/>
+            </c:otherwise>
+        </c:choose>
         <span class="checkbox-value" aria-hidden="true"></span>
     </span>
 </label>

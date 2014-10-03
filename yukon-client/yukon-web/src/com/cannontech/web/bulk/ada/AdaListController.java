@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk;
+package com.cannontech.web.bulk.ada;
 
 import java.util.List;
 
@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 @Controller
 @RequestMapping("archiveDataAnalysis/list/*")
 public class AdaListController {
+    
     @Resource(name="recentResultsCache") private RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache;
     @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     

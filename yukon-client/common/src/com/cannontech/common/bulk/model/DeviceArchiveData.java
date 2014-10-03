@@ -5,10 +5,12 @@ import java.util.List;
 import org.joda.time.Interval;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.google.common.collect.Lists;
 
-public class DeviceArchiveData {
+public class DeviceArchiveData implements YukonPao {
+    
     private PaoIdentifier paoIdentifier;
     private Attribute attribute;
     private Interval archiveRange;
@@ -91,5 +93,10 @@ public class DeviceArchiveData {
     
     public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
+    }
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return paoIdentifier;
     }
 }

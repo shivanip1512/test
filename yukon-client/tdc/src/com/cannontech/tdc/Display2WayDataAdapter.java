@@ -16,6 +16,7 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
@@ -2147,7 +2148,7 @@ private Vector setRowForEventViewer( Signal signal )
 	lDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( lPoint.getPaobjectID() );
 	if( lDevice == null )
 	{
-		lDevice = LiteYukonPAObject.LITEPAOBJECT_SYSTEM;
+		lDevice = PaoUtils.LITEPAOBJECT_SYSTEM;
 	}
 
 

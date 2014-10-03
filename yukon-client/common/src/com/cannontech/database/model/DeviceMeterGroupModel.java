@@ -1,5 +1,11 @@
 package com.cannontech.database.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -14,12 +20,13 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceMeterGroupModel extends DBTreeModel {
+    
     private static final PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
 
     public DeviceMeterGroupModel() {
         super(new DBTreeNode("Meter Numbers"));
     }
-
+    
     @Override
     protected LiteBase convertLiteBase(LiteBase lb) {
         if (lb instanceof LiteYukonPAObject) {
@@ -27,28 +34,21 @@ public class DeviceMeterGroupModel extends DBTreeModel {
         }
         return lb;
     }
-
+    
     private LiteBase findLiteDMG(LiteYukonPAObject liteYuk) {
-        LiteBase lBase = null;
-
+        
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
-            java.util.List<LiteDeviceMeterNumber> deviceMeterGroupsList = cache.getAllDeviceMeterGroups();
-
-            for (LiteDeviceMeterNumber liteDeviceMeterNumber : deviceMeterGroupsList) {
-                lBase = liteDeviceMeterNumber;
-                if (lBase.equals(liteYuk)) {
-                    lBase = liteDeviceMeterNumber;
-                    break;
-                } else {
-                    lBase = null;
-                }
+            SimpleMeter meter = cache.getAllMeters().get(liteYuk.getLiteID());
+            if (meter != null) {
+                return new LiteDeviceMeterNumber(meter.getPaoIdentifier().getPaoId(), 
+                        meter.getMeterNumber(), meter.getPaoIdentifier().getPaoType());
             }
         }
-
-        return lBase;
+        
+        return null;
     }
-
+    
     @Override
     public boolean isLiteTypeSupported(int liteType) {
         return (liteType == LiteTypes.YUKON_PAOBJECT || liteType == LiteTypes.DEVICE_METERNUMBER);
@@ -71,22 +71,30 @@ public class DeviceMeterGroupModel extends DBTreeModel {
 
     @Override
     public void update() {
+        
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-
+        
         synchronized (cache) {
-            java.util.List<LiteDeviceMeterNumber> deviceMeterGroupsList = cache.getAllDeviceMeterGroups();
-            java.util.Collections.sort(deviceMeterGroupsList, LiteComparators.liteStringComparator);
-
+            Map<Integer, SimpleMeter> allMeters = cache.getAllMeters();
+            List<LiteDeviceMeterNumber> dmns = new ArrayList<>();
+            for (SimpleMeter meter : allMeters.values()) {
+                dmns.add(new LiteDeviceMeterNumber(meter.getPaoIdentifier().getPaoId(), 
+                        meter.getMeterNumber(), meter.getPaoIdentifier().getPaoType()));
+            }
+            Collections.sort(dmns, LiteComparators.liteStringComparator);
+            
             DBTreeNode rootNode = (DBTreeNode) getRoot();
             rootNode.removeAllChildren();
-
-            for (LiteDeviceMeterNumber liteDeviceMeterNumber : deviceMeterGroupsList) {
-                DBTreeNode deviceNode = new DBTreeNode(liteDeviceMeterNumber);
-                if (isDeviceValid(liteDeviceMeterNumber.getPaoType())) {
+            
+            for (LiteDeviceMeterNumber dmn : dmns) {
+                DBTreeNode deviceNode = new DBTreeNode(dmn);
+                if (isDeviceValid(dmn.getPaoType())) {
                     rootNode.add(deviceNode);
                 }
             }
         }
+        
         reload();
     }
+    
 }

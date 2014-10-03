@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.service;
+package com.cannontech.web.bulk.ada.service;
 
 import java.util.List;
 
@@ -11,25 +11,28 @@ import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.PixelData;
 import com.cannontech.common.bulk.model.ReadSequence;
 import com.cannontech.common.bulk.model.ReadType;
+import com.cannontech.web.bulk.ada.model.AdaDevice;
 import com.google.common.collect.Lists;
 
 public class AdaResultsHelper {
 
-    public static void buildBars(Analysis analysis, int barWidth, List<DeviceArchiveData> data) {
+    public static void buildBars(Analysis analysis, int barWidth, List<AdaDevice> devices) {
         // Build pixel data for the visible devices subset
         long analysisStartLong = analysis.getDateTimeRange().getStartMillis();
         long analysisEndLong = analysis.getDateTimeRange().getEndMillis();
         long analysisLength = analysisEndLong - analysisStartLong;
         long pxRange = analysisLength / barWidth;  // Each pixel represents <pxRange> milliseconds
         
-        for (DeviceArchiveData device : data) {
+        for (AdaDevice device : devices) {
+            
+            DeviceArchiveData data = device.getData();
             
             List<PixelData> pixels = Lists.newArrayList();
             for (int i = 0; i < barWidth; i++) {
                 PixelData pixel = new PixelData();
                 pixels.add(pixel);
             }
-            List<ArchiveData> intervals = device.getArchiveData();
+            List<ArchiveData> intervals = data.getArchiveData();
             
             boolean done = false;
             int pixelIndex = 0;
@@ -87,7 +90,7 @@ public class AdaResultsHelper {
             }
             
             List<ReadSequence> readData = compressPixelData(pixels);
-            device.setTimeline(readData);
+            data.setTimeline(readData);
         }
         
     }

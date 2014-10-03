@@ -3,7 +3,10 @@
 <properties>
     
     <!-- GENERAL-PURPOSE KEYS -->
-    <entry key="yukon.web.modules.tools.bulk.analysis.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.analysis.NAME">Device Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.analysis.TYPE">Device Type</entry>
+    <entry key="yukon.web.modules.tools.bulk.analysis.METER_NUMBER">Meter Number</entry>
+    <entry key="yukon.web.modules.tools.bulk.analysis.MISSING">Intervals Missing</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.attribute">Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.interval">Interval</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.dateRange">Date Range</entry>
@@ -48,8 +51,6 @@
     <entry key="yukon.web.modules.tools.bulk.analysis.results.analysisInfo.title">Analysis Parameters</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.results.actions.title">Actions</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.results.resultsTable.title">Analysis Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.analysis.results.deviceType">Device Type</entry>
-    <entry key="yukon.web.modules.tools.bulk.analysis.results.holes">Intervals Missing</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.results.timeline">Timeline ({0} intervals)</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.results.reanalyze.label">Re-run Analysis</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.results.reanalyze.hoverText">Run a new analysis with identical parameters.</entry>

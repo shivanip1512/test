@@ -3,6 +3,7 @@ package com.cannontech.yukon;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
@@ -12,7 +13,6 @@ import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
@@ -54,7 +54,7 @@ public interface IDatabaseCache {
 
     List<LiteCICustomer> getAllCICustomers();
 
-    List<LiteDeviceMeterNumber> getAllDeviceMeterGroups();
+    Map<Integer, SimpleMeter> getAllMeters();
 
     List<LiteYukonPAObject> getAllDevices();
 
@@ -103,7 +103,7 @@ public interface IDatabaseCache {
     /**
      * @return Map of paoID to LiteYukonPAObject>
      */
-    Map<Integer, LiteYukonPAObject> getAllPAOsMap();
+    Map<Integer, LiteYukonPAObject> getAllPaosMap();
 
     /**
      * @return Map of contactNotifID to LiteContactNotification

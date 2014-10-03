@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -192,7 +193,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
 
         if( litePoint == null )
         {
-            deviceCombo.setSelectedItem( LiteYukonPAObject.LITEPAOBJECT_NONE );
+            deviceCombo.setSelectedItem( PaoUtils.LITEPAOBJECT_NONE );
         }
         else
         {
@@ -478,9 +479,9 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         pointCombo.removeAllItems();
 
         //if the (none) object is selected, just return
-        pointCombo.setEnabled( deviceCombo.getSelectedItem() != LiteYukonPAObject.LITEPAOBJECT_NONE );
+        pointCombo.setEnabled( deviceCombo.getSelectedItem() != PaoUtils.LITEPAOBJECT_NONE );
 
-        if( deviceCombo.getSelectedItem() == LiteYukonPAObject.LITEPAOBJECT_NONE )
+        if( deviceCombo.getSelectedItem() == PaoUtils.LITEPAOBJECT_NONE )
         {
             return;
         }
