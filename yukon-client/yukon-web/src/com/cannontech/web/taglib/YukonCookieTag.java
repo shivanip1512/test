@@ -22,7 +22,7 @@ public class YukonCookieTag extends YukonTagSupport {
     @Override
     public void doTag() throws IOException {
         
-        String result = defaultValue;
+        Object result = defaultValue;
         
         Map<String, Cookie> cookies = new HashMap<String, Cookie>();
         for (Cookie cookie : getRequest().getCookies()) cookies.put(cookie.getName(), cookie);
@@ -32,9 +32,9 @@ public class YukonCookieTag extends YukonTagSupport {
         if (yukon != null) {
             String json = yukon.getValue();
             String cookieText = URLDecoder.decode(json, "UTF-8");
-            Map<String, String> data = JsonUtils.fromJson(cookieText, Map.class);
+            Map<String, Object> data = JsonUtils.fromJson(cookieText, Map.class);
             
-            String value = data.get(scope + id);
+            Object value = data.get(scope + id);
             if (value != null) result = value;
         }
         
