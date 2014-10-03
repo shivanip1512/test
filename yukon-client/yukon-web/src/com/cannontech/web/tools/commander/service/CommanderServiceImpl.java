@@ -305,7 +305,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         
         CommandTarget type = params.getTarget();
         List<LiteDeviceTypeCommand> commands = new ArrayList<>();
-        if (type == CommandTarget.DEVICE || type == CommandTarget.DEVICE) {
+        if (type == CommandTarget.DEVICE || type == CommandTarget.LOAD_GROUP) {
             YukonPao pao = paoDao.getYukonPao(params.getPaoId());
             String deviceType = pao.getPaoIdentifier().getPaoType().getDbString();
             commands = commandDao.getAllDevTypeCommands(deviceType);
