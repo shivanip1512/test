@@ -6,61 +6,44 @@
  */
 package com.cannontech.database.model;
 
-import com.cannontech.yukon.IDatabaseCache;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public class TagModel extends DBTreeModel 
-{
-	
-	public TagModel() {
-		super(new DBTreeNode("Tag"));
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (4/22/2002 2:05:03 PM)
-	 * @return com.cannontech.database.data.lite.LiteBase[]
-	 */
-	public boolean isLiteTypeSupported( int liteType )
-	{
-		return ( liteType == com.cannontech.database.data.lite.LiteTypes.TAG );
-	}
-	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (8/24/2001 10:45:51 AM)
-	 */
-	public void update()
-	{
+import com.cannontech.core.dao.TagDao;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.spring.YukonSpringHook;
 
-		IDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-		synchronized (cache)
-		{
-			java.util.List theTags = cache.getAllTags();
-
-			java.util.Collections.sort(theTags, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-
-			DBTreeNode rootNode = (DBTreeNode) getRoot();
-			rootNode.removeAllChildren();
-
-			for (int i = 0; i < theTags.size(); i++)
-			{
-				DBTreeNode tagNode = new DBTreeNode(theTags.get(i));
-				if(((com.cannontech.database.data.lite.LiteTag)theTags.get(i)).getTagID() < 0)
-					tagNode.setIsSystemReserved(true);
-
-				rootNode.add(tagNode);
-			}
-		}
-
-		reload();
-	}
-	
-
+public class TagModel extends DBTreeModel {
+    
+    private TagDao tagDao = YukonSpringHook.getBean(TagDao.class);
+    
+    public TagModel() {
+        super(new DBTreeNode("Tag"));
+    }
+    
+    public boolean isLiteTypeSupported(int liteType) {
+        return liteType == LiteTypes.TAG;
+    }
+    
+    public void update() {
+        
+        List<LiteTag> tags = tagDao.getAllTags();
+        Collections.sort(tags, LiteComparators.liteStringComparator);
+        
+        DBTreeNode rootNode = (DBTreeNode) getRoot();
+        rootNode.removeAllChildren();
+        
+        for (LiteTag tag : tags) {
+            DBTreeNode tagNode = new DBTreeNode(tag);
+            
+            if (tag.getTagId() < 0) tagNode.setIsSystemReserved(true);
+            
+            rootNode.add(tagNode);
+        }
+        
+        reload();
+    }
+    
 }

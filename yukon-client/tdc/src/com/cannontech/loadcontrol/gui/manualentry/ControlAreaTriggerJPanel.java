@@ -732,7 +732,7 @@ private void setComboBoxText(int groupID, javax.swing.JComboBox jCombo )
 	synchronized( cache )
 	{
 		stateGroup = (LiteStateGroup)
-			cache.getAllStateGroupMap().get( new Integer(groupID) );
+			cache.getAllStateGroups().get( new Integer(groupID) );
 
 		for( int i = 0; i < stateGroup.getStatesList().size(); i++ )
 			jCombo.addItem( stateGroup.getStatesList().get(i) );

@@ -550,7 +550,7 @@ public class Editor extends JPanel {
 
             // get this stuff loaded into the cache asap
             DefaultDatabaseCache.getInstance().getAllDevices();
-            DefaultDatabaseCache.getInstance().getAllStateGroupMap();
+            DefaultDatabaseCache.getInstance().getAllStateGroups();
         } catch (Exception e) {
             CTILogger.error(e.getMessage(), e);
         }

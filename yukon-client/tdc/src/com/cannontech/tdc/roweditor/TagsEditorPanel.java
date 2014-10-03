@@ -58,17 +58,17 @@ public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialo
 			if( value instanceof LiteTag )
 			{
 				LiteTag tag = (LiteTag)value;
-				if( tag.getImageID() > CtiUtilities.NONE_ZERO_ID )
+				if( tag.getImageId() > CtiUtilities.NONE_ZERO_ID )
 				{
 					setIcon( 
 						new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-							YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
+							YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(tag.getImageId()).getImageValue()) ) );
 				}
 				else
 					setIcon( null );
 				
 				setText( tag.getTagName() );
-				setForeground( Colors.getColor(tag.getColorID()) );		
+				setForeground( Colors.getColor(tag.getColorId()) );		
 	
 				setEnabled(list.isEnabled());
 				setBorder((cellHasFocus) ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);

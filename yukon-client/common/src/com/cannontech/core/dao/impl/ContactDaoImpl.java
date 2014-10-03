@@ -27,6 +27,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.RowMapper;
@@ -54,6 +55,7 @@ import com.google.common.collect.ImmutableCollection;
 public final class ContactDaoImpl implements ContactDao {
     
     @Autowired private AddressDao addressDao;
+    @Autowired private CustomerDao customerDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private IDatabaseCache databaseCache;
@@ -71,24 +73,24 @@ public final class ContactDaoImpl implements ContactDao {
         if (contactId == CtiUtilities.NONE_ZERO_ID) {
             return null;
         }
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
         sql.append("FROM Contact");
         sql.append("WHERE ContactId").eq(contactId);
 
         LiteContact contact = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return contact;
     }
-	
-	@Override
+    
+    @Override
     public List<LiteContact> getContactsByLoginId(int loginId) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
         sql.append("FROM Contact");
         sql.append("WHERE LoginId").eq(loginId);
         sql.append("AND ContactID").gt(CtiUtilities.NONE_ZERO_ID);
         
-	    final List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
+        final List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
         return contactList;
     }
     
@@ -117,7 +119,7 @@ public final class ContactDaoImpl implements ContactDao {
         return resultMap;
     }
 
-	public int[] retrieveContactIDsByLastName(String lastName_, boolean partialMatch)
+    public int[] retrieveContactIDsByLastName(String lastName_, boolean partialMatch)
     {
         int [] contactIDs = null;
         PreparedStatement pstmt = null;
@@ -179,12 +181,12 @@ public final class ContactDaoImpl implements ContactDao {
         return contactIDs;
     }
 
-	@Override
+    @Override
     public List<LiteContact> findContactsByPhoneNo(String phone, boolean partialMatch) {
-		if (phone == null) {
+        if (phone == null) {
             return null;
         }
-		
+        
         SqlStatementBuilder sql = getContactByNotificationSql(phone, ContactNotificationMethodType.PHONE, partialMatch);
         List<LiteContact> contacts = yukonJdbcTemplate.query(sql, rowMapper);
         
@@ -196,25 +198,25 @@ public final class ContactDaoImpl implements ContactDao {
         }
 
         return contacts;
-	}
+    }
 
-	@Override
+    @Override
     public LiteContact findContactByEmail(String email) 
-	{
-		if (email == null) {
-			return null;
-		}
+    {
+        if (email == null) {
+            return null;
+        }
 
-		SqlStatementBuilder sql = getContactByNotificationSql(email, ContactNotificationMethodType.EMAIL, false);
-		try {
-		    return yukonJdbcTemplate.queryForObject(sql, rowMapper);
-		} catch(IncorrectResultSizeDataAccessException e) {
-		    log.error("Error finding contact for email " + email+ "; Actual size:" + e.getActualSize(), e);
-		    return null;
-		}
-	}
+        SqlStatementBuilder sql = getContactByNotificationSql(email, ContactNotificationMethodType.EMAIL, false);
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            log.error("Error finding contact for email " + email+ "; Actual size:" + e.getActualSize(), e);
+            return null;
+        }
+    }
 
-	@Override
+    @Override
     public List<LiteContact> getUnassignedContacts() {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -229,123 +231,121 @@ public final class ContactDaoImpl implements ContactDao {
         return contactList;
     }
 
-	@Override
+    @Override
     public String[] getAllEmailAddresses( int contactId ) {
-		LiteContact contact = getContact( contactId );
-		List<String> strList = new ArrayList<String>();
+        LiteContact contact = getContact( contactId );
+        List<String> strList = new ArrayList<String>();
 
-		//find all the email addresses in the list ContactNotifications
-		for( LiteContactNotification liteContactNotification : contactNotificationDao.getNotificationsForContactByType(contact, ContactNotificationType.EMAIL)) {	
-		    strList.add( liteContactNotification.getNotification() );
-		}
-
-		return strList.toArray( new String[strList.size()] );
-	}
-
-	@Override
-    public LiteContactNotification[] getAllPINNotifDestinations( int contactId )
-	{
-		LiteContact contact = getContact( contactId );
-		List<LiteContactNotification> notificationsForContactByType = contactNotificationDao.getNotificationsForContactByType(contact, ContactNotificationType.VOICE_PIN);
-		return notificationsForContactByType.toArray( new LiteContactNotification[notificationsForContactByType.size()] );
-	}
-
-	@Override
-    public List<LiteContactNotification> getAllContactNotifications() 
-	{
-		return contactNotificationDao.getAllContactNotifications();
-	}
-
-	@Override
-    public LiteCICustomer getOwnerCICustomer( int addtlContactID_ ) 
-	{
-		int customerId = -1;
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT c.CustomerID ");
-		sql.append(" FROM CustomerAdditionalContact ca, Customer c ");
-		sql.append(" WHERE c.CustomerTypeID").eq_k(CustomerTypes.CUSTOMER_CI);
-		sql.append(" AND c.CustomerID = ca.CustomerID ");
-		sql.append(" AND ca.ContactID").eq(addtlContactID_);
-        try {
-            customerId = yukonJdbcTemplate.queryForInt(sql);
-        } catch (EmptyResultDataAccessException e) {
-            // will return null customer
+        //find all the email addresses in the list ContactNotifications
+        for( LiteContactNotification liteContactNotification : contactNotificationDao.getNotificationsForContactByType(contact, ContactNotificationType.EMAIL)) {    
+            strList.add( liteContactNotification.getNotification() );
         }
 
-        LiteCICustomer liteCICust = null;
-        if (customerId >= 0) {
-            LiteCustomer liteCust = databaseCache.getACustomerByCustomerID(customerId);
-            if (liteCust != null && liteCust instanceof LiteCICustomer) {
-                liteCICust = (LiteCICustomer) liteCust;
-            }
-        }
-        return liteCICust;
-	}
-
-	@Override
-    public LiteCICustomer getPrimaryContactCICustomer( int primaryContactID_ ) 
-	{
-	    LiteCICustomer liteCICust = null;
-        LiteCustomer liteCust = databaseCache.getACustomerByPrimaryContactID(primaryContactID_);
-        if (liteCust != null && liteCust instanceof LiteCICustomer) {
-            liteCICust = (LiteCICustomer) liteCust;
-        }
-        return liteCICust;
-	}
-
-	@Override
-    public LiteCICustomer getCICustomer (int contactID_)
-	{
-		LiteCICustomer liteCICust = getPrimaryContactCICustomer(contactID_);
-		if( liteCICust == null) {
-            liteCICust = getOwnerCICustomer(contactID_);
-        }
-			
-		return liteCICust;
-	}
-	
-	@Override
-    public LiteCustomer getCustomer(int contactID) {
-	    LiteCustomer liteCust = databaseCache.getACustomerByPrimaryContactID(contactID);
-        if( liteCust == null) {
-            liteCust = getOwnerCICustomer(contactID);
-        }
-		return liteCust;
-	}
-
-	@Override
-    public boolean isPrimaryContact(int contactId) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT PrimaryContactId");
-		sql.append("FROM Customer");
-		sql.append("WHERE PrimaryContactId").eq(contactId);;
-	    try {
-	    	yukonJdbcTemplate.queryForInt(sql);
-	        return true;
-	    } catch(IncorrectResultSizeDataAccessException e) {
-	        return false;
-	    }
-	}
-
-	@Override
-    public LiteYukonUser getYukonUser(int contactID_) 
-	{
-		synchronized(databaseCache) 
-		{
-            LiteContact lc = getContact( contactID_ );
-            
-            if( lc != null ) {
-                return yukonUserDao.getLiteYukonUser(lc.getLoginID());
-            }            
-		}
-
-		return null;
-	}	
+        return strList.toArray( new String[strList.size()] );
+    }
 
     @Override
+    public LiteContactNotification[] getAllPINNotifDestinations( int contactId )
+    {
+        LiteContact contact = getContact( contactId );
+        List<LiteContactNotification> notificationsForContactByType = contactNotificationDao.getNotificationsForContactByType(contact, ContactNotificationType.VOICE_PIN);
+        return notificationsForContactByType.toArray( new LiteContactNotification[notificationsForContactByType.size()] );
+    }
+
+    @Override
+    public List<LiteContactNotification> getAllContactNotifications() 
+    {
+        return contactNotificationDao.getAllContactNotifications();
+    }
+
+    @Override
+    public LiteCICustomer getOwnerCICustomer(int additionalContactId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT c.CustomerId");
+        sql.append("FROM CustomerAdditionalContact ca, Customer c");
+        sql.append("WHERE c.CustomerTypeId").eq_k(CustomerTypes.CUSTOMER_CI);
+        sql.append("AND c.CustomerID = ca.CustomerId");
+        sql.append("AND ca.ContactID").eq(additionalContactId);
+        
+        try {
+            int customerId = yukonJdbcTemplate.queryForInt(sql);
+            if (customerId >= 0) {
+                LiteCustomer customer = databaseCache.getCustomer(customerId);
+                if (customer != null && customer instanceof LiteCICustomer) {
+                    return (LiteCICustomer) customer;
+                }
+            }
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public LiteCICustomer getPrimaryContactCICustomer(int primaryContactId) {
+        
+        LiteCustomer customer = customerDao.getLiteCustomerByPrimaryContact(primaryContactId);
+        
+        if (customer != null && customer instanceof LiteCICustomer) {
+            return (LiteCICustomer) customer;
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public LiteCICustomer getCICustomer (int contactID_)
+    {
+        LiteCICustomer liteCICust = getPrimaryContactCICustomer(contactID_);
+        if( liteCICust == null) {
+            liteCICust = getOwnerCICustomer(contactID_);
+        }
+            
+        return liteCICust;
+    }
+    
+    @Override
+    public LiteCustomer getCustomer(int contactId) {
+        LiteCustomer customer = customerDao.getLiteCustomerByPrimaryContact(contactId);
+        if (customer == null) {
+            customer = getOwnerCICustomer(contactId);
+        }
+        
+        return customer;
+    }
+
+    @Override
+    public boolean isPrimaryContact(int contactId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PrimaryContactId");
+        sql.append("FROM Customer");
+        sql.append("WHERE PrimaryContactId").eq(contactId);;
+        try {
+            yukonJdbcTemplate.queryForInt(sql);
+            return true;
+        } catch(IncorrectResultSizeDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public LiteYukonUser getYukonUser(int contactId) {
+        
+        LiteContact contact = getContact(contactId);
+        
+        if (contact != null) {
+            return yukonUserDao.getLiteYukonUser(contact.getLoginID());
+        }
+        
+        return null;
+    }
+    
+    @Override
     public LiteContact getPrimaryContactForAccount(int accountId) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
         sql.append("FROM Contact c, Customer cu, CustomerAccount ca");
         sql.append("WHERE c.ContactId = cu.PrimaryContactId");
         sql.append("AND cu.CustomerId = ca.CustomerId");
@@ -358,8 +358,8 @@ public final class ContactDaoImpl implements ContactDao {
 
     @Override
     public List<LiteContact> getAdditionalContactsForCustomer(int customerId) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
         sql.append("FROM Contact c, CustomerAdditionalContact cac");
         sql.append("WHERE c.ContactId = cac.ContactId");
         sql.append("AND cac.CustomerId").eq(customerId);
@@ -373,11 +373,11 @@ public final class ContactDaoImpl implements ContactDao {
     
     @Override
     public List<Integer> getAdditionalContactIdsForCustomer(int customerId) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT ContactId");
-    	sql.append("FROM CustomerAdditionalContact");
-    	sql.append("WHERE Customerid").eq(customerId);
-    	
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ContactId");
+        sql.append("FROM CustomerAdditionalContact");
+        sql.append("WHERE Customerid").eq(customerId);
+        
         List<Integer> contactIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return contactIds;
     }
@@ -385,8 +385,8 @@ public final class ContactDaoImpl implements ContactDao {
     @Override
     public List<LiteContact> getAdditionalContactsForAccount(int accountId) {
 
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
         sql.append("FROM Contact c, CustomerAdditionalContact cac, Customer cu, CustomerAccount ca");
         sql.append("WHERE c.ContactId = cac.ContactId");
         sql.append("AND cac.CustomerId = cu.CustomerId");
@@ -401,7 +401,7 @@ public final class ContactDaoImpl implements ContactDao {
     
     @Override
     public int getAllContactCount() {
-    	SqlStatementBuilder sql = new SqlStatementBuilder("select count(*) from Contact");
+        SqlStatementBuilder sql = new SqlStatementBuilder("select count(*) from Contact");
         int count = yukonJdbcTemplate.queryForInt(sql);
         return count;
     }
@@ -409,9 +409,9 @@ public final class ContactDaoImpl implements ContactDao {
     @Override
     public void callbackWithAllContacts(final SimpleCallback<LiteContact> callback) {
         // the following code may look familiar, I lifted it from the ContactLoader!
-    	
+        
         //get all the customer contacts that are assigned to a customer
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT cnt.contactID, cnt.ContFirstName, cnt.ContLastName, cnt.Loginid, cnt.AddressID");
         sql.append("FROM Contact cnt");
         sql.append("where cnt.ContactID").gt(CtiUtilities.NONE_ZERO_ID);
@@ -495,42 +495,42 @@ public final class ContactDaoImpl implements ContactDao {
     @Override
     @Transactional
     public void deleteContact(LiteContact contact) {
-    	
-    	SqlStatementBuilder sql = null;
-    	if (contact == null || contact.getContactID() == CtiUtilities.NONE_ZERO_ID) {
-    	    // safety check to make sure we didn't somehow get in here with the default LiteContact
-    	    log.warn("Contact was not deleted. Cannot delete default contactId=0.");
-    	    return;
-    	}
-    	
-    	int contactId = contact.getContactID();
-    	int addressId = contact.getAddressID();
+        
+        SqlStatementBuilder sql = null;
+        if (contact == null || contact.getContactID() == CtiUtilities.NONE_ZERO_ID) {
+            // safety check to make sure we didn't somehow get in here with the default LiteContact
+            log.warn("Contact was not deleted. Cannot delete default contactId=0.");
+            return;
+        }
+        
+        int contactId = contact.getContactID();
+        int addressId = contact.getAddressID();
 
-    	// delete notifications
-    	List<Integer> notificationIds = contactNotificationDao.getNotificationIdsForContact(contactId);
-    	contactNotificationDao.removeNotifications(notificationIds);
-    	
-    	// delete ContactNotifGroupMap
-    	sql = new SqlStatementBuilder();
-    	sql.append("DELETE FROM ContactNotifGroupMap WHERE ContactId").eq(contactId);
-    	yukonJdbcTemplate.update(sql);
+        // delete notifications
+        List<Integer> notificationIds = contactNotificationDao.getNotificationIdsForContact(contactId);
+        contactNotificationDao.removeNotifications(notificationIds);
+        
+        // delete ContactNotifGroupMap
+        sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ContactNotifGroupMap WHERE ContactId").eq(contactId);
+        yukonJdbcTemplate.update(sql);
         
         // delete CustomerAdditionalContact
-    	sql = new SqlStatementBuilder();
-    	sql.append("DELETE FROM CustomerAdditionalContact WHERE ContactId").eq(contactId);
-    	yukonJdbcTemplate.update(sql);
+        sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CustomerAdditionalContact WHERE ContactId").eq(contactId);
+        yukonJdbcTemplate.update(sql);
         
         // delete contact
-    	sql = new SqlStatementBuilder();
-    	sql.append("DELETE FROM Contact WHERE ContactId").eq(contactId);
-    	yukonJdbcTemplate.update(sql);
+        sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM Contact WHERE ContactId").eq(contactId);
+        yukonJdbcTemplate.update(sql);
         
         // delete address
         if(addressId != CtiUtilities.NONE_ZERO_ID) {
-        	
-        	sql = new SqlStatementBuilder();
-        	sql.append("DELETE FROM Address WHERE AddressId").eq(addressId);
-        	yukonJdbcTemplate.update(sql);
+            
+            sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM Address WHERE AddressId").eq(addressId);
+            yukonJdbcTemplate.update(sql);
         }
 
         // db change
@@ -578,7 +578,7 @@ public final class ContactDaoImpl implements ContactDao {
                                         DBChangeMsg.CAT_CUSTOMERCONTACT,
                                         DBChangeMsg.CAT_CUSTOMERCONTACT,
                                         DbChangeType.UPDATE);
-    	
+        
     }
 
     /**
@@ -596,12 +596,12 @@ public final class ContactDaoImpl implements ContactDao {
             LiteContact contact = baseMapper.mapRow(rs);
             
             List<LiteContactNotification> notifications = contactNotificationDao
-					.getNotificationsForContact(contact.getContactID());
+                    .getNotificationsForContact(contact.getContactID());
             contact.getLiteContactNotifications().addAll(notifications);
             
             return contact;
         }
-
+        
     }
     
     private class LiteContactNoNotificationsRowMapper implements YukonRowMapper<LiteContact> {

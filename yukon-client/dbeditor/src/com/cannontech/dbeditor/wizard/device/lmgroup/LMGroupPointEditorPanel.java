@@ -345,7 +345,7 @@ public class LMGroupPointEditorPanel extends DataInputPanel implements
 
                 LitePoint point = (LitePoint)getJComboBoxControlPoint().getSelectedItem();
 
-                LiteStateGroup stateGroup = cache.getAllStateGroupMap().get(point.getStateGroupID());
+                LiteStateGroup stateGroup = cache.getAllStateGroups().get(point.getStateGroupID());
 
                 for (int j = 0; j < stateGroup.getStatesList().size(); j++) {
                     // only add the first 2 states to the ComboBoxes

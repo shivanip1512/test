@@ -287,7 +287,7 @@ private void loadStateComboBoxes(int stateGroupID)
 	synchronized(cache)
 	{	
 		LiteStateGroup stateGroup = (LiteStateGroup)
-			cache.getAllStateGroupMap().get( new Integer(stateGroupID) );
+			cache.getAllStateGroups().get( new Integer(stateGroupID) );
 
 		java.util.List statesList = stateGroup.getStatesList();
 		for(int j=0;j<statesList.size();j++)

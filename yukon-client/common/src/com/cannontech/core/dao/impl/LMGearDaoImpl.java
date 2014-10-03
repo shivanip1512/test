@@ -1,7 +1,6 @@
 package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.ThermostatRampRateValues;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -23,6 +23,7 @@ import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 import com.google.common.collect.Maps;
 
 public class LMGearDaoImpl implements LMGearDao {
+    
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     private final static String beatThePeakTableName = "LMBeatThePeakGear";
     private final static String tableName = "LMProgramDirectGear";
@@ -199,5 +200,27 @@ public class LMGearDaoImpl implements LMGearDao {
         sql.append("WHERE GearId").eq(gearId);
         
         return yukonJdbcTemplate.queryForString(sql);
+    }
+    
+    @Override
+    public List<LiteGear> getAllLiteGears() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select GearId, GearName, ControlMethod, DeviceId, GearNumber");
+        sql.append("from LmProgramDirectGear");
+        sql.append("where GearId >= 0");
+        sql.append("order by DeviceId");
+        
+        return yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteGear>() {
+            @Override
+            public LiteGear mapRow(YukonResultSet rs) throws SQLException {
+                LiteGear gear = new LiteGear(rs.getInt("GearId"));
+                gear.setGearName(rs.getString("GearName"));
+                gear.setGearType(rs.getString("ControlMethod"));
+                gear.setOwnerID(rs.getInt("DeviceId"));
+                gear.setGearNumber(rs.getInt("GearNumber"));
+                return gear;
+            }
+        });
     }
 }

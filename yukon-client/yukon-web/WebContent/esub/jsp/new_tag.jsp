@@ -99,7 +99,7 @@ Type:<br>
 	while(tagIter.hasNext()) {
 		LiteTag lt = (LiteTag) tagIter.next();
 %>                  
-                  <option value="<%= lt.getTagID() %>"><%= lt.getTagName() %></option>
+                  <option value="<%=lt.getTagId()%>"><%= lt.getTagName() %></option>
 <%
 	}
 %>                  

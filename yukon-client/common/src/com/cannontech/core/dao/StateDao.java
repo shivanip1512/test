@@ -32,5 +32,5 @@ public interface StateDao {
      * @return
      */
     public LiteStateGroup[] getAllStateGroups();
-
+    
 }

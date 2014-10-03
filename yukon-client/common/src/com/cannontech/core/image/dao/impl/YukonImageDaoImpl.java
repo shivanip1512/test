@@ -96,7 +96,7 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     @Override
     public String yukonImageUsage(int id) {
         synchronized (databaseCache) {
-            for (LiteStateGroup group : databaseCache.getAllStateGroupMap().values()) {
+            for (LiteStateGroup group : databaseCache.getAllStateGroups().values()) {
                 for (LiteState state : group.getStatesList()) {
                     if (state.getImageID() == id) {
                         return group.getStateGroupName();

@@ -654,7 +654,7 @@ public void setValue(Object val)
 			String[] stateNames = null;
 
 			LiteStateGroup stateGroup = (LiteStateGroup)
-				cache.getAllStateGroupMap().get( point.getPoint().getStateGroupID() );
+				cache.getAllStateGroups().get( point.getPoint().getStateGroupID() );
 
 			stateNames = new String[stateGroup.getStatesList().size()];
 

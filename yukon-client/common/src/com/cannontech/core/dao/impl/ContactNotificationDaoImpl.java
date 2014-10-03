@@ -27,11 +27,8 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * Functions for the LiteContactNotification data in cache
- * 
- */
 public final class ContactNotificationDaoImpl implements ContactNotificationDao {
+    
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -53,7 +50,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
 	{
 		synchronized( databaseCache )
 		{
-			return databaseCache.getAContactNotifByNotifID(contactNotifID);
+			return databaseCache.getContactNotification(contactNotifID);
 		}
 	}
 

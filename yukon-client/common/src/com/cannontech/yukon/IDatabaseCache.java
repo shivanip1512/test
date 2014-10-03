@@ -14,7 +14,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteHolidaySchedule;
 import com.cannontech.database.data.lite.LiteLMConstraint;
@@ -25,15 +24,12 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteTOUDay;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
-import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -69,10 +65,6 @@ public interface IDatabaseCache {
     List<LiteSeasonSchedule> getAllSeasonSchedules();
 
     List<LiteTOUSchedule> getAllTOUSchedules();
-
-    List<LiteTOUDay> getAllTOUDays();
-
-    List<LiteGear> getAllGears();
 
     Map<Integer, LiteCommand> getAllCommands();
 
@@ -110,7 +102,8 @@ public interface IDatabaseCache {
      */
     Map<Integer, LiteContactNotification> getAllContactNotifsMap();
 
-    List<LitePointLimit> getAllPointLimits();
+    /** Return map of point id to {@link LitePointLimit} */
+    Map<Integer, LitePointLimit> getAllPointLimits();
 
     List<LiteYukonPAObject> getAllPorts();
 
@@ -119,15 +112,9 @@ public interface IDatabaseCache {
     /** Retuns a map of route id to route. */
     Map<Integer, LiteYukonPAObject> getAllRoutesMap();
     
-    /**
-     * @return Map if stateGroupID to LiteStateGroup
-     */
-    Map<Integer, LiteStateGroup> getAllStateGroupMap();
-
-    List<LiteTag> getAllTags();
-
-    List<LiteYukonPAObject> getAllUnusedCCDevices();
-
+    /** A map of StateGroupId to LiteStateGroup */
+    Map<Integer, LiteStateGroup> getAllStateGroups();
+    
     List<LiteYukonPAObject> getAllYukonPAObjects();
 
     List<LiteYukonGroup> getAllYukonGroups();
@@ -175,11 +162,7 @@ public interface IDatabaseCache {
 
     void releaseAllTOUSchedules();
 
-    void releaseAllTOUDays();
-
     void releaseAllConfigs();
-
-    void releaseAllTags();
 
     void releaseAllLMProgramConstraints();
 
@@ -197,21 +180,15 @@ public interface IDatabaseCache {
 
     void releaseAllDeviceTypeCommands();
 
-    LiteYukonRole getARole(LiteYukonUser user, int roleID);
-
     LiteContact getAContactByUserID(int userID);
 
     LiteContact getAContactByContactID(int contactID);
 
-    LiteContactNotification getAContactNotifByNotifID(int contNotifyID);
+    LiteContactNotification getContactNotification(int contactNotificationId);
 
     LiteCustomer getACustomerByPrimaryContactID(int contactID);
 
-    LiteCustomer getACustomerByCustomerID(int customerID);
-
-    void releaseUserRoleMap();
-
-    void releaseUserRolePropertyValueMap();
+    LiteCustomer getCustomer(int customerId);
 
     void releaseUserContactMap();
 

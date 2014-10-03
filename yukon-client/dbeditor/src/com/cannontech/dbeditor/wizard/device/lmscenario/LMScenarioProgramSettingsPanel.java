@@ -50,6 +50,7 @@ import com.cannontech.common.gui.util.TreeFindPanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.lm.LMFactory;
@@ -64,6 +65,10 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMScenarioProgramSettingsPanel extends DataInputPanel {
+    
+    private LMGearDao lmGearDao = YukonSpringHook.getBean(LMGearDao.class);
+    private IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    
     private IvjEventHandler ivjEventHandler = new IvjEventHandler();
     private JScrollPane ivjProgramsScrollPane = null;
     private JTable ivjProgramsTable = null;
@@ -719,11 +724,10 @@ public class LMScenarioProgramSettingsPanel extends DataInputPanel {
             allGears = new Vector<>();
         }
 
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             List<LiteYukonPAObject> progs = cache.getAllLoadManagement();
             Collections.sort(progs, LiteComparators.liteStringComparator);
-            allGears.addAll(cache.getAllGears());
+            allGears.addAll(lmGearDao.getAllLiteGears());
             Vector<Integer> programsInAControlArea = LMControlAreaProgram.getAllProgramsInControlAreas();
             try {
                 for (LiteYukonPAObject program : progs) {

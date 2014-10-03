@@ -99,7 +99,7 @@ public class TagTableModel extends javax.swing.table.AbstractTableModel implemen
 		LiteTag tagGrp = YukonSpringHook.getBean(TagDao.class).getLiteTag( 
 				getRowAt(row).getTagID() );
 
-		return Colors.getColor( tagGrp.getColorID() );
+		return Colors.getColor( tagGrp.getColorId() );
 	}
 	
 	

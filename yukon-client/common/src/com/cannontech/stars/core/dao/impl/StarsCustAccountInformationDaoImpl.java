@@ -183,7 +183,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
             
             IDatabaseCache cache = DefaultDatabaseCache.getInstance();
             synchronized (cache) {
-                LiteCustomer customer =  (cache.getACustomerByCustomerID(-1));
+                LiteCustomer customer =  (cache.getCustomer(-1));
                 placeHolderAccount.setCustomer(customer);
             }    
         }

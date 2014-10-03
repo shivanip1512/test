@@ -814,7 +814,7 @@ public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements A
             synchronized (cache) {
                 int stateGroupID = getJPanelTriggerID().getSelectedPoint().getStateGroupID();
 
-                LiteStateGroup stateGroup = cache.getAllStateGroupMap().get(new Integer(stateGroupID));
+                LiteStateGroup stateGroup = cache.getAllStateGroups().get(new Integer(stateGroupID));
 
                 Iterator<LiteState> stateIterator = stateGroup.getStatesList().iterator();
                 while (stateIterator.hasNext()) {

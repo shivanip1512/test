@@ -1,9 +1,3 @@
-/*
- * Created on May 20, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.analysis;
 
 import java.awt.Image;
@@ -91,6 +85,7 @@ import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
@@ -110,16 +105,14 @@ import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.yukon.IDatabaseCache;
 import com.keypoint.PngEncoder;
 
-/**
- * @author snebben
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public class ReportFuncs
-{
-    public static YukonReportBase createYukonReport(ReportModelBase<?> model)
-    {
+public class ReportFuncs {
+    
+    private static IDatabaseCache cache = YukonSpringHook.getBean(IDatabaseCache.class);
+    private static PaoAuthorizationService paoAuthService = YukonSpringHook.getBean(PaoAuthorizationService.class);
+    private static StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
+    private static DeviceGroupUiService deviceGroupUiService = YukonSpringHook.getBean(DeviceGroupUiService.class);
+    
+    public static YukonReportBase createYukonReport(ReportModelBase<?> model) {
         YukonReportBase returnVal = null;
         if( model instanceof StatisticModel)
             returnVal = new StatisticReport();
@@ -255,8 +248,7 @@ public class ReportFuncs
     }
     
     public static List<? extends Object> getObjectsByModelType(ReportFilter filter, int userId) {
-        IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
-
+        
         if( filter.equals(ReportFilter.DEVICE)){
             return cache.getAllDevices();
 
@@ -264,7 +256,7 @@ public class ReportFuncs
             return cache.getAllPorts();
 
         } else if( filter.equals(ReportFilter.GROUPS)){
-            List<? extends DeviceGroup> allGroups = ((DeviceGroupUiService)YukonSpringHook.getBean("deviceGroupUiService")).getGroups(new NonHiddenDeviceGroupPredicate());
+            List<? extends DeviceGroup> allGroups = deviceGroupUiService.getGroups(new NonHiddenDeviceGroupPredicate());
             List<String> mappingList = new MappingList<DeviceGroup, String>(allGroups, new ObjectMapper<DeviceGroup, String>() {
                 @Override
                 public String map(DeviceGroup from) {
@@ -387,7 +379,7 @@ public class ReportFuncs
         	return new ArrayList<LiteYukonPAObject>();
         	
         } else if (filter.equals(ReportFilter.STRATEGY)) {
-            StrategyDao strategyDao = YukonSpringHook.getBean("strategyDao", StrategyDao.class);
+            
         	List<LiteCapControlStrategy> strategyList = strategyDao.getAllLiteStrategies();
         	
         	return strategyList;
@@ -398,15 +390,11 @@ public class ReportFuncs
     }
     
     public static List<LiteYukonPAObject> getRestrictedPrograms(LiteYukonUser user){
-        PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
-        IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
         List<LiteYukonPAObject> programs = cache.getAllLMPrograms();
         return paoAuthService.filterAuthorized(user, programs, Permission.LM_VISIBLE);
     }
     
     public static List<LiteYukonPAObject> getRestrictedLMGroups(LiteYukonUser user){
-        PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
-        IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
         List<LiteYukonPAObject> groups = cache.getAllLMGroups();
         List<LiteYukonPAObject> filtered = paoAuthService.filterAuthorized(user, groups, Permission.LM_VISIBLE); 
         return filtered;

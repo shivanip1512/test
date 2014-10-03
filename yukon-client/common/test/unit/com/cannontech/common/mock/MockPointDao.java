@@ -248,4 +248,9 @@ public class MockPointDao implements PointDao {
     public LitePoint createLitePoint(YukonResultSet rs) throws SQLException {
         return null;
     }
+
+    @Override
+    public List<LitePointLimit> getAllPointLimits() {
+        return null;
+    }
 }

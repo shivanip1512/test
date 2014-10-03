@@ -79,7 +79,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             try {
                 // keep stuff up to date in the cache
                 DefaultDatabaseCache.getInstance().getAllDevices();
-                DefaultDatabaseCache.getInstance().getAllStateGroupMap();
+                DefaultDatabaseCache.getInstance().getAllStateGroups();
                 drawing.getLxGraph().startUndoEdit("update");
                 // keep track if we changed anything
                 boolean change = false;

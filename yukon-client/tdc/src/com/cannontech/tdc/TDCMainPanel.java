@@ -2844,10 +2844,10 @@ private void addTagMenuItems( int selRow )
 		mi.putClientProperty( "tdc_tag_row", new Integer(i++) );
 
 		//mi.setForeground( Colors.getColor(liteTag.getColorID()) );
-		if( liteTag.getImageID() > CtiUtilities.NONE_ZERO_ID )
+		if( liteTag.getImageId() > CtiUtilities.NONE_ZERO_ID )
 			mi.setIcon( 
 				new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-					YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(liteTag.getImageID()).getImageValue()) ) );
+					YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(liteTag.getImageId()).getImageValue()) ) );
 
 		//be sure any click on a specific tag takes the user to the
 		// tag editor

@@ -21,35 +21,37 @@ public final class StateDaoImpl implements StateDao {
     private static final Logger log = YukonLogManager.getLogger(StateDaoImpl.class);
     
     @Autowired private IDatabaseCache databaseCache;
-
+    
     @Override
     public LiteState findLiteState(int stateGroupId, int rawState) {
+        
         LiteStateGroup stateGroup = getLiteStateGroup(stateGroupId);
-
+        
         List<LiteState> stateList = stateGroup.getStatesList();
         for (final LiteState state : stateList) {
             if (rawState == state.getStateRawState()) return state;
         }
-
+        
         //this is a internal error
         log.debug("Unable to find the state for StateGroupID = " + stateGroupId +
                         " and rawState = " + rawState );
-
+        
         return null;
     }
-
+    
     @Override
     public LiteStateGroup getLiteStateGroup(int stateGroupID) {
         synchronized (databaseCache) {
-            LiteStateGroup liteStateGroup = databaseCache.getAllStateGroupMap().get(stateGroupID);
+            LiteStateGroup liteStateGroup = databaseCache.getAllStateGroups().get(stateGroupID);
             return liteStateGroup;
         }
     }
-
+    
     @Override
     public LiteStateGroup getLiteStateGroup(String stateGroupName) {
+        
         synchronized (databaseCache) {
-            Map<Integer,LiteStateGroup> allStateGroupMap = databaseCache.getAllStateGroupMap();
+            Map<Integer, LiteStateGroup> allStateGroupMap = databaseCache.getAllStateGroups();
             Collection<LiteStateGroup> stateGroups = allStateGroupMap.values();
             for(LiteStateGroup group : stateGroups){
                 if(stateGroupName.equals(group.getStateGroupName())){
@@ -57,33 +59,34 @@ public final class StateDaoImpl implements StateDao {
                 }
             }
         }
+        
         throw new NotFoundException("State group '" + stateGroupName + "' doesn't exist");
     }
-
+    
     @Override
-    public LiteState[] getLiteStates(int stateGroupID) {
+    public LiteState[] getLiteStates(int stateGroupId) {
+        
         LiteStateGroup lsg = null;
-        lsg = getLiteStateGroup(stateGroupID);
-
+        lsg = getLiteStateGroup(stateGroupId);
+        
         LiteState[] ls = new LiteState[lsg.getStatesList().size()];
         lsg.getStatesList().toArray(ls);
+        
         return ls;
     }
-
+    
     @Override
     public LiteStateGroup[] getAllStateGroups() {
+        
         LiteStateGroup[] stateGroups = null;
-
+        
         synchronized (databaseCache) {
-            Collection<LiteStateGroup> values = databaseCache.getAllStateGroupMap().values();
+            Collection<LiteStateGroup> values = databaseCache.getAllStateGroups().values();
             stateGroups = values.toArray(new LiteStateGroup[values.size()]);
             Arrays.sort(stateGroups, LiteComparators.liteStringComparator);
         }
-
+        
         return stateGroups;
     }
-
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
+    
 }

@@ -1,12 +1,7 @@
 package com.cannontech.mbean;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,23 +19,21 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.users.dao.UserGroupDao;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCommand;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteHolidaySchedule;
 import com.cannontech.database.data.lite.LiteLMConstraint;
@@ -51,9 +44,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteTOUDay;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
-import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -61,9 +52,6 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.CTIDbChange;
-import com.cannontech.database.db.capcontrol.CapBank;
-import com.cannontech.database.db.capcontrol.DeviceCBC;
-import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -75,44 +63,34 @@ import com.cannontech.yukon.server.cache.ConfigLoader;
 import com.cannontech.yukon.server.cache.ContactLoader;
 import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
 import com.cannontech.yukon.server.cache.DeviceCommPortLoader;
-import com.cannontech.yukon.server.cache.GearLoader;
 import com.cannontech.yukon.server.cache.GraphDefinitionLoader;
 import com.cannontech.yukon.server.cache.HolidayScheduleLoader;
 import com.cannontech.yukon.server.cache.LMConstraintLoader;
 import com.cannontech.yukon.server.cache.LMPAOExclusionLoader;
 import com.cannontech.yukon.server.cache.LMScenarioProgramLoader;
-import com.cannontech.yukon.server.cache.PointLimitLoader;
 import com.cannontech.yukon.server.cache.SeasonScheduleLoader;
-import com.cannontech.yukon.server.cache.StateGroupLoader;
 import com.cannontech.yukon.server.cache.SystemPointLoader;
-import com.cannontech.yukon.server.cache.TOUDayLoader;
 import com.cannontech.yukon.server.cache.TOUScheduleLoader;
-import com.cannontech.yukon.server.cache.TagLoader;
 import com.cannontech.yukon.server.cache.YukonGroupLoader;
 import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
 import com.cannontech.yukon.server.cache.YukonImageLoader;
 import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
-import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
-import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
-import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
 import com.google.common.collect.Lists;
 
-/**
- * All the action is here!
- * Creation date: (3/14/00 3:20:44 PM)
- * @author: everyone and their dog
- */
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache {
+    
     // stores a soft reference to the cache
     private static ServerDatabaseCache cache;
     
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     @Autowired private MeterDao meterDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
+    @Autowired private CustomerDao customerDao;
     @Autowired private CommandDao commandDao;
     
     private String databaseAlias = CtiUtilities.getDatabaseAlias();
@@ -125,11 +103,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     private List<LiteAlarmCategory> allAlarmCategories = null;
     private List<LiteGraphDefinition> allGraphDefinitions = null;
-    private List<LiteYukonPAObject> allMCTs = null;
+    private List<LiteYukonPAObject> allMcts = null;
     private List<LiteHolidaySchedule> allHolidaySchedules = null;
     private List<LiteBaseline> allBaselines = null;
     private List<LiteConfig> allConfigs = null;
-    private List<LitePointLimit> allPointLimits = null;
+    private Map<Integer, LitePointLimit> allPointLimits = null;
     private List<LiteYukonImage> allYukonImages = null;
     private volatile List<LiteCICustomer> allCICustomers = null;
     private List<LiteLMConstraint> allLMProgramConstraints = null;
@@ -137,11 +115,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private List<LiteLMProgScenario> allLMScenarioProgs = null;
     private List<LiteLMPAOExclusion> allLMPAOExclusions = null;
     
-    private List<LiteTag> allTags = null;
-    
     private List<LiteSeasonSchedule> allSeasonSchedules = null;
-    private List<LiteTOUSchedule> allTOUSchedules = null;
-    private List<LiteTOUDay> allTOUDays = null;
+    private List<LiteTOUSchedule> allTouSchedules = null;
     
     private List<LiteYukonRole> allYukonRoles = null;
     private List<LiteYukonRoleProperty> allYukonRoleProperties = null;
@@ -150,10 +125,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap = null;
     
     // lists that are created by the joining/parsing of existing lists
-    private List<LiteYukonPAObject> allUnusedCCDevices = null;
-    private List<LiteYukonPAObject> allCapControlFeeders = null;
-    private List<LiteYukonPAObject> allCapControlSubBuses = null;
-    private List<LiteYukonPAObject> allCapControlSubStations = null;
     private List<LiteYukonPAObject> allDevices = null;
     private List<LiteYukonPAObject> allLMPrograms = null;
     private List<LiteYukonPAObject> allLMControlAreas = null;
@@ -169,12 +140,10 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands = null;
     private Map<Integer, LiteCommand> allCommands = null;
     private Map<Integer, LiteYukonPAObject> allRoutes = null;
-    private Map<Integer, LiteStateGroup> allStateGroupMap = null;
+    private Map<Integer, LiteStateGroup> allStateGroups = null;
     private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
     
     private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<>(1000, .75f, 30);
-    private Map<MapKeyInts, String> userRolePropertyValueMap = null;
-    private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
     
     @Override
     public synchronized DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType) {
@@ -205,64 +174,60 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlFeeders() {
-        if (allCapControlFeeders == null) {
-            allCapControlFeeders = new ArrayList<>();
-
-            for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
-                    && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_FEEDER) {
-                    allCapControlFeeders.add(getAllYukonPAObjects().get(i));
-                }
+        
+        List<LiteYukonPAObject> feeders = new ArrayList<>();
+        
+        for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+            if (pao.getPaoType() == PaoType.CAP_CONTROL_FEEDER) {
+                feeders.add(pao);
             }
         }
-
-        return allCapControlFeeders;
+        
+        return feeders;
     }
 
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses() {
-        if (allCapControlSubBuses == null) {
-            allCapControlSubBuses = new ArrayList<>();
-
-            for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
-                    && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_SUBBUS) {
-                    allCapControlSubBuses.add(getAllYukonPAObjects().get(i));
-                }
+        
+        List<LiteYukonPAObject> buses = new ArrayList<>();
+        
+        for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+            PaoType type = pao.getPaoType();
+            if (type == PaoType.CAP_CONTROL_SUBBUS) {
+                buses.add(pao);
             }
         }
-
-        return allCapControlSubBuses;
+        
+        return buses;
     }
-
+    
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlSubStations() {
-        if (allCapControlSubStations == null) {
-            allCapControlSubStations = new ArrayList<>();
-
-            for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
-                    && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_SUBSTATION) {
-                    allCapControlSubStations.add(getAllYukonPAObjects().get(i));
-                }
+        
+        List<LiteYukonPAObject> subs = new ArrayList<>();
+        
+        for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+            if (pao.getPaoType() == PaoType.CAP_CONTROL_SUBSTATION) {
+                subs.add(pao);
             }
         }
-
-        return allCapControlSubStations;
+        
+        return subs;
     }
 
     private synchronized void loadAllContacts() {
+        
         if (allContactNotifsMap != null) {
             return;
         }
-
+        
         allContactsMap.clear();
         allContactNotifsMap = new HashMap<Integer, LiteContactNotification>();
-
+        
         ContactLoader contactLoader = new ContactLoader(allContactsMap, allContactNotifsMap, databaseAlias);
         contactLoader.run();
     }
-
+    
     /**
      * Called by:
      * HECO_SettlementModelBase.loadSettlementCustomerMap()
@@ -280,7 +245,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         return Collections.unmodifiableList(tempAllCICustomers);
     }
-
+    
     @Override
     public Map<Integer, SimpleMeter> getAllMeters() {
         
@@ -299,114 +264,106 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     @Override
     public synchronized List<LiteYukonPAObject> getAllDevices() {
+        
         if (allDevices == null) {
             allDevices = new ArrayList<>();
-
-            for (int i = 0; i < getAllYukonPAObjects().size(); i++) {
-                if (getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.DEVICE) {
-                    allDevices.add(getAllYukonPAObjects().get(i));
+            
+            for (LiteYukonPAObject pao : getAllPaosMap().values()) {
+                if (pao.getPaoType().getPaoCategory() == PaoCategory.DEVICE) {
+                    allDevices.add(pao);
                 }
             }
         }
-
+        
         return allDevices;
     }
-
+    
     @Override
     public synchronized List<LiteYukonPAObject> getAllMCTs() {
-        if (allMCTs == null) {
-            allMCTs = new ArrayList<>();
-
+        
+        if (allMcts == null) {
+            allMcts = new ArrayList<>();
+            
             for (LiteYukonPAObject device : getAllDevices()) {
                 if (device.getPaoType().isMct()) {
-                    allMCTs.add(device);
+                    allMcts.add(device);
                 }
             }
         }
-
-        return allMCTs;
+        
+        return allMcts;
     }
-
+    
     @Override
     public synchronized List<LiteGraphDefinition> getAllGraphDefinitions() {
+        
         if (allGraphDefinitions != null) {
             return allGraphDefinitions;
         }
-
+        
         allGraphDefinitions = new ArrayList<>();
         GraphDefinitionLoader graphDefinitionLoader = new GraphDefinitionLoader(allGraphDefinitions, databaseAlias);
         graphDefinitionLoader.run();
+        
         return allGraphDefinitions;
     }
-
+    
     @Override
     public synchronized List<LiteHolidaySchedule> getAllHolidaySchedules() {
+        
         if (allHolidaySchedules != null) {
             return allHolidaySchedules;
         }
-
+        
         allHolidaySchedules = new ArrayList<>();
         HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
         holidayScheduleLoader.run();
+        
         return allHolidaySchedules;
     }
-
+    
     @Override
     public synchronized List<LiteBaseline> getAllBaselines() {
+        
         if (allBaselines != null) {
             return allBaselines;
         }
-
+        
         allBaselines = new ArrayList<>();
         BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
         baselineLoader.run();
+        
         return allBaselines;
     }
-
+    
     @Override
     public synchronized List<LiteSeasonSchedule> getAllSeasonSchedules() {
+        
         if (allSeasonSchedules != null) {
             return allSeasonSchedules;
         }
-
+        
         allSeasonSchedules = new ArrayList<>();
         SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
         seasonLoader.run();
+        
         return allSeasonSchedules;
     }
-
+    
     @Override
     public synchronized List<LiteTOUSchedule> getAllTOUSchedules() {
-        if (allTOUSchedules != null) {
-            return allTOUSchedules;
+        
+        if (allTouSchedules != null) {
+            return allTouSchedules;
         }
-
-        allTOUSchedules = new ArrayList<>();
-        TOUScheduleLoader touLoader = new TOUScheduleLoader(allTOUSchedules, databaseAlias);
+        
+        allTouSchedules = new ArrayList<>();
+        TOUScheduleLoader touLoader = new TOUScheduleLoader(allTouSchedules, databaseAlias);
         touLoader.run();
-        return allTOUSchedules;
+        
+        return allTouSchedules;
     }
-
-    @Override
-    public synchronized List<LiteTOUDay> getAllTOUDays() {
-        if (allTOUDays != null) {
-            return allTOUDays;
-        }
-
-        allTOUDays = new ArrayList<>();
-        TOUDayLoader dayLoader = new TOUDayLoader(allTOUDays, databaseAlias);
-        dayLoader.run();
-        return allTOUDays;
-    }
-
-    @Override
-    public List<LiteGear> getAllGears() {
-        List<LiteGear> allGears = new ArrayList<>();
-        GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
-        gearLoader.run();
-        return allGears;
-    }
-
+    
     @Override
     public synchronized Map<Integer, LiteCommand> getAllCommands() {
         
@@ -609,30 +566,36 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         loadAllContacts();
         return allContactNotifsMap;
     }
-
+    
     @Override
-    public synchronized List<LitePointLimit> getAllPointLimits() {
+    public synchronized Map<Integer, LitePointLimit> getAllPointLimits() {
+        
         if (allPointLimits != null) {
             return allPointLimits;
         }
-
-        allPointLimits = new ArrayList<>();
-        PointLimitLoader pointLimitLoader = new PointLimitLoader(allPointLimits, databaseAlias);
-        pointLimitLoader.run();
+        
+        allPointLimits = new ConcurrentHashMap<Integer, LitePointLimit>();
+        
+        for (LitePointLimit limit : pointDao.getAllPointLimits()) {
+            allPointLimits.put(limit.getPointID(), limit);
+        }
+        
         return allPointLimits;
     }
-
+    
     @Override
     public synchronized List<LiteYukonPAObject> getAllPorts() {
+        
         if (allPorts == null) {
             allPorts = new ArrayList<>();
-
+            
             for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
                 if (pao.getPaoType().getPaoCategory() == PaoCategory.PORT || pao.getPaoType() == PaoType.RFN_1200) {
                     allPorts.add(pao);
                 }
             }
         }
+        
         return allPorts;
     }
     
@@ -643,6 +606,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     @Override
     public synchronized Map<Integer, LiteYukonPAObject> getAllRoutesMap() {
+        
         if (allRoutes == null) {
             allRoutes = new ConcurrentHashMap<>();
             
@@ -658,82 +622,18 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     }
     
     @Override
-    public synchronized Map<Integer, LiteStateGroup> getAllStateGroupMap() {
-        if (allStateGroupMap == null) {
-            allStateGroupMap = new HashMap<Integer, LiteStateGroup>();
-            StateGroupLoader stateGroupLoader = new StateGroupLoader(allStateGroupMap);
-            stateGroupLoader.run();
-            return allStateGroupMap;
-        }
-
-        return allStateGroupMap;
-    }
-
-    @Override
-    public synchronized List<LiteTag> getAllTags() {
-        if (allTags == null) {
-            allTags = new ArrayList<>();
-            TagLoader tagLoader = new TagLoader(allTags, databaseAlias);
-            tagLoader.run();
-            return allTags;
-        }
-        return allTags;
-    }
-
-    // This cache is derive from the Device cache
-    @Override
-    public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices() {
-        if (allUnusedCCDevices != null) {
-            return allUnusedCCDevices;
-        }
-
-        // temp code
-        Date timerStart = new Date();
-        // temp code
-
-        // add all the CBC and and addressable Devices (RTU, DNP, etc) into these results
-        String sqlString =
-            "select deviceID from " + DeviceAddress.TABLE_NAME + " union select deviceID from "
-                + DeviceCBC.TABLE_NAME + " where deviceID not in " + " (select controldeviceid from "
-                + CapBank.TABLE_NAME + ")";
-
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rset = null;
-        allUnusedCCDevices = new ArrayList<>(32);
-
-        try {
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            stmt = conn.createStatement();
-            rset = stmt.executeQuery(sqlString);
-
-            while (rset.next()) {
-                int paoID = rset.getInt(1);
-                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoID);
-
-                if (pao != null) {
-                    allUnusedCCDevices.add(pao);
-                }
+    public synchronized Map<Integer, LiteStateGroup> getAllStateGroups() {
+        
+        if (allStateGroups == null) {
+            allStateGroups = new ConcurrentHashMap<>();
+            
+            List<LiteStateGroup> groups = stateGroupDao.getAllStateGroups();
+            for (LiteStateGroup group : groups) {
+                allStateGroups.put(group.getStateGroupID(), group);
             }
-
-            if (rset != null) {
-                rset.close();
-            }
-
-            // ensure is list is sorted by name
-            Collections.sort(allUnusedCCDevices, LiteComparators.liteYukonPAObjectIDComparator);
-
-            // temp code
-            Date timerStop = new Date();
-            CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001 + " Secs for getAllUnusedCCPaos()");
-            // temp code
-        } catch (SQLException e) {
-            CTILogger.error(e.getMessage(), e);
-        } finally {
-            SqlUtils.close(rset, stmt, conn);
         }
         
-        return allUnusedCCDevices;
+        return allStateGroups;
     }
     
     @Override
@@ -745,7 +645,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         return allYukonGroups;
     }
-
+    
     @Override
     public synchronized List<LiteYukonRole> getAllYukonRoles() {
         if (allYukonRoles == null) {
@@ -755,7 +655,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         return allYukonRoles;
     }
-
+    
     @Override
     public synchronized List<LiteYukonRoleProperty> getAllYukonRoleProperties() {
         if (allYukonRoleProperties == null) {
@@ -765,7 +665,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         return allYukonRoleProperties;
     }
-
+    
     @Override
     public synchronized Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>>
         getYukonGroupRolePropertyMap() {
@@ -988,8 +888,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             
             if (dbCategory.equalsIgnoreCase(PaoCategory.DEVICE.getDbString())) {
                 allDevices = null;
-                allMCTs = null;
-                allUnusedCCDevices = null;
+                allMcts = null;
                 allLoadManagement = null; // PAOGroups are here, oops!
                 
                 if (PaoType.getForDbString(dbChangeMsg.getObjectType()).hasMeterNumber()) {
@@ -1003,10 +902,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allLMScenarios = null;
                 allLMScenarioProgs = null;
                 allLMPAOExclusions = null;
-            } else if (dbCategory.equalsIgnoreCase(PaoCategory.CAPCONTROL.getDbString())) {
-                allCapControlFeeders = null;
-                allCapControlSubBuses = null;
-                allCapControlSubStations = null;
             } else if (dbCategory.equalsIgnoreCase(PaoCategory.PORT.getDbString())) {
                 allPorts = null;
             } else if (dbCategory.equalsIgnoreCase(PaoCategory.ROUTE.getDbString())) {
@@ -1047,8 +942,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             } else {
                 retLBase = handleConfigChange(dbChangeType, id);
             }
-        } else if (database == DBChangeMsg.CHANGE_TAG_DB) {
-            retLBase = handleTagChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB) {
             retLBase = handleLMProgramConstraintChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB) {
@@ -1339,39 +1232,39 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         LiteBase lBase = null;
 
         // if the storage is not already loaded, we must not care about it
-        if (allTOUSchedules == null) {
+        if (allTouSchedules == null) {
             return lBase;
         }
 
         switch (dbChangeType) {
         case ADD:
-            for (int i = 0; i < allTOUSchedules.size(); i++) {
-                if (allTOUSchedules.get(i).getScheduleID() == id) {
+            for (int i = 0; i < allTouSchedules.size(); i++) {
+                if (allTouSchedules.get(i).getScheduleID() == id) {
                     alreadyAdded = true;
-                    lBase = allTOUSchedules.get(i);
+                    lBase = allTouSchedules.get(i);
                     break;
                 }
             }
             if (!alreadyAdded) {
                 LiteTOUSchedule lh = new LiteTOUSchedule(id);
                 lh.retrieve(databaseAlias);
-                allTOUSchedules.add(lh);
+                allTouSchedules.add(lh);
                 lBase = lh;
             }
             break;
         case UPDATE:
-            for (int i = 0; i < allTOUSchedules.size(); i++) {
-                if (allTOUSchedules.get(i).getScheduleID() == id) {
-                    allTOUSchedules.get(i).retrieve(databaseAlias);
-                    lBase = allTOUSchedules.get(i);
+            for (int i = 0; i < allTouSchedules.size(); i++) {
+                if (allTouSchedules.get(i).getScheduleID() == id) {
+                    allTouSchedules.get(i).retrieve(databaseAlias);
+                    lBase = allTouSchedules.get(i);
                     break;
                 }
             }
             break;
         case DELETE:
-            for (int i = 0; i < allTOUSchedules.size(); i++) {
-                if (allTOUSchedules.get(i).getScheduleID() == id) {
-                    lBase = allTOUSchedules.remove(i);
+            for (int i = 0; i < allTouSchedules.size(); i++) {
+                if (allTouSchedules.get(i).getScheduleID() == id) {
+                    lBase = allTouSchedules.remove(i);
                     break;
                 }
             }
@@ -1450,57 +1343,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
         return lBase;
     }
-
-    private synchronized LiteBase handleTagChange(DbChangeType dbChangeType, int id) {
-        boolean alreadyAdded = false;
-        LiteBase lTag = null;
-
-        // if the storage is not already loaded, we must not care about it
-        if (allTags == null) {
-            return lTag;
-        }
-
-        switch (dbChangeType) {
-        case ADD:
-            for (int i = 0; i < allTags.size(); i++) {
-                if (allTags.get(i).getTagID() == id) {
-                    alreadyAdded = true;
-                    lTag = allTags.get(i);
-                    break;
-                }
-            }
-            if (!alreadyAdded) {
-                LiteTag lh = new LiteTag(id);
-                lh.retrieve(databaseAlias);
-                allTags.add(lh);
-                lTag = lh;
-            }
-            break;
-        case UPDATE:
-            for (int i = 0; i < allTags.size(); i++) {
-                if (allTags.get(i).getTagID() == id) {
-                    allTags.get(i).retrieve(databaseAlias);
-                    lTag = allTags.get(i);
-                    break;
-                }
-            }
-            break;
-        case DELETE:
-            for (int i = 0; i < allTags.size(); i++) {
-                if (allTags.get(i).getTagID() == id) {
-                    lTag = allTags.remove(i);
-                    break;
-                }
-            }
-            break;
-        default:
-            releaseAllTags();
-            break;
-        }
-
-        return lTag;
-    }
-
+    
     private synchronized LiteBase handleLMProgramConstraintChange(DbChangeType dbChangeType, int id) {
         boolean alreadyAdded = false;
         LiteBase lBase = null;
@@ -1628,44 +1471,25 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return lBase;
     }
 
-    private synchronized LiteBase handleStateGroupChange(DbChangeType dbChangeType, int id) {
-        LiteBase lBase = null;
-
-        // if the storage is not already loaded, we must not care about it
-        if (allStateGroupMap == null) {
-            return lBase;
-        }
-
-        switch (dbChangeType) {
-        case ADD:
-            lBase = allStateGroupMap.get(new Integer(id));
-            if (lBase == null) {
-                LiteStateGroup lsg = new LiteStateGroup(id);
-                lsg.retrieve(databaseAlias);
-                allStateGroupMap.put(new Integer(lsg.getStateGroupID()), lsg);
-                lBase = lsg;
-            }
-            break;
-
-        case UPDATE:
-            LiteStateGroup ly = allStateGroupMap.get(new Integer(id));
-            ly.retrieve(databaseAlias);
-
-            lBase = ly;
-            break;
-
-        case DELETE:
-            lBase = allStateGroupMap.remove(new Integer(id));
-            break;
-
-        default:
+    private synchronized LiteBase handleStateGroupChange(DbChangeType type, int id) {
+        
+        if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
+            
+            LiteStateGroup group = stateGroupDao.getStateGroup(id);
+            getAllStateGroups().put(group.getLiteID(), group);
+            
+            return group;
+        } else if (type == DbChangeType.DELETE) {
+            
+            LiteStateGroup group = getAllStateGroups().remove(id);
+            return group;
+        } else {
             releaseAllStateGroups();
-            break;
+            return null;
         }
-
-        return lBase;
+        
     }
-
+    
     private LiteBase handleCustomerChange(DbChangeType dbChangeType, int id, String dbCategory, boolean noObjectNeeded) {
         LiteBase lBase = null;
 
@@ -1745,9 +1569,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 break;
             }
         }
-
-        releaseUserRoleMap();
-        releaseUserRolePropertyValueMap();
 
         return lBase;
     }
@@ -1835,13 +1656,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         allLitePaos = null;
         allSystemPoints = null;
-        allStateGroupMap = null;
+        allStateGroups = null;
         allNotificationGroups = null;
         allContactNotifsMap = null;
         
         allAlarmCategories = null;
         allGraphDefinitions = null;
-        allMCTs = null;
+        allMcts = null;
         allHolidaySchedules = null;
         allBaselines = null;
         allConfigs = null;
@@ -1853,11 +1674,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allLMScenarios = null;
         allLMScenarioProgs = null;
         
-        allTags = null;
         allSeasonSchedules = null;
         allDeviceTypeCommands = null;
-        allTOUSchedules = null;
-        allTOUDays = null;
+        allTouSchedules = null;
         
         allYukonRoles = null;
         allYukonRoleProperties = null;
@@ -1866,10 +1685,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allYukonGroupRolePropertiesMap = null;
         
         // lists that are created by the joining/parsing of existing lists
-        allUnusedCCDevices = null;
-        allCapControlFeeders = null;
-        allCapControlSubBuses = null;
-        allCapControlSubStations = null;
         allDevices = null;
         allLMPrograms = null;
         allLMControlAreas = null;
@@ -1926,24 +1741,14 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public synchronized void releaseAllTOUSchedules() {
-        allTOUSchedules = null;
+        allTouSchedules = null;
     }
-
-    @Override
-    public synchronized void releaseAllTOUDays() {
-        allTOUDays = null;
-    }
-
+    
     @Override
     public synchronized void releaseAllConfigs() {
         allConfigs = null;
     }
-
-    @Override
-    public synchronized void releaseAllTags() {
-        allTags = null;
-    }
-
+    
     @Override
     public synchronized void releaseAllLMProgramConstraints() {
         allLMProgramConstraints = null;
@@ -1975,13 +1780,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     public synchronized void releaseAllYukonGroups() {
         allYukonGroups = null;
-        releaseUserRoleMap();
-        releaseUserRolePropertyValueMap();
     }
 
     @Override
     public synchronized void releaseAllStateGroups() {
-        allStateGroupMap = null;
+        allStateGroups = null;
     }
 
     @Override
@@ -1992,41 +1795,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized void releaseAllDeviceTypeCommands() {
         allDeviceTypeCommands = null;
-    }
-
-    /*
-     * This method takes a userid and a roleid. It checks userRoleMap to see
-     * if this role has been recovered from the db before. If it has not, it will
-     * be taken directly from the database.
-     */
-    @Override
-    public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID) {
-        MapKeyInts keyInts = new MapKeyInts(user.getLiteID(), roleID);
-        LiteYukonRole specifiedRole = null;
-        // check cache for previous grabs
-        if (userRoleMap == null) {
-            userRoleMap = new HashMap<MapKeyInts, LiteYukonRole>();
-        } else {
-            specifiedRole = userRoleMap.get(keyInts);
-        }
-
-        // not in cache, go to DB.
-        if (specifiedRole == null && !userRoleMap.containsKey(keyInts)) {
-            specifiedRole = YukonUserRolePropertyLookup.loadSpecificRole(user, roleID);
-            /*
-             * found it, put it in the cache for later searches
-             * Go ahead and put in null values, too. This will make it faster to check if this
-             * role exists for this user next time around.
-             */
-            userRoleMap.put(keyInts, specifiedRole);
-            /*
-             * This is useful for checking the map after a DBChangeMsg is received to see if
-             * this user exists in the map. If it does, then the map should be reset.
-             */
-            userRoleMap.put(new MapKeyInts(user.getLiteID(), CtiUtilities.NONE_ZERO_ID), null);
-        }
-
-        return specifiedRole;
     }
 
     /*
@@ -2074,35 +1842,35 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 userContactMap.put(specifiedContact.getLoginID(), specifiedContact);
             }
         }
-
+        
         return specifiedContact;
     }
-
+    
     @Override
-    public synchronized LiteContactNotification getAContactNotifByNotifID(int contNotifyID) {
+    public synchronized LiteContactNotification getContactNotification(int contactNotificationId) {
+        
         loadAllContacts();
-
-        LiteContactNotification specifiedNotify = allContactNotifsMap.get(new Integer(contNotifyID));
-
+        LiteContactNotification notification = allContactNotifsMap.get(contactNotificationId);
+        
         // not in cache, go to DB.
-        if (specifiedNotify == null) {
-            specifiedNotify = contactNotificationDao.getNotificationForContact(contNotifyID);
+        if (notification == null) {
+            notification = contactNotificationDao.getNotificationForContact(contactNotificationId);
             // found it, put it in the cache for later searches
-            allContactNotifsMap.put(new Integer(contNotifyID), specifiedNotify);
+            allContactNotifsMap.put(new Integer(contactNotificationId), notification);
             // make sure the contact is also loaded
-            getAContactByContactID(specifiedNotify.getContactID());
+            getAContactByContactID(notification.getContactID());
         }
-
-        return specifiedNotify;
+        
+        return notification;
     }
-
+    
     /*
      * This method takes a primaryContactId to look for the relevant customer. It will
      * be taken directly from the database.
      */
     @Override
     public LiteCustomer getACustomerByPrimaryContactID(int primaryContactId) {
-        return YukonCustomerLookup.loadSpecificCustomerByPrimaryContactID(primaryContactId);
+        return customerDao.getLiteCustomerByPrimaryContact(primaryContactId);
     }
 
     /*
@@ -2111,69 +1879,39 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
      * be taken directly from the database.
      */
     @Override
-    public LiteCustomer getACustomerByCustomerID(int customerID) {
+    public LiteCustomer getCustomer(int customerID) {
+        
         LiteCustomer specifiedCustomer = null;
         // check cache for previous grabs
         specifiedCustomer = customerCache.get(customerID);
 
         // not in cache, go to DB.
         if (specifiedCustomer == null) {
-            specifiedCustomer = YukonCustomerLookup.loadSpecificCustomer(customerID);
+            specifiedCustomer = customerDao.getLiteCustomer(customerID);
             // found it, put it in the cache for later searches
             customerCache.put(customerID, specifiedCustomer);
         }
 
         return specifiedCustomer;
     }
-
-    /*
-     * Scrub out the userRoleMap. Any LiteYukonRoles that were in here will have to be
-     * recovered from the database.
-     */
-    @Override
-    public synchronized void releaseUserRoleMap() {
-        userRoleMap = null;
-    }
-
-    /*
-     * Scrub out the userRolePropertyValueMap. Any String values that were in here will have to be
-     * recovered from the database.
-     */
-    @Override
-    public synchronized void releaseUserRolePropertyValueMap() {
-        userRolePropertyValueMap = null;
-    }
-
+    
     @Override
     public synchronized void releaseUserContactMap() {
         userContactMap.clear();
     }
-
-    /*
+    
+    /**
      * Upon receiving a DBChangeMsg for a user or a group, this method
      * checks to see if this user is in the map. There is no point in
      * resetting these mappings if the user that was changed is not a one
      * that has been accessed before (and therefore mapped here).
      */
     public synchronized void adjustUserMappings(int userID) {
-        MapKeyInts keyInts = new MapKeyInts(userID, CtiUtilities.NONE_ZERO_ID);
-
-        if (userRoleMap != null) {
-            if (userRoleMap.containsKey(keyInts)) {
-                releaseUserRoleMap();
-            }
-        }
-
-        if (userRolePropertyValueMap != null) {
-            if (userRolePropertyValueMap.containsKey(keyInts)) {
-                releaseUserRolePropertyValueMap();
-            }
-        }
-
+        
         if (userContactMap.containsKey(userID)) {
             releaseUserContactMap();
         }
-
+        
         return;
     }
 

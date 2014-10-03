@@ -638,29 +638,30 @@ public class PaoDefinitionDaoImplTest {
         public LiteState findLiteState(int stateGroupID, int rawState) {
             return null;
         }
-
+        
         @Override
         public LiteStateGroup getLiteStateGroup(int stateGroupID) {
             return null;
         }
-
+        
         @Override
         public LiteStateGroup getLiteStateGroup(String stateGroupName) {
-
+            
             if (stateGroupName.equals("state0")) {
                 return new LiteStateGroup(0);
             }
             throw new IllegalArgumentException("State group doesn't exist: " + stateGroupName);
         }
-
+        
         @Override
         public LiteState[] getLiteStates(int stateGroupID) {
             return null;
         }
-
+        
         @Override
         public LiteStateGroup[] getAllStateGroups() {
             return null;
         }
+        
     }
 }

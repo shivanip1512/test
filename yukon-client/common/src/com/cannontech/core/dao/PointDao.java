@@ -211,4 +211,7 @@ public interface PointDao {
     /** Given a {@link YukonResultSet}, produces a {@link LitePoint} */
     LitePoint createLitePoint(YukonResultSet rs) throws SQLException;
 
+    /** Retrieves all {@link LitePointLimit}s from the database. */
+    List<LitePointLimit> getAllPointLimits();
+
 }

@@ -174,7 +174,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			break;*/
 		case LiteTypes.TAG:
 			returnObject = new com.cannontech.database.db.tags.Tag();
-			((com.cannontech.database.db.tags.Tag)returnObject).setTagID(new Integer(((LiteTag)liteObject).getTagID()) );
+			((com.cannontech.database.db.tags.Tag)returnObject).setTagID(new Integer(((LiteTag)liteObject).getTagId()) );
 			((com.cannontech.database.db.tags.Tag)returnObject).setTagName( ((LiteTag)liteObject).getTagName() );
 			((com.cannontech.database.db.tags.Tag)returnObject).setTagLevel( new Integer(((LiteTag)liteObject).getTagLevel()));
 			Character inhibit = new Character('N');
@@ -182,8 +182,8 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
                 inhibit = new Character('Y');
             }
 			((com.cannontech.database.db.tags.Tag)returnObject).setInhibit( inhibit );
-			((com.cannontech.database.db.tags.Tag)returnObject).setColorID(new Integer(((LiteTag)liteObject).getColorID()) );
-			((com.cannontech.database.db.tags.Tag)returnObject).setImageID(new Integer(((LiteTag)liteObject).getImageID()) );
+			((com.cannontech.database.db.tags.Tag)returnObject).setColorID(new Integer(((LiteTag)liteObject).getColorId()) );
+			((com.cannontech.database.db.tags.Tag)returnObject).setImageID(new Integer(((LiteTag)liteObject).getImageId()) );
 			break;							
      case LiteTypes.STATE_IMAGE:
         returnObject = new com.cannontech.database.db.state.YukonImage();

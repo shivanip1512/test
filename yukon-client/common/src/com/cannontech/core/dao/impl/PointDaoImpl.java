@@ -3,19 +3,16 @@ package com.cannontech.core.dao.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoCategory;
@@ -75,7 +72,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 public class PointDaoImpl implements PointDao {
-    private static final Logger log = YukonLogManager.getLogger(PointDaoImpl.class);
 
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private NextValueHelper nextValueHelper;
@@ -300,20 +296,33 @@ public class PointDaoImpl implements PointDao {
 
     @Override
     public LitePointLimit getPointLimit(int pointId) {
-
-        synchronized (databaseCache) {
-            Iterator<LitePointLimit> iter = databaseCache.getAllPointLimits().iterator();
-            while (iter.hasNext()) {
-                LitePointLimit lpl = iter.next();
-                if (lpl.getPointID() == pointId) {
-                    return lpl;
-                }
-            }
-        }
-
+        
+        LitePointLimit limit = databaseCache.getAllPointLimits().get(pointId);
+        if (limit != null) return limit;
+        
         throw new NotFoundException("PointLimit for point with id " + pointId + "cannot be found.");
     }
-
+    
+    @Override
+    public List<LitePointLimit> getAllPointLimits() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select PointId, LimitNumber, HighLimit, LowLimit, LimitDuration");
+        sql.append("from PointLimits");
+        
+        return jdbcTemplate.query(sql, new YukonRowMapper<LitePointLimit>() {
+            @Override
+            public LitePointLimit mapRow(YukonResultSet rs) throws SQLException {
+                LitePointLimit limit = new LitePointLimit(rs.getInt("PointId"));
+                limit.setHighLimit(rs.getDouble("HighLimit"));
+                limit.setLowLimit(rs.getDouble("LowLimit"));
+                limit.setLimitDuration(rs.getInt("LimitDuration"));
+                limit.setLimitNumber(rs.getInt("LimitNumber"));
+                return limit;
+            }
+        });
+    }
+    
     @Override
     public LitePointUnit getPointUnit(int pointId) {
 
@@ -343,7 +352,7 @@ public class PointDaoImpl implements PointDao {
 
     @Override
     public LiteStateGroup getStateGroup(int stateGroupId) {
-        return databaseCache.getAllStateGroupMap().get(stateGroupId);
+        return databaseCache.getAllStateGroups().get(stateGroupId);
     }
 
     @Override

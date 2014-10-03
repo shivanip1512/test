@@ -398,7 +398,7 @@ public class CalcStatusBasePanel extends DataInputPanel implements ActionListene
 
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
-            LiteStateGroup stateGroup = cache.getAllStateGroupMap().get(new Integer(stateGroupID));
+            LiteStateGroup stateGroup = cache.getAllStateGroups().get(new Integer(stateGroupID));
 
             List<LiteState> statesList = stateGroup.getStatesList();
             for (LiteState ls : statesList) {

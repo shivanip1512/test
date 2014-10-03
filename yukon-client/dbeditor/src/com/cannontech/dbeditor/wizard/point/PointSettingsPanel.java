@@ -213,27 +213,6 @@ public class PointSettingsPanel extends DataInputPanel implements CaretListener 
     public void setValue(Object val) {
     }
 
-    public void setValueCapControl(Object val, Integer initialPAOId) {
-        if (getDeviceComboBox().getModel().getSize() > 0)
-            getDeviceComboBox().removeAllItems();
-
-        // Load the device list
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        synchronized (cache) {
-            List<LiteYukonPAObject> capObjects = cache.getAllYukonPAObjects();
-            for (LiteYukonPAObject liteYukonPAObject : capObjects) {
-                if (PaoType.isCapControl(liteYukonPAObject)) {
-                    getDeviceComboBox().addItem(liteYukonPAObject);
-
-                    if (initialPAOId != null && initialPAOId.intValue() == liteYukonPAObject.getYukonID()) {
-                        getDeviceComboBox().setSelectedIndex(getDeviceComboBox().getItemCount() - 1);
-                    }
-                }
-            }
-        }
-
-    }
-
     public void setValueCore(Object val, Integer initialPAOId) {
 
         // Load the device list

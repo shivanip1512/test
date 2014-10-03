@@ -1,59 +1,72 @@
-/*
- * Created on Dec 19, 2003
- */
 package com.cannontech.core.dao.impl;
 
-import java.util.Iterator;
+import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.TagDao;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * TagFuncs - deals with lite static tag definitions
- * @author aaron
- */
 public final class TagDaoImpl implements TagDao {
-	
-    private IDatabaseCache databaseCache;
+    
+    @Autowired private IDatabaseCache cache;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    private final static YukonRowMapper<LiteTag> mapper = new YukonRowMapper<LiteTag>() {
+        @Override
+        public LiteTag mapRow(YukonResultSet rs) throws SQLException {
+            LiteTag tag = new LiteTag(rs.getInt("TagId"));
+            tag.setTagName(rs.getString("TagName"));
+            tag.setTagLevel(rs.getInt("TagLevel"));
+            tag.setInhibit(rs.getBoolean("Inhibit"));
+            tag.setColorId(rs.getInt("ColorId"));
+            tag.setImageId(rs.getInt("ImageId"));
+            return tag;
+        }
+    };
     
     @Override
-    public List<LiteTag> getAllTags(){
-        return databaseCache.getAllTags();
+    public List<LiteTag> getAllTags() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select TagId, TagName, TagLevel, Inhibit, ColorId, ImageId");
+        sql.append("from Tags");
+        sql.append("order by TagLevel");
+        
+        return jdbcTemplate.query(sql, mapper);
     }
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.TagDao#getLiteTag(int)
-     */
-	@Override
-    public LiteTag getLiteTag(int tagID) {
-		synchronized(databaseCache) {
-			Iterator iter = databaseCache.getAllTags().iterator();
-			while(iter.hasNext()) {
-				LiteTag lt = (LiteTag) iter.next();
-				if(tagID == lt.getLiteID()) {
-					return lt;
-				}
-			}
-		}
-		return null;
-	}
+    
+    @Override
+    public LiteTag getLiteTag(int tagId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select TagId, TagName, TagLevel, Inhibit, ColorId, ImageId");
+        sql.append("from Tags");
+        sql.append("where TagId").eq(tagId);
+        
+        return jdbcTemplate.queryForObject(sql, mapper);
+    }
     
     @Override
     public LiteTag getLiteTag(String tagName) {
-        synchronized(databaseCache) {
-            Iterator iter = databaseCache.getAllTags().iterator();
-            while(iter.hasNext()) {
-                LiteTag lt = (LiteTag) iter.next();
-                if(tagName.equalsIgnoreCase(lt.getTagName())) {
-                    return lt;
-                }
-            }
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select TagId, TagName, TagLevel, Inhibit, ColorId, ImageId");
+        sql.append("from Tags");
+        sql.append("where upper(TagName)").eq(tagName.toUpperCase());
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, mapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
         }
-        return null;
     }
-
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
+    
 }
