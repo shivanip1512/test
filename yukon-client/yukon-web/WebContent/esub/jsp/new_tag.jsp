@@ -25,7 +25,7 @@
     String descriptionStr = request.getParameter("description");
     String actionStr = request.getParameter("action");
     
-    LitePoint litePoint = .getLitePoint(pointID);
+    LitePoint litePoint = pointDao.getLitePoint(pointID);
     LiteYukonPAObject liteDevice = pointDao.getLiteYukonPAO(litePoint.getPaobjectID());
     
     if(actionStr != null && actionStr.equalsIgnoreCase("SUBMITTAG")) {
