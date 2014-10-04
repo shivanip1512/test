@@ -4,36 +4,37 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook"%> 
 <%@ page import="com.cannontech.core.dao.PointDao" %>
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
-<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTag" %>
+<%@ page import="com.cannontech.core.dao.TagDao" %>
 <%@ page import="com.cannontech.tags.TagManager" %>
 <%@ page import="com.cannontech.tags.Tag" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 <%
-	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
-	LiteYukonUser YUKON_USER = userContext.getYukonUser();
+    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+    TagDao tagDao = YukonSpringHook.getBean(TagDao.class);
+    PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
+    LiteYukonUser YUKON_USER = userContext.getYukonUser();
 
-
-	int pointID = Integer.parseInt(request.getParameter("pointid"));
-	
-	//The next parameters are only used when adding a tag
-	String tagIDStr = request.getParameter("tagid");
-	String descriptionStr = request.getParameter("description");
-	String actionStr = request.getParameter("action");
-	
-	LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
-	LiteYukonPAObject liteDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(litePoint.getPaobjectID());
-	
-	if(actionStr != null && actionStr.equalsIgnoreCase("SUBMITTAG")) {
-		TagManager.getInstance().createTag(pointID, Integer.parseInt(tagIDStr), YUKON_USER.getUsername(), descriptionStr, "-", "-");
-		response.sendRedirect("control.jsp?pointid=" + pointID + "&action=DISPLAY");
-		//Give dispatch a chance, see if this is long enough
-		try { Thread.sleep(500); } catch(Exception e) { }
-		return;
-	}	
+    int pointID = Integer.parseInt(request.getParameter("pointid"));
+    
+    //The next parameters are only used when adding a tag
+    String tagIDStr = request.getParameter("tagid");
+    String descriptionStr = request.getParameter("description");
+    String actionStr = request.getParameter("action");
+    
+    LitePoint litePoint = .getLitePoint(pointID);
+    LiteYukonPAObject liteDevice = pointDao.getLiteYukonPAO(litePoint.getPaobjectID());
+    
+    if(actionStr != null && actionStr.equalsIgnoreCase("SUBMITTAG")) {
+        TagManager.getInstance().createTag(pointID, Integer.parseInt(tagIDStr), YUKON_USER.getUsername(), descriptionStr, "-", "-");
+        response.sendRedirect("control.jsp?pointid=" + pointID + "&action=DISPLAY");
+        //Give dispatch a chance, see if this is long enough
+        try { Thread.sleep(500); } catch(Exception e) { }
+        return;
+    }    
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -95,13 +96,14 @@ Type:<br>
                   <td class="TableCell" style="vertical-align: top;">
                   <select name="tagtypeselect">
 <%
-	Iterator tagIter = DefaultDatabaseCache.getInstance().getAllTags().iterator();
-	while(tagIter.hasNext()) {
-		LiteTag lt = (LiteTag) tagIter.next();
+    Iterator tagIter = tagDao.getAllTags().iterator();
+TagDao
+    while(tagIter.hasNext()) {
+        LiteTag lt = (LiteTag) tagIter.next();
 %>                  
                   <option value="<%=lt.getTagId()%>"><%= lt.getTagName() %></option>
 <%
-	}
+    }
 %>                  
                   </select>
                   </td>

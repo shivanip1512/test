@@ -6,18 +6,10 @@ import com.cannontech.database.data.lite.LiteTag;
 
 public interface TagDao {
 
-    /**
-     * Return the LiteTag for the given tagID
-     * @param tagID
-     * @return
-     */
-    public LiteTag getLiteTag(int tagID);
-    public LiteTag getLiteTag(String tagName);
+    LiteTag getLiteTag(int tagId);
     
-    /**
-     * Method to get all tags
-     * @return
-     */
-    public List<LiteTag> getAllTags();
+    LiteTag getLiteTag(String tagName);
+    
+    List<LiteTag> getAllTags();
 
 }
