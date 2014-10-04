@@ -97,7 +97,7 @@ Type:<br>
                   <select name="tagtypeselect">
 <%
     Iterator tagIter = tagDao.getAllTags().iterator();
-TagDao
+
     while(tagIter.hasNext()) {
         LiteTag lt = (LiteTag) tagIter.next();
 %>                  
