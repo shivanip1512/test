@@ -18,6 +18,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
@@ -144,18 +145,22 @@ public class RfnMeterDisconnectService {
     }
     
     private PointValueQualityHolder publishPointData(int rawState, RfnMeter meter) {
-        LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
-        PointData pointData = new PointData();
-        pointData.setId(point.getLiteID());
-        pointData.setPointQuality(PointQuality.Normal);
-        pointData.setValue(rawState);
-        pointData.setTime(new Date());
-        pointData.setType(point.getPointType());
-        
-        dynamicDataSource.putValue(pointData);
-        
-        log.debug("PointData generated for RfnMeterDisconnectRequest");
-        
+    	PointData pointData = null;
+    	try{
+	        LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
+	        pointData = new PointData();
+	        pointData.setId(point.getLiteID());
+	        pointData.setPointQuality(PointQuality.Normal);
+	        pointData.setValue(rawState);
+	        pointData.setTime(new Date());
+	        pointData.setType(point.getPointType());
+	        
+	        dynamicDataSource.putValue(pointData);
+	        
+	        log.debug("PointData generated for RfnMeterDisconnectRequest");
+    	}catch(IllegalUseOfAttribute e){
+    		log.error("There is no Disconnect Status Point", e);
+    	}
         return pointData;
     }
     

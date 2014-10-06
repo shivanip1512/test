@@ -34,8 +34,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     
@@ -79,22 +81,55 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             for (CommandRequestDevice c : commands) {
                 log.debug("PLC send" + c);
             }
-        }
-        Callback commandCompletionCallback = new Callback(callback, meters);
-        commandRequestDeviceExecutor
-            .createTemplateAndExecute(execution, commandCompletionCallback, commands, user);
+        }			          
+        Callback commandCompletionCallback = new Callback(callback, meters, command);
+          
+		commandRequestDeviceExecutor.createTemplateAndExecute(execution, commandCompletionCallback, commands, user, true);
         return commandCompletionCallback;
     }
 
     private class Callback implements CommandCompletionCallback<CommandRequestDevice> {
 
         private final DisconnectCallback callback;
+        DisconnectCommand command;
         Set<SimpleDevice> meters;
+        Set<SimpleDevice> devicesWithoutPoint;
         
-        Callback(DisconnectCallback callback, Set<SimpleDevice> meters) {
+        Callback(DisconnectCallback callback, Set<SimpleDevice> meters, DisconnectCommand command) {
             this.callback = callback;
             this.meters = meters;
+            this.command = command;
+    		BiMap<SimpleDevice, LitePoint> deviceToPoint = attributeService.getPoints(meters,
+    				BuiltInAttribute.DISCONNECT_STATUS);
+
+    		devicesWithoutPoint = Sets.difference(meters, deviceToPoint.keySet());
         }
+
+		/**
+		 * Process devices that do not have  point. The command was sent to the
+		 * device, but we do not know what state device is in
+		 * (connected/disconnected/armed). If the "connect" command was send
+		 * mark device as "connected" etc.
+		 */
+        private void processUnsupported(Set<SimpleDevice> devicesWithoutPoint) {
+			for(SimpleDevice meter: devicesWithoutPoint){
+				if (log.isDebugEnabled()) {
+					log.debug("PLC processUnsupported command:" + command + " Meter:" + meter);
+				}
+				switch (command) {
+				case DISCONNECT:
+					callback.disconnected(meter, null);
+					break;
+				case ARM:
+					callback.armed(meter, null);
+					break;
+				case CONNECT:
+					callback.connected(meter, null);
+					break;
+				}
+				meters.remove(meter);
+			}
+		}
 
         @Override
         public void complete() {
@@ -104,6 +139,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             }
             if (!callback.isCanceled()) {
                 log.debug("PLC Completed");
+                processUnsupported(devicesWithoutPoint);
                 callback.complete();
             }else{
                 if(log.isDebugEnabled()){
@@ -124,6 +160,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
                     if (log.isDebugEnabled()) {
                         log.debug("Proccessing cancelations for meters:" + meters);
                     }
+                    processUnsupported(devicesWithoutPoint);
                     for (SimpleDevice meter : meters) {
                         callback.canceled(meter);
                     }

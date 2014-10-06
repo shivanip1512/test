@@ -65,9 +65,12 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
 				DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ, userContext.getYukonUser());
 		if (result.isSuccess()) {
 			model.addAttribute("success", true);
-			model.addAttribute("configString", result.getLastResultString());
+			if(!StringUtils.isEmpty(result.getLastResultString())){
+				model.addAttribute("configString", result.getLastResultString());
+			}
 		}
 		model.addAttribute("errors", result.getErrors());
+		model.addAttribute("isRead", true);
         
         return "disconnectMeterWidget/render.jsp";
     }
@@ -139,6 +142,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         
         model.addAttribute("success", result.isSuccess());
         model.addAttribute("command", result.getCommand());
+        model.addAttribute("isRead", false);
     }
     
     private void initModel(ModelMap model, YukonUserContext userContext, YukonMeter meter) {

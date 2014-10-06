@@ -28,20 +28,36 @@
 </c:if>
 
 <c:if test="${fn:length(errors) > 0}">
-	<div class="scroll-md">
-		<c:forEach items="${errors}" var="error">
-			<c:if test="${not empty error.detail}">
-				<tags:hideReveal2 titleKey="${error.summary}" showInitially="false">
-					<i:inline key="${error.detail}" />
-				</tags:hideReveal2>
+ 	<c:if test="${!isRead}">
+		<div class="scroll-md">
+			<c:forEach items="${errors}" var="error">
+				<tags:hideReveal title="${error.description} (${error.errorCode})"
+					showInitially="false">
+					<div>${error.porter}</div>
+					<div>${error.troubleshooting}</div>
+				</tags:hideReveal>
+			</c:forEach>
+			<c:if test="${exceptionReason != null}">
+				<span class="error">${exceptionReason}</span>
 			</c:if>
-			<c:if test="${empty error.detail}">
-				<div>
-					<span class="error"><i:inline key="${error.summary}" /></span>
-				</div>
-			</c:if>
-		</c:forEach>
-	</div>
+		</div>
+	</c:if>
+	<c:if test="${isRead}">
+		<div class="scroll-md">
+			<c:forEach items="${errors}" var="error">
+				<c:if test="${not empty error.detail}">
+					<tags:hideReveal2 titleKey="${error.summary}" showInitially="false">
+						<i:inline key="${error.detail}" />
+					</tags:hideReveal2>
+				</c:if>
+				<c:if test="${empty error.detail}">
+					<div>
+						<span class="error"><i:inline key="${error.summary}" /></span>
+					</div>
+				</c:if>
+			</c:forEach>
+		</div>
+	</c:if> 
 </c:if>
 
 <div class="action-area">
