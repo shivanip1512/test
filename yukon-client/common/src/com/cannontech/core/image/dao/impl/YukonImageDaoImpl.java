@@ -42,9 +42,7 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate template;
     
-    private final static String select = new SqlStatementBuilder()
-    .append("select ImageId, ImageCategory, ImageName, ImageValue")
-    .append("from YukonImage").getSql();
+    private final static String select = "select ImageId, ImageCategory, ImageName, ImageValue from YukonImage";
     
     private final static YukonRowMapper<LiteYukonImage> mapper = new YukonRowMapper<LiteYukonImage>() {
         @Override
