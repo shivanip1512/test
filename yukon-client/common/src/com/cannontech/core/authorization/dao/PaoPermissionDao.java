@@ -23,14 +23,6 @@ public interface PaoPermissionDao<T> {
     public List<PaoPermission> getPermissions(T it);
 
     /**
-     * Method to get a list of all pao permissions for a list of things
-     * @param itList - List of things to get permissions for
-     * @return List of permissions
-     */
-    public List<PaoPermission> getPermissions(List<T> itList);
-
-
-    /**
      * Method to get all paoids for which the thing has the given permission
      * @param it - Thing to get paoids for
      * @param permission - Permission in question
@@ -64,17 +56,6 @@ public interface PaoPermissionDao<T> {
      * @return
      */
     public AuthorizationResponse hasPermissionForPao(int id, int paoId, Permission permission);
-
-    /**
-     * Method to determine if any of the things in the list have a given
-     * permission for a pao
-     * @param itList - List of things to check permission for
-     * @param pao - Pao to determine permission for
-     * @param permission - Permission in question
-     * @return True if any of the things in the list have the permission for the
-     *         pao
-     */
-    public AuthorizationResponse hasPermissionForPao(List<T> itList, YukonPao pao, Permission permission);
 
     /**
      * Method to get a list of authorizations for a collection of paos and a permission
@@ -114,13 +95,6 @@ public interface PaoPermissionDao<T> {
      */
     public void removePermission(T it, YukonPao pao, Permission permission);
 
-    /**
-     * Method to remove all permissions for a given thing. (Can be used when
-     * deleting the thing)
-     * @param it - Thing to remove permissions for
-     */
-    public void removeAllPermissions(T it);
-    
     /**
      * Method to remove all matching permissions for a given thing.
      * @param it - Thing to remove permissions for

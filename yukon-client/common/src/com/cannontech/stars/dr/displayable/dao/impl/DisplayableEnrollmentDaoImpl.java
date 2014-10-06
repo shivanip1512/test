@@ -36,7 +36,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     
     @Autowired private EnrollmentDao enrollmentDao;
 	@Autowired private PaoDefinitionDao paoDefinitionDao;
-	@Autowired LoadGroupDao loadGroupDao; 
+	@Autowired private LoadGroupDao loadGroupDao; 
 	
     @Override
     public List<DisplayableEnrollment> find(int customerAccountId) {

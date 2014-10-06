@@ -1,16 +1,12 @@
 package com.cannontech.stars.util;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.Validate;
 import org.joda.time.Instant;
 
 import com.cannontech.common.exception.NotLoggedInException;
@@ -48,7 +44,7 @@ public class ServletUtils {
     public static final int ACTION_TOWAREHOUSE = 4;
     public static final int ACTION_CHANGE_WO_SERVICE_STATUS = 5;
     public static final int ACTION_CHANGE_WO_SERVICE_TYPE = 6;
-    
+
     /**
      * When used in session, the attribute with this name should be passed a
      * CtiNavObject
@@ -62,15 +58,13 @@ public class ServletUtils {
     public static final String FILTER_INVEN_LIST = ServletUtil.FILTER_INVEN_LIST;
 
     public static final String ATT_YUKON_USER = ServletUtil.ATT_YUKON_USER;
-    @Deprecated
-    public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
-    @Deprecated
-    public static final String ATT_ENERGY_COMPANY_SETTINGS = "ENERGY_COMPANY_SETTINGS";
+    @Deprecated public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
+    @Deprecated public static final String ATT_ENERGY_COMPANY_SETTINGS = "ENERGY_COMPANY_SETTINGS";
     public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
     public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
     public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
     public static final String TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO = ServletUtils.TRANSIENT_ATT_LEADING
-                                                                     + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO;
+        + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO;
 
     public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
     public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
@@ -110,10 +104,8 @@ public class ServletUtils {
 
     public static final String INHERITED_FAQ = "INHERITED_FAQ";
 
-    private static final java.text.SimpleDateFormat[] timeFormat = {
-            new java.text.SimpleDateFormat("hh:mm a"),
-            new java.text.SimpleDateFormat("hh:mma"),
-            new java.text.SimpleDateFormat("HH:mm"), };
+    private static final java.text.SimpleDateFormat[] timeFormat = { new java.text.SimpleDateFormat("hh:mm a"),
+        new java.text.SimpleDateFormat("hh:mma"), new java.text.SimpleDateFormat("HH:mm"), };
 
     // this static initializer sets all the simpledateformat to lenient
     static {
@@ -122,14 +114,14 @@ public class ServletUtils {
         }
     }
 
-    public static String getApplianceDescription(StarsEnrollmentPrograms categories, StarsAppliance  appliance) {
+    public static String getApplianceDescription(StarsEnrollmentPrograms categories, StarsAppliance appliance) {
         for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
             StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
             if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
                 return category.getDescription();
             }
         }
-        
+
         return "(none)";
     }
 
@@ -172,7 +164,7 @@ public class ServletUtils {
     public static String formatPhoneNumberForSearch(String phoneNo) throws WebClientException {
 
         phoneNo = formatPhoneNumberForStorage(phoneNo);
-        
+
         // get rid of US country code (long distance)
         if (phoneNo.startsWith("1") && phoneNo.length() == 11) {
             phoneNo = phoneNo.replaceFirst("1", "");
@@ -181,18 +173,20 @@ public class ServletUtils {
         return phoneNo;
     }
 
-    public static String formatPhoneNumberForStorage(String phoneNo) throws WebClientException {
+    private static String formatPhoneNumberForStorage(String phoneNo) throws WebClientException {
         if (phoneNo.trim().equals("")) {
             return "";
         }
 
-        PhoneNumberFormattingService phoneNumberFormattingService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
-        if(phoneNumberFormattingService.isHasInvalidCharacters(phoneNo)){
-            throw new WebClientException("Invalid phone number format '"+ phoneNo + "'.  The phone number contains non-digits.");
+        PhoneNumberFormattingService phoneNumberFormattingService =
+            YukonSpringHook.getBean(PhoneNumberFormattingService.class);
+        if (phoneNumberFormattingService.isHasInvalidCharacters(phoneNo)) {
+            throw new WebClientException("Invalid phone number format '" + phoneNo
+                + "'.  The phone number contains non-digits.");
         }
         return phoneNumberFormattingService.strip(phoneNo);
     }
-    
+
     public static String formatPin(String pin) throws WebClientException {
         pin = pin.trim();
         if (pin.equals("")) {
@@ -201,14 +195,14 @@ public class ServletUtils {
 
         if (pin.length() > 19) {
             throw new WebClientException("Invalid IVR information format '" + pin
-                                         + "'. This IVR field should have fewer than 20 digits.");
+                + "'. This IVR field should have fewer than 20 digits.");
         }
 
         try {
             Long.parseLong(pin);
         } catch (NumberFormatException e) {
             throw new WebClientException("Invalid IVR information format '" + pin
-                                         + "'. This field is required to be numeric.'");
+                + "'. This field is required to be numeric.'");
         }
 
         return pin;
@@ -216,30 +210,29 @@ public class ServletUtils {
 
     @SuppressWarnings("ucd")
     public static String getOneLineAddress(StarsCustomerAddress starsAddr) {
-		if (starsAddr == null){
-		    return "(none)";
-		}
-    	
-		StringBuffer sBuf = new StringBuffer();
-		if (starsAddr.getStreetAddr1().trim().length() > 0) {
-			sBuf.append( starsAddr.getStreetAddr1() ).append(", ");
-		}
-		if (starsAddr.getStreetAddr2().trim().length() > 0){
-			sBuf.append( starsAddr.getStreetAddr2() ).append(", ");
-		}
-		if (starsAddr.getCity().trim().length() > 0) {
-			sBuf.append( starsAddr.getCity() ).append(", ");
-		}
-		if (starsAddr.getState().trim().length() > 0) {
-            sBuf.append( starsAddr.getState() ).append(" ");
+        if (starsAddr == null) {
+            return "(none)";
         }
-		if (starsAddr.getZip().trim().length() > 0) {
-            sBuf.append( starsAddr.getZip() );
+
+        StringBuffer sBuf = new StringBuffer();
+        if (starsAddr.getStreetAddr1().trim().length() > 0) {
+            sBuf.append(starsAddr.getStreetAddr1()).append(", ");
         }
-    	
-		return sBuf.toString();
-	}
-    
+        if (starsAddr.getStreetAddr2().trim().length() > 0) {
+            sBuf.append(starsAddr.getStreetAddr2()).append(", ");
+        }
+        if (starsAddr.getCity().trim().length() > 0) {
+            sBuf.append(starsAddr.getCity()).append(", ");
+        }
+        if (starsAddr.getState().trim().length() > 0) {
+            sBuf.append(starsAddr.getState()).append(" ");
+        }
+        if (starsAddr.getZip().trim().length() > 0) {
+            sBuf.append(starsAddr.getZip());
+        }
+
+        return sBuf.toString();
+    }
 
     // Return image names: large icon, small icon, saving icon, control icon,
     // environment icon
@@ -256,11 +249,11 @@ public class ServletUtils {
 
         return imgNames;
     }
-    
+
     // Return program display names: display name, short name (used in enrollment page)
     @SuppressWarnings("ucd")
     public static String[] getProgramDisplayNames(StarsEnrLMProgram starsProg) {
-        String[] names = StarsUtils.splitString( starsProg.getStarsWebConfig().getAlternateDisplayName(), "," );
+        String[] names = StarsUtils.splitString(starsProg.getStarsWebConfig().getAlternateDisplayName(), ",");
         String[] dispNames = new String[2];
         for (int i = 0; i < 2; i++) {
             if (i < names.length) {
@@ -269,7 +262,7 @@ public class ServletUtils {
                 dispNames[i] = "";
             }
         }
-        
+
         // If not provided, default display name to program name, and short name to display name
         if (dispNames[0].length() == 0) {
             if (starsProg.getYukonName() != null) {
@@ -324,13 +317,15 @@ public class ServletUtils {
     }
 
     @Deprecated
+    @SuppressWarnings("ucd")
     public static StarsYukonUser getStarsYukonUser(final HttpSession session) {
         return (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
     }
 
     @SuppressWarnings("ucd")
     public static StarsEnergyCompanySettings removeEnergyCompanySettings(final HttpSession session) {
-        StarsEnergyCompanySettings settings = (StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+        StarsEnergyCompanySettings settings =
+            (StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
         session.removeAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
         return settings;
     }
@@ -349,8 +344,10 @@ public class ServletUtils {
         return confirmMsg;
     }
 
+    @SuppressWarnings("ucd")
     public static StarsCustAccountInformation removeAccountInformation(final HttpSession session) {
-        StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
+        StarsCustAccountInformation accountInfo =
+            (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
         session.removeAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
         return accountInfo;
     }
@@ -371,9 +368,10 @@ public class ServletUtils {
         }
         return starsYukonUser;
     }
-    
-    /** 
-     * This method should be removed once Work Order processing is removed.  Do not use.
+
+    /**
+     * This method should be removed once Work Order processing is removed. Do not use.
+     * 
      * @param instant
      * @param format
      * @return
@@ -382,9 +380,10 @@ public class ServletUtils {
     public static String formatInstant(Instant instant, SimpleDateFormat format) {
         return formatDate(instant.toDate(), format);
     }
-    
+
     /**
-     * This method should be removed once Work Order processing is removed.  Do not use.
+     * This method should be removed once Work Order processing is removed. Do not use.
+     * 
      * @param str
      * @return
      */
@@ -394,9 +393,10 @@ public class ServletUtils {
         }
         return str;
     }
-    
+
     /**
-     * This method should be removed once Work Order processing is removed.  Do not use. 
+     * This method should be removed once Work Order processing is removed. Do not use.
+     * 
      * @param starsAddr
      * @return
      */
@@ -405,57 +405,29 @@ public class ServletUtils {
         if (starsAddr == null) {
             return "";
         }
-        
+
         StringBuffer sBuf = new StringBuffer();
         if (starsAddr.getStreetAddr1().trim().length() > 0) {
-            sBuf.append( starsAddr.getStreetAddr1() ).append( "<br>" );
+            sBuf.append(starsAddr.getStreetAddr1()).append("<br>");
         }
         if (starsAddr.getStreetAddr2().trim().length() > 0) {
-            sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
+            sBuf.append(starsAddr.getStreetAddr2()).append("<br>");
         }
         if (starsAddr.getCity().trim().length() > 0) {
-            sBuf.append( starsAddr.getCity() ).append( ", " );
+            sBuf.append(starsAddr.getCity()).append(", ");
         }
         if (starsAddr.getState().trim().length() > 0) {
-            sBuf.append( starsAddr.getState() ).append( " " );
+            sBuf.append(starsAddr.getState()).append(" ");
         }
         if (starsAddr.getZip().trim().length() > 0) {
-            sBuf.append( starsAddr.getZip() );
+            sBuf.append(starsAddr.getZip());
         }
-        
+
         return sBuf.toString();
     }
-    
+
     @SuppressWarnings("ucd")
     public static String hideUnsetNumber(int num, int num_unset) {
-        return (num == num_unset)? "" : String.valueOf(num);
-    }
-
-    /**
-     * Generate a bit of HTML which will trigger a custom event "eventName" on the document
-     * object with the given payload.
-     * @param eventName The name of the custom event to trigger.
-     * @param payload A JavaScript expression to be passed to the event callback. If you're
-     *            passing a simple string, be sure to enclose it in single quotes.
-     */
-    public static void dialogFormSuccess(HttpServletResponse response, String eventName, String payload) {
-        Validate.notNull(eventName);
-        response.setContentType("text/html");
-        PrintWriter writer;
-        try {
-            writer = response.getWriter();
-        } catch (IOException ioe) {
-            throw new RuntimeException("error getting writer from response", ioe);
-        }
-        writer.println("<script type=\"text/javascript\">");
-        writer.print("$(document).trigger('");
-        writer.print(eventName);
-        writer.print("'");
-        if (payload != null) {
-            writer.print(", ");
-            writer.print(payload);
-        }
-        writer.println(");");
-        writer.println("</script>");
+        return (num == num_unset) ? "" : String.valueOf(num);
     }
 }

@@ -24,7 +24,6 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
@@ -45,21 +44,9 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     }
 
     @Override
-    public List<PaoPermission> getPermissions(List<LiteUserGroup> userGroups) {
-        List<Integer> userGroupIds = Lists.transform(userGroups, LiteBase.ID_FUNCTION);
-
-        return this.getPermissionsByUserGroupIds(userGroupIds);
-    }
-
-    @Override
     public AuthorizationResponse hasPermissionForPao(LiteUserGroup userGroup, YukonPao pao, Permission permission) {
-        return this.isHasPermissionForPao(Collections.singletonList(userGroup.getUserGroupId()), pao.getPaoIdentifier().getPaoId(), permission);
-    }
-
-    @Override
-    public AuthorizationResponse hasPermissionForPao(List<LiteUserGroup> userGroups, YukonPao pao, Permission permission) {
-        List<Integer> userGroupIdList = Lists.transform(userGroups, LiteBase.ID_FUNCTION);
-        return this.isHasPermissionForPao(userGroupIdList, pao.getPaoIdentifier().getPaoId(), permission);
+        return this.isHasPermissionForPao(Collections.singletonList(userGroup.getUserGroupId()),
+            pao.getPaoIdentifier().getPaoId(), permission);
     }
 
     @Override
@@ -77,13 +64,8 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM GroupPaoPermission");
         sql.append("WHERE PaoId").eq(paoId);
-        
-        yukonJdbcTemplate.update(sql);
-    }
 
-    @Override
-    public void removeAllPermissions(LiteUserGroup userGroup) {
-        this.removeAllPermissions(userGroup.getUserGroupId());
+        yukonJdbcTemplate.update(sql);
     }
 
     @Override
@@ -91,7 +73,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM GroupPaoPermission");
         sql.append("WHERE UserGroupId").eq(userGroupId);
-        
+
         yukonJdbcTemplate.update(sql);
     }
 
@@ -118,7 +100,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
                 return userGroup.getUserGroupId();
             }
         });
-        
+
         return this.getPaosForUserGroupIdsAndPermission(userGroupIds, permission);
     }
 
@@ -129,7 +111,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         sql.append("FROM GroupPaoPermission");
         sql.append("WHERE UserGroupId").in(userGroupIds);
         sql.append("  AND Permission").eq(permission);
-        
+
         List<Integer> paoIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         return paoIdList;
     }
@@ -152,7 +134,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         sql.append("FROM GroupPaoPermission");
         sql.append("WHERE UserGroupId").eq(userGroupId);
         sql.append("  AND PaoId").eq(paoId);
-        
+
         List<? extends PaoPermission> gppList = yukonJdbcTemplate.query(sql, new GroupPaoPermissionMapper());
         List<PaoPermission> result = Lists.newArrayList(gppList);
         return result;
@@ -168,20 +150,20 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         sql.append("  AND Permission").eq(permission);
 
         List<String> allowList = yukonJdbcTemplate.query(sql, new StringRowMapper());
-        
+
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
         } else {
-            if(permission.getDefault()){
-                for(Object entry : allowList){
-                    if(entry.equals(AllowDeny.DENY.name())){
+            if (permission.getDefault()) {
+                for (Object entry : allowList) {
+                    if (entry.equals(AllowDeny.DENY.name())) {
                         return AuthorizationResponse.UNAUTHORIZED;
                     }
                 }
                 return AuthorizationResponse.AUTHORIZED;
             } else {
-                for(Object entry : allowList){
-                    if(entry.equals(AllowDeny.ALLOW.name())){
+                for (Object entry : allowList) {
+                    if (entry.equals(AllowDeny.ALLOW.name())) {
                         return AuthorizationResponse.AUTHORIZED;
                     }
                 }
@@ -189,34 +171,34 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
             }
         }
     }
-    
+
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
-                                                                               LiteUserGroup lightUserGroup, Permission permission) {
+            LiteUserGroup lightUserGroup, Permission permission) {
         return getPaoAuthorizations(paos, Collections.singletonList(lightUserGroup), permission);
     }
-    
+
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
-                                                                               List<LiteUserGroup> userGroups, final Permission permission) {
-        
+            List<LiteUserGroup> userGroups, final Permission permission) {
+
         final Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();
 
         final Multimap<Integer, PaoIdentifier> paoLookup = ArrayListMultimap.create();
-        for(PaoIdentifier pao : paos) {
+        for (PaoIdentifier pao : paos) {
             int paoId = pao.getPaoId();
             paoLookup.put(paoId, pao);
         }
-        
+
         final List<Integer> userGroupIds = Lists.transform(userGroups, new Function<LiteUserGroup, Integer>() {
             @Override
             public Integer apply(LiteUserGroup userGroup) {
                 return userGroup.getUserGroupId();
             }
         });
-        
+
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
+
         template.query(new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -227,30 +209,28 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
                 sql.append("WHERE UserGroupId").in(userGroupIds);
                 sql.append("    AND PaoId").in(subList);
                 sql.append("    AND Permission").eq_k(permission);
-                
+
                 return sql;
             }
-        },
-        paoLookup.keySet(),
-        new PaoPermissionRowCallbackHandler(paoLookup, result));
-        
+        }, paoLookup.keySet(), new PaoPermissionRowCallbackHandler(paoLookup, result));
+
         // Add any leftover paos to the unknown list - there was no row in the paopermission table
         // for these paos
         result.putAll(AuthorizationResponse.UNKNOWN, paoLookup.values());
-        
+
         return result;
-        
+
     }
 
     private void addPermission(int userGroupId, int paoId, Permission permission, boolean allow) {
 
         int id = nextValueHelper.getNextValue("GroupPaoPermission");
         AllowDeny allowDeny = allow ? AllowDeny.ALLOW : AllowDeny.DENY;
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO GroupPaoPermission");
         sql.values(id, userGroupId, paoId, permission, allowDeny.name());
-        
+
         yukonJdbcTemplate.update(sql);
     }
 

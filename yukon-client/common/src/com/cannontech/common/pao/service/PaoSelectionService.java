@@ -43,24 +43,6 @@ public interface PaoSelectionService {
         }
     }
 
-    public class PaoSelector {
-        private PaoSelectorType type;
-        private Element element;
-
-        public PaoSelector(PaoSelectorType type, Element element) {
-            this.element = element;
-            this.type = type;
-        }
-
-        public PaoSelectorType getType() {
-            return type;
-        }
-
-        public Element getElement() {
-            return element;
-        }
-    }
-
     public class PaoSelectionData {
         private final Map<PaoIdentifier, PaoData> paoDataById;
         private final Map<PaoSelectorType, List<String>> lookupFailures;

@@ -32,7 +32,7 @@ import com.google.common.collect.Multimap;
  * User implementation for PaoPermissionDao
  */
 public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser> {
-    
+
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
 
@@ -54,11 +54,6 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     @Override
     public void removePermission(LiteYukonUser user, YukonPao pao, Permission permission) {
         removePermission(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
-    }
-
-    @Override
-    public void removeAllPermissions(LiteYukonUser it) {
-        removeAllPermissions(it.getUserID());
     }
 
     @Override
@@ -87,9 +82,9 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     private List<Integer> getPaosForPermission(int userID, Permission permission) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select paoid from UserPaoPermission where userid").eq(userID);
-        sql.append(    "and permission").eq(permission.name());
-        
-        List<Integer> paoIdList = jdbcTemplate.query(sql,  RowMapper.INTEGER);
+        sql.append("and permission").eq(permission.name());
+
+        List<Integer> paoIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
         return paoIdList;
     }
 
@@ -99,23 +94,13 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     }
 
     @Override
-    public List<PaoPermission> getPermissions(List<LiteYukonUser> it) {
-        throw new UnsupportedOperationException("Not implemented for users");
-    }
-
-    @Override
-    public AuthorizationResponse hasPermissionForPao(List<LiteYukonUser> itList, YukonPao pao, Permission permission) {
-        throw new UnsupportedOperationException("Not implemented for users");
-    }
-
-    @Override
     public AuthorizationResponse hasPermissionForPao(int userId, int paoId, Permission permission) {
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select allow from UserPaoPermission where userid").eq(userId);
-        sql.append(    "and paoId").eq(paoId);
-        sql.append(    "and permission").eq(permission.name());
-                        
+        sql.append("and paoId").eq(paoId);
+        sql.append("and permission").eq(permission.name());
+
         List<String> allowList = jdbcTemplate.query(sql, RowMapper.STRING);
 
         if (allowList.size() == 0) {
@@ -132,7 +117,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
 
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
-        final LiteYukonUser it, final Permission permission) {
+            final LiteYukonUser it, final Permission permission) {
 
         final Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();
 
@@ -166,14 +151,14 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
 
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
-        List<LiteYukonUser> it, Permission permission) {
+            List<LiteYukonUser> it, Permission permission) {
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
     private List<PaoPermission> getPermissions(int userId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission where userid")
-            .eq(userId);
+        sql.append("select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission where userid").eq(
+            userId);
         List<? extends PaoPermission> uppList = jdbcTemplate.query(sql, new UserPaoPermissionMapper());
         List<PaoPermission> result = Lists.newArrayList(uppList);
         return result;

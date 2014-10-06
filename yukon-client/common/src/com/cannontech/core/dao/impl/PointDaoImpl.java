@@ -16,7 +16,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -245,22 +244,7 @@ public class PointDaoImpl implements PointDao {
         SqlUtil.buildInClause("and", "ypo", "cateogry", paoCategoriesStr, sql);
         SqlUtil.buildInClause("and", "ypo", "paoclass", paoClassesStr, sql);
 
-        List<LitePoint> points =
-            jdbcTemplate.query(sql.toString(), new YukonRowMapperAdapter<LitePoint>(litePointRowMapper));
-
-        return points;
-    }
-
-    @Override
-    public List<LitePoint> getLitePointsByNumStates(int numberOfStates) {
-
-        SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
-        sql.append("where P.StateGroupId in (");
-        sql.append("select StateGroupId from State");
-        sql.append("group by StateGroupId having count(RawState)").eq(numberOfStates);
-        sql.append(")");
-
-        List<LitePoint> points = jdbcTemplate.query(sql, litePointRowMapper);
+        List<LitePoint> points = jdbcTemplate.query(sql.toString(), new YukonRowMapperAdapter<>(litePointRowMapper));
 
         return points;
     }
@@ -296,20 +280,22 @@ public class PointDaoImpl implements PointDao {
 
     @Override
     public LitePointLimit getPointLimit(int pointId) {
-        
+
         LitePointLimit limit = databaseCache.getAllPointLimits().get(pointId);
-        if (limit != null) return limit;
-        
+        if (limit != null) {
+            return limit;
+        }
+
         throw new NotFoundException("PointLimit for point with id " + pointId + "cannot be found.");
     }
-    
+
     @Override
     public List<LitePointLimit> getAllPointLimits() {
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select PointId, LimitNumber, HighLimit, LowLimit, LimitDuration");
         sql.append("from PointLimits");
-        
+
         return jdbcTemplate.query(sql, new YukonRowMapper<LitePointLimit>() {
             @Override
             public LitePointLimit mapRow(YukonResultSet rs) throws SQLException {
@@ -322,7 +308,7 @@ public class PointDaoImpl implements PointDao {
             }
         });
     }
-    
+
     @Override
     public LitePointUnit getPointUnit(int pointId) {
 
@@ -630,7 +616,7 @@ public class PointDaoImpl implements PointDao {
     public List<PointBase> getPointsForPao(int paoId) {
 
         List<LitePoint> litePoints = getLitePointsByPaObjectId(paoId);
-        List<PointBase> points = new ArrayList<PointBase>(litePoints.size());
+        List<PointBase> points = new ArrayList<>(litePoints.size());
 
         for (LitePoint litePoint : litePoints) {
 
@@ -689,7 +675,7 @@ public class PointDaoImpl implements PointDao {
     @Override
     public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank) {
 
-        List<CapBankMonitorPointParams> monitorPointList = new ArrayList<CapBankMonitorPointParams>();
+        List<CapBankMonitorPointParams> monitorPointList = new ArrayList<>();
 
         for (CCMonitorBankList point : capBank.getCcMonitorBankList()) {
 
@@ -723,17 +709,6 @@ public class PointDaoImpl implements PointDao {
         }
 
         return monitorPointList;
-    }
-
-    @Override
-    public List<LitePoint> searchByName(final String name, final PaoClass paoClass) {
-
-        SqlStatementBuilder sql = new SqlStatementBuilder(litePaoPointSql);
-        sql.append("where YPO.PAOClass").eq_k(paoClass);
-        sql.append("and upper(PointName) like").appendArgument("%" + name.toUpperCase() + "%");
-
-        List<LitePoint> pointList = jdbcTemplate.query(sql, litePointRowMapper);
-        return pointList;
     }
 
     @Override

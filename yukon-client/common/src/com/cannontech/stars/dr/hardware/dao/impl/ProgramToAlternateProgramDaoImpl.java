@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.hardware.dao.impl;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -28,76 +27,74 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
 
 public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgramDao {
-	
+
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    
-    private SimpleTableAccessTemplate<ProgramToAlternateProgram> programToAlternateProgramTemplate;
-    
-    private FieldMapper<ProgramToAlternateProgram> programToSeasonalProgramFieldMapper = new FieldMapper<ProgramToAlternateProgram>() {
-        @Override
-        public void extractValues(MapSqlParameterSource p, ProgramToAlternateProgram programToSeasonalProgram) {
-            p.addValue("SeasonalProgramId", programToSeasonalProgram.getAlternateProgramId());
-        }
-        
-        @Override
-        public Number getPrimaryKey(ProgramToAlternateProgram programToSeasonalProgram) {
-            return programToSeasonalProgram.getAssignedProgramId();
-        }
-        
-        @Override
-        public void setPrimaryKey(ProgramToAlternateProgram programToSeasonalProgram, int newId) {
-            programToSeasonalProgram.setAssignedProgramId(newId);
-        }
-    };
-    
-    //Row Mappers
-    private static YukonRowMapper<ProgramToAlternateProgram> ProgramToAlternateProgramRowMapper = new YukonRowMapper<ProgramToAlternateProgram>() {
 
-        @Override
-        public ProgramToAlternateProgram mapRow(YukonResultSet rs) throws SQLException {
-            ProgramToAlternateProgram programToAlternateProgram = new ProgramToAlternateProgram();
-            
-            programToAlternateProgram.setAssignedProgramId(rs.getInt("AssignedProgramId"));
-            programToAlternateProgram.setAlternateProgramId(rs.getInt("SeasonalProgramId"));
-            
-            return programToAlternateProgram;
-        }
-    };
-    
-    private static YukonRowMapper<ProgramToAlternateProgram> ProgramToAlternateProgramParameterizedRowMapper = new YukonRowMapper<ProgramToAlternateProgram>() {
-        @Override
-        public ProgramToAlternateProgram mapRow(YukonResultSet rs) throws SQLException {
-            ProgramToAlternateProgram programToAlternateProgram = new ProgramToAlternateProgram();
-            
-            programToAlternateProgram.setAssignedProgramId(rs.getInt("AssignedProgramId"));
-            programToAlternateProgram.setAlternateProgramId(rs.getInt("SeasonalProgramId"));
-            
-            return programToAlternateProgram;
-        }
-    };
-    
+    private SimpleTableAccessTemplate<ProgramToAlternateProgram> programToAlternateProgramTemplate;
+
+    private FieldMapper<ProgramToAlternateProgram> programToSeasonalProgramFieldMapper =
+        new FieldMapper<ProgramToAlternateProgram>() {
+            @Override
+            public void extractValues(MapSqlParameterSource p, ProgramToAlternateProgram programToSeasonalProgram) {
+                p.addValue("SeasonalProgramId", programToSeasonalProgram.getAlternateProgramId());
+            }
+
+            @Override
+            public Number getPrimaryKey(ProgramToAlternateProgram programToSeasonalProgram) {
+                return programToSeasonalProgram.getAssignedProgramId();
+            }
+
+            @Override
+            public void setPrimaryKey(ProgramToAlternateProgram programToSeasonalProgram, int newId) {
+                programToSeasonalProgram.setAssignedProgramId(newId);
+            }
+        };
+
+    // Row Mappers
+    private static YukonRowMapper<ProgramToAlternateProgram> ProgramToAlternateProgramRowMapper =
+        new YukonRowMapper<ProgramToAlternateProgram>() {
+
+            @Override
+            public ProgramToAlternateProgram mapRow(YukonResultSet rs) throws SQLException {
+                ProgramToAlternateProgram programToAlternateProgram = new ProgramToAlternateProgram();
+
+                programToAlternateProgram.setAssignedProgramId(rs.getInt("AssignedProgramId"));
+                programToAlternateProgram.setAlternateProgramId(rs.getInt("SeasonalProgramId"));
+
+                return programToAlternateProgram;
+            }
+        };
+
+    private static YukonRowMapper<ProgramToAlternateProgram> ProgramToAlternateProgramParameterizedRowMapper =
+        new YukonRowMapper<ProgramToAlternateProgram>() {
+            @Override
+            public ProgramToAlternateProgram mapRow(YukonResultSet rs) throws SQLException {
+                ProgramToAlternateProgram programToAlternateProgram = new ProgramToAlternateProgram();
+
+                programToAlternateProgram.setAssignedProgramId(rs.getInt("AssignedProgramId"));
+                programToAlternateProgram.setAlternateProgramId(rs.getInt("SeasonalProgramId"));
+
+                return programToAlternateProgram;
+            }
+        };
+
     @PostConstruct
     public void init() throws Exception {
-        programToAlternateProgramTemplate = new SimpleTableAccessTemplate<ProgramToAlternateProgram>(yukonJdbcTemplate, nextValueHelper);
+        programToAlternateProgramTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         programToAlternateProgramTemplate.setTableName("ProgramToSeasonalProgram");
         programToAlternateProgramTemplate.setPrimaryKeyField("AssignedProgramId");
         programToAlternateProgramTemplate.setFieldMapper(programToSeasonalProgramFieldMapper);
         programToAlternateProgramTemplate.setPrimaryKeyValidOver(0);
     }
-    
-    @Override
-    public void save(final ProgramToAlternateProgram programToAlternateProgram) {
-    	try {
-    		programToAlternateProgramTemplate.insert(programToAlternateProgram);
-    	} catch (DataIntegrityViolationException e) {
-    		programToAlternateProgramTemplate.update(programToAlternateProgram);
-    	}
-    }
 
     @Override
-    public void delete(ProgramToAlternateProgram programToAlternateProgram) {
-        delete(programToAlternateProgram.getAssignedProgramId());
+    public void save(final ProgramToAlternateProgram programToAlternateProgram) {
+        try {
+            programToAlternateProgramTemplate.insert(programToAlternateProgram);
+        } catch (DataIntegrityViolationException e) {
+            programToAlternateProgramTemplate.update(programToAlternateProgram);
+        }
     }
 
     @Override
@@ -105,13 +102,8 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ProgramToSeasonalProgram");
         sql.append("WHERE AssignedProgramId").eq(assignedProgramId);
-        
-        yukonJdbcTemplate.update(sql);
-    }
 
-    @Override
-    public List<ProgramToAlternateProgram> getByAssignedProgramId(int assignedProgramId) {
-        return getByAssignedProgramId(Collections.singletonList(assignedProgramId));
+        yukonJdbcTemplate.update(sql);
     }
 
     @Override
@@ -120,15 +112,15 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         sql.append("SELECT *");
         sql.append("FROM ProgramToSeasonalProgram");
         sql.append("WHERE AssignedProgramId").in(assignedProgramIds);
-        
+
         return yukonJdbcTemplate.query(sql, ProgramToAlternateProgramRowMapper);
     }
-    
+
     @Override
     public List<ProgramToAlternateProgram> getByEitherAssignedProgramIdOrSeasonalProgramId(Iterable<Integer> programIds) {
-        
+
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
+
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -142,19 +134,18 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         };
 
         List<ProgramToAlternateProgram> retVal =
-                template.query(sqlGenerator, programIds, ProgramToAlternateProgramParameterizedRowMapper);
-        
+            template.query(sqlGenerator, programIds, ProgramToAlternateProgramParameterizedRowMapper);
+
         return retVal;
     }
 
-    
     @Override
     public List<ProgramToAlternateProgram> getAll() {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT *");
-    	sql.append("FROM ProgramToSeasonalProgram");
-    	
-    	return yukonJdbcTemplate.query(sql, ProgramToAlternateProgramRowMapper);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM ProgramToSeasonalProgram");
+
+        return yukonJdbcTemplate.query(sql, ProgramToAlternateProgramRowMapper);
     }
 
     @Override
@@ -162,27 +153,30 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT SeasonalProgramId");
         sql.append("FROM ProgramToSeasonalProgram");
-        
+
         return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
 
     @Override
-    public int getTotalNumberOfDevicesInSeasonalOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
+    public int getTotalNumberOfDevicesInSeasonalOptOuts(YukonEnergyCompany yukonEnergyCompany,
+            List<Integer> assignedProgramIds) {
         List<Integer> seasonalOptOutProgramIds = null;
         if (CollectionUtils.isEmpty(assignedProgramIds)) {
-            seasonalOptOutProgramIds = Lists.transform(getAll(), ProgramToAlternateProgram.ALTERNATE_PROGRAM_IDS_FUNCTION);
+            seasonalOptOutProgramIds =
+                Lists.transform(getAll(), ProgramToAlternateProgram.ALTERNATE_PROGRAM_IDS_FUNCTION);
         } else {
-            List<ProgramToAlternateProgram> programToAlternateProgram = getByEitherAssignedProgramIdOrSeasonalProgramId(assignedProgramIds);
-            seasonalOptOutProgramIds = Lists.transform(programToAlternateProgram, ProgramToAlternateProgram.ALTERNATE_PROGRAM_IDS_FUNCTION);
+            List<ProgramToAlternateProgram> programToAlternateProgram =
+                getByEitherAssignedProgramIdOrSeasonalProgramId(assignedProgramIds);
+            seasonalOptOutProgramIds =
+                Lists.transform(programToAlternateProgram, ProgramToAlternateProgram.ALTERNATE_PROGRAM_IDS_FUNCTION);
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT (CA.AccountId)");
         sql.append("FROM CustomerAccount CA");
         sql.append("  JOIN ECToAccountMapping ECTAM ON CA.AccountId = ECTAM.AccountId");
-        sql.append("  JOIN LMHardwareControlGroup LMHCG ON (CA.AccountId = LMHCG.AccountId  AND " +
-                                                                                              " LMHCG.GroupEnrollStart IS NOT NULL AND " +
-                                                                                              " LMHCG.GroupEnrollStop IS NULL)");
+        sql.append("  JOIN LMHardwareControlGroup LMHCG ON (CA.AccountId = LMHCG.AccountId  AND "
+            + " LMHCG.GroupEnrollStart IS NOT NULL AND " + " LMHCG.GroupEnrollStop IS NULL)");
         sql.append("WHERE ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
         sql.append("  AND LMHCG.ProgramId").in(seasonalOptOutProgramIds);
 

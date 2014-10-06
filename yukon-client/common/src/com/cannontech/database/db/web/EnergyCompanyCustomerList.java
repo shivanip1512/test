@@ -1,179 +1,83 @@
 package com.cannontech.database.db.web;
 
-/**
- * Creation date: (6/2/2001 4:23:32 PM)
- * @author: Aaron Lauinger
- */
-public class EnergyCompanyCustomerList extends com.cannontech.database.db.DBPersistent 
-{
-	public static final String tableName = "EnergyCompanyCustomerList";
-	
-	private long energyCompanyID = -1;
-	private long customerID = -1;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
-	private static final String energyCompanySql =
-	"SELECT EnergyCompanyID FROM " + tableName + " WHERE CustomerID=?";
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.DBPersistent;
 
-	private static final String customerSql =
-	"SELECT CustomerID FROM " + tableName + " WHERE EnergyCompanyID=?";
-/**
- * EnergyCompanyCustomerList constructor comment.
- */
-public EnergyCompanyCustomerList() {
-	super();
-}
-/**
- * This method was created by a SmartGuide.
- * @exception java.sql.SQLException The exception description.
- */
-public void add() throws java.sql.SQLException 
-{
-	throw new RuntimeException("Not implemented");
-}
-/**
- * This method was created by a SmartGuide.
- */
-public void delete() throws java.sql.SQLException 
-{
-	throw new RuntimeException("Not implemented");
-}
-/**
- * Creation date: (6/2/2001 4:27:37 PM)
- * @return long[]
- * @param energyCompanyID long
- */
-public static long[] getCustomerIDs(long energyCompanyID) {
-	return getCustomerIDs(energyCompanyID, "yukon");
-}
-/**
- * Creation date: (6/2/2001 4:27:37 PM)
- * @return long[]
- * @param energyCompanyID long
- */
-public static long[] getCustomerIDs(long energyCompanyID, String dbAlias) {
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+public class EnergyCompanyCustomerList extends DBPersistent {
+    public static final String tableName = "EnergyCompanyCustomerList";
 
-		pstmt = conn.prepareStatement(customerSql);
-		pstmt.setLong(1, energyCompanyID);
+    private static final String customerSql = "SELECT CustomerID FROM " + tableName + " WHERE EnergyCompanyID=?";
 
-		rset = pstmt.executeQuery();
+    @Override
+    public void add() throws SQLException {
+        throw new RuntimeException("Not implemented");
+    }
 
-		java.util.ArrayList idList = new java.util.ArrayList();	
-		while( rset.next() )
-		{
-			idList.add( new Long(rset.getLong(1)) );
-		}
+    @Override
+    public void delete() throws SQLException {
+        throw new RuntimeException("Not implemented");
+    }
 
-		long[] retIDs = new long[idList.size()];
-		for( int i = 0; i < idList.size(); i++ )
-		{
-			retIDs[i] = ((Long) idList.get(i)).longValue();
-		}
-		
-		return retIDs;			
-	}
-	catch(java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( rset != null ) rset.close();
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
-	}
+    public static long[] getCustomerIDs(long energyCompanyID, String dbAlias) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
 
-	// An exception must have occured
-	return new long[0];
-}
-/**
- * Creation date: (6/2/2001 4:27:06 PM)
- * @return long[]
- * @param customerID long
- */
-public static long[] getEnergyCompanyIDs(long customerID) {
-	return getEnergyCompanyIDs(customerID, "yukon");
-}
-/**
- * Creation date: (6/2/2001 4:27:06 PM)
- * @return long[]
- * @param customerID long
- */
-public static long[] getEnergyCompanyIDs(long customerID, String dbAlias) {
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+        try {
+            conn = PoolManager.getInstance().getConnection(dbAlias);
 
-		pstmt = conn.prepareStatement(energyCompanySql);
-		pstmt.setLong(1, customerID);
+            pstmt = conn.prepareStatement(customerSql);
+            pstmt.setLong(1, energyCompanyID);
 
-		rset = pstmt.executeQuery();
+            rset = pstmt.executeQuery();
 
-		java.util.ArrayList idList = new java.util.ArrayList();	
-		while( rset.next() )
-		{
-			idList.add( new Long(rset.getLong(1)) );
-		}
+            ArrayList<Long> idList = new ArrayList<>();
+            while (rset.next()) {
+                idList.add(new Long(rset.getLong(1)));
+            }
 
-		long[] retIDs = new long[idList.size()];
-		for( int i = 0; i < idList.size(); i++ )
-		{
-			retIDs[i] = ((Long) idList.get(i)).longValue();
-		}
-		
-		return retIDs;			
-	}
-	catch(java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( rset != null ) rset.close();
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
-	}
+            long[] retIDs = new long[idList.size()];
+            for (int i = 0; i < idList.size(); i++) {
+                retIDs[i] = idList.get(i).longValue();
+            }
 
-	// An exception must have occured
-	return new long[0];
-}
-/**
- * This method was created by a SmartGuide.
- */
-public void retrieve() throws java.sql.SQLException 
-{
-	throw new RuntimeException("Not implemented");
-}
-/**
- * This method was created by a SmartGuide.
- * @exception java.sql.SQLException The exception description.
- */
-public void update() throws java.sql.SQLException 
-{
-	throw new RuntimeException("Not implemented");
-}
+            return retIDs;
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (rset != null) {
+                    rset.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e2) {
+                CTILogger.error(e2.getMessage(), e2);
+            }
+        }
+
+        // An exception must have occured
+        return new long[0];
+    }
+
+    @Override
+    public void retrieve() throws SQLException {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void update() throws SQLException {
+        throw new RuntimeException("Not implemented");
+    }
 }

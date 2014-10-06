@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -31,9 +30,7 @@ import com.google.common.collect.Multimap;
  * static value expected for unit testing
  */
 public class MockPointDao implements PointDao {
-    
-    public MockPointDao() {}
-    
+
     /**
      * This method will return a point based on a fake id (ids 1 thru 4 are
      * valid)
@@ -54,18 +51,18 @@ public class MockPointDao implements PointDao {
         }
         throw new NotFoundException("point not found");
     }
-    
+
     @Override
-    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) throws NotFoundException {
-        
+    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType)
+            throws NotFoundException {
+
         int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
         if (pointId == PointTypes.SYS_PID_SYSTEM) {
             throw new NotFoundException("nope");
-        } else {
-            return getLitePoint(pointId);
         }
+        return getLitePoint(pointId);
     }
-    
+
     @Override
     public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
         List<LitePoint> pointList = new ArrayList<LitePoint>();
@@ -94,7 +91,7 @@ public class MockPointDao implements PointDao {
 
         return PointTypes.SYS_PID_SYSTEM;
     }
-    
+
     @Override
     public List<LitePoint> getLitePoints(Iterable<Integer> pointIds) {
         return null;
@@ -103,7 +100,7 @@ public class MockPointDao implements PointDao {
     public int getMaxPointID() {
         return 0;
     }
-    
+
     @Override
     public int getPointId(PaoPointIdentifier paoPointIdentifier) {
         return 0;
@@ -125,13 +122,8 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs,
-            Integer[] paoTypes, Integer[] paoCategories, Integer[] paoClasses) {
-        return null;
-    }
-
-    @Override
-    public List<LitePoint> getLitePointsByNumStates(int numStates) {
+    public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs, Integer[] paoTypes,
+            Integer[] paoCategories, Integer[] paoClasses) {
         return null;
     }
 
@@ -165,27 +157,21 @@ public class MockPointDao implements PointDao {
         return null;
     }
 
-	@Override
-    public List<LitePoint> searchByName(String name, PaoClass paoClass) {
-		return null;
-	}
-
     @Override
-    public List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId,
-            int pointType) throws NotFoundException {
+    public List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId, int pointType) throws NotFoundException {
         return null;
     }
-    
+
     @Override
     public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType) {
         return false;
     }
-    
+
     @Override
     public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
         return null;
     }
-    
+
     @Override
     public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier) {
         return null;
@@ -198,19 +184,19 @@ public class MockPointDao implements PointDao {
 
     @Override
     public Map<PaoIdentifier, PointInfo> getPointInfoByPointName(Iterable<PaoIdentifier> paoIdentifiers,
-                                                                 String pointName) {
+            String pointName) {
         return null;
     }
 
     @Override
     public Map<PaoIdentifier, PointInfo> getPointInfoByDefaultName(Iterable<PaoIdentifier> paoIdentifiers,
-                                                                   String defaultName) {
+            String defaultName) {
         return null;
     }
 
     @Override
     public Map<PaoIdentifier, PointInfo> getPointInfoByPointIdentifier(Iterable<PaoIdentifier> paoIdentifiers,
-                                                                       PointIdentifier pointIdentifier) {
+            PointIdentifier pointIdentifier) {
         return null;
     }
 
@@ -225,7 +211,8 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
+    public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(
+            Iterable<PaoPointIdentifier> paoPointIdentifiers) {
         return null;
     }
 
