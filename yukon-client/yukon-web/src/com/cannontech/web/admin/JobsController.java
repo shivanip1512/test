@@ -46,7 +46,7 @@ public class JobsController {
     @RequestMapping("status")
     public String status(ModelMap model) {
         Date now = new Date();
-        Date oneWeekAgo = DateUtils.addWeeks(now, -7);
+        Date oneWeekAgo = DateUtils.addWeeks(now, -1);
         
         List<JobStatus<YukonJob>> allStatus = jobStatusDao.getAllStatus(now, oneWeekAgo);
         model.addAttribute("jobStatusList", allStatus);
