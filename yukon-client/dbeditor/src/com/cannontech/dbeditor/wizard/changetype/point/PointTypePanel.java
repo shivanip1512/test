@@ -17,7 +17,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class PointTypePanel extends com.cannontech.common.gui.util.DataInputPanel {
     
-    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    private IDatabaseCache cache = DefaultDatabaseCache.getInstance();
     
     private int pointType = com.cannontech.database.data.point.PointTypes.INVALID_POINT;
     private javax.swing.JRadioButton ivjAnalogRadioButton = null;
