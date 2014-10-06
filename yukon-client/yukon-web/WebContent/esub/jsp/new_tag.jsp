@@ -16,6 +16,7 @@
     YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
     TagDao tagDao = YukonSpringHook.getBean(TagDao.class);
     PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
+    PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
     LiteYukonUser YUKON_USER = userContext.getYukonUser();
 
     int pointID = Integer.parseInt(request.getParameter("pointid"));
@@ -26,7 +27,7 @@
     String actionStr = request.getParameter("action");
     
     LitePoint litePoint = pointDao.getLitePoint(pointID);
-    LiteYukonPAObject liteDevice = pointDao.getLiteYukonPAO(litePoint.getPaobjectID());
+    LiteYukonPAObject liteDevice = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
     
     if(actionStr != null && actionStr.equalsIgnoreCase("SUBMITTAG")) {
         TagManager.getInstance().createTag(pointID, Integer.parseInt(tagIDStr), YUKON_USER.getUsername(), descriptionStr, "-", "-");
