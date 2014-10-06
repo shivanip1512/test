@@ -22,7 +22,7 @@
             <tags:sectionContainer title="Utilities">
                 <ul class="simple-list">
                     <li><a href="<cti:url value="/dev/pointInjection/main"/>">Point Injection</a></li>
-                    <li><a href="<cti:url value="/dev/bulkPointInjection/main"/>">Bulk Point Injection</a></li>
+                    <li><a href="<cti:url value="/dev/bulkPointInjection/home"/>">Bulk Point Injection</a></li>
                     <li><a href="<cti:url value="/dev/setupDatabase/main"/>">Setup Development Database</a></li>
                     <li><a href="<cti:url value="/dev/miscellaneousMethod/main"/>">Miscellaneous Methods</a></li>
                 </ul>

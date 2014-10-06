@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2005 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,8 @@
 
 package com.cannontech.common.i18n;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.context.MessageSource;
@@ -31,7 +33,7 @@ import org.springframework.context.support.ApplicationObjectSupport;
  * providing various overloaded getMessage methods.
  *
  * Makes a MessageSource easier to use because it defaults the Locale
- * and supports variable arguments. This is otherwise similar to the 
+ * and supports variable arguments. This is otherwise similar to the
  * Spring class of the same name, but renames the "defaultMessage"
  * methods  to support the varags change.
  *
@@ -88,12 +90,24 @@ public class MessageSourceAccessor {
     public String getMessage(String code, Object... args) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, args, getDefaultLocale());
     }
-    
+
     /**
-     * @see MessageSourceAccessor.getMessage(String code, Object... args) 
+     * @see MessageSourceAccessor.getMessage(String code, Object... args)
      */
     public String getMessage(DisplayableEnum displayableEnum, Object... args) throws NoSuchMessageException {
         return this.messageSource.getMessage(displayableEnum.getFormatKey(), args, getDefaultLocale());
+    }
+
+    /**
+     * @see MessageSourceAccessor.getMessage(String code, Object... args)
+     * Retains original lists order.
+     */
+    public List<String> getMessages(List<? extends Displayable> displayables) throws NoSuchMessageException {
+        List<String> messages = new ArrayList<>(displayables.size());
+        for (Displayable displayable : displayables) {
+            messages.add(messageSource.getMessage(displayable.getMessage(), getDefaultLocale()));
+        }
+        return messages;
     }
 
     /**
@@ -105,7 +119,7 @@ public class MessageSourceAccessor {
     public String getMessageWithDefault(String code, String defaultMessage) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, null, defaultMessage, getDefaultLocale());
     }
-    
+
     /**
      * Retrieve the message for the given code and the default Locale.
      * @param code code of the message
@@ -116,7 +130,7 @@ public class MessageSourceAccessor {
     public String getMessageWithDefault(String code, String defaultMessage, Object... args) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, args, defaultMessage, getDefaultLocale());
     }
-    
+
     /**
      * Retrieve the given MessageSourceResolvable (e.g. an ObjectError instance)
      * in the default Locale.

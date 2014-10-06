@@ -49,6 +49,14 @@ public final class SimpleDevice implements YukonDevice {
         return paoIdentifier.toString();
     }
 
+    public static final Function<SimpleDevice, PaoType> TO_PAO_TYPE =
+        new Function<SimpleDevice, PaoType>() {
+            @Override
+            public PaoType apply(SimpleDevice simpleDevice) {
+                return simpleDevice.paoIdentifier.getPaoType();
+            }
+        };
+
     public static final Function<SimpleDevice, PaoIdentifier> TO_PAO_IDENTIFIER =
         new Function<SimpleDevice, PaoIdentifier>() {
             @Override

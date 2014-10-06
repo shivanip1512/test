@@ -6,10 +6,12 @@ import org.jfree.util.Log;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 
 @ManagedResource
-public class DispatchClientConnection extends com.cannontech.message.util.ClientConnection {
+public class DispatchClientConnection extends ClientConnection {
+
     private static final int maxQueueSize = 64 * 1024;
     private static final int latchOffOnRemainingCapacity = 1024;
     private static final int latchOnRemainingCapacity = maxQueueSize * 50 / 100;
