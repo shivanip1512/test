@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +22,13 @@ import org.springframework.util.FileCopyUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -34,17 +36,34 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class YukonImageDaoImpl implements YukonImageDao {
-    @Autowired private IDatabaseCache databaseCache;
+    
+    @Autowired private IDatabaseCache cache;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate template;
     
+    private final static String select = new SqlStatementBuilder()
+    .append("select ImageId, ImageCategory, ImageName, ImageValue")
+    .append("from YukonImage").getSql();
+    
+    private final static YukonRowMapper<LiteYukonImage> mapper = new YukonRowMapper<LiteYukonImage>() {
+        @Override
+        public LiteYukonImage mapRow(YukonResultSet rs) throws SQLException {
+            LiteYukonImage image = new LiteYukonImage(rs.getInt("ImageId"));
+            image.setImageCategory(rs.getString("ImageCategory"));
+            image.setImageName(rs.getString("imageName"));
+            image.setImageValue(rs.getBytes("ImageValue"));
+            return image;
+        }
+    };
+    
     @Override
     public List<String> getAllCategories() {
+        
         List<String> categories = new ArrayList<>();
-
-        synchronized (databaseCache) {
-            List<LiteYukonImage> images = databaseCache.getAllYukonImages();
+        
+        synchronized (cache) {
+            List<LiteYukonImage> images = new ArrayList<>(cache.getImages().values());
             Collections.sort(images, LiteComparators.liteYukonImageCategoryComparator);
             
             String currCat = null;
@@ -63,40 +82,28 @@ public final class YukonImageDaoImpl implements YukonImageDao {
         return categories;
     }
     
-   	@Override
+    @Override
     public LiteYukonImage getLiteYukonImage(int id) {
-   	    synchronized (databaseCache) {
-   	        Iterator<LiteYukonImage> iter = databaseCache.getAllYukonImages().iterator();
-            while (iter.hasNext()) {
-               LiteYukonImage img = iter.next();
-               if(img.getImageID() == id) {
-                  return img;
-               }
-            }
-        }        
-        
-        return null;
+        return cache.getImages().get(id);
     }
-      
+    
     @Override
     public LiteYukonImage getLiteYukonImage(String name) {
-        synchronized (databaseCache) {
-            Iterator<LiteYukonImage> iter = databaseCache.getAllYukonImages().iterator();
-            while (iter.hasNext()) {
-               LiteYukonImage img = iter.next();
-               if (img.getImageName().equalsIgnoreCase(name)) {
-                  return img;
-               }
+        
+        synchronized (cache) {
+            for (LiteYukonImage img : cache.getImages().values()) {
+               if (img.getImageName().equalsIgnoreCase(name)) return img;
             }
         }
         
         return null;
     }
-
+    
     @Override
     public String yukonImageUsage(int id) {
-        synchronized (databaseCache) {
-            for (LiteStateGroup group : databaseCache.getAllStateGroups().values()) {
+        
+        synchronized (cache) {
+            for (LiteStateGroup group : cache.getAllStateGroups().values()) {
                 for (LiteState state : group.getStatesList()) {
                     if (state.getImageID() == id) {
                         return group.getStateGroupName();
@@ -110,7 +117,9 @@ public final class YukonImageDaoImpl implements YukonImageDao {
     }
     
     @Override
-    public LiteYukonImage add(final int id, final String category, final String name, final Resource resource) throws IOException {
+    public LiteYukonImage add(final int id, final String category, final String name, final Resource resource) 
+            throws IOException {
+        
         InputStream in = resource.getInputStream();
         final File temp = File.createTempFile("yukon_image", ".tmp");
         OutputStream out = new FileOutputStream(temp);
@@ -130,10 +139,16 @@ public final class YukonImageDaoImpl implements YukonImageDao {
             }
         });
         
-        DBChangeMsg dbChange = new DBChangeMsg(id, DBChangeMsg.CHANGE_YUKON_IMAGE, DBChangeMsg.CAT_STATEGROUP, DBChangeMsg.CAT_STATEGROUP, DbChangeType.ADD);
+        DBChangeMsg dbChange = new DBChangeMsg(id, DBChangeMsg.CHANGE_YUKON_IMAGE, DBChangeMsg.CAT_STATEGROUP, 
+                DBChangeMsg.CAT_STATEGROUP, DbChangeType.ADD);
         dbChangeManager.processDbChange(dbChange);
         
         return getLiteYukonImage(id);
+    }
+    
+    @Override
+    public LiteYukonImage add(final String category, final String name, final Resource resource) throws IOException {
+        return add(nextValueHelper.getNextValue("YukonImage"), category, name, resource);
     }
     
     @Override
@@ -142,23 +157,20 @@ public final class YukonImageDaoImpl implements YukonImageDao {
         sql.append("delete from YukonImage where ImageID").eq(id);
         template.update(sql);
         
-        DBChangeMsg dbChange = new DBChangeMsg(id, DBChangeMsg.CHANGE_YUKON_IMAGE, DBChangeMsg.CAT_STATEGROUP, DBChangeMsg.CAT_STATEGROUP, DbChangeType.DELETE);
+        DBChangeMsg dbChange = new DBChangeMsg(id, DBChangeMsg.CHANGE_YUKON_IMAGE, DBChangeMsg.CAT_STATEGROUP, 
+                DBChangeMsg.CAT_STATEGROUP, DbChangeType.DELETE);
         dbChangeManager.processDbChange(dbChange);
     }
     
     @Override
-    public LiteYukonImage add(final String category, final String name, final Resource resource) throws IOException {
-        return add(nextValueHelper.getNextValue("YukonImage"), category, name, resource);
-    }
-
-    @Override
     public List<LiteYukonImage> getImagesForCategory(String category) {
+        
         if (StringUtils.isBlank(category)) {
-            return databaseCache.getAllYukonImages();
+            return new ArrayList<>(cache.getImages().values());
         }
         
         List<LiteYukonImage> images = new ArrayList<>();
-        for (LiteYukonImage image : databaseCache.getAllYukonImages()) {
+        for (LiteYukonImage image : cache.getImages().values()) {
             if (category.equalsIgnoreCase(image.getImageCategory())) {
                 images.add(image);
             }
@@ -166,4 +178,23 @@ public final class YukonImageDaoImpl implements YukonImageDao {
         
         return images;
     }
+    
+    @Override
+    public List<LiteYukonImage> load() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder(select);
+        sql.append("where ImageId").gt(YukonImage.NONE_IMAGE_ID);
+        
+        return template.query(sql, mapper);
+    }
+    
+    @Override
+    public LiteYukonImage load(int imageId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder(select);
+        sql.append("where ImageId").eq(imageId);
+        
+        return template.queryForObject(sql, mapper);
+    }
+    
 }

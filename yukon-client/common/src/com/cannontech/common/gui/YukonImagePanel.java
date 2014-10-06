@@ -1,4 +1,9 @@
 package com.cannontech.common.gui;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -6,8 +11,10 @@ import javax.swing.SwingConstants;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.image.ImageChooser;
 import com.cannontech.common.gui.util.DialogUtil;
-import com.cannontech.common.gui.wizard.state.GroupStateNamePanel;
 import com.cannontech.common.gui.wizard.state.ImagePopup;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.yukon.IDatabaseCache;
@@ -767,76 +774,36 @@ public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	return;
 }
 
+    
+    public void jListCategories_ValueChanged(javax.swing.event.ListSelectionEvent listSelectionEvent) {
+        if (!listSelectionEvent.getValueIsAdjusting() && getJListCategories().getSelectedValue() != null) {
+            // just in case, remove all the JLabels
+            getJPanelImages().removeAll();
 
-/**
- * Comment
- */
-public void jListCategories_ValueChanged(javax.swing.event.ListSelectionEvent listSelectionEvent) 
-{
-   if( !listSelectionEvent.getValueIsAdjusting()
-        && getJListCategories().getSelectedValue() != null )
-   {
-      //just in case, remove all the JLabels
-      getJPanelImages().removeAll();
+            IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
-      IDatabaseCache cache = 
-         com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-       
-      synchronized( cache )
-      {
-         java.util.List imgList = cache.getAllYukonImages();
-         String selCategory = getJListCategories().getSelectedValue().toString();
+            synchronized (cache) {
+                String selCategory = getJListCategories().getSelectedValue().toString();
 
-         //create and add the image as a JLabel   
-         for( int i = 0; i < imgList.size(); i++ )
-         {
-            LiteYukonImage lImage = (LiteYukonImage)imgList.get(i);
-            if( lImage.getImageValue() != null
-                && ( selCategory.equalsIgnoreCase(ALL_CATEGORIES_STRING)
-                     || lImage.getImageCategory().equalsIgnoreCase(selCategory)) )
-            {
-               createImageLabel( (LiteYukonImage)imgList.get(i) );
+                // create and add the image as a JLabel
+                for (LiteYukonImage image : cache.getImages().values()) {
+                    if (image.getImageValue() != null 
+                            && (selCategory.equalsIgnoreCase(ALL_CATEGORIES_STRING) 
+                                    || image.getImageCategory().equalsIgnoreCase(selCategory))) {
+                        createImageLabel(image);
+                    }
+                }
             }
             
-         }
-         
-      }   
-
-      //relayout our display
-      doImagePanelLayout();
-      
-      setSelectedLiteYukonImage( getSelectedLiteImage() );
-   }
-
-	return;
-}
-
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		GroupStateNamePanel aGroupStateNamePanel;
-		aGroupStateNamePanel = new GroupStateNamePanel();
-		frame.setContentPane(aGroupStateNamePanel);
-		frame.setSize(aGroupStateNamePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		exception.printStackTrace(System.out);
-	}
-}
-
-
+            // relayout our display
+            doImagePanelLayout();
+            
+            setSelectedLiteYukonImage(getSelectedLiteImage());
+        }
+        
+        return;
+    }
+    
    @Override
 public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e)
    {
@@ -913,58 +880,51 @@ public void setSelectedLiteYukonImage( LiteYukonImage liteImg )
 
 }
 
-
-protected void setUpImages( LiteYukonImage[] images )
-{
-   //just in case, remove all the JLabels
-   getJPanelImages().removeAll();
-
-   if( images == null )
-   {
-      IDatabaseCache cache = 
-         com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-       
-      synchronized( cache )
-      {
-         java.util.List imgList = cache.getAllYukonImages();
-         images = new LiteYukonImage[ imgList.size() ];
-   
-         for( int i = 0; i < imgList.size(); i++ ) {
-            if( ((LiteYukonImage)imgList.get(i)).getImageValue() != null ) {
-                images[i] = (LiteYukonImage)imgList.get(i);
+    protected void setUpImages(LiteYukonImage[] images) {
+        // just in case, remove all the JLabels
+        getJPanelImages().removeAll();
+        
+        if (images == null) {
+            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+            
+            synchronized (cache) {
+                List<LiteYukonImage> imgList = new ArrayList<>();
+                
+                for (LiteYukonImage image : cache.getImages().values()) {
+                    if (image.getImageValue() != null) {
+                        imgList.add(image);
+                    }
+                }
+                images = imgList.toArray(new LiteYukonImage[imgList.size()]);
             }
         }
-      }   
-   }
-
-   //put our images in order by their category
-	java.util.Arrays.sort( images, com.cannontech.database.data.lite.LiteComparators.liteYukonImageCategoryComparator );
-	java.util.Vector catVector = new java.util.Vector(images.length / 3);
-	catVector.add( ALL_CATEGORIES_STRING );
-	String currCategory = null;
-	
-   for (int i = 0; i < images.length; i++) 
-   {
-      LiteYukonImage image = images[i];
-      
-      //create and add the image as a JLabel
-      createImageLabel( image );
-
-      if( currCategory == null || !image.getImageCategory().equalsIgnoreCase(currCategory) )
-      {
-			currCategory = image.getImageCategory();
-
-         if( !currCategory.equalsIgnoreCase(com.cannontech.common.util.CtiUtilities.STRING_NONE) ) {
-            catVector.add( currCategory );
+        
+        // put our images in order by their category
+        Arrays.sort(images, LiteComparators.liteYukonImageCategoryComparator);
+        Vector catVector = new Vector(images.length / 3);
+        catVector.add(ALL_CATEGORIES_STRING);
+        String currCategory = null;
+        
+        for (int i = 0; i < images.length; i++) {
+            LiteYukonImage image = images[i];
+            
+            // create and add the image as a JLabel
+            createImageLabel(image);
+            
+            if (currCategory == null || !image.getImageCategory().equalsIgnoreCase(currCategory)) {
+                currCategory = image.getImageCategory();
+                
+                if (!currCategory.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+                    catVector.add(currCategory);
+                }
+            }
+            
         }
-		}
-      
-   }
-
-  	getJListCategories().setListData( catVector );
-   
-   doImagePanelLayout();
-}
+        
+        getJListCategories().setListData(catVector);
+        
+        doImagePanelLayout();
+    }
 
    private void createImageLabel( LiteYukonImage image )
    {

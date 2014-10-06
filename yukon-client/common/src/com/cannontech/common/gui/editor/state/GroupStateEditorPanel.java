@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -710,19 +711,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
             int yukImgID = statesVector.get(i).getState().getImageID().intValue();
             if (yukImgID > YukonImage.NONE_IMAGE_ID) {
                 IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-
-                LiteYukonImage liteYukImg = null;
-                synchronized (cache) {
-                    List<LiteYukonImage> imgList = cache.getAllYukonImages();
-
-                    for (LiteYukonImage liteYukonImage : imgList) {
-                        if (liteYukonImage.getImageID() == yukImgID) {
-                            liteYukImg = liteYukonImage;
-                            break;
-                        }
-                    }
-                }
-
+                LiteYukonImage liteYukImg = cache.getImages().get(yukImgID);
                 // be sure we have found a matching LiteYukonImage
                 if (liteYukImg != null) {
                     setImageButton(imageButtons[i], new ImageIcon(liteYukImg.getImageValue()), liteYukImg);
@@ -807,14 +796,14 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
         synchronized (cache) {
-            List<LiteYukonImage> imgList = cache.getAllYukonImages();
-            yukonImages = new LiteYukonImage[imgList.size()];
-
-            for (int i = 0; i < imgList.size(); i++) {
-                if (imgList.get(i).getImageValue() != null) {
-                    yukonImages[i] = imgList.get(i);
+            List<LiteYukonImage> imgList = new ArrayList<>();
+            
+            for (LiteYukonImage image : cache.getImages().values()) {
+                if (image.getImageValue() != null) {
+                    imgList.add(image);
                 }
             }
+            yukonImages = imgList.toArray(new LiteYukonImage[imgList.size()]);
         }
 
         final JDialog d = new JDialog();

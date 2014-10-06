@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.wizard.tags;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TextFieldDocument;
@@ -452,15 +455,16 @@ public void imageButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
    	IDatabaseCache cache = 
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
     
-   	synchronized( cache )
-   	{
-		java.util.List imgList = cache.getAllYukonImages();
-	  	yukonImages = new  LiteYukonImage[ imgList.size() ];
-
-	  	for( int i = 0; i < imgList.size(); i++ )
-			if( ((LiteYukonImage)imgList.get(i)).getImageValue() != null )
-				yukonImages[i] = (LiteYukonImage)imgList.get(i);
-   	}
+   	synchronized (cache) {
+        List<LiteYukonImage> imgList = new ArrayList<>();
+        
+        for (LiteYukonImage image : cache.getImages().values()) {
+            if (image.getImageValue() != null) {
+                imgList.add(image);
+            }
+        }
+        yukonImages = imgList.toArray(new LiteYukonImage[imgList.size()]);
+    }
 
    	final javax.swing.JDialog d = new javax.swing.JDialog();
 
@@ -723,18 +727,7 @@ public void setValue(Object o)
 			IDatabaseCache cache = 
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
           
-			LiteYukonImage liteYukImg = null;
-			synchronized( cache )
-			{
-				java.util.List imgList = cache.getAllYukonImages();
-       
-				for( int j = 0; j < imgList.size(); j++ )
-					if( ((LiteYukonImage)imgList.get(j)).getImageID() == yukImgID )
-					{
-						liteYukImg = (LiteYukonImage)imgList.get(j);
-						break;
-					}
-			}
+			LiteYukonImage liteYukImg = cache.getImages().get(yukImgID);
          
 			//be sure we have found a matching LiteYukonImage
 			if( liteYukImg != null )

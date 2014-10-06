@@ -40,8 +40,6 @@ public interface IDatabaseCache {
 
     List<LiteAlarmCategory> getAllAlarmCategories();
 
-    List<LiteYukonImage> getAllYukonImages();
-
     List<LiteYukonPAObject> getAllCapControlFeeders();
 
     List<LiteYukonPAObject> getAllCapControlSubBuses();
@@ -195,5 +193,7 @@ public interface IDatabaseCache {
     List<Integer> getDevicesByCommPort(int portId);
 
     List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
+
+    Map<Integer, LiteYukonImage> getImages();
 
 }

@@ -23,6 +23,7 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
@@ -73,7 +74,6 @@ import com.cannontech.yukon.server.cache.SystemPointLoader;
 import com.cannontech.yukon.server.cache.TOUScheduleLoader;
 import com.cannontech.yukon.server.cache.YukonGroupLoader;
 import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
-import com.cannontech.yukon.server.cache.YukonImageLoader;
 import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
 import com.google.common.collect.Lists;
@@ -87,6 +87,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Autowired private PaoDao paoDao;
     @Autowired private MeterDao meterDao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private YukonImageDao imageDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
@@ -98,50 +99,50 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private Map<Integer, LiteYukonPAObject> allLitePaos;
     private Map<Integer, SimpleMeter> allMeters;
     
-    private List<LitePoint> allSystemPoints = null;
-    private List<LiteNotificationGroup> allNotificationGroups = null;
+    private List<LitePoint> allSystemPoints;
+    private List<LiteNotificationGroup> allNotificationGroups;
     
-    private List<LiteAlarmCategory> allAlarmCategories = null;
-    private List<LiteGraphDefinition> allGraphDefinitions = null;
-    private List<LiteYukonPAObject> allMcts = null;
-    private List<LiteHolidaySchedule> allHolidaySchedules = null;
-    private List<LiteBaseline> allBaselines = null;
-    private List<LiteConfig> allConfigs = null;
-    private Map<Integer, LitePointLimit> allPointLimits = null;
-    private List<LiteYukonImage> allYukonImages = null;
-    private volatile List<LiteCICustomer> allCICustomers = null;
-    private List<LiteLMConstraint> allLMProgramConstraints = null;
-    private List<LiteYukonPAObject> allLMScenarios = null;
-    private List<LiteLMProgScenario> allLMScenarioProgs = null;
-    private List<LiteLMPAOExclusion> allLMPAOExclusions = null;
+    private List<LiteAlarmCategory> allAlarmCategories;
+    private List<LiteGraphDefinition> allGraphDefinitions;
+    private List<LiteYukonPAObject> allMcts;
+    private List<LiteHolidaySchedule> allHolidaySchedules;
+    private List<LiteBaseline> allBaselines;
+    private List<LiteConfig> allConfigs;
+    private Map<Integer, LitePointLimit> allPointLimits;
+    private Map<Integer, LiteYukonImage> images;
+    private volatile List<LiteCICustomer> allCICustomers;
+    private List<LiteLMConstraint> allLMProgramConstraints;
+    private List<LiteYukonPAObject> allLMScenarios;
+    private List<LiteLMProgScenario> allLMScenarioProgs;
+    private List<LiteLMPAOExclusion> allLMPAOExclusions;
     
-    private List<LiteSeasonSchedule> allSeasonSchedules = null;
-    private List<LiteTOUSchedule> allTouSchedules = null;
+    private List<LiteSeasonSchedule> allSeasonSchedules;
+    private List<LiteTOUSchedule> allTouSchedules;
     
-    private List<LiteYukonRole> allYukonRoles = null;
-    private List<LiteYukonRoleProperty> allYukonRoleProperties = null;
-    private List<LiteYukonGroup> allYukonGroups = null;
+    private List<LiteYukonRole> allYukonRoles;
+    private List<LiteYukonRoleProperty> allYukonRoleProperties;
+    private List<LiteYukonGroup> allYukonGroups;
     
-    private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap = null;
+    private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap;
     
     // lists that are created by the joining/parsing of existing lists
-    private List<LiteYukonPAObject> allDevices = null;
-    private List<LiteYukonPAObject> allLMPrograms = null;
-    private List<LiteYukonPAObject> allLMControlAreas = null;
-    private List<LiteYukonPAObject> allLMGroups = null;
-    private List<LiteYukonPAObject> allLoadManagement = null;
-    private List<LiteYukonPAObject> allPorts = null;
+    private List<LiteYukonPAObject> allDevices;
+    private List<LiteYukonPAObject> allLMPrograms;
+    private List<LiteYukonPAObject> allLMControlAreas;
+    private List<LiteYukonPAObject> allLMGroups;
+    private List<LiteYukonPAObject> allLoadManagement;
+    private List<LiteYukonPAObject> allPorts;
     
     private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<>(1000, .75f, 30);
     private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<>(1000, .75f, 30);
     
     // derived from allYukonUsers,allYukonRoles,allYukonGroups
     // see type info in IDatabaseCache
-    private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands = null;
-    private Map<Integer, LiteCommand> allCommands = null;
-    private Map<Integer, LiteYukonPAObject> allRoutes = null;
-    private Map<Integer, LiteStateGroup> allStateGroups = null;
-    private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
+    private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands;
+    private Map<Integer, LiteCommand> allCommands;
+    private Map<Integer, LiteYukonPAObject> allRoutes;
+    private Map<Integer, LiteStateGroup> allStateGroups;
+    private Map<Integer, LiteContactNotification> allContactNotifsMap;
     
     private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<>(1000, .75f, 30);
     
@@ -160,18 +161,20 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         alarmStateLoader.run();
         return allAlarmCategories;
     }
-
+    
     @Override
-    public synchronized List<LiteYukonImage> getAllYukonImages() {
-        if (allYukonImages != null) {
-            return allYukonImages;
+    public synchronized Map<Integer, LiteYukonImage> getImages() {
+        
+        if (images == null) {
+            images = new ConcurrentHashMap<>();
+            for (LiteYukonImage image : imageDao.load()) {
+                images.put(image.getImageID(), image);
+            }
         }
-        allYukonImages = new ArrayList<>();
-        YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
-        imageLoader.run();
-        return allYukonImages;
+        
+        return images;
     }
-
+    
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlFeeders() {
         
@@ -185,7 +188,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         return feeders;
     }
-
+    
     @Override
     public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses() {
         
@@ -762,61 +765,25 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
         return lBase;
     }
-
-    private synchronized LiteBase handleYukonImageChange(DbChangeType dbChangeType, int id) {
-        boolean alreadyAdded = false;
-        LiteBase lBase = null;
-
-        // if the storage is not already loaded, we must not care about it
-        if (allYukonImages == null) {
-            return lBase;
-        }
-
-        switch (dbChangeType) {
-        case ADD:
-            for (int i = 0; i < allYukonImages.size(); i++) {
-                if (allYukonImages.get(i).getImageID() == id) {
-                    alreadyAdded = true;
-                    lBase = allYukonImages.get(i);
-                    break;
-                }
-            }
-            if (!alreadyAdded) {
-                LiteYukonImage ls = new LiteYukonImage(id);
-                ls.retrieve(databaseAlias);
-                allYukonImages.add(ls);
-                lBase = ls;
-            }
-            break;
-
-        case UPDATE:
-            for (int i = 0; i < allYukonImages.size(); i++) {
-                if (allYukonImages.get(i).getImageID() == id) {
-                    allYukonImages.get(i).retrieve(databaseAlias);
-                    lBase = allYukonImages.get(i);
-                    break;
-                }
-            }
-            break;
-        case DELETE:
-            for (int i = 0; i < allYukonImages.size(); i++) {
-                if (allYukonImages.get(i).getImageID() == id) {
-                    lBase = allYukonImages.remove(i);
-                    break;
-                }
-            }
-            break;
-        default:
+    
+    private synchronized LiteBase handleYukonImageChange(DbChangeType type, int id) {
+        
+        if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
+            LiteYukonImage image = imageDao.load(id);
+            getImages().put(image.getImageID(), image);
+            return image;
+        } else if (type == DbChangeType.DELETE) {
+            return getImages().remove(id);
+        } else {
             releaseAllYukonImages();
-            break;
+            return null;
         }
-
-        return lBase;
+        
     }
-
+    
     private synchronized LiteBase handleContactChange(DbChangeType dbChangeType, int id) {
         LiteBase lBase = null;
-
+        
         switch (dbChangeType) {
         case ADD: {
             if (id == DBChangeMsg.CHANGE_INVALID_ID) {
@@ -865,13 +832,14 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg) {
         return handleDBChangeMessage(dbChangeMsg, false);
     }
-
+    
     /**
      * Returns the LiteBase object that was added, deleted or updated.
      * However, the noObjectNeeded serves as a hint that the caller
      * does not need the LiteBase object to be returned and that any
      * available optimizations can be made to ignore it.
      */
+    @SuppressWarnings("deprecation")
     @Override
     public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg, boolean noObjectNeeded) {
         String dbCategory = dbChangeMsg.getCategory();
@@ -1668,7 +1636,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allConfigs = null;
         allMeters = null;
         allPointLimits = null;
-        allYukonImages = null;
+        images = null;
         allCICustomers = null;
         allLMProgramConstraints = null;
         allLMScenarios = null;
@@ -1711,7 +1679,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
     @Override
     public synchronized void releaseAllYukonImages() {
-        allYukonImages = null;
+        images = null;
     }
 
     @Override

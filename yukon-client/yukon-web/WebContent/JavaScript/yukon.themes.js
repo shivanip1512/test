@@ -178,33 +178,30 @@ yukon.themes = (function () {
 
             /** Delete image button confirm handler, attempt to delete the image */
             $(document).on('click', '.js-delete-ok', function (e) {
-                var button = $(e.currentTarget),
+                var button = $(this),
                     imageParent = button.closest('.section'),
-                    imageUrl = imageParent.find('a img').attr('src'),
+                    imageId = button.closest('.image').data('imageId'),
                     imagePicker = button.closest('.image-picker'),
                     originalImageId = imagePicker.data('originalImageId');
-
-                imageUrl = imageUrl.substring(0, imageUrl.indexOf('/thumb'));
+                
                 e.preventDefault();
-                if ('undefined' !== typeof imageUrl) {
-                    $.ajax({
-                      url: yukon.url(imageUrl),
-                      type: 'post',
-                      // _method is needed by the HiddenHttpMethodFilter which allows us to use other methods like DELETE and PUT
-                      data: { _method: 'DELETE'}
-                    }).done(function (data, textStatus, jqXHR) {
-                        var deleteConfirm = $('.js-delete-confirm');
-                        if (data.success === true) {
-                            imageParent.toggle('fade', function() {
-                                imageParent.remove();
-                            });
-                            imagePicker.find('[data-image-id=' + originalImageId + ']').addClass('selected');
-                        } else {
-                            deleteConfirm.html(data.message);
-                            deleteConfirm.find('.button').addClass('dn');
-                        }
-                    });
-                }
+                $.ajax({
+                  url: yukon.url('/common/images/' + imageId),
+                  type: 'post',
+                  // _method is needed by the HiddenHttpMethodFilter which allows us to use other methods like DELETE and PUT
+                  data: { _method: 'DELETE'}
+                }).done(function (data, textStatus, jqXHR) {
+                    var deleteConfirm = $('.js-delete-confirm');
+                    if (data.success === true) {
+                        imageParent.toggle('fade', function() {
+                            imageParent.remove();
+                        });
+                        imagePicker.find('[data-image-id=' + originalImageId + ']').addClass('selected');
+                    } else {
+                        deleteConfirm.html(data.message);
+                        deleteConfirm.find('.button').addClass('dn');
+                    }
+                });
             });
 
             /** Delete image button confirm cancel handler */
