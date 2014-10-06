@@ -89,10 +89,8 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         Set<SimpleDevice> devices = new HashSet<SimpleDevice>(PaoUtils.asSimpleDeviceListFromPaos(paos));
         List<CommandRequestDevice> initiatedCommands = getCommandRequests(devices, DEMAND_RESET_COMMAND);
         InitiatedCallback initiatedCallback = new InitiatedCallback(callback, paos);
-        commandRequestDeviceExecutor.createTemplateAndExecute(initiatedExecution,
-                                                              initiatedCallback,
-                                                              initiatedCommands,
-                                                              user);
+		commandRequestDeviceExecutor.createTemplateAndExecute(initiatedExecution, initiatedCallback, initiatedCommands,
+				user, true);
         return initiatedCallback;
     }
     
@@ -137,10 +135,8 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                 getCommandRequests(deviceToPoint.keySet(), LAST_RESET_TIME_COMMAND);
             VerificationCallback verificationCallback =
                 new VerificationCallback(callback, deviceToPoint, whenRequested);
-            commandRequestDeviceExecutor.createTemplateAndExecute(verificationExecution,
-                                                                  verificationCallback,
-                                                                  verificationCommands,
-                                                                  user);
+			commandRequestDeviceExecutor.createTemplateAndExecute(verificationExecution, verificationCallback,
+					verificationCommands, user, true);
             callbacks.add(verificationCallback);
         }
         return callbacks;

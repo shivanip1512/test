@@ -87,7 +87,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             log.debug("Points:" + points);
             log.debug("Commands:" + commands);
         }
-		commandRequestDeviceExecutor.createTemplateAndExecute(groupCallback.getExecution(), groupCallback, commands, user);
+		commandRequestDeviceExecutor.createTemplateAndExecute(groupCallback.getExecution(), groupCallback, commands, user, true);
     }
  
     @Override
@@ -134,7 +134,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             log.debug("Points:" + points);
             log.debug("Commands:" + commands);
         }
-        commandRequestDeviceExecutor.createTemplateAndExecute(execution, groupCallback, commands, user);
+        commandRequestDeviceExecutor.createTemplateAndExecute(execution, groupCallback, commands, user, true);
     }
     
     @Override

@@ -89,7 +89,7 @@ public class CommandRequestRetryExecutor<T> {
         log.debug("Starting intial execution attempt using retry executor: contextId="
                   + template.getContextId().getId() + " retryCount=" + retryCount + " stopRetryAfterDate="
                   + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
-        template.execute(commands, retryCallback, execution);
+        template.execute(commands, retryCallback, execution, false);
 
         CommandRequestExecutionObjects<T> executionObjects =
             new CommandRequestExecutionObjects<T>(commandRequestExecutor, retryCallback, template.getContextId());

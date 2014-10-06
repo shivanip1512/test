@@ -101,15 +101,16 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         private volatile boolean canceled = false;
         private final CountDownLatch commandsAreWritingLatch = new CountDownLatch(1);
         private final CommandRequestExecution commandRequestExecution;
+        private boolean multipleStrategies;
 
-        private CommandResultMessageListener(List<RequestHolder> requests,
-                CommandCompletionCallback<? super T> callback,
-                int groupMessageId,
-                CommandRequestExecution commandRequestExecution) {
-            
+		private CommandResultMessageListener(List<RequestHolder> requests,
+				CommandCompletionCallback<? super T> callback, int groupMessageId,
+				CommandRequestExecution commandRequestExecution, boolean multipleStrategies) {
+
             this.callback = callback;
             this.groupMessageId = groupMessageId;
             this.commandRequestExecution = commandRequestExecution;
+            this.multipleStrategies = multipleStrategies;
             
             pendingUserMessageIds = new HashMap<>(requests.size());
             for (RequestHolder requestHolder : requests) {
@@ -212,8 +213,10 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     // complete the callback
                     callback.complete();
                     
-                    // complete the commandRequestExecution record
-                    completeCommandRequestExecutionRecord(this.commandRequestExecution, CommandRequestExecutionStatus.COMPLETE);
+                    if(!multipleStrategies){
+                    	// complete the commandRequestExecution record
+                    	completeCommandRequestExecutionRecord(this.commandRequestExecution, CommandRequestExecutionStatus.COMPLETE);
+                    }
 
                     if (debug) {
                         log.debug("Removing porter message listener because pending list is empty: " + this);
@@ -332,7 +335,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     public CommandRequestExecutionIdentifier executeWithParameterDto(final List<T> commands,
                                                                 final CommandCompletionCallback<? super T> callback, 
                                                                 final CommandRequestExecutionParameterDto parameterDto, 
-                                                                final CommandRequestExecution execution) {
+                                                                final CommandRequestExecution execution,
+                                                                final boolean multipleStrategies) {
 
         log.debug("Executing " + commands.size() + " for " + callback);
 
@@ -385,10 +389,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                 }
         
                 // create listener
-                CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
-                                                                                                callback, 
-                                                                                                groupMessageId,
-                                                                                                execution);
+				CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
+						callback, groupMessageId, execution, multipleStrategies);
                 
                 msgListeners.put(callback, messageListener);
                 
@@ -536,13 +538,12 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     @Override
-    public void createTemplateAndExecute(CommandRequestExecution execution,
-                                         CommandCompletionCallback<? super T> callback,
-                                         List<T> commands,
-                                         final LiteYukonUser user) {
+	public void createTemplateAndExecute(CommandRequestExecution execution,
+			CommandCompletionCallback<? super T> callback, List<T> commands, final LiteYukonUser user,
+			boolean multipleStrategies) {
 
         CommandRequestExecutionTemplate<T> template = getExecutionTemplate(execution, user);
-        template.execute(commands, callback, execution);
+        template.execute(commands, callback, execution, multipleStrategies);
     }
     
     private final class CommandRequestExecutionTemplateImpl implements CommandRequestExecutionTemplate<T> {
@@ -565,18 +566,18 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         @Override
         public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback) {
             CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
-            return executeWithParameterDto(commands, callback, this.parameterDto, execution);
+            return executeWithParameterDto(commands, callback, this.parameterDto, execution, false);
         }
 
         @Override
-        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, CommandRequestExecution execution) {
-            return executeWithParameterDto(commands, callback, this.parameterDto, execution);
+        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, CommandRequestExecution execution, boolean multipleStrategies) {
+            return executeWithParameterDto(commands, callback, this.parameterDto, execution, multipleStrategies);
         }
 
         @Override
         public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noqueue) {
             CommandRequestExecution execution = createCommandRequestExecution(parameterDto, commands);
-            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue), execution);
+            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue), execution, false);
         }
         
         @Override

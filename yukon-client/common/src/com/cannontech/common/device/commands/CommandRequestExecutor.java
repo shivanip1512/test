@@ -61,14 +61,15 @@ public interface CommandRequestExecutor<T> {
     public CommandRequestExecutionIdentifier executeWithParameterDto(List<T> commands,
                                                               CommandCompletionCallback<? super T> callback,
                                                               CommandRequestExecutionParameterDto parameterDto,
-                                                              CommandRequestExecution execution);
+                                                              CommandRequestExecution execution,
+                                                              boolean multipleStrategies);
 
  
     /**
      * Creates a template from CommandRequestExecution and executes commands
      */
     void createTemplateAndExecute(CommandRequestExecution execution, CommandCompletionCallback<? super T> callback,
-                                  List<T> commands, LiteYukonUser user);
+                                  List<T> commands, LiteYukonUser user, boolean multipleStrategies);
 
     /**
      * Creating execution prior to creating template is needed when the commands are send to devices
