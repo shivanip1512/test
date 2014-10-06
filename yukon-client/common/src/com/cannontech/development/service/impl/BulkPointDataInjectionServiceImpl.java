@@ -113,20 +113,6 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
         log.info("[Bulk injector] ----------Total points injected " + bulkInjection.getInjectionCount() + " ----------");
     }
 
-    public static void main(String...args) {
-        double valueHigh = 100;
-        double valueLow = 10;
-        double runningTotal = 0;
-        boolean usage = true;
-        for (int i=0;i<100;i++) {
-            double pointValue = Math.random() * (valueHigh - valueLow) + valueLow + runningTotal;
-            if (usage) {
-                runningTotal = pointValue;
-            }
-            System.out.println((int)pointValue + " " + (int)runningTotal);
-        }
-    }
-    
     @Override
     public List<PointData> createPointData(Attribute attribute, double valueHigh, double valueLow, SimpleDevice device,
             List<Instant> timestamps) {
