@@ -43,3 +43,11 @@ CtiTablePointStatusControl::CtiTablePointStatusControl() :
 {
 }
 
+
+int CtiTablePointStatusControl::getCommandTimeout() const
+{
+    return _commandTimeout > 0
+            ? _commandTimeout
+            : DefaultControlExpirationTime;
+}
+

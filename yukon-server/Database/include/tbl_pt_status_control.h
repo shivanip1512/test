@@ -25,7 +25,7 @@ public:
     int getCloseTime2()      const  {  return _closeTime2;  }
     const std::string& getStateZeroControl() const {  return _stateZeroControl;  }
     const std::string& getStateOneControl() const  {  return _stateOneControl;  }
-    int getCommandTimeout()  const  {  return _commandTimeout;  }
+    int getCommandTimeout()  const;
 
     // -- only used for unit tests?  Fixy? --
     void setControlType(CtiControlType_t t);
