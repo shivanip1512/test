@@ -129,8 +129,7 @@
                   </page>
                   <page name="meterDetailLocateRoute" type="BASIC">
                   </page>
-                  <page name="meterPoints" type="BASIC">
-                  </page>
+                  <page name="meter.points" type="BASIC"/>
                 </pages>
               </page>
               <page name="meterDetail.water" type="DETAIL">

@@ -318,13 +318,13 @@ public class UserPageDaoImpl implements UserPageDao {
 
         paoUrls.addAll(capControlUrls);
 
+        meterUrls.add(Pattern.compile("/common/pao/(\\d+).*"));
         meterUrls.add(compileUrlParam("/meter/home", "deviceId"));
         meterUrls.add(compileUrlParam("/meter/moveIn", "deviceId"));
         meterUrls.add(compileUrlParam("/meter/moveOut", "deviceId"));
         meterUrls.add(compileUrlParam("/meter/highBill/view", "deviceId"));
         meterUrls.add(compileUrlParam("/amr/profile/home", "deviceId"));
         meterUrls.add(compileUrlParam("/amr/voltageAndTou/home", "deviceId"));
-        meterUrls.add(compileUrlParam("/common/device/points", "deviceId"));
         meterUrls.add(compileUrlParam("/amr/manualCommand/home", "deviceId"));
         meterUrls.add(Pattern.compile("/bulk/routeLocate/home\\?.*?idList.ids=(\\d+(?:,\\d+)).*?"));
 

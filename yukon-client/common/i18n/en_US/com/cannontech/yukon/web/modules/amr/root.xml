@@ -186,8 +186,8 @@
     <entry key="yukon.web.modules.amr.meterDetailProfile.pageDescription">Profile</entry>
     
     <!-- meterPoints.jsp -->
-    <entry key="yukon.web.modules.amr.meterPoints.pageName">Point Values</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.meter.points.pageName">Points</entry>
+    <entry key="yukon.web.modules.amr.meter.points.pageDescription">{0}</entry>
     
     <!-- voltageAndTou.jsp -->
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageName">Voltage &amp; TOU</entry>

@@ -6,20 +6,23 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.model.PointSortField;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
@@ -30,35 +33,44 @@ import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
-@RequestMapping("/device/*")
+@RequestMapping("/pao/*")
 public class PaoPointsController {
     
-    @Autowired private DeviceDao deviceDao;
     @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private YukonPointHelper yukonPointHelper;
-   
     
-    @RequestMapping("points")
-    public String points(ModelMap model, int deviceId, YukonUserContext userContext,
+    @RequestMapping("{paoId}")
+    public @ResponseBody LiteYukonPAObject pao(HttpServletResponse resp, @PathVariable int paoId) {
+        
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+        if (pao == null) resp.setStatus(HttpStatus.NOT_FOUND.value());
+        
+        return pao;
+    }
+   
+    @RequestMapping("{paoId}/points")
+    public String points(ModelMap model, @PathVariable int paoId, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "POINTNAME") SortingParameters sorting) {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-        final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, sorting, accessor);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(pao, sorting, accessor);
         
+        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(pao).getName());
         model.addAttribute("points", liteYukonPoints);
-        model.addAttribute("device", device);
-        model.addAttribute("deviceId", deviceId);
-        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+        model.addAttribute("pao", pao);
+        model.addAttribute("paoId", paoId);
+        model.addAttribute("deviceId", paoId);
         
         buildColumn(model, accessor, PointSortField.ATTRIBUTE, sorting);
         buildColumn(model, accessor, PointSortField.POINTNAME, sorting);
         buildColumn(model, accessor, PointSortField.POINTTYPE, sorting);
         buildColumn(model, accessor, PointSortField.POINTOFFSET, sorting);
-
-        return "device/points.jsp";
+        
+        return "pao/points.jsp";
     }
     
     private void buildColumn(ModelMap model, MessageSourceAccessor accessor, PointSortField field, 
@@ -73,8 +85,8 @@ public class PaoPointsController {
         model.addAttribute(field.name(), col);
     }
     
-    @RequestMapping("download")
-    public void download(HttpServletResponse response, YukonUserContext context, int deviceId) throws IOException {
+    @RequestMapping("{paoId}/download")
+    public void download(HttpServletResponse resp, YukonUserContext context, @PathVariable int paoId) throws IOException {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
 
@@ -89,9 +101,9 @@ public class PaoPointsController {
         headerRow[6] = accessor.getMessage(PointSortField.POINTTYPE);
         headerRow[7] = accessor.getMessage(PointSortField.POINTOFFSET);
         
-        final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         
-        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(device);
+        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(pao);
         
         List<String[]> dataRows = Lists.newArrayList();
         for (LiteYukonPoint point: points) {
@@ -114,10 +126,8 @@ public class PaoPointsController {
             dataRows.add(dataRow);
         }
         
-        String deviceName = paoLoadingService.getDisplayablePao(device).getName();
-        
         //write out the file
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, deviceName + "_Points.csv");
+        WebFileUtils.writeToCSV(resp, headerRow, dataRows, pao.getPaoName() + "_Points.csv");
     }
     
 }

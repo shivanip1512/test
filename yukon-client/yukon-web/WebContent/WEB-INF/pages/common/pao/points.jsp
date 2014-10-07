@@ -6,11 +6,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="hardware.points">
-    <cti:url var="url" value="/stars/operator/hardware/points">
-        <cti:param name="deviceId" value="${deviceId}"/>
-        <cti:param name="accountId" value="${accountId}"/>
-    </cti:url>
+<cti:standardPage module="amr" page="meter.points">
+    <cti:url var="url" value="/common/pao/${paoId}/points"/>
     <div data-url="${url}" data-static>
         <%@ include file="/WEB-INF/pages/common/pao/points.table.jsp" %>
     </div>

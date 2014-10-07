@@ -33,6 +33,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     @Override
     public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, SortingParameters sorting,
             final MessageSourceAccessor accessor) {
+        
         List<LiteYukonPoint> liteYukonPoints = getYukonPointsForSorting(pao);
         PointSortField sortField = PointSortField.valueOf(sorting.getSort());
         if (sortField != PointSortField.ATTRIBUTE) {
@@ -63,7 +64,6 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     /**
      * Method to get list of YukonPoints for sorting
      */
-    
     private List<LiteYukonPoint> getYukonPointsForSorting(final YukonPao pao) {
         Function<LitePoint, LiteYukonPoint> pointFunction = new Function<LitePoint, LiteYukonPoint>() {
             @Override

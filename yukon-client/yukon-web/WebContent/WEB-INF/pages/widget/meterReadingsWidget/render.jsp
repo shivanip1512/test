@@ -108,9 +108,7 @@ function ${widgetParameters.widgetId}_updateDifference() {
 </c:if>
 
 <div id="${widgetParameters.widgetId}_results" class="buffered"></div>
-<cti:url var="meterPointsUrl" value="/common/device/points">
-    <cti:param name="deviceId">${device.deviceId}</cti:param>
-</cti:url>
+<cti:url var="meterPointsUrl" value="/common/pao/${device.deviceId}/points"/>
 <div class="action-area">
     <a href="${meterPointsUrl}" class="fl"><i:inline key="yukon.web.defaults.showAll"/></a>
     <a href="javascript:void(0);" class="fl" style="margin-left: 10px;" id="readings_quick_view"><i:inline key="yukon.web.defaults.quickView"/></a>
