@@ -4,11 +4,24 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/lexical_cast.hpp>
 
 BOOST_AUTO_TEST_SUITE( test_error )
 
+struct UnknownErrorHelper
+{
+    unsigned num;
+
+    UnknownErrorHelper(unsigned initial) : num(initial) {}
+
+    operator std::string()
+    {
+        return "Unknown Error Code (" + boost::lexical_cast<std::string>(num++) + ")";
+    }
+};
+
 //  Used by test_GetError, test_GetErrorString, and test_FormatError
-const std::vector<std::string> ErrorStrings = boost::assign::list_of
+const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string>
     //  0
     ("Normal (Success) Return")
     ("Not Normal (Unsuccessful) Return")
@@ -120,16 +133,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Bad Nexus Specification")
     ("Error Writing to Nexus")
     //  100
-    ("Bad BCH")                 ("Unknown Error Code (101)")("Unknown Error Code (102)")("Unknown Error Code (103)")("Unknown Error Code (104)")("Unknown Error Code (105)")("Unknown Error Code (106)")("Unknown Error Code (107)")("Unknown Error Code (108)")("Unknown Error Code (109)")
-    ("Unknown Error Code (110)")("Unknown Error Code (111)")("Unknown Error Code (112)")("Unknown Error Code (113)")("Unknown Error Code (114)")("Unknown Error Code (115)")("Unknown Error Code (116)")("Unknown Error Code (117)")("Unknown Error Code (118)")("Unknown Error Code (119)")
-    ("Unknown Error Code (120)")("Unknown Error Code (121)")("Unknown Error Code (122)")("Unknown Error Code (123)")("Unknown Error Code (124)")("Unknown Error Code (125)")("Unknown Error Code (126)")("Unknown Error Code (127)")("Unknown Error Code (128)")("Unknown Error Code (129)")
-    ("Unknown Error Code (130)")("Unknown Error Code (131)")("Unknown Error Code (132)")("Unknown Error Code (133)")("Unknown Error Code (134)")("Unknown Error Code (135)")("Unknown Error Code (136)")("Unknown Error Code (137)")("Unknown Error Code (138)")("Unknown Error Code (139)")
-    ("Unknown Error Code (140)")("Unknown Error Code (141)")("Unknown Error Code (142)")("Unknown Error Code (143)")("Unknown Error Code (144)")("Unknown Error Code (145)")("Unknown Error Code (146)")("Unknown Error Code (147)")("Unknown Error Code (148)")("Unknown Error Code (149)")
-    ("Unknown Error Code (150)")("Unknown Error Code (151)")("Unknown Error Code (152)")("Unknown Error Code (153)")("Unknown Error Code (154)")("Unknown Error Code (155)")("Unknown Error Code (156)")("Unknown Error Code (157)")("Unknown Error Code (158)")("Unknown Error Code (159)")
-    ("Unknown Error Code (160)")("Unknown Error Code (161)")("Unknown Error Code (162)")("Unknown Error Code (163)")("Unknown Error Code (164)")("Unknown Error Code (165)")("Unknown Error Code (166)")("Unknown Error Code (167)")("Unknown Error Code (168)")("Unknown Error Code (169)")
-    ("Unknown Error Code (170)")("Unknown Error Code (171)")("Unknown Error Code (172)")("Unknown Error Code (173)")("Unknown Error Code (174)")("Unknown Error Code (175)")("Unknown Error Code (176)")("Unknown Error Code (177)")("Unknown Error Code (178)")("Unknown Error Code (179)")
-    ("Unknown Error Code (180)")("Unknown Error Code (181)")("Unknown Error Code (182)")("Unknown Error Code (183)")("Unknown Error Code (184)")("Unknown Error Code (185)")("Unknown Error Code (186)")("Unknown Error Code (187)")("Unknown Error Code (188)")("Unknown Error Code (189)")
-    ("Unknown Error Code (190)")("Unknown Error Code (191)")("Unknown Error Code (192)")("Unknown Error Code (193)")("Unknown Error Code (194)")("Unknown Error Code (195)")("Unknown Error Code (196)")("Unknown Error Code (197)")("Unknown Error Code (198)")("Unknown Error Code (199)")
+    ("Bad BCH")
+    .repeat(99, UnknownErrorHelper(101))
     //  200
     ("Unknown Error Code (200)")
     ("Memory Error")
@@ -241,11 +246,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Unknown Error Code (298)")
     ("Unknown Error Code (299)")
     //  300
-    ("Unknown Error Code (300)")("Unknown Error Code (301)")("Unknown Error Code (302)")("Unknown Error Code (303)")("Unknown Error Code (304)")("Unknown Error Code (305)")("Unknown Error Code (306)")("Unknown Error Code (307)")("Unknown Error Code (308)")("Unknown Error Code (309)")
-    ("Unknown Error Code (310)")("Unknown Error Code (311)")("Unknown Error Code (312)")("Unknown Error Code (313)")("Unknown Error Code (314)")("Unknown Error Code (315)")("Unknown Error Code (316)")("Unknown Error Code (317)")("Unknown Error Code (318)")("Unknown Error Code (319)")
-    ("Unknown Error Code (320)")("Unknown Error Code (321)")("Unknown Error Code (322)")("Unknown Error Code (323)")("Unknown Error Code (324)")("Unknown Error Code (325)")("Unknown Error Code (326)")("Unknown Error Code (327)")("Unknown Error Code (328)")("Unknown Error Code (329)")
-    ("Unknown Error Code (330)")("Unknown Error Code (331)")("Unknown Error Code (332)")("Unknown Error Code (333)")("Unknown Error Code (334)")("Unknown Error Code (335)")("Unknown Error Code (336)")("Unknown Error Code (337)")("Unknown Error Code (338)")("Unknown Error Code (339)")
-    ("Unknown Error Code (340)")("Unknown Error Code (341)")("Unknown Error Code (342)")("Unknown Error Code (343)")("Unknown Error Code (344)")("Unknown Error Code (345)")("Unknown Error Code (346)")("Unknown Error Code (347)")("Unknown Error Code (348)")("Unknown Error Code (349)");
+    .repeat(50, UnknownErrorHelper(300));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {
