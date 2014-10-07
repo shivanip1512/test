@@ -57,9 +57,9 @@ public enum ChartPeriod implements DisplayableEnum {
                 return ChartInterval.MONTH;
             } else if (dayDiff >= 180) {
                 return ChartInterval.WEEK;
-            } else if(dayDiff >= 7) {
+            } else if(dayDiff >= 30) {
                 return ChartInterval.DAY;
-            } else if(dayDiff < 7 && dayDiff > 1) {
+            } else if(dayDiff < 30 && dayDiff > 1) {
                 return ChartInterval.HOUR;
             } else {
                 return ChartInterval.FIFTEENMINUTE;
