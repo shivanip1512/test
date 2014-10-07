@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
 
             DlcCommand::request_ptr r = disconnectCommand.decodeCommand(execute_time + 10, 0x1fe, payload, description, points);
 
-            BOOST_CHECK_EQUAL(description, "\nConfig data received: 00000000000000010005050000");
+            BOOST_CHECK_EQUAL(description, "\nConfig data received: 00 00 00 00 00 00 00 01 00 05 05 00 00");
 
             BOOST_CHECK( ! r.get());
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
 
             DlcCommand::request_ptr r = disconnectCommand.decodeCommand(execute_time + 10, 0x1fe, payload, description, points);
 
-            BOOST_CHECK_EQUAL(description, "\nConfig data received: 0000040815029b0a003c3c0000");
+            BOOST_CHECK_EQUAL(description, "\nConfig data received: 00 00 04 08 15 02 9b 0a 00 3c 3c 00 00");
 
             BOOST_CHECK( ! r.get());
 
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
 
             DlcCommand::request_ptr r = disconnectCommand.decodeCommand(execute_time + 10, 0x1fe, payload, description, points);
 
-            BOOST_CHECK_EQUAL(description, "\nConfig data received: 000004081500000a0000000000");
+            BOOST_CHECK_EQUAL(description, "\nConfig data received: 00 00 04 08 15 00 00 0a 00 00 00 00 00");
 
             BOOST_CHECK( ! r.get());
 

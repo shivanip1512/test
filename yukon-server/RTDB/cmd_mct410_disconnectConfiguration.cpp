@@ -91,11 +91,14 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::decodeCommand(cons
             throw CommandException(ClientErrors::InvalidData, "Payload too small");
         }
 
-        description += "\nConfig data received: ";
+        std::ostringstream desc;
+
+        desc << "\nConfig data received:" << std::hex << std::setfill('0');
         for each(const unsigned char byte in *payload)
         {
-            description += CtiNumStr(byte).hex().zpad(2);
+            desc << " " << std::setw(2) << (unsigned)byte;
         }
+        description += desc.str();
 
         //  the rest of the disconnect configuration elements
         const unsigned dynamicDemand = (*payload)[5] << 8 | (*payload)[6];
