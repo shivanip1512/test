@@ -27,7 +27,7 @@ public enum AuthenticationCategory implements DisplayableEnum {
      * This authentication type is added so that is authentication type is set to plane in Database and the 
      * user can login
      */
-   PLAIN(AuthType.PLAIN)
+   //PLAIN(AuthType.PLAIN)
     ;
 
     /**
