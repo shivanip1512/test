@@ -957,9 +957,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
             SimpleMeter meter = meterDao.getSimpleMeterForId(id);
-            allMeters.put(meter.getPaoIdentifier().getPaoId(), meter);
+            getAllMeters().put(meter.getPaoIdentifier().getPaoId(), meter);
         } else if (type == DbChangeType.DELETE) {
-            allMeters.remove(id);
+            getAllMeters().remove(id);
         } else {
             releaseAllMeters();
         }
