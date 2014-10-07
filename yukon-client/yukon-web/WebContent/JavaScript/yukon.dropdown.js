@@ -45,8 +45,8 @@ $(function() {
 
     /** Reposition when showing to ensure the menu follows the element even
      *  if the page changed since the last time it was shown.
-     *  @param {Object} menu - Menu item that needs to be changed.
-     *  @param {Object} container - div containing the drop down
+     *  @param {Object} menu - Menu item to be positioned.
+     *  @param {Object} container - element containing the dropdown menu
      */
     function positionDropdownMenu(menu, container) {
         
@@ -69,7 +69,7 @@ $(function() {
     }
     
     /** Retrieve a menu via ajax and open it. 
-     *  @param {Object} target - div containing the drop down
+     *  @param {Object} target - element containing the drodown menu    
      *  @param {Object} event - jquery event object. 
      * */
     function ajaxMenuOpen(target, e) {

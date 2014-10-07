@@ -58,6 +58,7 @@ yukon.PorterResponseMonitor = (function () {
 $(function() {
     
     /** SETUP ROWS AFTER PAGE LOAD*/
+    // just get rid of the extra hidden input that spring uses for the checkbox state
     $('#rules-table tbody tr').each(function(idx, elem) {
         $(elem).find('[name^="_rule"]').remove();
     });
