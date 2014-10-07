@@ -23,6 +23,11 @@ public enum AuthenticationCategory implements DisplayableEnum {
      * in Yukon using the IntegrationLoginController.
      */
     NONE(AuthType.NONE),
+    /*
+     * This authentication type is added so that is authentication type is set to plane in Database and the 
+     * user can login
+     */
+   PLAIN(AuthType.PLAIN)
     ;
 
     /**
