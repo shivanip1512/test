@@ -1595,14 +1595,14 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             releaseAllYukonPAObjects();
             return lBase;
         }else if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
-            lBase = allLitePaos.get(id);
+            lBase = getAllPaosMap().get(id);
             if (lBase == null) {
                 LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
-                allLitePaos.put(pao.getLiteID(), pao);
+                getAllPaosMap().put(pao.getLiteID(), pao);
                 lBase = pao;
             }
         } else if (type == DbChangeType.DELETE) {
-            lBase = allLitePaos.remove(id);
+            lBase = getAllPaosMap().remove(id);
         } else {
             releaseAllYukonPAObjects();
         }
