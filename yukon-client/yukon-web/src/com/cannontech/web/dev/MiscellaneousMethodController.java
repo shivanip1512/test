@@ -23,14 +23,11 @@ public class MiscellaneousMethodController {
     
     @RequestMapping("/miscellaneousMethod/main")
     public void main(YukonUserContext userContext, ModelMap model) {
-    	YukonEnergyCompany energyCompanyByOperator = null;
 		try {
-			energyCompanyByOperator = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+		    YukonEnergyCompany energyCompanyByOperator = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+		    model.addAttribute("energyCompanyId",energyCompanyByOperator.getEnergyCompanyId());
 		} catch (EnergyCompanyNotFoundException e) {
 			log.error("User is not associated with an Energy Company. No methods available.");
-		}
-		if (null != energyCompanyByOperator) {
-           model.addAttribute("energyCompanyId",energyCompanyByOperator.getEnergyCompanyId());
 		}
     }
     
