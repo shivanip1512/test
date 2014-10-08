@@ -102,7 +102,7 @@ public class TdcDisplayController {
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
         @Override
         protected void doValidation(DisplayBackingBean bean, Errors errors) {
-            YukonValidationUtils.checkIsPositiveDouble(errors, "value", bean.getValue());
+            YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
         }
     };
 
