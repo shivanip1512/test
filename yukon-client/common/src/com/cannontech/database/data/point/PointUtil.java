@@ -85,11 +85,7 @@ public class PointUtil {
                                                     PointArchiveInterval.ZERO);
            
            break;
-           /*In the current implementation for an accumulator point its by default implementing 
-            * the Demand Accumulator to change it to Pulse Accumulator type We have added a case 
-            * PointTypes.PULSE_ACCUMULATOR_POINT and calling accordingly in The CBCSelectionLists
-            */
-           
+          
        case PointTypes.DEMAND_ACCUMULATOR_POINT:
            point = PointFactory.createDmdAccumPoint(name, 
                                                     paoId, 
