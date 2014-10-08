@@ -33,6 +33,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
@@ -53,9 +54,12 @@ import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
 import com.cannontech.web.tools.commander.model.CommandRequestExceptionType;
 import com.cannontech.web.tools.commander.model.CommandTarget;
+import com.cannontech.web.tools.commander.model.RecentTarget;
+import com.cannontech.web.tools.commander.model.ViewableTarget;
 import com.cannontech.web.tools.commander.service.CommanderService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebUtilityService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -75,6 +79,7 @@ public class CommanderController {
     @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
+    private static final TypeReference<List<RecentTarget>> recentTargetsType = new TypeReference<List<RecentTarget>>() {};
     private static final String keyBase = "yukon.web.modules.tools.commander";
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
     private static final Comparator<CommandRequest> onTimestamp = new Comparator<CommandRequest>() {
@@ -84,6 +89,7 @@ public class CommanderController {
         }
     };
     
+    /** The commander page. */
     @RequestMapping({"/commander", "/commander/"})
     public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user) throws IOException {
         
@@ -94,7 +100,7 @@ public class CommanderController {
         model.addAttribute("requests", requests);
         
         // Check cookie for last target of command execution
-        String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null);
+        String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null, JsonUtils.stringType);
         if (lastTarget != null) {
             
             CommandTarget target = CommandTarget.valueOf(lastTarget);
@@ -102,7 +108,7 @@ public class CommanderController {
             
             if (target.isPao()) {
                 // Device or load group
-                int paoId = Integer.parseInt(webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null));
+                int paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.intType);
                 model.addAttribute("paoId", paoId);
                 // Add route info if available
                 LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
@@ -112,12 +118,17 @@ public class CommanderController {
                     model.addAttribute("route", route);
                 }
             } else {
-                model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null));
-                model.addAttribute("routeId", webUtil.getYukonCookieValue(req, "commander", "lastRouteId", null));
+                model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null, JsonUtils.stringType));
+                model.addAttribute("routeId", webUtil.getYukonCookieValue(req, "commander", "lastRouteId", null, JsonUtils.intType));
             }
         } else {
             // Default to device target
             model.addAttribute("target", CommandTarget.DEVICE);
+        }
+        
+        List<RecentTarget> recentTargets = webUtil.getYukonCookieValue(req, "commander", "recentTargets", null, recentTargetsType);
+        if (recentTargets != null) {
+            model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
         }
         
         return "commander/commander.jsp";
@@ -183,8 +194,9 @@ public class CommanderController {
             CarrierBase db = (CarrierBase) dbPersistentDao.retrieveDBPersistent(pao);
             db.getDeviceRoutes().setRouteID(routeId);
             dbPersistentDao.performDBChange(db, TransactionType.UPDATE);
-            Log.debug("User: " + user.getUsername() + " change route on " + pao.getPaoName() + " from " 
+            Log.debug("User: " + user.getUsername() + " changed route on " + pao.getPaoName() + " from " 
                 + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
+            // TODO Log change in event log
         } catch (RuntimeException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
         }
@@ -224,6 +236,7 @@ public class CommanderController {
         List<CommandRequest> commands = null;
         try {
             commands = commanderService.sendCommand(userContext, params);
+            // TODO Log command sent in event log
         } catch (CommandRequestException e) {
             commands = e.getRequests();
             if (e.getType() == CommandRequestExceptionType.PORTER_CONNECTION_INVALID) {
@@ -291,6 +304,25 @@ public class CommanderController {
         }
         
         return commandDao.filterCommandsForUser(visible, user);
+    }
+    
+    /** Builds a list of objects consumed by a recent targets dropdown menu. */
+    private List<ViewableTarget> buildViewableTargets(List<RecentTarget> recents) {
+        
+        List<ViewableTarget> viewables = new ArrayList<>();
+        for (RecentTarget recent : recents) {
+            ViewableTarget viewable = new ViewableTarget();
+            viewable.setTarget(recent);
+            CommandTarget type = CommandTarget.valueOf(recent.getTarget());
+            if (type == CommandTarget.DEVICE || type == CommandTarget.LOAD_GROUP) {
+                viewable.setLabel(cache.getAllPaosMap().get(recent.getPaoId()).getPaoName());
+            } else {
+                viewable.setLabel(recent.getSerialNumber() + " - " + cache.getAllPaosMap().get(recent.getRouteId()).getPaoName());
+            }
+            viewables.add(viewable);
+        }
+        
+        return viewables;
     }
     
 }

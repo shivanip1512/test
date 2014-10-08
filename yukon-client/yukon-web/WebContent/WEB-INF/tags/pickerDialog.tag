@@ -41,6 +41,9 @@
 <cti:msg2 var="cancelText" key="yukon.common.cancel"/>
 <cti:msg2 var="noneSelectedText" key="yukon.web.components.button.selectionPicker.label"/>
 
+<cti:pickerProperties var="idFieldName" property="ID_FIELD_NAME" type="${type}"/>
+<cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="${type}"/>
+
 <script type="text/javascript">
     // Only create picker if not already created.  This tag gets called more than
     // once if it's used inside a widget and the widget is updated.  Since the user
@@ -54,9 +57,12 @@
     try {
         try {
             ${id} = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerArg});
+            ${id}.idFieldName = '${idFieldName}';
+            ${id}.outputColumns = ${outputColumns};
         } catch(pickerException) {
             debug.log('pickerDialog.tag: new Picker failed: ' + pickerException);
         }
+        
         <c:if test="${pageScope.multiSelectMode}">
             ${id}.multiSelectMode = true;
         </c:if>

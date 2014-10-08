@@ -153,16 +153,28 @@ yukon.protoPicker = function (okText,
             if (updateOutsideFields.call(this, false)) {
                 if (!this.container) {
                     dialogElem = document.getElementById(this.pickerId);
-                    $(dialogElem).dialog('close');
+                    try {
+                        $(dialogElem).dialog('close');
+                    } catch (error) { /* Dialog may not have been initialized yet. */ }
                 }
             }
         }
     },
     
     /** Called when the user clicks on a row for selection. */
-    selectThisItem = function (hit, link) {
+    selectThisItem = function (hit) {
         
-        var row, rows, index;
+        var 
+        selectedId = hit[this.idFieldName],
+        row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]'),
+        onThisPage = row.length,
+        alreadySelected = false;
+        
+        this.selectedItems.forEach(function (item, index, arr) {
+            if (JSON.stringify(hit) === JSON.stringify(item)) {
+                alreadySelected = true;
+            }
+        });
         
         $(this.nothingSelectedDiv).hide();
         
@@ -172,10 +184,9 @@ yukon.protoPicker = function (okText,
             return;
         }
         
-        row = link.closest('tr');
-        if (row.hasClass('highlighted')) {
+        if (alreadySelected) {
             // unselect
-            row.removeClass('highlighted');
+            if (onThisPage) row.removeClass('highlighted');
             removeFromSelectedItems.call(this, hit);
             if (this.selectAllCheckBox != null && typeof this.selectAllCheckBox !== 'undefined') {
                 this.selectAllCheckBox.checked = false;
@@ -185,10 +196,14 @@ yukon.protoPicker = function (okText,
             if (!this.multiSelectMode) {
                 // not multi-select mode; unselect all others
                 this.selectedItems = [hit];
-                row.addClass('highlighted').siblings().removeClass('highlighted');
+                if (onThisPage) {
+                    row.addClass('highlighted').siblings().removeClass('highlighted');
+                } else {
+                    $('#' + this.pickerId + ' tr[data-id]').removeClass('highlighted');
+                }
             } else {
                 this.selectedItems.push(hit);
-                row.addClass('highlighted');
+                if (onThisPage) row.addClass('highlighted');
                 updateSelectAllCheckbox.call(this);
             }
         }
@@ -207,7 +222,7 @@ yukon.protoPicker = function (okText,
                 } else {
                     pickerThis.allLinks.push({'hit' : hit, 'link' : link});
                     return function () {
-                        selectThisItem.call(pickerThis, hit, link);
+                        selectThisItem.call(pickerThis, hit);
                     };
                 }
             },
@@ -219,7 +234,6 @@ yukon.protoPicker = function (okText,
                 
                 if (pickerThis.excludeIds.indexOf(data[pickerThis.idFieldName]) !== -1) {
                     row.addClass('disabled');
-                    row.attr('title', Picker.alreadySelectedHoverMessage);
                 } else {
                     pickerThis.selectedItems.forEach(function (item, index, arr){
                         if (data[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
@@ -657,6 +671,14 @@ yukon.protoPicker = function (okText,
         } else {
             doShow.call(this, skipFocus);
         }
+    };
+    
+    yukon.protoPicker.prototype.cancel = function () {
+        cancel.call(this);
+    };
+    
+    yukon.protoPicker.prototype.select = function (hit) {
+        selectThisItem.call(this, hit);
     };
     
     /** Attached to the onkeyup event of the search text input field. */

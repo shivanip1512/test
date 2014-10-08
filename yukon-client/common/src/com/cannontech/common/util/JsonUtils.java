@@ -11,6 +11,10 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JsonUtils {
     
+    public static final TypeReference<String> stringType = new TypeReference<String>() {};
+    public static final TypeReference<Integer> intType = new TypeReference<Integer>() {};
+    public static final TypeReference<Long> longType = new TypeReference<Long>() {};
+    
     private static final ObjectReader reader;
     private static final ObjectWriter writer;
     static {

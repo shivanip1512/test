@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -7,7 +8,6 @@
 
 <cti:standardPage module="tools" page="commander">
 <cti:includeScript link="/JavaScript/yukon.tools.commander.js"/>
-
 <style>
 .console { min-height: 200px; }
 .console .title-bar {
@@ -143,8 +143,9 @@
 <cti:toJson id="intial-requests" object="${requests}"/>
 
 <!-- Template elements for js cloning. -->
-<div id="cmd-templates" class="dn">
+<div id="cmdr-templates" class="dn">
     <div class="cmd-pending clearfix"><cti:icon icon="icon-loading-bars"/></div>
+    <cm:dropdownOption icon="icon-database-add">placeholder</cm:dropdownOption>
 </div>
 
 <div data-dialog id="prompt-dialog" class="dn"
@@ -165,6 +166,24 @@
             </tr>
         </tbody>
     </table>
+</div>
+
+<div id="page-buttons" class="dn">
+<c:set var="clazz" value="${empty recentTargets ? 'js-recent-btn dn' : 'js-recent-btn'}"/>
+<cm:dropdown key=".recent" type="button" triggerClasses="${clazz}" showIcon="false" menuClasses="js-recent-menu">
+    <c:if test="${not empty recentTargets}">
+        <c:forEach var="target" items="${recentTargets}">
+            <c:set var="label" value="${fn:escapeXml(target.label)}"/>
+            <c:set var="type" value="${target.target.target}"/>
+            <c:set var="icon" value="${type == 'DEVICE' || type == 'LOAD_GROUP' ? 'icon-database-add' : 'icon-textfield'}"/>
+            <cm:dropdownOption icon="${icon}"
+                data-type="${type}"
+                data-pao-id="${target.target.paoId}"
+                data-route-id="${target.target.routeId}"
+                data-serial-number="${target.target.serialNumber}">${label}</cm:dropdownOption>
+        </c:forEach>
+    </c:if>
+</cm:dropdown>
 </div>
 
 </cti:standardPage>

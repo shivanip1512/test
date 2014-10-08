@@ -5,12 +5,6 @@
 
 <cti:msgScope paths="picker">
 
-<script type="text/javascript">
-Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
-${id}.outputColumns = ${cti:jsonString(outputColumns)};
-${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
-</script>
-
 <cti:msg var="dialogTitle" key="${title}"/>
 <div title="${dialogTitle}" id="${id}" class="dn js-picker-dialog" role="dialog">
     <div class="clearfix">

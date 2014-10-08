@@ -44,9 +44,6 @@ public class PickerController {
         model.addAttribute("multiSelectMode", multiSelectMode);
         model.addAttribute("immediateSelectMode", immediateSelectMode);
 
-        model.addAttribute("outputColumns", makeLocal(picker.getOutputColumns(), userContext));
-        model.addAttribute("idFieldName", picker.getIdFieldName());
-
         return "inline".equals(mode) ? "inlinePicker" : "pickerDialog";
     }
 
@@ -118,53 +115,8 @@ public class PickerController {
             searchResult = SearchResults.pageBasedForSublist(newHits, searchResult.getCurrentPage(),
                 searchResult.getCount(), searchResult.getHitCount());
         }
-
+        
         return searchResult;
     }
-
-    /**
-     * The ultimate use of these output columns is in Javascript
-     * (yukon.ui.util.createTable via yukon.picker.js) to determine the label (title) and value
-     * (field is the name of the property on the row object) of each column.
-     * Because there is no way in Javascript to resolve a
-     * MessageSourceResolvable, we do it here.
-     */
-    private List<LocalOutputColumn> makeLocal(List<OutputColumn> outputColumns, YukonUserContext userContext) {
-        List<LocalOutputColumn> retVal = Lists.newArrayList();
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
-        for (OutputColumn outputColumn : outputColumns) {
-            LocalOutputColumn translatedOutputColumn =
-                new LocalOutputColumn(outputColumn.getField(),
-                                      messageSourceAccessor.getMessage(outputColumn.getTitle()),
-                                      outputColumn.getMaxCharsDisplayed());
-            retVal.add(translatedOutputColumn);
-        }
-
-        return retVal;
-    }
-
-    public static final class LocalOutputColumn {
-        private final String field;
-        private final String title;
-        private final int maxCharsDisplayed;
-
-        private LocalOutputColumn(String field, String title, int maxCharsDisplayed) {
-            this.field = field;
-            this.title = title;
-            this.maxCharsDisplayed = maxCharsDisplayed;
-        }
-
-        public String getField() {
-            return field;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public int getMaxCharsDisplayed() {
-            return maxCharsDisplayed;
-        }
-    }
+    
 }

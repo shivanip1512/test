@@ -1120,7 +1120,7 @@
     </bean>
 
     <bean id="pageTitleTagPrototype" class="com.cannontech.web.i18n.PageTitleTag"/>
-
+    
     <bean id="csrfTokenTagPrototype" class="com.cannontech.web.taglib.CsrfTokenTag"/>
 
     <bean class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
@@ -1299,6 +1299,8 @@
     <bean id="yukonListEntryValueTagPrototype" class="com.cannontech.web.taglib.YukonListEntryValueTag">
         <property name="yukonListDao" ref="yukonListDao"/>
     </bean>
+    
+    <bean id="pickerPropertiesTagPrototype" class="com.cannontech.web.taglib.PickerPropertiesTag"/>
 
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">

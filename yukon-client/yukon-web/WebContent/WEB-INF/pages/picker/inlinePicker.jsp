@@ -5,12 +5,6 @@
 
 <cti:msgScope paths="picker">
 
-<script type="text/javascript">
-Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
-${id}.outputColumns = ${cti:jsonString(outputColumns)};
-${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
-</script>
-
 <div id="${id}">
     <div class="column-12-12 clearfix">
         <div class="column one">

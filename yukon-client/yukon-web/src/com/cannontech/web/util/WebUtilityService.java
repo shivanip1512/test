@@ -15,6 +15,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * A utility service to house methods solving common needs of controllers and views.
@@ -31,23 +32,24 @@ public class WebUtilityService {
         return ServletUtil.createSafeUrl(request, homeUrl);
     }
     
-    @SuppressWarnings("unchecked")
-    public String getYukonCookieValue(HttpServletRequest request, String scope, String id, String defaultValue) 
+    public <T> T getYukonCookieValue(HttpServletRequest req, String scope, String id, T defaultValue, TypeReference<T> expected) 
             throws IOException {
         
-        String result = defaultValue;
+        T result = defaultValue;
         
         Map<String, Cookie> cookies = new HashMap<String, Cookie>();
-        for (Cookie cookie : request.getCookies()) cookies.put(cookie.getName(), cookie);
+        for (Cookie cookie : req.getCookies()) cookies.put(cookie.getName(), cookie);
         
         Cookie yukon = cookies.get("yukon");
         
         if (yukon != null) {
             String json = yukon.getValue();
             String cookieText = URLDecoder.decode(json, "UTF-8");
-            Map<String, String> data = JsonUtils.fromJson(cookieText, Map.class);
+            Map<String, Object> data = JsonUtils.fromJson(cookieText, new TypeReference<Map<String, Object>>() {});
             
-            String value = data.get(scope + id);
+            Object mapValue = data.get(scope + id);
+            String stringify = JsonUtils.toJson(mapValue);
+            T value = JsonUtils.fromJson(stringify, expected);
             if (value != null) result = value;
         }
         

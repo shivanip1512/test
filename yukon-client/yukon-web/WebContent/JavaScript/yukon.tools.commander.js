@@ -14,11 +14,19 @@ yukon.tools.commander = (function () {
     mod = {},
     
     /** {object} - Map of target button id's to CommandType enum entries. */
-    _targets = { 
-        'target-device-btn': 'DEVICE',
-        'target-lm-group-btn': 'LOAD_GROUP',
-        'target-expresscom-btn': 'EXPRESSCOM',
-        'target-versacom-btn': 'VERSACOM'
+    _targetTypes = {
+        device: 'DEVICE',
+        lmGroup: 'LOAD_GROUP',
+        ecom: 'EXPRESSCOM',
+        vcom: 'VERSACOM'
+    },
+    
+    /** {object} - Map of target button id's to CommandType enum entries. */
+    _targetButtons = { 
+        'target-device-btn': _targetTypes.device,
+        'target-lm-group-btn': _targetTypes.lmGroup,
+        'target-expresscom-btn': _targetTypes.ecom,
+        'target-versacom-btn': _targetTypes.vcom
     },
     
     /** {object} - Map of regex expressions for finding prompt, update, and queueing command parts. */
@@ -42,7 +50,7 @@ yukon.tools.commander = (function () {
     _timeFormat = 'MMM DD hh:mm:ss A z',
     
     /** {object} - Map of requests that are still waiting for responses.
-     *             It is a hash of request id to array of already processed response ids. */
+     *             It's a hash of request id to array of already processed response ids. */
     _pending = {},
     
     _initialized = false,
@@ -141,7 +149,7 @@ yukon.tools.commander = (function () {
         var timestamp = moment(req.timezone).tz(_tz).format(_timeFormat),
             result = $('<div>'), 
             resultReq = $('<div>'),
-            pending = $('#cmd-templates .cmd-pending').clone();
+            pending = $('#cmdr-templates .cmd-pending').clone();
         
         result.addClass('cmd-req-resp').data('requestId', req.id).attr('data-request-id', req.id);
         resultReq.addClass('cmd-req').text('[' + timestamp + '] - ' + req.requestText).appendTo(result);
@@ -244,6 +252,64 @@ yukon.tools.commander = (function () {
         }
     },
     
+    /**
+     * User is attempting a command to a target, store that target as the last target
+     * and add it to the most recent 10 targets if it's a new target.
+     */
+    _storeTarget = function (target, params) {
+        
+        var option, recent, targetStore, newTarget = true;
+        
+        yukon.cookie.set('commander', 'lastTarget', target);
+        recent = yukon.cookie.get('commander', 'recentTargets', []);
+        targetStore = { target: target };
+        
+        if (params.paoId) {
+            yukon.cookie.set('commander', 'lastPaoId', params.paoId);
+            targetStore.paoId = params.paoId;
+        } else {
+            yukon.cookie.set('commander', 'lastSerialNumber', params.serialNumber);
+            yukon.cookie.set('commander', 'lastRouteId', params.routeId);
+            targetStore.serialNumber = params.serialNumber;
+            targetStore.routeId = params.routeId;
+        }
+        
+        recent.forEach(function (item, index, arr) {
+            if (JSON.stringify(targetStore) === JSON.stringify(item)) {
+                newTarget = false; // This is not a new target
+            }
+        });
+        
+        if (newTarget) {
+            
+            recent.unshift(targetStore);
+            if (recent.length > 10) for (var i = recent.length; i > 10; i--) recent.pop();
+            yukon.cookie.set('commander', 'recentTargets', recent);
+            
+            option = $('#cmdr-templates .dropdown-option').clone()
+                .removeClass('js-template-menu-option')
+                .data('type', targetStore.target);
+            
+            if (targetStore.target === _targetTypes.device || targetStore.target === _targetTypes.lmGroup) {
+                option.data('paoId', targetStore.paoId);
+                if (targetStore.target === _targetTypes.device) {
+                    option.find('.dropdown-option-label').text($('#picker_commanderDevicePicker_btn .b-label').text());
+                } else {
+                    option.find('.dropdown-option-label').text($('#picker_lmGroupPicker_btn .b-label').text());
+                }
+            } else {
+                option.data('routeId', targetStore.routeId);
+                option.data('serialNumber', targetStore.serialNumber);
+                option.find('.dropdown-option-label').text($('#serial-number').val() + ' - ' 
+                        + $('#route-id option:selected').text());
+                option.find('.icon').toggleClass('icon-database-add icon-textfield');
+            }
+            
+            $('.js-recent-menu').prepend(option);
+            $('.js-recent-btn').show();
+        }
+    },
+    
     /** 
      * User clicked the execute button or hit enter in the command textfield.
      * Send the command request to the server.
@@ -252,17 +318,17 @@ yukon.tools.commander = (function () {
         var
         picker,
         valid = true,
-        target = _targets[$('#target-row .on').attr('id')],
+        target = _targetButtons[$('#target-row .on').attr('id')],
         params = {
-                target: target,
+            target: target,
             command: $('#command-text').val().trim()
         },
         btn = $('#cmd-execute-btn'),
         field = $('#command-text');
         
-        if (target === 'DEVICE') {
+        if (target === _targetTypes.device) {
             params.paoId = $('#pao-id').val();
-        } else if (target === 'LOAD_GROUP') {
+        } else if (target === _targetTypes.lmGroup) {
             params.paoId = $('#lm-group-id').val();
         } else {
             params.serialNumber = $('#serial-number').val();
@@ -275,14 +341,14 @@ yukon.tools.commander = (function () {
             field.addClass('animated shake-subtle error')
             .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
         }
-        if (!params.paoId && (target === 'DEVICE' || target === 'LOAD_GROUP')) {
+        if (!params.paoId && (target === _targetTypes.device || target === _targetTypes.lmGroup)) {
             valid = false;
-            picker = target === 'DEVICE' ? $('.js-device-picker') : $('.js-lm-group-picker');
+            picker = target === _targetTypes.device ? $('.js-device-picker') : $('.js-lm-group-picker');
             picker.addClass('animated shake-subtle')
             .one(yg.events.animationend, function() { 
                 $(this).removeClass('animated shake-subtle error').find('.b-label').removeClass('error'); 
             }).find('.b-label').addClass('error');
-        } else if ((target === 'EXPRESSCOM' || target === 'VERSACOM') && !params.serialNumber) {
+        } else if ((target === _targetTypes.ecom || target === _targetTypes.vcom) && !params.serialNumber) {
             valid = false;
             $('#serial-number').addClass('animated shake-subtle error')
             .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
@@ -291,13 +357,7 @@ yukon.tools.commander = (function () {
         if (valid) {
             
             // Store the target of the command in the yukon cookie
-            yukon.cookie.set('commander', 'lastTarget', target);
-            if (params.paoId) {
-                yukon.cookie.set('commander', 'lastPaoId', params.paoId);
-            } else {
-                yukon.cookie.set('commander', 'lastSerialNumber', params.serialNumber);
-                yukon.cookie.set('commander', 'lastRouteId', params.routeId);
-            }
+            _storeTarget(target, params);
             
             yukon.ui.busy(btn);
             field.prop('disabled', true);
@@ -332,14 +392,14 @@ yukon.tools.commander = (function () {
             
             if (_initialized) return;
             
-            // Load common commands if we came in with a previous target from the cookie
+            /** Load common commands if we came in with a previous target from the cookie */
             var target = yukon.cookie.get('commander', 'lastTarget', ''), paoId, category, url;
             if (target) {
-                if (target === 'DEVICE' || target === 'LOAD_GROUP') {
+                if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
                     paoId = yukon.cookie.get('commander', 'lastPaoId', '');
                     _updateCommandsForPao(paoId);
                 } else {
-                    category = taget === 'EXPRESSCOM' ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
+                    category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
                     url = 'commander/type-commands?' + $.param({ type: category });
                     $.getJSON(url).done(function (commands) {
                         _updateCommonCommands(commands);
@@ -347,9 +407,41 @@ yukon.tools.commander = (function () {
                 }
             }
             
-            // Scroll the console to the bottom incase there are previous commands
+            /** Scroll the console to the bottom incase there are previous commands */
             var lastReq = $('#commander-results .cmd-req-resp:last-child');
             if (lastReq.length) $('#commander-results').scrollTo(lastReq);
+            
+            /** EVENT HANDLERS **/
+            
+            /** User clicked a recent target from the recent targets menu. */
+            $(document).on('click', '.js-recent-menu a', function (ev) {
+                
+                var option = $(this).parent(),
+                    type = option.data('type'), 
+                    paoId = option.data('paoId'),
+                    routeId = option.data('routeId'),
+                    serialNumber = option.data('serialNumber');
+                
+                if (type === _targetTypes.device) {
+                    $('#target-device-btn').trigger('click');
+                    $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
+                        commanderDevicePicker.select({ type: pao.paoType, paoId: paoId, paoName: pao.paoName });
+                    });
+                } else if (type === _targetTypes.lmGroup) {
+                    $('#target-lm-group-btn').trigger('click');
+                    $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
+                        lmGroupPicker.select({ type: pao.paoType, paoId: paoId, paoName: pao.paoName });
+                    });
+                } else if (type === _targetTypes.ecom) {
+                    $('#target-expresscom-btn').trigger('click');
+                    $('#serial-number').val(serialNumber);
+                    $('#route-id').val(routeId);
+                } else if (type === _targetTypes.vcom) {
+                    $('#target-versacom-btn').trigger('click');
+                    $('#serial-number').val(serialNumber);
+                    $('#route-id').val(routeId);
+                }
+            });
             
             /** 
              * Init the the common commands select with chosen. 
@@ -463,10 +555,10 @@ yukon.tools.commander = (function () {
                 _promptForInput();
             });
             
-            // Prime the pending cache with any pending requests found in the console.
+            /** Prime the pending cache with any pending requests found in the console. */
             _primePending();
             
-            // Start the recursive updating
+            /** Start the recursive updating. */
             setTimeout(_update, 200);
             
             _initialized = true;

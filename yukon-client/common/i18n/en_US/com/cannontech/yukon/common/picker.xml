@@ -10,7 +10,6 @@
 <entry key="yukon.web.picker.cancel">Cancel</entry>
 <entry key="yukon.web.picker.noResults">No results found</entry>
 <entry key="yukon.web.picker.nothingSelected">You have not selected anything.</entry>
-<entry key="yukon.web.picker.alreadySelectedHover">Already Selected</entry>
 <entry key="yukon.web.picker.pageSelected">Selected items on this page.</entry>
 <entry key="yukon.web.picker.selectAllPages">Select all {0} matching items.</entry>
 <entry key="yukon.web.picker.allPagesSelected">All {0} matching items selected.</entry>
