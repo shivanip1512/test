@@ -27,7 +27,6 @@
 #include "pt_accum.h"
 #include "pt_analog.h"
 #include "pt_status.h"
-#include "pttrigger.h"
 
 #include "dev_base.h"
 
@@ -92,8 +91,6 @@ using Cti::ThreadStatusKeeper;
 
 /* Global Variables */
 CtiPointClientManager      PointMgr;   // The RTDB for memory points....
-//This trigger mananger was implemented but never used. It is commented out everywhere!
-//CtiPointTriggerManager     TriggerMgr; // The RTDB for point triggers....
 CtiVanGoghExecutorFactory  ExecFactory;
 
 static map< long, CtiPointDataMsg* > fullBoatMap;
@@ -883,7 +880,6 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 bool is_a_control = writeControlMessageToPIL(did, rawstate, static_cast<const CtiPointStatus &>(*pPoint), Cmd);
 
                                 CtiPointDataMsg *pPseudoValPD = 0;
-                                PtVerifyTriggerSPtr verificationPtr;
 
                                 CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
                                 pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
@@ -892,12 +888,6 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 pendingControlRequest->setControlCompleteValue( (DOUBLE) rawstate );
                                 pendingControlRequest->setControlTimeout( controlTimeout );
                                 pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(did));
-
-                                /*if( verificationPtr = TriggerMgr.getPointTriggerFromPoint(pPoint->getID()) )
-                                {
-                                    pendingControlRequest->setControlTimeout( verificationPtr->dbTriggerData.getCommandTimeOut() );
-                                    pendingControlRequest->setControlCompleteDeadband(verificationPtr->dbTriggerData.getVerificationDeadband());
-                                }*/
 
                                 pendingControlRequest->getControl().setPAOID( did );
                                 pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
@@ -2512,7 +2502,6 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 {
     int status = ClientErrors::None;
     bool isPseudo = false;
-    PtVerifyTriggerSPtr verificationPtr;
 
     try
     {
@@ -2551,18 +2540,6 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->setControlCompleteValue( (DOUBLE) pMsg->getRawState() );
                 pendingControlLMMsg->setControlTimeout( controlTimeout );
                 pendingControlLMMsg->setExcludeFromHistory(!isDeviceGroupType(pPoint->getDeviceID()));
-
-                /*if( verificationPtr = TriggerMgr.getPointTriggerFromPoint(pPoint->getID()) )
-                {
-                    pendingControlLMMsg->setControlTimeout(verificationPtr->dbTriggerData.getCommandTimeOut());
-                    pendingControlLMMsg->setControlCompleteDeadband(verificationPtr->dbTriggerData.getVerificationDeadband());
-
-                    if( verificationPtr->dbTriggerData.getVerificationID() == 0 )
-                    {
-                        //So we dont verify, we are a pseudo. Handle the pseudo point here!
-                        isPseudo = true;
-                    }
-                }*/
 
                 // We prime the pending control object here, where we know all there is to know.
                 pendingControlLMMsg->getControl().setPAOID(pMsg->getPAOId());
@@ -4299,18 +4276,14 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     if(pChg != NULL && pChg->getDatabase() == ChangePAODb && pChg->getTypeOfChange() == ChangeTypeAdd )
                     {
                         PointMgr.updatePoints(0, pChg->getId());
-                        //TriggerMgr is really not used so I am currently not loading it here!
                     }
                     else if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
                         PointMgr.updatePoints(pChg->getId(), 0, resolvePointType(pChg->getObjectType()) );
-
-                        //TriggerMgr.refreshList(pChg->getId(), PointMgr);
                     }
                     else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
-                        PointMgr  .erase(pChg->getId());
-                        //TriggerMgr.erase(pChg->getId());
+                        PointMgr.erase(pChg->getId());
                     }
                     else if(pChg == NULL)
                     {
@@ -4331,7 +4304,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                             }
                             PointMgr.loadAllStaticData();
                         }
-                        //TriggerMgr.refreshList(0, PointMgr);
                     }
                     else
                     {
@@ -7005,7 +6977,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
 
         // We can only care about failure if we are a status/control point
         // and someone has sent out a command.  Otherwise this is irrelevant.
-        if(tags & TAG_ATTRIB_CONTROL_AVAILABLE /*|| TriggerMgr.isAVerificationPoint(point->getPointID())*/)
+        if(tags & TAG_ATTRIB_CONTROL_AVAILABLE)
         {
             CtiPendable *pendable = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_ControlStatusComplete, NULL, pData->getTime() );
 

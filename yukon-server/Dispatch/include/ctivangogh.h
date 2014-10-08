@@ -21,7 +21,6 @@
 #include "pending_info.h"
 #include "pt_dyn_dispatch.h"
 #include "pt_status.h"
-#include "pttrigger.h"
 #include "signalmanager.h"
 #include "tagmanager.h"
 #include "tbl_state_grp.h"
