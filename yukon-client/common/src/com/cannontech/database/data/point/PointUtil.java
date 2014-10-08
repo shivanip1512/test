@@ -72,7 +72,7 @@ public class PointUtil {
            break;
            
        case PointTypes.DEMAND_ACCUMULATOR_POINT:
-           point = PointFactory.createDmdAccumPoint(name, 
+           point = PointFactory.createPulseAccumPoint(name, 
                                                     paoId, 
                                                     null,
                                                     0, 
