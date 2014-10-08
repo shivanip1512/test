@@ -25,6 +25,7 @@
                     <li><a href="<cti:url value="/dev/bulkPointInjection/home"/>">Bulk Point Injection</a></li>
                     <li><a href="<cti:url value="/dev/setupDatabase/main"/>">Setup Development Database</a></li>
                     <li><a href="<cti:url value="/dev/miscellaneousMethod/main"/>">Miscellaneous Methods</a></li>
+                    <li><a href="<cti:url value="/dev/db-change"/>">DbChange Messages</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>
