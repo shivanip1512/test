@@ -19,6 +19,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 @Controller
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
@@ -71,12 +72,16 @@ public class DeveloperController {
 
     @RequestMapping("/do-db-change")
     @ResponseBody
-    public String doDbChangePage(Integer itemId, String databaseField, String categoryField, DbChangeType type) {
+    public Map<String, Object> doDbChangePage(Integer itemId, String databaseField, String categoryField, DbChangeType type) {
         Integer database = databaseFields.get(databaseField);
         String category = categoryFields.get(categoryField);
-
-        dbChangeManager.processDbChange(itemId, database, category, category, type);
-
-        return "success";
+        Map<String, Object> returnJson = Maps.newHashMapWithExpectedSize(2);
+        try {
+            dbChangeManager.processDbChange(itemId, database, category, category, type);
+        } catch (Exception e) {
+            returnJson.put("error", true);
+            returnJson.put("errorMessage", "Exception Thrown: " + e.getMessage());
+        }
+        return returnJson;
     }
 }

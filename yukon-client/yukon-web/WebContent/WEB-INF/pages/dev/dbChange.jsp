@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="dev" page="dbChange">
    <script>
@@ -10,34 +11,91 @@
 
     yukon.dev.dbChange = (function() {
         var _initialized = false,
-        _showTempMessage = function(message, type) {
-            $('#submitStatus').addMessage({message: message, messageClass:type}).show();
+        _shortenString = function(string) {
+            if (string.length > 20) {
+                return string.substring(0, 20) + '...';
+            }
+            return string;
+        },
+        
+        _createPreviouslySentDiv = function(previouslySent) {
+            var resultClass = previouslySent.error ? 'error' : 'success';
+            var newRow = $('#previouslySentTemplate').clone().removeAttr("id");
+            newRow.show();
+            newRow.find('[data-result]').text(previouslySent.resultMessage).addClass(resultClass);
+            newRow.find('[data-itemId]').html(previouslySent.itemId);
+            newRow.find('[data-database]').text(_shortenString(previouslySent.database));
+            newRow.find('[data-category]').text(_shortenString(previouslySent.category));
+            newRow.find('[data-type]').text(previouslySent.type);
+             return newRow;
+        },
+        
+        _updatePreviouslySent = function() {
+            var previouslySentDiv = $('#previouslySent').empty();
+            var previouslySent = JSON.parse(localStorage['previouslySent']);
+            var numberPreviouslySent = previouslySent.length;
+            for (var i = 0; i < numberPreviouslySent; i++) {
+                previouslySentDiv.append(_createPreviouslySentDiv(previouslySent[i]));
+            }
+        },
+        
+        _showTempError = function(message, type) {
+            var newMsgDiv = $('<div/>').addMessage({message: message, messageClass:'error'}).show();
+            $('#errorMessage').html(newMsgDiv);
             setTimeout(function() {
-                $('#submitStatus').slideUp(150);
-            }, 3000);
-        }
+                newMsgDiv.remove();
+            }, 10000);
+        };
         _submitButtonClick = function() {
-            var formData = $('#dbChangeForm').serialize();
+            var form = $('#dbChangeForm');
+            var sentItem = {
+                    itemId : form.find('[name="itemId"]').val(),
+                    database : form.find('[name="databaseField"]').val(),
+                    type : form.find('[name="type"]').val(),
+                    category : form.find('[name="categoryField"]').val()
+            };
+            var formData = form.serialize();
             $.ajax({
                 url: yukon.url('do-db-change'),
                 type: 'post',
                 data: formData
             }).done(function(data) {
-                _showTempMessage('Successfully submitted DbChangeMsg', 'success');
+                if (data.error) {
+                    sentItem.error = true;
+                    sentItem.resultMessage = data.errorMessage;
+                } else {
+                    sentItem.resultMessage = 'Success';
+                }
             }).fail(function(data) {
-                _showTempMessage('Failed to submit. DbChangeMessage', 'error');
+                sentItem.error = true;
+                sentItem.resultMessage = data.statusText;
+                _showTempError('Failed to submit DbChangeMessage. Due to ' + data.statusText + '.');
+            }).always(function() {
+                var previouslySent = JSON.parse(localStorage['previouslySent']);
+                previouslySent.unshift(sentItem);
+                previouslySent = previouslySent.slice(0, 10);
+                localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
+                _updatePreviouslySent();
             });
         },
         
         mod = {
             init : function() {
                 if (_initialized) return;
-                
+
+                if (localStorage.getItem('previouslySent') == null) {
+                    localStorage.setItem('previouslySent', "[]");
+                }
+
                 $('#submit-button').click(_submitButtonClick);
                 $('#dbChangeForm').change(function(event) {
                     var input = $(event.target);
                     yukon.cookie.set('devDbChange', input.attr('name'), input.val());
                 });
+                $(document).on('click', '.js-re-submit', function() {
+                    console.log('clicked');
+                });
+                _updatePreviouslySent();
                 _initialized = true;
             }
         };
@@ -52,36 +110,70 @@
     <cti:yukonCookie var="database" scope="devDbChange" id="databaseField"/>
     <cti:yukonCookie var="category" scope="devDbChange" id="categoryField"/>
     <cti:yukonCookie var="type" scope="devDbChange" id="type"/>
-    <div id="submitStatus"></div>
-    <form id='dbChangeForm'>
-        <tags:nameValueContainer2>
-            <tags:nameValue2 argument="Item Id" label="modules.dev.setupDatabase.setupDevDatabase.generic">
-                <input type="text" size="6" name="itemId" value="${itemId}" />
-            </tags:nameValue2>
-            <tags:nameValue2 argument="Database" label="modules.dev.setupDatabase.setupDevDatabase.generic">
-                <select name="databaseField">
-                    <c:forEach var="entry" items="${databaseFields}">
-                        <option value="${entry.key}" ${database eq entry.key ? 'selected' : ''}>${entry.key}</option>
-                    </c:forEach>
-                </select>
-            </tags:nameValue2>
-            <tags:nameValue2 argument="Category" label="modules.dev.setupDatabase.setupDevDatabase.generic">
-                <select name="categoryField">
-                    <c:forEach var="entry" items="${categoryFields}">
-                        <option value="${entry.key}" ${category eq entry.key ? 'selected' : ''}>${entry.key}</option>
-                    </c:forEach>
-                </select>
-            </tags:nameValue2>
-            <tags:nameValue2 argument="DbChangeType" label="modules.dev.setupDatabase.setupDevDatabase.generic">
-                <select name="type">
-                    <c:forEach var="entry" items="${dbChangeTypes}">
-                        <option value="${entry}" ${type eq entry ? 'selected' : ''}>${entry}</option>
-                    </c:forEach>
-                </select>
-            </tags:nameValue2>
-        </tags:nameValueContainer2>
-    </form>
-    <div class="page-action-area">
-        <cti:button id="submit-button" label="Submit" classes="primary action"/>
+    
+    <div id="errorMessage"></div>
+    <tags:sectionContainer title="Submit DbChange Message">
+        <form id='dbChangeForm'>
+            <tags:nameValueContainer2>
+                <tags:nameValue2 argument="DbChangeType" label="modules.dev.setupDatabase.setupDevDatabase.generic">
+                    <select name="type">
+                        <c:forEach var="entry" items="${dbChangeTypes}">
+                            <option value="${entry}" ${type eq entry ? 'selected' : ''}>${entry}</option>
+                        </c:forEach>
+                    </select>
+                </tags:nameValue2>
+                <tags:nameValue2 argument="Item Id" label="modules.dev.setupDatabase.setupDevDatabase.generic">
+                    <input type="text" size="6" name="itemId" value="${itemId}" />
+                </tags:nameValue2>
+                <tags:nameValue2 argument="Database" label="modules.dev.setupDatabase.setupDevDatabase.generic">
+                    <select name="databaseField">
+                        <c:forEach var="entry" items="${databaseFields}">
+                            <option value="${entry.key}" ${database eq entry.key ? 'selected' : ''}>${fn:replace(entry.key, "CHANGE_", "")}</option>
+                        </c:forEach>
+                    </select>
+                </tags:nameValue2>
+                <tags:nameValue2 argument="Category" label="modules.dev.setupDatabase.setupDevDatabase.generic">
+                    <select name="categoryField">
+                        <c:forEach var="entry" items="${categoryFields}">
+                            <option value="${entry.key}" ${category eq entry.key ? 'selected' : ''}>${fn:replace(entry.key, "CAT_", "")}</option>
+                        </c:forEach>
+                    </select>
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
+        </form>
+        <div class="page-action-area">
+            <cti:button id="submit-button" label="Submit" classes="primary action"/>
+         </div>
+     </tags:sectionContainer>
+    <tags:sectionContainer title="Previously Sent">
+        <div id="previouslySent" class="scroll-lg">
+            
+        </div>
+    </tags:sectionContainer>
+    <div id="previouslySentTemplate" class="column-8-16 dn">
+        <div class="column one">
+            <div class="column-12-12">
+                <div class="column one">
+                    Type: <span class="la4bel l4abel-default" data-type>ADD</span>
+                </div>
+                <div class="column two nogutter">
+                    Item: <span class="lab4el label-default4" data-itemId>1232</span>
+                </div>
+            </div>
+        </div>
+        <div class="column two nogutter">
+            <div class="column-12-12">
+                <div class="column one">
+                    Database: <span class="labsel la4bel-default" data-database>CHANGE_U_USER_ID</span>
+                </div>
+                <div class="column two nogutter">
+                    Category: <span class="labsel la4bel-default" data-category>CHANGE_U_USER_ID</span>
+                </div>
+            </div>
+        </div>
+        <div class="stacked clearfix">
+            <span class="fl">Result: <span data-result>Success</Span></span>
+            <i class="icon icon-arrow-rotate-clockwise js-re-submit"></i>
+        </div>
     </div>
 </cti:standardPage>
