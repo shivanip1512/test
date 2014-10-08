@@ -2,13 +2,26 @@ package com.cannontech.common.rfn.message.gateway;
 
 import java.io.Serializable;
 
-public class GatewayConnectionTestReponse implements Serializable {
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+
+public class GatewayConnectionTestReponse implements RfnIdentifyingMessage, Serializable {
     
     private static final long serialVersionUID = 1L;
     
+    private RfnIdentifier rfnIdentifier;
     private GatewayConnectionTestResult result;
     private String ipAddress;
+    
+    @Override
+    public RfnIdentifier getRfnIdentifier() {
+        return rfnIdentifier;
+    }
 
+    public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        this.rfnIdentifier = rfnIdentifier;
+    }
+    
     public String getIpAddress() {
         return ipAddress;
     }
@@ -31,6 +44,7 @@ public class GatewayConnectionTestReponse implements Serializable {
         int result = 1;
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((this.result == null) ? 0 : this.result.hashCode());
+        result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         return result;
     }
 
@@ -50,12 +64,21 @@ public class GatewayConnectionTestReponse implements Serializable {
             return false;
         if (result != other.result)
             return false;
+        if (rfnIdentifier == null) {
+            if (other.rfnIdentifier != null)
+                return false;
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return String.format("GatewayConnectionTestReponse [result=%s, ipAddress=%s]", result, ipAddress);
+        return String
+            .format("GatewayConnectionTestReponse [rfnIdentifier=%s, result=%s, ipAddress=%s]",
+                    rfnIdentifier,
+                    result,
+                    ipAddress);
     }
     
 }

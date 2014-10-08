@@ -20,7 +20,7 @@
 }
 </style>
 
-<c:if test="${not empty location}"><cti:toJson id="gateway-geojson" object="${location}"/></c:if>
+<c:if test="${not empty gateway.location}"><cti:toJson id="gateway-geojson" object="${gateway.location}"/></c:if>
 
 <div id="page-actions" class="dn">
     <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
@@ -32,25 +32,38 @@
     <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
 </div>
 
-<div id="gateway-edit-popup" class="dn" data-title="Edit Gateway" data-url="${gateway.id}/edit" 
+<div id="gateway-edit-popup" class="dn" data-title="Edit Gateway" data-url="${gateway.paoIdentifier.paoId}/edit" 
     data-width="360" data-dialog data-event="yukon_assets_gateway_save"></div>
 
 <div class="column-12-12 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="info" styleClass="stacked">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name">GW001</tags:nameValue2>
-                <tags:nameValue2 nameKey=".serialNumber">7500000383</tags:nameValue2>
-                <tags:nameValue2 nameKey=".hardwareVersion">1000156_06</tags:nameValue2>
-                <tags:nameValue2 nameKey=".softwareVersion">R_5_3_0</tags:nameValue2>
-                <tags:nameValue2 nameKey=".upperStackVersion">R_5_3_0_0_1</tags:nameValue2>
-                <tags:nameValue2 nameKey=".radioVersion">R2.3.0L</tags:nameValue2>
-                <tags:nameValue2 nameKey=".releaseVersion">R5.3.0</tags:nameValue2>
+                <tags:nameValue2 nameKey=".name">${fn:escapeXml(gateway.data.name)}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".hardwareVersion">${gateway.data.hardwareVersion}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".softwareVersion">${gateway.data.softwareVersion}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".upperStackVersion">${gateway.data.upperStackVersion}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".radioVersion">${gateway.data.radioVersion }</tags:nameValue2>
+                <tags:nameValue2 nameKey=".releaseVersion">${gateway.data.releaseVersion}</tags:nameValue2>
                 <tags:nameValue2 nameKey=".versionConflicts">
-                    <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
+                    <c:if test="${empty gateway.data.versionConflicts}">
+                        <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
+                    </c:if>
+                    <c:if test="${not empty gateway.data.versionConflicts}">
+                        <div class="stacked">
+                            <c:forEach var="conflict" items="${gateway.data.versionConflicts}">
+                                <div><i:inline key=".conflictType.${conflict}"/></div>
+                            </c:forEach>
+                        </div>
+                    </c:if>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".appMode">
-                    <span class="error"><i:inline key=".appMode.failsafe"/></span>
+                    <c:set var="clazz" value="green"/>
+                    <c:if test="${gateway.appModeNonNormal}">
+                        <c:set var="clazz" value="error"/>
+                    </c:if>
+                    <span class="${clazz}"><i:inline key=".appMode.${gateway.data.mode}"/></span>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
@@ -80,19 +93,43 @@
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".username">
-                        <span class="empty-list">admin</span>
+                    <tags:nameValue2 nameKey=".user">
+                        <c:if test="${empty gateway.data.user}">
+                            <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
+                        </c:if>
+                        <c:if test="${not empty gateway.data.user}">
+                            <span class="empty-list">${fn:escapeXml(gateway.data.user.username)}</span>
+                        </c:if>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".connectionType">TCP/IP</tags:nameValue2>
-                    <tags:nameValue2 nameKey=".ipaddress">10.106.46.102 Port: 32030</tags:nameValue2>
+                    <tags:nameValue2 nameKey=".admin">
+                        <c:if test="${empty gateway.data.admin}">
+                            <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
+                        </c:if>
+                        <c:if test="${not empty gateway.data.admin}">
+                            <span class="empty-list">${fn:escapeXml(gateway.data.admin.username)}</span>
+                        </c:if>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".superAdmin">
+                        <c:if test="${empty gateway.data.superAdmin}">
+                            <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
+                        </c:if>
+                        <c:if test="${not empty gateway.data.superAdmin}">
+                            <span class="empty-list">${fn:escapeXml(gateway.data.superAdmin.username)}</span>
+                        </c:if>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".connectionType">
+                        <i:inline key=".connectionType.${gateway.data.connectionType}"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".ipaddress">
+                        ${fn:escapeXml(gateway.data.ipAddress)} <i:inline key=".port" arguments="${gateway.data.port}"/>
+                    </tags:nameValue2>
                     <tags:nameValue2 nameKey=".radios">
-                        <div title="3/31/2014 2:11:07 PM" class="stacked">
-                            <div>EkaNet 915 MHz</div>
-                            <div>MAC Address: 00:14:08:03:44:D0</div>
-                        </div>
-                        <div title="5/2/2014 7:49:12 PM">
-                            <div>EkaNet 915 MHz</div>
-                            <div>MAC Address: FF:FF:FF:FF:FF:FF</div>
+                        <c:forEach var="radio" items="${gateway.data.radios}">
+                            <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">
+                                <div><i:inline key=".radioType.${radio.type}"/></div>
+                                <div><i:inline key=".macAddress" arguments="${radio.macAddress}"/></div>
+                            </div>
+                        </c:forEach>
                         </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -100,10 +137,12 @@
             <div class="column two nogutter">
                 <tags:nameValueContainer2>
     	            <tags:nameValue2 nameKey=".connectionStatus">
-    	                <span class="state-box green"></span>&nbsp;Connected
+    	                <span class="state-box green"></span>
+                        <i:inline key=".connectionStatus.${gateway.data.connectionStatus}"/>
     	            </tags:nameValue2>
     	            <tags:nameValue2 nameKey=".lastComms">
-    	                <span class="green">Successful</span>&nbsp;(7/16/2014 9:45:07 AM)
+    	                <span class="${clazz}"><i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/></span>
+                        (<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>)
     	            </tags:nameValue2>
     	        </tags:nameValueContainer2>
                 <div class="action-area">
@@ -121,21 +160,21 @@
                     <tags:nameValue2 nameKey=".dataCompleteness">
                         <div class="dib vatb progress">
                             <c:set var="clazz" value="progress-bar-success"/>
-                            <c:if test="${gateway.dataWarning}">
+                            <c:if test="${gateway.totalCompletionLevelWarning}">
                                 <c:set var="clazz" value="progress-bar-warning"/>
                             </c:if>
-                            <c:if test="${gateway.dataError}">
+                            <c:if test="${gateway.totalCompletionLevelDanger}">
                                 <c:set var="clazz" value="progress-bar-danger"/>
                             </c:if>
-                            <div class="progress-bar ${clazz}" style="width: ${gateway.dataCollection}%"></div>
-                        </div>&nbsp;${gateway.dataCollection}%
+                            <div class="progress-bar ${clazz}" style="width: ${gateway.totalCompletionPercentage}%"></div>
+                        </div>&nbsp;${gateway.totalCompletionPercentage}%
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
             <div class="column two nogutter">
                 <tags:nameValueContainer2 tableClass="with-form-controls">
                     <tags:nameValue2 nameKey=".collectionSchedule" valueClass="full-width">
-                        <cti:formatCron value="0 0 */1 * * ? *"/>
+                        <cti:formatCron value="${gateway.data.collectionSchedule}"/>
                         <cti:button nameKey="edit" icon="icon-pencil" classes="fr"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -154,22 +193,24 @@
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                    <c:forEach var="sequence" items="${sequences}">
+                    <c:forEach var="sequence" items="${gateway.data.sequences}">
                         <tr>
-                            <td>${fn:escapeXml(sequence.name)}</td>
-                            <td>${sequence.start}</td>
-                            <td>${sequence.end}</td>
+                            <td><i:inline key=".sequenceType.${sequence.type}"/></td>
+                            <%-- TODO: Probably need to modify DataSequence & SequenceBlock to make this work - NM will have to update too --%>
+                            <td><%--${sequence.start}--%></td>
+                            <td><%--${sequence.end}--%></td>
+                            
                             <td>
                                 <div class="dib progress">
                                     <c:set var="clazz" value="progress-bar-success"/>
-                                    <c:if test="${sequence.warning}">
+                                    <c:if test="${sequence.completionPercentage < 90 and sequence.completionPercentage >= 75}">
                                         <c:set var="clazz" value="progress-bar-warning"/>
                                     </c:if>
-                                    <c:if test="${sequence.error}">
+                                    <c:if test="${sequence.completionPercentage <= 75}">
                                         <c:set var="clazz" value="progress-bar-danger"/>
                                     </c:if>
-                                    <div class="progress-bar ${clazz}" style="width: ${sequence.percent}%"></div>
-                                </div>&nbsp;${sequence.percent}%
+                                    <div class="progress-bar ${clazz}" style="width: ${sequence.completionPercentage}%"></div>
+                                </div>&nbsp;${sequence.completionPercentage}%
                             </td>
                         </tr>
                     </c:forEach>

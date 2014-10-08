@@ -9,11 +9,11 @@
 
 <c:choose>
     <c:when test="${mode == 'CREATE'}">
-        <cti:url var="url" value="/stars/gateways"/>
+        <cti:url var="url" value="/stars/gatewaysMockup"/>
         <c:set var="method" value="post"/>
     </c:when>
     <c:otherwise>
-        <cti:url var="url" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
+        <cti:url var="url" value="/stars/gatewaysMockup/${gateway.id}"/>
         <c:set var="method" value="put"/>
     </c:otherwise>
 </c:choose>
@@ -27,22 +27,13 @@
         <tags:nameValue2 nameKey=".ipaddress">
             <input type="text" value="" class="full-width">
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".user">
+    </tags:nameValueContainer2>
+    
+    <tags:nameValueContainer2>
+        <tags:nameValue2 nameKey=".username">
             <input type="text" value="">
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".userPassword">
-            <input type="password" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".admin">
-            <input type="text" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".adminPassword">
-            <input type="password" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".superAdmin">
-            <input type="text" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".superAdminPassword">
+        <tags:nameValue2 nameKey=".password">
             <input type="password" value="">
         </tags:nameValue2>
     </tags:nameValueContainer2>

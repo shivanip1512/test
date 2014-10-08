@@ -10,7 +10,7 @@
     <div id="page-buttons" class="dn">
         <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
     </div>
-    <div id="gateway-create-popup" class="dn" data-title="Create Gateway" data-url="gateways/create" 
+    <div id="gateway-create-popup" class="dn" data-title="Create Gateway" data-url="gatewaysMockup/create" 
         data-width="360" data-dialog data-event="yukon_assets_gateway_save">
         
     </div>
@@ -30,38 +30,37 @@
             <c:forEach items="${gateways}" var="gateway">
                 <tr>
 <!--                 TODO : determine if they are connected and display the appropriate tool tip -->
-                    <td title="<cti:msg2 key=".connected"/> <cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>">
-                        <c:set var="clazz" value="${gateway.data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
+                    <td title="<cti:msg2 key=".connected"/> <cti:formatDate type="DATEHM" value="${gateway.lastCommTimestamp}"/>">
+                        <c:set var="clazz" value="${gateway.connected ? 'green' : 'red'}"/>
                         <span class="state-box ${clazz}"></span>
                     </td>
-                    <cti:url var="gatewayDetailLink" value="gateways/${gateway.paoIdentifier.paoId}"/>
-                    <td><a href="${gatewayDetailLink}">${fn:escapeXml(gateway.data.name)}</a></td>
-                    <td>${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
-                    <td>${fn:escapeXml(gateway.data.ipAddress)}</td>
-                    <td title="<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>">
+                    <td><a href="gatewaysMockup/42">${fn:escapeXml(gateway.name)}</a></td>
+                    <td>${fn:escapeXml(gateway.serialNumber)}</td>
+                    <td>${fn:escapeXml(gateway.ipaddress)}</td>
+                    <td title="<cti:formatDate type="DATEHM" value="${gateway.lastCommTimestamp}"/>">
                         <c:set var="clazz" value="green"/>
-                        <c:if test="${gateway.lastCommFailed}">
+                        <c:if test="${gateway.commFailed}">
                             <c:set var="clazz" value="red"/>
                         </c:if>
-                        <c:if test="${gateway.lastCommMissed}">
+                        <c:if test="${gateway.commMissed}">
                             <c:set var="clazz" value="orange"/>
                         </c:if>
-                        <c:if test="${gateway.lastCommUnknown}">
+                        <c:if test="${gateway.commUnknown}">
                             <c:set var="clazz" value="subtle"/>
                         </c:if>
-                        <span class="${clazz}"><i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/></span>
+                        <span class="${clazz}"><i:inline key="${gateway.lastComm}"/></span>
                     </td>
                     <td>
                         <div class="dib vam progress">
                             <c:set var="clazz" value="progress-bar-success"/>
-                            <c:if test="${gateway.totalCompletionLevelWarning}">
+                            <c:if test="${gateway.dataWarning}">
                                 <c:set var="clazz" value="progress-bar-warning"/>
                             </c:if>
-                            <c:if test="${gateway.totalCompletionLevelDanger}">
+                            <c:if test="${gateway.dataError}">
                                 <c:set var="clazz" value="progress-bar-danger"/>
                             </c:if>
-                            <div class="progress-bar ${clazz}" style="width: ${gateway.totalCompletionPercentage}%"></div>
-                        </div>&nbsp;${gateway.totalCompletionPercentage}%
+                            <div class="progress-bar ${clazz}" style="width: ${gateway.dataCollection}%"></div>
+                        </div>&nbsp;${gateway.dataCollection}%
                     </td>
                     <td class="action-column">
                         <cm:dropdown>
