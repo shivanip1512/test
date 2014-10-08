@@ -72,7 +72,9 @@ public class CBCSelectionLists {
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
       new SelectItem(new Integer (PointTypes.STATUS_POINT), "Status"),
-      new SelectItem(new Integer (PointTypes.DEMAND_ACCUMULATOR_POINT), "Accumulator"),
+      /* In case we need to add functionality for demand accumulator  to the existing code the following lines need to be un-commented  */
+      /*new SelectItem(new Integer (PointTypes.DEMAND_ACCUMULATOR_POINT), "Demand Accumulator")*/
+      new SelectItem(new Integer (PointTypes.PULSE_ACCUMULATOR_POINT), "Accumulator"),
       new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Calculated Analog Output"),
       new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Calculated Status Output"),
     };

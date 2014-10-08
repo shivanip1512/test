@@ -71,8 +71,27 @@ public class PointUtil {
            point.getPoint().setPointOffset( new Integer ( validPointOffset) );
            break;
            
-       case PointTypes.DEMAND_ACCUMULATOR_POINT:
+           
+       case PointTypes.PULSE_ACCUMULATOR_POINT:
            point = PointFactory.createPulseAccumPoint(name, 
+                                                    paoId, 
+                                                    null,
+                                                    0, 
+                                                    UnitOfMeasure.UNDEF.getId(), 
+                                                    0.1, 
+                                                    StateGroupUtils.STATEGROUP_ANALOG,
+                                                    PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                    PointArchiveType.NONE,
+                                                    PointArchiveInterval.ZERO);
+           
+           break;
+           /*In the current implementation for an accumulator point its by default implementing 
+            * the Demand Accumulator to change it to Pulse Accumulator type We have added a case 
+            * PointTypes.PULSE_ACCUMULATOR_POINT and calling accordingly in The CBCSelectionLists
+            */
+           
+       case PointTypes.DEMAND_ACCUMULATOR_POINT:
+           point = PointFactory.createDmdAccumPoint(name, 
                                                     paoId, 
                                                     null,
                                                     0, 
