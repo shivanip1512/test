@@ -92,12 +92,12 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             }
         } else {
             // get the PaoPointIdentifiers for the devices & attributes
-            List<PaoMultiPointIdentifier> paoMultiPointIdentifiersForAttributes =
-                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributeSet).getDevicesAndPoints();
-            Set<PaoPointIdentifier> paoPointIdentifiers = Sets.newHashSet();
-            for (PaoMultiPointIdentifier paoMultiPointIdentifier : paoMultiPointIdentifiersForAttributes) {
-                paoPointIdentifiers.addAll(paoMultiPointIdentifier.getPaoPointIdentifiers());
-            }
+			List<PaoMultiPointIdentifier> paoMultiPointIdentifiersForAttributes = attributeService
+					.findPaoMultiPointIdentifiersForAttributes(devices, attributeSet);
+			Set<PaoPointIdentifier> paoPointIdentifiers = Sets.newHashSet();
+			for (PaoMultiPointIdentifier paoMultiPointIdentifier : paoMultiPointIdentifiersForAttributes) {
+				paoPointIdentifiers.addAll(paoMultiPointIdentifier.getPaoPointIdentifiers());
+			}
 
             // get the pointIds for the PaoPointIdentifiers
             paoPointInfoMap = pointDao.getPointInfoById(paoPointIdentifiers);

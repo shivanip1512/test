@@ -82,7 +82,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		}
 
 		List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForAttributes(
-				devices, attributes).getDevicesAndPoints();
+				devices, attributes);
 
 		Multimap<PaoType, PaoMultiPointIdentifier> pointsByPaoType = ArrayListMultimap.create(1,
 				devicesAndPoints.size());
@@ -109,20 +109,19 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 	@Override
 	public void initiateRead(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
 			DeviceAttributeReadCallback delegateCallback, DeviceRequestType type, LiteYukonUser user) {
+	    
+        PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
+                attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(devices, attributes);
 
-		PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers = attributeService
-				.findPaoMultiPointIdentifiersForAttributes(devices, attributes);
-
-		Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy = getValidPointsForStrategy(
-				devices, attributes);
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy =
+                getValidPointsForStrategy(paoPointIdentifiers.getSupportedDevicesAndPoints());
 
 		int requestCount = getRequestCount(pointsForStrategy);
 		CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(
 				CommandRequestType.DEVICE, type, requestCount, user);
 
 		Set<YukonPao> unreadableDevices = getUnreadableDevices(devices);
-		Set<YukonPao> unsupportedDevices = new HashSet<>();
-		unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
+		Set<YukonPao> unsupportedDevices = paoPointIdentifiers.getUnsupportedDevices();
 
 		if (log.isDebugEnabled()) {
 			log.debug("initiateRead  Type:" + type + " Attributes:" + attributes + " Devices:" + devices);
@@ -175,16 +174,14 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 	public String initiateRead(DeviceCollection deviceCollection, Set<? extends Attribute> attributes,
 			DeviceRequestType type, SimpleCallback<GroupMeterReadResult> callback, LiteYukonUser user) {
 
-		PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers = attributeService
-				.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes);
-
-		Set<YukonPao> unsupportedDevices = new HashSet<>();
-		unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
-
+		
 		Set<YukonPao> unreadableDevices = getUnreadableDevices(deviceCollection.getDeviceList());
-
-		Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy = getValidPointsForStrategy(
-				deviceCollection.getDeviceList(), attributes);
+		PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
+	            attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(deviceCollection, attributes);
+		Set<YukonPao> unsupportedDevices = paoPointIdentifiers.getUnsupportedDevices();
+		
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy =
+            getValidPointsForStrategy(paoPointIdentifiers.getSupportedDevicesAndPoints());
 
 		int requestCount = getRequestCount(pointsForStrategy);
 		CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(
@@ -493,29 +490,27 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		return requestCount;
 	}
 
-	private Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> getValidPointsForStrategy(
-			Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
+    private Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> getValidPointsForStrategy(
+            List<PaoMultiPointIdentifier> supportedDevicesAndPoints) {
 
-		List<PaoMultiPointIdentifier> devicesAndPoints = 
-				attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes).getDevicesAndPoints();
+        Multimap<PaoType, PaoMultiPointIdentifier> pointsByPaoType = ArrayListMultimap.create();
+        for (PaoMultiPointIdentifier multiPoints : supportedDevicesAndPoints) {
+            pointsByPaoType.put(multiPoints.getPao().getPaoType(), multiPoints);
+        }
 
-		Multimap<PaoType, PaoMultiPointIdentifier> pointsByPaoType = ArrayListMultimap.create(1, devicesAndPoints.size());
-		for (PaoMultiPointIdentifier multiPoints : devicesAndPoints) {
-			pointsByPaoType.put(multiPoints.getPao().getPaoType(), multiPoints);
-		}
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> validMetersForStrategy =
+            ArrayListMultimap.create();
+        for (PaoType paoType : pointsByPaoType.keySet()) {
+            for (DeviceAttributeReadStrategy strategy : strategies) {
+                if (strategy.canRead(paoType)) {
+                    Collection<PaoMultiPointIdentifier> points = pointsByPaoType.get(paoType);
+                    for (PaoMultiPointIdentifier point : points) {
+                        validMetersForStrategy.put(strategy, point);
+                    }
+                }
+            }
+        }
 
-		Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> validMetersForStrategy = ArrayListMultimap.create();
-		for (YukonPao pao : devices) {
-			for (DeviceAttributeReadStrategy strategy : strategies) {
-				if (strategy.canRead(pao.getPaoIdentifier().getPaoType())) {
-					Collection<PaoMultiPointIdentifier> points = pointsByPaoType.get(pao.getPaoIdentifier().getPaoType());
-					for (PaoMultiPointIdentifier point : points) {
-						validMetersForStrategy.put(strategy, point);
-					}
-				}
-			}
-		}
-
-		return validMetersForStrategy;
-	}
+        return validMetersForStrategy;
+    }
 }

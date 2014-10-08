@@ -161,36 +161,23 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(
+    public PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributesWithUnsupported(
             Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
 
-        return getPaoMultiPointIdentifiersForAttributesHelper(devices, attributes, false);
+        PaoMultiPointIdentifierWithUnsupported multiPointIdentifier =
+            findPaoMultiPointIdentifiersForAttributes(devices, attributes, true);
+
+        return multiPointIdentifier;
     }
 
-    private PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributesHelper(
-            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException) {
+    @Override
+    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(
+            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
 
-        PaoMultiPointIdentifierWithUnsupported devicesAndPoints = new PaoMultiPointIdentifierWithUnsupported();
-
-        for (YukonPao pao : devices) {
-            List<PaoPointIdentifier> points = new ArrayList<>(attributes.size());
-            for (Attribute attribute : attributes) {
-                try {
-                    points.add(getPaoPointIdentifierForAttribute(pao, attribute));
-                } catch (IllegalUseOfAttribute e) {
-                    devicesAndPoints.addUnsupportedDevice(pao, attribute);
-                    if (throwException) {
-                        log.error("Unable to look up values for " + attribute + " on " + pao);
-                        throw e;
-                    }
-                    log.debug("unable to look up values for " + attribute + " on " + pao + ": " + e.toString());
-                }
-            }
-            if (!points.isEmpty()) {
-                devicesAndPoints.add(new PaoMultiPointIdentifier(points));
-            }
-        }
-        return devicesAndPoints;
+        PaoMultiPointIdentifierWithUnsupported multiPointIdentifier =
+            findPaoMultiPointIdentifiersForAttributes(devices, attributes, false);
+        
+        return multiPointIdentifier.getSupportedDevicesAndPoints();
     }
 
     @Override
@@ -612,5 +599,58 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         return pis;
+    }
+    
+
+    private PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(
+            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean addUnsupported) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("START:findPaoMultiPointIdentifiersForAttributesWithUnsupported Attributes:" + attributes
+                + " Devices:" + devices);
+        }
+
+        Set<YukonPao> devicesWithoutPoint = new HashSet<>();
+        List<PaoMultiPointIdentifier> devicesAndPoints = new ArrayList<>();
+        Multimap<PaoType, YukonPao> typeToDevice = ArrayListMultimap.create();
+        for (YukonPao pao : devices) {
+            typeToDevice.put(pao.getPaoIdentifier().getPaoType(), pao);
+        }
+
+        Multimap<YukonPao, PaoPointIdentifier> paoToPoint = ArrayListMultimap.create();
+
+        for (PaoType type : typeToDevice.keySet()) {
+            for (Attribute attribute : attributes) {
+                try {
+                    AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(type, attribute);
+                    for (YukonPao pao : typeToDevice.get(type)) {
+                        PaoPointIdentifier paoPointIdentifier = attributeDefinition.findActualPointIdentifier(pao);
+                        if (paoPointIdentifier != null) {
+                            paoToPoint.put(pao, paoPointIdentifier);
+                        }
+                    }
+                } catch (IllegalUseOfAttribute e) {
+                    if (addUnsupported) {
+                        for (YukonPao pao : typeToDevice.get(type)) {
+                            // meters do not have a point for the attribute
+                            devicesWithoutPoint.add(pao);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (YukonPao pao : paoToPoint.keySet()) {
+            Collection<PaoPointIdentifier> points = paoToPoint.get(pao);
+            if (!points.isEmpty()) {
+                devicesAndPoints.add(new PaoMultiPointIdentifier(paoToPoint.get(pao)));
+            }
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("END:findPaoMultiPointIdentifiersForAttributesWithUnsupported");
+        }
+
+        return new PaoMultiPointIdentifierWithUnsupported(devicesAndPoints, devicesWithoutPoint);
     }
 }

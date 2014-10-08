@@ -3,7 +3,6 @@ package com.cannontech.amr.deviceread.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -156,17 +155,14 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE, type, 0, user);
 
         PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
-            attributeService.findPaoMultiPointIdentifiersForAttributes(deviceCollection, attributes);
-
-        Set<YukonPao> unsupportedDevices = new HashSet<>();
+            attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(deviceCollection, attributes);
+        
+        Set<YukonPao> unsupportedDevices = paoPointIdentifiers.getUnsupportedDevices();
 
         // MCTs that support the attributes
         List<PaoMultiPointIdentifier> supportedDevices = new ArrayList<>();
-
-        unsupportedDevices.addAll(paoPointIdentifiers.getUnsupportedDevices().keySet());
-
    
-        for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getDevicesAndPoints()) {
+        for (PaoMultiPointIdentifier identifier : paoPointIdentifiers.getSupportedDevicesAndPoints()) {
             if (identifier.getPao().getPaoType().isMct()) {
                 supportedDevices.add(identifier);
             } else {

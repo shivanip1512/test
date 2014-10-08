@@ -14,6 +14,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
@@ -52,19 +53,6 @@ public interface AttributeService {
      */
     PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute)
             throws IllegalUseOfAttribute;
-
-    /**
-     * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
-     * for at least one of the specified attributes.
-     *
-     * Like the above method, this is a transitional method that assumes attributes are unmapped.
-     * 
-     * @param devices
-     * @param attributes
-     * @return list of PaoMultiPointIdentifiers
-     */
-    PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(
-            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
 
     List<PointIdentifier> findPointsForDevicesAndAttribute(Iterable<? extends YukonPao> devices, Attribute attributes);
 
@@ -237,4 +225,21 @@ public interface AttributeService {
      * Ignores devices that do not support the attribute.
      */
     BiMap<SimpleDevice, LitePoint> getPoints(Iterable<SimpleDevice> devices, BuiltInAttribute attribute);
+
+    /**
+     * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
+     * for at least one of the specified attributes. This method also returns a list of devices that doesn't
+     * support one of the attributes.
+     */
+    PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributesWithUnsupported(
+            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
+    
+    /**
+     * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
+     * for at least one of the specified attributes.
+     *
+     * Like the above method, this is a transitional method that assumes attributes are unmapped.
+     */
+    List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices,
+            Set<? extends Attribute> attributes);
 }

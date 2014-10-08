@@ -35,7 +35,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
-import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
@@ -413,11 +412,11 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
             List<SimpleDevice> supportedMonitorGroupDevices = attributeService.getDevicesInGroupThatSupportAttribute(monitorGroup, attribute);
 
             // from that list get all the devices that have any attributes matching
-            PaoMultiPointIdentifierWithUnsupported pointIdentifiersForAttributes =
+            List<PaoMultiPointIdentifier> paoPointIdentifiers=
                     attributeService.findPaoMultiPointIdentifiersForAttributes(supportedMonitorGroupDevices, Collections.singleton(attribute));
-            for (PaoMultiPointIdentifier paoMultiPointIdentifier : pointIdentifiersForAttributes.getDevicesAndPoints()) {
-                for (PaoPointIdentifier paoPointIdentifier : paoMultiPointIdentifier.getPaoPointIdentifiers()) {
-                    checkWorkerInterrupted();
+			for (PaoMultiPointIdentifier paoMultiPointIdentifier : paoPointIdentifiers) {
+				for (PaoPointIdentifier paoPointIdentifier : paoMultiPointIdentifier.getPaoPointIdentifiers()) {
+					checkWorkerInterrupted();
 
                     // this monitor currently only works on status points
                     if (paoPointIdentifier.getPointIdentifier().getPointType() != PointType.Status) {
