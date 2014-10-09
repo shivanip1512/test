@@ -94,56 +94,56 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
         DisconnectCommand command;
         Set<SimpleDevice> meters;
         Set<SimpleDevice> devicesWithoutPoint;
-        
+
         Callback(DisconnectCallback callback, Set<SimpleDevice> meters, DisconnectCommand command) {
             this.callback = callback;
             this.meters = meters;
             this.command = command;
-    		BiMap<SimpleDevice, LitePoint> deviceToPoint = attributeService.getPoints(meters,
-    				BuiltInAttribute.DISCONNECT_STATUS);
+            BiMap<SimpleDevice, LitePoint> deviceToPoint =
+                attributeService.getPoints(meters, BuiltInAttribute.DISCONNECT_STATUS);
 
-    		devicesWithoutPoint = Sets.difference(meters, deviceToPoint.keySet());
+            devicesWithoutPoint = Sets.difference(meters, deviceToPoint.keySet());
         }
 
-		/**
-		 * Process devices that do not have  point. The command was sent to the
-		 * device, but we do not know what state device is in
-		 * (connected/disconnected/armed). If the "connect" command was send
-		 * mark device as "connected" etc.
-		 */
+        /**
+         * Process devices that do not have point. The command was sent to the
+         * device, but we do not know what state device is in
+         * (connected/disconnected/armed). If the "connect" command was send
+         * mark device as "connected" etc.
+         */
         private void processUnsupported(Set<SimpleDevice> devicesWithoutPoint) {
-			for(SimpleDevice meter: devicesWithoutPoint){
-				if (log.isDebugEnabled()) {
-					log.debug("PLC processUnsupported command:" + command + " Meter:" + meter);
-				}
-				switch (command) {
-				case DISCONNECT:
-					callback.disconnected(meter, null);
-					break;
-				case ARM:
-					callback.armed(meter, null);
-					break;
-				case CONNECT:
-					callback.connected(meter, null);
-					break;
-				}
-				meters.remove(meter);
-			}
-		}
+            for (SimpleDevice meter : devicesWithoutPoint) {
+                if (log.isDebugEnabled()) {
+                    log.debug("PLC processUnsupported command:" + command + " Meter:" + meter);
+                }
+                switch (command) {
+                case DISCONNECT:
+                    callback.disconnected(meter, null);
+                    break;
+                case ARM:
+                    callback.armed(meter, null);
+                    break;
+                case CONNECT:
+                    callback.connected(meter, null);
+                    break;
+                }
+                meters.remove(meter);
+            }
+        }
 
         @Override
         public void complete() {
             log.debug("PLC Complete (CommandCompletionCallback)");
-            if(log.isDebugEnabled()){
-                log.debug("PLC Canceled:"+callback.isCanceled());
+            if (log.isDebugEnabled()) {
+                log.debug("PLC Canceled:" + callback.isCanceled());
             }
             if (!callback.isCanceled()) {
                 log.debug("PLC Completed");
                 processUnsupported(devicesWithoutPoint);
                 callback.complete();
-            }else{
-                if(log.isDebugEnabled()){
-                    log.debug("PLC Waiting for "+ minutesToWait + " minutes before completing");
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("PLC Waiting for " + minutesToWait + " minutes before completing");
                 }
             }
         }

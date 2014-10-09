@@ -145,22 +145,22 @@ public class RfnMeterDisconnectService {
     }
     
     private PointValueQualityHolder publishPointData(int rawState, RfnMeter meter) {
-    	PointData pointData = null;
-    	try{
-	        LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
-	        pointData = new PointData();
-	        pointData.setId(point.getLiteID());
-	        pointData.setPointQuality(PointQuality.Normal);
-	        pointData.setValue(rawState);
-	        pointData.setTime(new Date());
-	        pointData.setType(point.getPointType());
-	        
-	        dynamicDataSource.putValue(pointData);
-	        
-	        log.debug("PointData generated for RfnMeterDisconnectRequest");
-    	}catch(IllegalUseOfAttribute e){
-    		log.error("There is no Disconnect Status Point", e);
-    	}
+        PointData pointData = null;
+        try {
+            LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
+            pointData = new PointData();
+            pointData.setId(point.getLiteID());
+            pointData.setPointQuality(PointQuality.Normal);
+            pointData.setValue(rawState);
+            pointData.setTime(new Date());
+            pointData.setType(point.getPointType());
+
+            dynamicDataSource.putValue(pointData);
+
+            log.debug("PointData generated for RfnMeterDisconnectRequest");
+        } catch (IllegalUseOfAttribute e) {
+            log.error("There is no Disconnect Status Point for " + meter, e);
+        }
         return pointData;
     }
     
