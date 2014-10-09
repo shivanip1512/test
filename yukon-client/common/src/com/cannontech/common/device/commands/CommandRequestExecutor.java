@@ -66,7 +66,10 @@ public interface CommandRequestExecutor<T> {
 
  
     /**
-     * Creates a template from CommandRequestExecution and executes commands
+     * Creates a template from CommandRequestExecution and executes commands. If multipleStrategies is set to
+     * true the calling program should set execution record to complete when all the strategies are done.
+     * If multipleStrategies is set to false the execution record will be set to complete after the last message
+     * is recieved.
      */
     void createTemplateAndExecute(CommandRequestExecution execution, CommandCompletionCallback<? super T> callback,
                                   List<T> commands, LiteYukonUser user, boolean multipleStrategies);
