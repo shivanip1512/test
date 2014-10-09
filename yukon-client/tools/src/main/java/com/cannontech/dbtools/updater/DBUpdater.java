@@ -82,7 +82,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     private static final String FS = System.getProperty("file.separator");
     private static final String LF = System.getProperty("line.separator");
 
-    public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose" };
+    public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly" };
 
     public DBUpdater() {
         super();
@@ -167,7 +167,7 @@ public class DBUpdater extends MessageFrameAdaptor {
             System.out.println("An intermediate file is generated in the " + CtiUtilities.getClientLogDir());
             System.out.println("directory for each DBUpdate file found.");
             System.out.println("");
-            System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false]");
+            System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false][nightly= true | false]");
             System.out.println("");
             System.out.println("   " + IRunnableDBTool.PROP_VALUE
                     + "   : directory that contains the script files for updating the DB");
@@ -187,9 +187,12 @@ public class DBUpdater extends MessageFrameAdaptor {
     private synchronized boolean executeCommands() {
         // get all the files in the log DIR
         FileVersion[] fileVers = updateDB.getDBUpdateFiles(CtiUtilities.getClientLogDir());
-
+        final String nightlyParam = System.getProperty(CMD_LINE_PARAM_NAMES[2]);
+        boolean isNightlyCheck = false;
         Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
+        if (nightlyParam != null) {
+            isNightlyCheck = Boolean.parseBoolean(nightlyParam.trim());
+        }
         String cmd = null;
         File sqlFile = null;
         UpdateLine[] validLines = null;
@@ -204,10 +207,17 @@ public class DBUpdater extends MessageFrameAdaptor {
                 validLines = updateDB.readFile(sqlFile);
                 isIgnoreAllErrors = false;
                 isIgnoreBlockErrors = false;
-
+                if (isNightlyCheck) {
+                    isIgnoreAllErrors = true;
+                    isIgnoreBlockErrors = true;
+                }
                 for (int j = 0; j < validLines.length; j++) {
                     cmd = validLines[j].getValue().toString();
-                    processLine(validLines[j], conn);
+                    if (!isNightlyCheck) {
+                        processLine(validLines[j], conn);
+                    } else {
+                        processLine(validLines[j], conn);
+                    }
                 }
 
                 // print a new version of this file
