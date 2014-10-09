@@ -75,8 +75,8 @@
                     sendData.resultMessage = 'Success';
                 }
             }).fail(function(data) {
-                sentItem.error = true;
-                sentItem.resultMessage = data.statusText;
+                sendData.error = true;
+                sendData.resultMessage = data.statusText;
                 _showTempError('Failed to submit DbChangeMessage. Due to ' + data.statusText + '.');
             }).always(function() {
                 var previouslySent = JSON.parse(localStorage['previouslySent']);
