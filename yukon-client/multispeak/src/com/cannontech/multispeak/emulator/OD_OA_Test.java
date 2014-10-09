@@ -28,14 +28,14 @@ import com.cannontech.multispeak.deploy.service.OD_OASoap_PortType;
 public class OD_OA_Test {
 
 	private OD_OASoap_PortType port = null;
-	private String endpointURL = "http://127.0.0.1:8080/soap/OD_OASoap";
+	private String endpointURL = "http://127.0.0.1:8080/soap/OD_ServerSoap";
 	private SOAPHeaderElement header;
 	
 	public static void main(String [] args)
 	{
 		OD_OA_Test test = new OD_OA_Test();
 		YukonMultispeakMsgHeader testHeader = new YukonMultispeakMsgHeader();
-		testHeader.setCompany("cannon");
+		testHeader.setCompany("Cannon MSP1");
 		test.header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", testHeader);
 		try {
 			if( args != null && args.length > 0)
@@ -43,9 +43,9 @@ public class OD_OA_Test {
 				test.endpointURL = args[0]; 
 			}
 			String[] mn = new String[3];
-			mn[0] = "86200262";
-			mn[1] = "86200263";
-			mn[2] = "1000119";
+			mn[0] = "1010070";
+			mn[1] = "1010073";
+			mn[2] = "1010074";
 			if( args.length > 2)	// comma separated list of meter numbers
 			{
 				String m = args[2];
@@ -93,7 +93,7 @@ public class OD_OA_Test {
 	{
 		ErrorObject[] objects = port.initiateOutageDetectionEventRequest(meters, 
 		                                                                 new GregorianCalendar(), 
-		                                                                 null, "1");
+		                                                                 "http://msp1.cannontech.com:8002/OA_ODSoap", "1");
 		print_ErrorObjects(objects);
 
 	}

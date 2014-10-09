@@ -1,9 +1,9 @@
-set endpoint=http://localhost:8080/soap/AdminService
+set endpoint=http://localhost:8080/yukon/soap/AdminService
 set MSP_PACKAGE=com.cannontech.multispeak.deploy.service
 set MSP_URL=--timeout -1 http://www.multispeak.org/interface/30v/
-set MSP_URL=--timeout -1 C:\eclipsesvn\branch_4_2\multispeak\wsdl\
+set MSP_URL=--timeout -1 C:\Users\E9816170\dev\svn\yukon_trunk\multispeak\wsdl\
 set MSP_DEPLOY_FILE=com\cannontech\multispeak\deploy\service\deploy.wsdd
-set AXIS_LIB=C:\eclipsesvn\branch_4_2\third-party\
+set AXIS_LIB=C:\Users\E9816170\dev\svn\yukon_trunk\branch_4_2\third-party\
 set AXISCLASSPATH=%AXIS_LIB%\axis.jar;%AXIS_LIB%\commons-discovery.jar;%AXIS_LIB%\commons-logging-1.1.jar;%AXIS_LIB%\jaxrpc.jar;%AXIS_LIB%\saaj.jar;%AXIS_LIB%\log4j-1.2.17.jar;C:\axis1_2\lib\xercesImpl-2.11.0.jar;%AXIS_LIB%\wsdl4j-1.6.3.jar;%AXIS_LIB%\mailapi-1.5.1.jar;%AXIS_LIB%\activation.jar;
 set URL_EXT=.asmx?WSDL
 set URL_EXT=.wsdl

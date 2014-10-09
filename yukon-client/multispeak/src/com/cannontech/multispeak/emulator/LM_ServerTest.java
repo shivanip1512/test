@@ -14,9 +14,9 @@ import com.cannontech.multispeak.deploy.service.LM_ServerLocator;
 import com.cannontech.multispeak.deploy.service.LM_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.LM_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
-import com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy;
 import com.cannontech.multispeak.deploy.service.ObjectRef;
 import com.cannontech.multispeak.deploy.service.Strategy;
+import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatus;
 import com.cannontech.multispeak.deploy.service.Uom;
 
 public class LM_ServerTest {
@@ -29,9 +29,9 @@ public class LM_ServerTest {
 	{
 		LM_ServerTest test = new LM_ServerTest();
 		YukonMultispeakMsgHeader testHeader = new YukonMultispeakMsgHeader();
-		testHeader.setCompany("milsoft");
-		testHeader.setUserID("therm");
-		testHeader.setPwd("therm");
+		testHeader.setCompany("Cannon");
+		testHeader.setUserID("yukon");
+		testHeader.setPwd("yukon");
 		test.header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", testHeader);
 		
 		try {
@@ -44,16 +44,17 @@ public class LM_ServerTest {
 			test.port = service.getLM_ServerSoap();
 			((LM_ServerSoap_BindingStub)test.port).setHeader(test.header);
 
-			if( args.length > 1) {
-				String method = args[1];
-				if( method.toLowerCase().startsWith("m"))
-					test.getMethodsTest();
-				else
-					test.pingURLTest();
-			} else {
-			    test.getMethodsTest();
-			}
-			test.initiateLoadManagementEvent();
+//			if( args.length > 1) {
+//				String method = args[1];
+//				if( method.toLowerCase().startsWith("m"))
+//					test.getMethodsTest();
+//				else
+//					test.pingURLTest();
+//			} else {
+//			    test.getMethodsTest();
+//			}
+//			test.initiateLoadManagementEvent();
+			test.getAll();
 
 						
 		} catch (Exception e) {
@@ -98,6 +99,14 @@ public class LM_ServerTest {
         print_ErrorObjects(objects);
     }
 	
+	   public void getAll() throws RemoteException
+	    {
+	       SubstationLoadControlStatus[] status = port.getAllSubstationLoadControlStatuses();
+	       
+	       for (SubstationLoadControlStatus substationLoadControlStatus : status) {
+            System.out.println(substationLoadControlStatus.getStatus());
+        }
+	    }
 	public void print_String(String[] strings)
 	{
 		if (strings != null && strings != null)

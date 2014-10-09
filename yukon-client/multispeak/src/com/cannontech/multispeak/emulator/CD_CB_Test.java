@@ -23,7 +23,7 @@ import com.cannontech.multispeak.deploy.service.Module;
  * This is the "poor man's MultiSpeak testing harness" 
  */
 public class CD_CB_Test {
-	private String endpointURL = "http://localhost:8080/soap/CD_ServerSoap";
+	private String endpointURL = "http://localhost:8080/yukon/soap/CD_ServerSoap";
 	private CD_ServerSoap_BindingStub instance;
 	
 	public static void main(String [] args)
@@ -36,18 +36,17 @@ public class CD_CB_Test {
 		  	t.instance = new CD_ServerSoap_BindingStub(new URL(t.endpointURL), new Service());
 			
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            //msgHeader.setCompany("Cannon");
+            msgHeader.setCompany("Cannon MSP1");
             
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			t.instance.setHeader(header);
 			
-			String meterNumber = "0300031";
-//			System.out.println(meterNumber + "- IS CD METER? " + t.isCDMeter(meterNumber));
-//			t.initiateConnectDisconnect();
+			//			System.out.println(meterNumber + "- IS CD METER? " + t.isCDMeter(meterNumber));
+			t.initiateConnectDisconnect();
 //			t.cdAddNotification();
 //			t.getCDMeterState();
-			Meter[] meters = t.getCDSupportedMeters();
-			printMeters(meters);			
+//			Meter[] meters = t.getCDSupportedMeters();
+//			printMeters(meters);			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,9 +61,13 @@ public class CD_CB_Test {
 	private void initiateConnectDisconnect() throws RemoteException {
 		ConnectDisconnectEvent[] cdEvents = new ConnectDisconnectEvent[1];
 	    ConnectDisconnectEvent cdEvent = new ConnectDisconnectEvent();
-	    cdEvent.setObjectID("50000012");
+//	    cdEvent.setObjectID("50000012");
+	    cdEvent.setObjectID("1016655");
 	    cdEvent.setLoadActionCode(LoadActionCode.Connect);
 	    cdEvents[0] = cdEvent;
+//	    cdEvents[1] = cdEvent;
+//	    cdEvents[2] = cdEvent;
+//	    cdEvents[3] = cdEvent;
 	    ErrorObject[] objects = instance.initiateConnectDisconnect(cdEvents, null, null, Float.MIN_NORMAL);
 	    if (objects != null && objects != null) {
             for (int i = 0; i < objects.length; i++) {

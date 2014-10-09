@@ -44,7 +44,7 @@ public class MR_CB_Test {
 			test.loadInstance(endpointURL);
 
 			ErrorObject[] objects = null;
-
+test.isAMRMeter("109129080");
 //			test.updateServiceLocation();
 //			Meter[] meters = test.getAMRSupportedMeters();
 //			printMeters(meters);
@@ -75,7 +75,7 @@ public class MR_CB_Test {
 			
 			//Meter change process tests
 //			objects = test.meterAddNotification();
-			test.largeTest();
+//			test.largeTest();
 			
 			//Meter Group tests
 /*			String groupName = "/Meters/Test/Stacey";
