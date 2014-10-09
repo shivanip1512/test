@@ -91,7 +91,6 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			returnObject = com.cannontech.database.data.point.PointFactory.createPoint(((LitePoint)liteObject).getPointType());
 			((com.cannontech.database.data.point.PointBase)returnObject).setPointID(new Integer(((LitePoint)liteObject).getPointID()));
 			((com.cannontech.database.data.point.PointBase)returnObject).getPoint().setPointName(((LitePoint)liteObject).getPointName());
-			((com.cannontech.database.data.point.PointBase)returnObject).getPoint().setPaoID(((LitePoint)liteObject).getPaobjectID());
 			break;
 		case LiteTypes.STATEGROUP:
 			returnObject = com.cannontech.database.data.state.StateFactory.createGroupState();

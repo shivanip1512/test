@@ -556,13 +556,10 @@ public class PointForm extends DBEditorForm {
         String exclNotify = "";
 
         int i = 0;
-        if (null != getAlarmTableEntries()) {
+        if (null != alarmTableEntries) {
             for (i = 0; i < getAlarmTableEntries().size(); i++) {
-
                 AlarmTableEntry entry = getAlarmTableEntries().get(i);
-
-                alarmStates += (char) YukonSpringHook.getBean(AlarmCatDao.class)
-                                                     .getAlarmCategoryId(entry.getGenerate());
+                alarmStates += (char) YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryId(entry.getGenerate());
                 exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
             }
         }
@@ -732,10 +729,9 @@ public class PointForm extends DBEditorForm {
     protected void checkForErrors() throws InvalidPointOffsetException, InvalidPointLimits {
         int offset = getPointBase().getPoint().getPointOffset().intValue();
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());
-        Integer paoId = getPointBase().getPoint().getPaoID();
-        //make sure we are not erroring out because of the same offset
         LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(getPointBase().getPoint().getPointID().intValue());
         
+        Integer paoId = litePoint.getPaobjectID();
         if (!checkPointLimits())   
             throw new InvalidPointLimits ("High point limit can't be lower than Low point Limit");
         if (litePoint.getPointOffset() == offset)
