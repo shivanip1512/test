@@ -608,11 +608,18 @@ yukon.tools.commander = (function () {
                 _updateCommandsForPao(paoId);
             }
             
-            $.ajax({ url: 'commander/route/' + paoId, dataType: 'json' })
-            .done(function (route, status, xhr) {
-                $('.js-on-route').data('routeId', route.liteID).show().find('.value').text(route.paoName);
-            }).fail(function () {
-                $('.js-on-route').hide();
+            $.ajax({ url: 'commander/' + paoId + '/data', dataType: 'json' })
+            .done(function (data, status, xhr) {
+                var show = data.isRoutable || data.isMeter;
+                $('#change-route-btn').toggleClass('dn', !data.isRoutable);
+                $('#view-meter-detail-btn').toggleClass('dn', !data.isMeter);
+                $('.js-device-actions-btn').toggleClass('dn', !show);
+                if (data.isRoutable) {
+                    $('.js-on-route').data('routeId', data.route.liteID).show().find('.value').text(data.route.paoName);
+                }
+                if (data.isMeter) {
+                    $('#view-meter-detail-btn a').attr('href', yukon.url('/meter/home?deviceId=' + data.pao.liteID));
+                } 
             });
             
             _loadNearby(paoId);

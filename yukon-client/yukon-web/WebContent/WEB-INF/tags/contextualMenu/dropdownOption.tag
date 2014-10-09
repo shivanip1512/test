@@ -4,7 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<%@ attribute name="classes" description="Class attribute applied to the 'a' element. Classes will already have 'clearfix'." %>
+<%@ attribute name="classes" description="Class attribute applied to the outer 'li' element." %>
 <%@ attribute name="displayable" description="Object that implements Displayable or DisplayableEnum. Used in place of 'label' and 'key' attributes." %>
 <%@ attribute name="icon" description="Icon class name.  Defaut: icon-blank" %>
 <%@ attribute name="id" description="Id attribute applied to the 'li' element." %>
@@ -16,12 +16,12 @@
 
 <cti:default var="icon" value="icon-blank"/>
 <cti:default var="newTab" value="${false}"/>
-<c:set var="classes" value="clearfix ${pageScope.classes}"/>
+<c:set var="classes" value="dropdown-option ${pageScope.classes}"/>
 <c:set var="labelClasses" value="dropdown-option-label dib"/>
 <c:set var="disabled" value="${not empty pageScope.disabled && disabled == 'true' ? 'disabled' : ''}"/>
 
-<li class="dropdown-option" <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
-    <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> <c:if test="${newTab}">target="_blank"</c:if> class="${classes}">
+<li class="${classes}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
+    <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> <c:if test="${newTab}">target="_blank"</c:if> class="clearfix">
         <c:choose>
             <c:when test="${not empty pageScope.displayable}">
                 <cti:icon icon="${icon}" classes="${disabled}"/>

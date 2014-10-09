@@ -41,7 +41,12 @@
                         </td>
                         <td class="alarm-ack">
                             <c:if test='${unackAlarms.get(alarm) != null}'>
-                                <cti:button nameKey="alarm.acknowledge" icon="icon-tick" classes="fr js-ack" pointId="${alarm.pointId}" condition="${alarm.condition}" renderMode="buttonImage" />
+                                <cti:button nameKey="alarm.acknowledge" 
+                                    icon="icon-tick" 
+                                    classes="fr js-ack" 
+                                    renderMode="buttonImage" 
+                                    data-point-id="${alarm.pointId}" 
+                                    data-condition="${alarm.condition}"/>
                             </c:if>
                         </td>
                     </tr>

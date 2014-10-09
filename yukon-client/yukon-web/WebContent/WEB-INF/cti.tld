@@ -2204,6 +2204,11 @@
     <tag-class>com.cannontech.web.taglib.PaoTypeIconTag</tag-class>
     <body-content>scriptless</body-content>
     <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
         <name>yukonPao</name>
         <required>true</required>
         <rtexprvalue>true</rtexprvalue>

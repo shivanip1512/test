@@ -52,8 +52,9 @@
     </tags:nameValue2>
     
     <c:set var="clazz" value="${target != 'DEVICE' ? 'dn' : ''}"/>
+    <c:set var="deviceChosen" value="${target == 'DEVICE' and not empty paoId ? true : false}"/>
     <tags:nameValue2 nameKey=".device" rowId="device-row" rowClass="${clazz}">
-        <input id="pao-id" type="hidden" name="paoId" value="${target == 'DEVICE' and not empty paoId ? paoId : ''}">
+        <input id="pao-id" type="hidden" name="paoId" value="${deviceChosen ? paoId : ''}">
         <tags:pickerDialog type="commanderDevicePicker" id="commanderDevicePicker"
             buttonStyleClass="js-device-picker"
             linkType="selection"
@@ -65,10 +66,26 @@
         <span class="js-on-route${clazz}" <c:if test="${not empty route}">data-route-id="${route.liteID}"</c:if>>
             <span class="name"><i:inline key=".onRoute"/></span>
             <span class="value">${fn:escapeXml(route.paoName)}</span>
-            <cti:button id="change-route-btn" nameKey="change" icon="icon-pencil" classes="fn vat"/>
             <div data-dialog id="change-route-dialog" title="<cti:msg2 key=".changeRoute"/>" data-width="500" 
                     data-event="yukon.tools.commander.routeChange" class="dn"></div>
         </span>
+        <c:set var="clazz" value="${!deviceChosen ? 'dn' : ''}"/>
+        <cm:dropdown type="button" id="device-actions-menu" triggerClasses="js-device-actions-btn vab ${clazz}" showLabel="false">
+            <c:set var="clazz" value="${!routable ? 'dn' : ''}"/>
+            <cm:dropdownOption id="change-route-btn" key=".changeRoute" icon="icon-pencil" classes="${clazz}"/>
+            <c:if test="${deviceChosen}">
+                <cti:url var="otherActionsUrl" value="/bulk/collectionActions">
+                    <cti:param name="collectionType" value="idList"/>
+                    <cti:param name="idList.ids" value="${paoId}"/>
+                </cti:url>
+                <cti:url var="viewMeterUrl" value="/meter/home">
+                    <cti:param name="deviceId" value="${paoId}"/>
+                </cti:url>
+            </c:if>
+            <c:set var="clazz" value="${!meter ? 'dn' : ''}"/>
+            <cm:dropdownOption id="view-meter-detail-btn" key=".viewMeter" icon="icon-layout-go" href="${viewMeterUrl}" classes="${clazz}"/>
+            <cm:dropdownOption id="other-actions-btn" key=".otherActions" icon="icon-cog-go" href="${otherActionsUrl}"/>
+        </cm:dropdown>
     </tags:nameValue2>
     
     <c:set var="clazz" value="${!target.serialNumber ? 'dn' : ''}"/>
@@ -170,7 +187,7 @@
 
 <div id="page-buttons" class="dn">
 <c:set var="clazz" value="${empty recentTargets ? 'js-recent-btn dn' : 'js-recent-btn'}"/>
-<cm:dropdown key=".recent" type="button" triggerClasses="${clazz}" icon="icon-time" menuClasses="js-recent-menu">
+<cm:dropdown key=".recent" type="button" triggerClasses="vab ${clazz}" icon="icon-time" menuClasses="js-recent-menu">
     <c:if test="${not empty recentTargets}">
         <c:forEach var="target" items="${recentTargets}">
             <c:set var="label" value="${fn:escapeXml(target.label)}"/>

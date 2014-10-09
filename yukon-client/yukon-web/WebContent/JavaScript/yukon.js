@@ -509,7 +509,7 @@ yukon.ui = (function () {
                 if ($(e.target).hasClass('js-allowSubmitViaEnterKey')) {
                     return true;
                 }
-                if (e.keyCode == yukon.keys.enter) {
+                if (e.keyCode == yg.keys.enter) {
                     return false;
                 }
             });

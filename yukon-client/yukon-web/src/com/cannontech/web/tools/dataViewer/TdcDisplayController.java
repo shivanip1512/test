@@ -65,6 +65,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.tags.Tag;
 import com.cannontech.user.YukonUserContext;
@@ -84,6 +85,7 @@ import com.google.common.collect.Sets.SetView;
 @CheckRole(YukonRole.TABULAR_DISPLAY_CONSOLE)
 public class TdcDisplayController {
 
+    @Autowired private ServerDatabaseCache cache;
     @Autowired private DisplayDao displayDao;
     @Autowired private TdcService tdcService;
     @Autowired private PointDao pointDao;
@@ -441,18 +443,19 @@ public class TdcDisplayController {
         return null;
     }
 
-    @RequestMapping(value = "data-viewer/altScanRate", method = RequestMethod.POST)
+    @RequestMapping("data-viewer/alt-scan-rate")
     public String altScanRate(ModelMap model, int deviceId, String deviceName) {
-
+        
         DisplayBackingBean backingBean = new DisplayBackingBean();
         backingBean.setDeviceId(deviceId);
         model.addAttribute("backingBean", backingBean);
-        model.addAttribute("deviceName", deviceName);
+        model.addAttribute("deviceName", cache.getAllPaosMap().get(deviceId).getPaoName());
         model.addAttribute("altScanRates", AltScanRate.values());
+        
         return "data-viewer/altScanRatePopup.jsp";
     }
 
-    @RequestMapping(value="altScanRateSend", method = RequestMethod.POST)
+    @RequestMapping(value="data-viewer/altScanRateSend", method = RequestMethod.POST)
     public @ResponseBody Map<String, String> altScanRateSend(YukonUserContext userContext, ModelMap model,
                                @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
 
@@ -592,7 +595,7 @@ public class TdcDisplayController {
         WebFileUtils.writeToCSV(response, columnNames, dataGrid, display.getName() + ".csv");
         return null;
     }
-
+    
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(AltScanRate.class,
@@ -600,33 +603,11 @@ public class TdcDisplayController {
         binder.registerCustomEditor(EnabledStatus.class,
                                     new EnumPropertyEditor<>(EnabledStatus.class));
     }
-
+    
     private Map<String, String> getJSONSuccess(MessageSourceResolvable successMsg,
                                       YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
-
-    /*
-     * @RequestMapping(value = "/{displayId}", method = RequestMethod.PUT)
-     * public String update(ModelMap model, @PathVariable int displayId) {
-     * model.addAttribute("mode", "update");
-     * return "display.jsp";
-     * }
-     * @RequestMapping(value = "/{displayId}", method = RequestMethod.DELETE)
-     * public String delete(ModelMap model, @PathVariable int displayId) {
-     * model.addAttribute("mode", "delete");
-     * return "display.jsp";
-     * }
-     * @RequestMapping(value = "/create", method = RequestMethod.GET)
-     * public String create(ModelMap model) {
-     * model.addAttribute("mode", PageEditMode.CREATE);
-     * return "display.jsp";
-     * }
-     * @RequestMapping(value = "/{displayId}/edit", method = RequestMethod.GET)
-     * public String edit(ModelMap model, @PathVariable int displayId) {
-     * model.addAttribute("mode", PageEditMode.EDIT);
-     * return "display.jsp";
-     * }
-     */
+    
 }

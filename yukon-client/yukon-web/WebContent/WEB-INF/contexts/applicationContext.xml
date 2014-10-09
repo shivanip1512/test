@@ -1044,9 +1044,7 @@
         <property name="paoDetailUrlHelper" ref="paoDetailUrlHelper"/>
     </bean>
 
-    <bean id="paoTypeIconTagPrototype" class="com.cannontech.web.taglib.PaoTypeIconTag">
-        <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
-    </bean>
+    <bean id="paoTypeIconTagPrototype" class="com.cannontech.web.taglib.PaoTypeIconTag"/>
 
     <bean id="formatTemplateTagPrototype" class="com.cannontech.web.i18n.FormatTemplateTag">
         <property name="templateProcessorFactory" ref="templateProcessorFactory"/>

@@ -27,6 +27,9 @@
     <entry key="yukon.web.modules.tools.commander.command">Command</entry>
     <entry key="yukon.web.modules.tools.commander.device">Device</entry>
     <entry key="yukon.web.modules.tools.commander.target">Target</entry>
+    <entry key="yukon.web.modules.tools.commander.viewMeter">View Meter</entry>
+    <entry key="yukon.web.modules.tools.commander.changeRoute">Change Route</entry>
+    <entry key="yukon.web.modules.tools.commander.otherActions">Other Actions</entry>
     <entry key="yukon.web.modules.tools.commander.device.label">Device</entry>
     <entry key="yukon.web.modules.tools.commander.expressCom.label">ExpressCom</entry>
     <entry key="yukon.web.modules.tools.commander.versaCom.label">VersaCom</entry>

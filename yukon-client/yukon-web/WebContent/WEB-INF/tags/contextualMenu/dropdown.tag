@@ -15,10 +15,12 @@
 <%@ attribute name="type" description="The type of this element. Either 'button', 'link', or 'icon'. Default: 'icon'. 'link' and 'button' require a 'key'" %>
 <%@ attribute name="showArrow" description="Show the down arrow? Default: 'true'" %>
 <%@ attribute name="showIcon" description="Ignored when type = 'icon'. Default: 'true'" %>
+<%@ attribute name="showLabel" description="Show text on the button? Default: 'true'" %>
 
 <cti:default var="icon" value="icon-cog"/>
 <cti:default var="showArrow" value="true"/>
 <cti:default var="showIcon" value="true"/>
+<cti:default var="showLabel" value="true"/>
 <cti:default var="type" value="icon"/>
 
 <div class="dropdown-trigger usn clearfix ${pageScope.triggerClasses}" <c:if test="${not empty id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
@@ -37,10 +39,12 @@
             <cti:default var="key" value="yukon.web.defaults.actions"/>
             <button role="button" class="button">
                 <c:if test="${showIcon}"><i class="icon ${icon}"></i></c:if>
-                <c:choose>
-                    <c:when test="${not empty pageScope.label}"><span class="b-label">${pageScope.label}</span></c:when>
-                    <c:otherwise><span class="b-label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
-                </c:choose>
+                <c:if test="${showLabel}">
+                    <c:choose>
+                        <c:when test="${not empty pageScope.label}"><span class="b-label">${pageScope.label}</span></c:when>
+                        <c:otherwise><span class="b-label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
+                    </c:choose>
+                </c:if>
                 <c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down"></i></c:if>
             </button>
         </c:when>

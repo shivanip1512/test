@@ -11,22 +11,28 @@
 
 <cti:standardPage module="tools" page="tdc.display.${mode}">
 
-    <cti:includeScript link="/JavaScript/yukon.tdc.js" />
+    <cti:includeScript link="/JavaScript/yukon.tdc.js"/>
     <flot:defaultIncludes />
 
     <div id="page-buttons" class="dn">
         <c:if test="${display.acknowledgable}">
             <tags:dynamicChoose updaterString="TDC/ALARM_DISPLAY/${display.displayId}" suffix="${display.displayId}">
                 <tags:dynamicChooseOption optionId="MULT_ALARMS">
-                    <cti:button nameKey="tdc.alarm.acknowledgeAll" displayId="${display.displayId}" icon="icon-tick" classes="js-display-alarm-ack" />
+                    <cti:button nameKey="tdc.alarm.acknowledgeAll" 
+                        data-display-id="${display.displayId}" 
+                        icon="icon-tick" 
+                        classes="js-display-alarm-ack"/>
                 </tags:dynamicChooseOption>
                 <tags:dynamicChooseOption optionId="NO_ALARMS">
-                    <cti:button nameKey="tdc.alarm.acknowledgeAll" displayId="${display.displayId}" icon="icon-tick" classes="js-display-alarm-ack dn" />
+                    <cti:button nameKey="tdc.alarm.acknowledgeAll" 
+                        data-display-id="${display.displayId}" 
+                        icon="icon-tick" 
+                        classes="js-display-alarm-ack dn"/>
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
         </c:if>
-        <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download" />
-        <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel" />
+        <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
+        <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
     </div>
     
     <cti:url var="url" value="/tools/data-viewer/${display.displayId}/page"/>
@@ -65,7 +71,8 @@
                                                 <c:set var="alarmIndicator" value="TDC/BG_COLOR_POINT/${row.pointId}/${row.condition}"/>
                                             </c:otherwise>
                                         </c:choose>
-                                        <span class="${colorStateBoxes.get(row.pointId).get(row.condition)}" data-class-updater="${alarmIndicator}"></span>
+                                        <span class="${colorStateBoxes.get(row.pointId).get(row.condition)}" 
+                                            data-class-updater="${alarmIndicator}"></span>
                                     </c:if>
                                 </td>
                                 <c:forEach var="column" items="${display.columns}">
@@ -76,16 +83,16 @@
                                         <td>${fn:escapeXml(row.pointName)}</td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TYPE')}">
-                                        <td><i:inline key="${row.pointType}" /></td>
+                                        <td><i:inline key="${row.pointType}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_STATE')}">
-                                        <td><i:inline key=".point.enabled.${row.pointEnabled}" /></td>
+                                        <td><i:inline key=".point.enabled.${row.pointEnabled}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_NAME')}">
                                         <td>${fn:escapeXml(row.deviceName)}</td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_TYPE')}">
-                                        <td><tags:paoType yukonPao="${row.device}" showLink="false" /></td>
+                                        <td><tags:paoType yukonPao="${row.device}" showLink="false"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_CURRENT_STATE')}">
                                         <td>${fn:escapeXml(row.deviceCurrentState)}</td>
@@ -96,19 +103,19 @@
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
                                         <td class="state-indicator tar">
                                             <c:if test="${row.pointType.status}">
-                                                <cti:pointStatus pointId="${row.pointId}" />
+                                                <cti:pointStatus pointId="${row.pointId}"/>
                                             </c:if>
                                         </td>
-                                        <td><cti:pointValue pointId="${row.pointId}" format="VALUE_UNIT" /></td>
+                                        <td><cti:pointValue pointId="${row.pointId}" format="VALUE_UNIT"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_QUALITY')}">
-                                        <td><cti:pointValue pointId="${row.pointId}" format="{quality}" /></td>
+                                        <td><cti:pointValue pointId="${row.pointId}" format="{quality}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TIME_STAMP')}">
-                                        <td><tags:historicalValue pao="${row.device}" pointId="${row.pointId}" /></td>
+                                        <td><tags:historicalValue pao="${row.device}" pointId="${row.pointId}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TIME_STAMP')}">
-                                        <td><cti:formatDate value="${row.date}" type="BOTH" /></td>
+                                        <td><cti:formatDate value="${row.date}" type="BOTH"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TEXT_MESSAGE')}">
                                         <td>${fn:escapeXml(row.textMessage)}</td>
@@ -123,20 +130,25 @@
                                         <td>${fn:escapeXml(row.userName)}</td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
-                                        <td><cti:dataUpdaterValue type="TDC" identifier="STATE/${row.pointId}" /></td>
+                                        <td><cti:dataUpdaterValue type="TDC" identifier="STATE/${row.pointId}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TAG')}">
                                         <td>${fn:escapeXml(row.tagName)}</td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.U_OF_M')}">
-                                        <td><cti:pointValue pointId="${row.pointId}" format="UNIT" /></td>
+                                        <td><cti:pointValue pointId="${row.pointId}" format="UNIT"/></td>
                                     </c:if>
                                 </c:forEach>
                                 <c:if test="${display.acknowledgable && display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
                                     <td>
                                         <tags:dynamicChoose updaterString="TDC/ALARM_POINT_CONDITION/${row.pointId}/${row.condition}" suffix="${row.pointId}">
                                             <tags:dynamicChooseOption optionId="ONE_ALARM">
-                                                <cti:button nameKey="alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="js-one-alarm-ack-b fr" renderMode="buttonImage" />
+                                                <cti:button nameKey="alarm.acknowledge" 
+                                                    icon="icon-tick" 
+                                                    data-point-id="${row.pointId}" 
+                                                    data-condition="${row.condition}" 
+                                                    classes="js-one-alarm-ack-b fr" 
+                                                    renderMode="buttonImage"/>
                                             </tags:dynamicChooseOption>
                                         </tags:dynamicChoose>
                                     </td>
@@ -144,89 +156,127 @@
                                 <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
                                     <td class="action-column">
                                         <cm:dropdown id="dropdown_${row.pointId}" triggerClasses="fr vh">
-                                            <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" suffix="${row.pointId}">
+                                            <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" 
+                                                    suffix="${row.pointId}">
                                                 <tags:dynamicChooseOption optionId="ONE_ALARM">
-                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="clearfix js-one-alarm-ack"/>
+                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" 
+                                                        data-point-id="${row.pointId}" data-condition="${row.condition}" 
+                                                        classes="js-one-alarm-ack"/>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                                 <tags:dynamicChooseOption optionId="MULT_ALARMS">
-                                                    <cti:msg2 key=".alarm.acknowledge" var="title" />
+                                                    <cti:msg2 key=".alarm.acknowledge" var="title"/>
                                                     <cti:list var="arguments">
                                                         <cti:item value="${title}"/>
                                                         <cti:item value="${row.deviceName}"/>
                                                         <cti:item value="${row.pointName}"/>
                                                     </cti:list>
-                                                    <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-mult-alarm-ack" id="acknowledge-${row.pointId}"></cm:dropdownOption>
+                                                    <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
+                                                    <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" 
+                                                        data-point-id="${row.pointId}" data-popup-title="${popupTitle}" 
+                                                        classes="js-mult-alarm-ack" id="acknowledge-${row.pointId}"/>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
-                                            <tags:dynamicChoose updaterString="TDC/MAN_ENTRY/${row.pointId}/${row.pointType.pointTypeId}/${hasPointValueColumn}" suffix="${row.pointId}">
-                                                <cti:msg2 key=".manualEntry.title" var="title" />
+                                            <tags:dynamicChoose updaterString="TDC/MAN_ENTRY/${row.pointId}/${row.pointType.pointTypeId}/${hasPointValueColumn}" 
+                                                    suffix="${row.pointId}">
+                                                <cti:msg2 key=".manualEntry.title" var="title"/>
                                                 <cti:list var="arguments">
                                                     <cti:item value="${title}"/>
                                                     <cti:item value="${row.deviceName}"/>
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
-                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
+                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
                                                 <tags:dynamicChooseOption optionId="TRUE">
-                                                    <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-manualEntry" id="manualEntry-${row.pointId}"></cm:dropdownOption>
+                                                    <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" 
+                                                        data-point-id="${row.pointId}" data-popup-title="${popupTitle}" 
+                                                        classes="js-manualEntry" id="manualEntry-${row.pointId}"/>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
-                                            <tags:dynamicChoose updaterString="TDC/MAN_CONTROL/${row.pointId}" suffix="${row.pointId}">
-                                                <cti:msg2 key=".tdc.manualControl.title" var="title" />
+                                            <tags:dynamicChoose updaterString="TDC/MAN_CONTROL/${row.pointId}" 
+                                                    suffix="${row.pointId}">
+                                                <cti:msg2 key=".tdc.manualControl.title" var="title"/>
                                                 <cti:list var="arguments">
                                                     <cti:item value="${title}"/>
                                                     <cti:item value="${row.deviceName}"/>
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
-                                                <cti:msg2 key=".tdc.popupTitle" arguments="${arguments}" var="popupTitle" />
+                                                <cti:msg2 key=".tdc.popupTitle" arguments="${arguments}" var="popupTitle"/>
                                                 <tags:dynamicChooseOption optionId="TRUE">
-                                                    <cm:dropdownOption key=".manualControl.title" icon="icon-wrench" pointId="${row.pointId}" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" classes="clearfix js-manualControl" id="manualControl-${row.pointId}"></cm:dropdownOption>
+                                                    <cm:dropdownOption key=".manualControl.title" 
+                                                        icon="icon-wrench" 
+                                                        data-point-id="${row.pointId}" 
+                                                        data-popup-title="${popupTitle}" 
+                                                        data-device-id="${row.device.deviceId}" 
+                                                        classes="js-manualControl" 
+                                                        id="manualControl-${row.pointId}"/>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
                                             <c:if test="${row.cog.tags}">
-                                                <cti:msg2 key=".tags.title" var="title" />
+                                                <cti:msg2 key=".tags.title" var="title"/>
                                                 <cti:list var="arguments">
                                                     <cti:item value="${title}"/>
                                                     <cti:item value="${row.deviceName}"/>
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
-                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".tags.title" icon="icon-tag-blue" pointId="${row.pointId}" deviceId="${row.device.deviceId}" popupTitle="${popupTitle}" classes="clearfix js-tags" id="tagsDialog-${row.pointId}"></cm:dropdownOption>
+                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
+                                                <cm:dropdownOption key=".tags.title" 
+                                                    icon="icon-tag-blue" 
+                                                    data-point-id="${row.pointId}" 
+                                                    data-device-id="${row.device.deviceId}" 
+                                                    data-popup-title="${popupTitle}" 
+                                                    classes="js-tags" 
+                                                    id="tagsDialog-${row.pointId}"/>
                                             </c:if>
                                             <c:if test="${row.cog.enableDisable}">
-                                                <cti:msg2 key=".enableDisable.title" var="title" />
+                                                <cti:msg2 key=".enableDisable.title" var="title"/>
                                                 <cti:list var="arguments">
                                                     <cti:item value="${title}"/>
                                                     <cti:item value="${row.deviceName}"/>
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
-                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".enableDisable.title" icon="icon-accept" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-enableDisable" id="enableDisable-${row.pointId}"></cm:dropdownOption>
+                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
+                                                <cm:dropdownOption key=".enableDisable.title" 
+                                                    icon="icon-accept" 
+                                                    data-point-id="${row.pointId}" 
+                                                    data-popup-title="${popupTitle}" 
+                                                    classes="js-enableDisable" 
+                                                    id="enableDisable-${row.pointId}"/>
                                             </c:if>
                                             <c:if test="${row.cog.trend}">
-                                                <cti:msg2 key=".trend.title" var="title" />
+                                                <cti:msg2 key=".trend.title" var="title"/>
                                                 <cti:list var="arguments">
                                                     <cti:item value="${title}"/>
                                                     <cti:item value="${row.deviceName}"/>
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
-                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".trend.title" icon="icon-chart-line" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix js-trend" id="trendDialog-${row.pointId}"></cm:dropdownOption>
+                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
+                                                <cm:dropdownOption key=".trend.title" 
+                                                    icon="icon-chart-line" 
+                                                    data-point-id="${row.pointId}" 
+                                                    data-popup-title="${popupTitle}" 
+                                                    classes="js-trend" 
+                                                    id="trendDialog-${row.pointId}"/>
                                             </c:if>
                                             <c:if test="${row.cog.altScan}">
-                                                <cti:msg2 key=".altScan.title" var="title" />
+                                                <cti:msg2 key=".altScan.title" var="title"/>
                                                 <cti:list var="arguments">
                                                     <cti:item value="${title}"/>
                                                     <cti:item value="${row.deviceName}"/>
                                                     <cti:item value="${row.pointName}"/>
                                                 </cti:list>
-                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
-                                                <cm:dropdownOption key=".altScan.title" icon="icon-transmit-blue" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" deviceName="${row.deviceName}" classes="clearfix js-altScan" id="altScan-${row.pointId}"></cm:dropdownOption>
+                                                <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
+                                                <cm:dropdownOption key=".altScan.title" 
+                                                    icon="icon-transmit-blue" 
+                                                    data-popup-title="${popupTitle}" 
+                                                    data-device-id="${row.device.deviceId}" 
+                                                    data-device-name="${row.deviceName}" 
+                                                    classes="js-altScan" 
+                                                    id="altScan-${row.pointId}"/>
                                             </c:if>
-                                        </cm:dropdown></td>
+                                        </cm:dropdown>
+                                    </td>
                                 </c:if>
                             </tr> 
                         </c:otherwise>
@@ -238,5 +288,5 @@
             <tags:pagingResultsControls adjustPageCount="true" result="${result}"/>
         </c:if>
     </div>
-    <tags:simplePopup id="tdc-popup" title="" />
+    <tags:simplePopup id="tdc-popup" title=""/>
 </cti:standardPage>

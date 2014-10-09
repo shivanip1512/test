@@ -4,7 +4,9 @@ public enum PaoTypeIcon {
     
     ELECTRIC_METER("icon-electric-meter"),
     WATER_METER("icon-water-meter"),
-    GAS_METER("icon-gas-meter");
+    GAS_METER("icon-gas-meter"),
+    TRANSMITTER("icon-transmitter"),
+    ;
     
     private String icon;
     private PaoTypeIcon(String icon) {

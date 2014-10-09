@@ -8,7 +8,7 @@
 yukon.namespace('yukon.tdc');
 
 yukon.tdc = (function () {
-    var _playAudio = function() {
+    var _playAudio = function () {
         try {
             $('#alarm-audio')[0].play();
         } catch (err) {
@@ -16,7 +16,7 @@ yukon.tdc = (function () {
             // probably caused by no audio service started or audio driver installed.
         }
     },
-    _pauseAudio = function() {
+    _pauseAudio = function () {
         try {
             $('#alarm-audio')[0].pause();
         } catch (err) {
@@ -67,24 +67,30 @@ yukon.tdc = (function () {
                 });
             });    
             
-            $(document).on('click', '.js-ack', function () {
-                var pointId = $(this).attr("pointId");
-                var condition = $(this).attr("condition");
-                var args = {};
+            $(document).on('click', '.js-ack', function (ev) {
+                
+                var btn = $(this),
+                    pointId = btn.data('pointId'),
+                    condition = btn.data('condition'),
+                    args = {};
+                
                 args.pointId = pointId;
                 args.condition = condition;
+                
                 $.post(yukon.url('/tools/data-viewer/acknowledge'), args).done(function (data) {
                     $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
                 });
             });
-            $('.js-trend').click(function (event) {
-                var popupTitle = $(this).parent().attr("popupTitle");
-                var pointId = $(this).parent().attr("pointId");
-                var url = yukon.url("/tools/data-viewer/trend");
-                var data = {
-                    pointId : pointId
-                };
-                $('#tdc-popup').load(url, data, function() {
+            
+            $('.js-trend').click(function (ev) {
+                
+                var option = $(this),
+                    popupTitle = option.data('popupTitle'),
+                    pointId = option.data('pointId'),
+                    url = yukon.url('/tools/data-viewer/trend'),
+                    data = { pointId : pointId };
+                
+                $('#tdc-popup').load(url, data, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
                         width : 700,
@@ -92,16 +98,17 @@ yukon.tdc = (function () {
                     });
                 });
             });
+            
             $('.js-tags').click(function () {
-                var popupTitle = $(this).parent().attr("popupTitle");
-                var pointId = $(this).parent().attr("pointId");
-                var deviceId = $(this).parent().attr("deviceId");
-                var url = yukon.url("/tools/data-viewer/tags");
-                var data = {
-                    deviceId : deviceId,
-                    pointId : pointId
-                };
-                $('#tdc-popup').load(url, data, function() {
+                
+                var option = $(this),
+                    popupTitle = option.data('popupTitle'),
+                    pointId = option.data('pointId'),
+                    deviceId = option.data('deviceId'),
+                    url = yukon.url('/tools/data-viewer/tags'),
+                    data = { deviceId : deviceId, pointId : pointId };
+                
+                $('#tdc-popup').load(url, data, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
                         width : 700,
@@ -109,14 +116,15 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.js-enableDisable').click(function (event) {
-                var pointId = $(this).parent().attr("pointId");
-                var popupTitle = $(this).parent().attr("popupTitle");
-                var url = yukon.url("/tools/data-viewer/enableDisable");
-                var data = {
-                    pointId : pointId
-                };
-                $('#tdc-popup').load(url, data, function() {
+            
+            $('.js-enableDisable').click(function (ev) {
+                
+                var option = $(this),
+                    popupTitle = option.data('popupTitle'),
+                    pointId = option.data('pointId'),
+                    url = yukon.url('/tools/data-viewer/enableDisable');
+                
+                $('#tdc-popup').load(url, { pointId : pointId }, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
                         width : 400,
@@ -124,14 +132,15 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.js-manualEntry').click(function (event) {
-                var pointId = $(this).parent().attr("pointId");
-                var url = yukon.url("/tools/data-viewer/manualEntry");
-                var popupTitle = $(this).parent().attr("popupTitle");
-                var data = {
-                    pointId : pointId
-                };
-                $('#tdc-popup').load(url, data, function() {
+            
+            $('.js-manualEntry').click(function (ev) {
+                
+                var option = $(this),
+                    pointId = option.data('pointId'),
+                    popupTitle = option.data('popupTitle'),
+                    url = yukon.url('/tools/data-viewer/manualEntry');
+                
+                $('#tdc-popup').load(url, { pointId : pointId }, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
                         width : 500,
@@ -139,16 +148,17 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.js-manualControl').click(function (event) {
-                var pointId = $(this).parent().attr("pointId");
-                var deviceId = $(this).parent().attr("deviceId");
-                var url = yukon.url("/tools/data-viewer/manualControl");
-                var popupTitle = $(this).parent().attr("popupTitle");
-                var data = {
-                    deviceId : deviceId,
-                    pointId : pointId
-                };
-                $('#tdc-popup').load(url, data, function() {
+            
+            $('.js-manualControl').click(function (ev) {
+                
+                var option = $(this),
+                    pointId = option.data('pointId'),
+                    deviceId = option.data('deviceId'),
+                    popupTitle = option.data('popupTitle'),
+                    url = yukon.url('/tools/data-viewer/manualControl'),
+                    data = { deviceId : deviceId, pointId : pointId };
+                
+                $('#tdc-popup').load(url, data, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
                         width : 500,
@@ -156,16 +166,15 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.js-altScan').click(function (event) {
-                var popupTitle = $(this).parent().attr("popupTitle");
-                var deviceId = $(this).parent().attr("deviceId");
-                var deviceName = $(this).parent().attr("deviceName");
-                var url = yukon.url("/tools/data-viewer/altScanRate");
-                var data = {
-                    deviceName : deviceName,
-                    deviceId : deviceId
-                };
-                $('#tdc-popup').load(url, data, function() {
+            
+            $('.js-altScan').click(function (ev) {
+                
+                var option = $(this),
+                    deviceId = option.data('deviceId'),
+                    popupTitle = option.data('popupTitle'),
+                    url = '/tools/data-viewer/alt-scan-rate?deviceId=' + deviceId;
+                
+                $('#tdc-popup').load(yukon.url(url), function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
                         width : 500,
@@ -173,48 +182,42 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $('.js-display-alarm-ack').click(
-				function () {
-	   			 var displayId = $(this).attr("displayId");
-	   			 var data = {
-	        		displayId: displayId
-	    		};
-	    		$.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForDisplay'), data)
-	        		.done(function (data) {
-	            	yukon.ui.flashSuccess(data.success);
-	        	});
-			});
-           $('.js-one-alarm-ack').click(function (event) {
-				var pointId = $(this).parent().attr( "pointId");
-				var condition = $(this).parent().attr("condition");
-                   var data = {
-                       pointId: pointId,
-                       condition: condition
-                   };
-                   $("#dropdown_"+pointId).find("ul").hide();
-                   $("#dropdown_"+pointId).removeClass("menu-open");
-                   $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function (data) {});
+            
+            $('.js-display-alarm-ack').click(function (ev) {
+                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForDisplay'), { displayId: $(this).data('displayId') })
+                .done(function (data) { yukon.ui.flashSuccess(data.success); });
+            });
+            
+           $('.js-one-alarm-ack').click(function (ev) {
+               
+               var option = $(this),
+                   pointId = option.data('pointId'),
+                   condition = option.data('condition'),
+                   data = { pointId: pointId, condition: condition };
+               
+                   $('#dropdown_' + pointId).find('ul').hide();
+                   $('#dropdown_' + pointId).removeClass('menu-open');
+                   $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data);
                });
             
-            $(document).on('click', '.js-one-alarm-ack-b', function () {
-                var pointId = $(this).attr("pointId");
-                var condition = $(this).attr("condition");
-                        var data = {
-                            pointId : pointId,
-                            condition : condition
-                        };
-                        $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(
-                                function (data) {
-                                });
-                    });
-            $('.js-mult-alarm-ack').click(function (event) {
-                var pointId = $(this).parent().attr("pointId");
-                var popupTitle = $(this).parent().attr("popupTitle");
-                var url = yukon.url("/tools/data-viewer/unacknowledged");
-                var data = {
-                    pointId : pointId
-                };
-                $('#tdc-popup').load(url, data, function() {
+            $(document).on('click', '.js-one-alarm-ack-b', function (ev) {
+                
+                var option = $(this),
+                    pointId = option.data('pointId'),
+                    condition = option.data('condition'),
+                    data = { pointId : pointId, condition : condition };
+                
+                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data);
+            });
+            
+            $('.js-mult-alarm-ack').click(function (ev) {
+                
+                var option = $(this),
+                    pointId = option.data('pointId'),
+                    popupTitle = option.data('popupTitle'),
+                    url = yukon.url('/tools/data-viewer/unacknowledged');
+                
+                $('#tdc-popup').load(url, { pointId : pointId }, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
                         width : 700,
@@ -222,81 +225,78 @@ yukon.tdc = (function () {
                     });
                 });
             });
-            $(document).on('click', '.js-altScanRate-send', function () {
+            
+            $(document).on('click', '.js-altScanRate-send', function (ev) {
+                
                 $.ajax({
-                    url : $("#altScanRateForm").attr("action"),
-                    data : $("#altScanRateForm").serialize(),
-                    type : "POST"
+                    url : $('#altScanRateForm').attr('action'),
+                    data : $('#altScanRateForm').serialize(),
+                    type : 'POST'
                 }).done(function (data, textStatus, jqXHR) {
                     $('#tdc-popup').dialog('close');
                 });
             });
-            $(document).on('click', '.js-manualEntry-send', function() {
+            
+            $(document).on('click', '.js-manualEntry-send', function (ev) {
                 submitFormViaAjax('tdc-popup', 'manualEntryForm');
             });
             
-            $(document).on('click', '.js-enableDisable-send', function() {
+            $(document).on('click', '.js-enableDisable-send', function (ev) {
+                
                 $.ajax({
-                    url : $("#enableDisableForm").attr("action"),
-                    data : $("#enableDisableForm").serialize(),
-                    type : "POST"
+                    url : $('#enableDisableForm').attr('action'),
+                    data : $('#enableDisableForm').serialize(),
+                    type : 'POST'
                 }).done(function (data, textStatus, jqXHR) {
                     $('#tdc-popup').dialog('close');
                 });
-
             });
             
-            $(document).on('click', '.js-manualControl-send', function() {
+            $(document).on('click', '.js-manualControl-send', function (ev) {
                 submitFormViaAjax('tdc-popup', 'manualControlForm');
             });
             
-            $(document).on('click', '.js-tags-save', function() {
+            $(document).on('click', '.js-tags-save', function (ev) {
+                
                 $.ajax({
                     url: yukon.url('/tools/data-viewer/tagsSave'),
-                    data: $("#tagsForm").serialize(),
-                    type: "POST"
+                    data: $('#tagsForm').serialize(),
+                    type: 'POST'
                 }).done(function (data, textStatus, jqXHR) {
                     $('#tdc-popup').dialog('close');
                 });
             });
             
-            $(document).on('click', '.js-tags-add', function() {
+            $(document).on('click', '.js-tags-add', function (ev) {
                 submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagAdd'));
             });
             
-            $(document).on('click', '.js-tags-remove', function() {
-                var rowIndex = $(this).attr("rowIndex");
-                console.info(rowIndex);
-                
-                $("#rowIndex").val(rowIndex);
+            $(document).on('click', '.js-tags-remove', function (ev) {
+                var rowIndex = $(this).data('row');
+                $('#rowIndex').val(rowIndex);
                 submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagRemove'));
             });
             
-            $(document).on('click', '.js-ack-alarm', function() {
-                var data = {};
-                data.pointId = $(this).attr("pointId");
-                data.condition = $(this).attr("condition");
-                $("#"+data.condition).hide();
-                $("#"+data.condition).removeClass("js-ack-alarm");
-                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function(json) {
+            $(document).on('click', '.js-ack-alarm', function (ev) {
+                var data = { pointId: $(this).data('pointId'), condition: $(this).data('condition') };
+                $('#' + data.condition).hide();
+                $('#' + data.condition).removeClass('js-ack-alarm');
+                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function (json) {
                     if ($('.js-ack-alarm').length === 0) $('.js-ack-alarms-for-point').hide();
                 });
             });
             
-            $(document).on('click', '.js-ack-alarms-for-point', function() {                
-                var pointId = $(this).attr("pointId");
-                var data = {};
-                data.pointId = pointId;
-                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForPoint'), data).done(function(data) {  
+            $(document).on('click', '.js-ack-alarms-for-point', function (ev) {
+                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForPoint'), { pointid: $(this).data('pointId') })
+                .done(function (data) {  
                     yukon.ui.flashSuccess(data.success);
                     $('#tdc-popup').dialog('close');
                 });
             });
         }
     };
+    
     return tdcMod;
 }());
 
-$(function () {
-    yukon.tdc.init();
-});
+$(function () { yukon.tdc.init(); });

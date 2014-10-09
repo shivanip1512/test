@@ -119,6 +119,8 @@ public class CommanderController {
                 // Add route info if available
                 LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
                 PaoType type = pao.getPaoType();
+                model.addAttribute("routable", type.isRoutable());
+                model.addAttribute("meter", type.isMeter());
                 if (type.isRoutable()) {
                     LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
                     model.addAttribute("route", route);
@@ -140,19 +142,23 @@ public class CommanderController {
         return "commander/commander.jsp";
     }
     
-    /** Get the route for the device */
-    @RequestMapping("/commander/route/{paoId}")
-    public @ResponseBody LiteYukonPAObject route(LiteYukonUser user, HttpServletResponse resp, @PathVariable int paoId) {
+    /** A device was chosen, get the details to setup the actions button. */
+    @RequestMapping("/commander/{paoId}/data")
+    public @ResponseBody Map<String, Object> data(LiteYukonUser user, HttpServletResponse resp, @PathVariable int paoId) {
         
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+        Map<String, Object> data = new HashMap<>();
+        data.put("pao", pao);
+        
         PaoType type = pao.getPaoType();
         if (type.isRoutable()) {
+            data.put("isRoutable", true);
             LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
-            return route;
-        } else {
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            return null;
+            data.put("route", route);
         }
+        data.put("isMeter", type.isMeter());
+        
+        return data;
     }
     
     /** Change route popup */

@@ -3,41 +3,42 @@ package com.cannontech.web.taglib;
 import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTypeIcon;
 
-@Configurable("paoTypeIconTagPrototype")
+@Configurable(value="paoTypeIconTagPrototype", autowire=Autowire.BY_NAME)
 public class PaoTypeIconTag extends YukonTagSupport {
     
-    private PaoDefinitionDao paoDefinitionDao;
+    private @Autowired PaoDefinitionDao paoDefDao;
 
-    private YukonPao yukonPao = null;
-    private Logger log = YukonLogManager.getLogger(PaoTypeIconTag.class);
-
+    private YukonPao yukonPao;
+    private String var;
+    
     @Override
     public void doTag() throws JspException, IOException {
+        
         PaoType paoType = yukonPao.getPaoIdentifier().getPaoType();
-
-        String classname = null;
-        if (paoDefinitionDao.isTagSupported(paoType, PaoTag.DEVICE_ICON_TYPE)) {
-            classname = PaoTypeIcon.valueOf(paoDefinitionDao.getValueForTagString(paoType, PaoTag.DEVICE_ICON_TYPE).toUpperCase()).getIcon();
+        
+        String classname = "";
+        if (paoDefDao.isTagSupported(paoType, PaoTag.DEVICE_ICON_TYPE)) {
+            classname = PaoTypeIcon.valueOf(paoDefDao.getValueForTagString(paoType, PaoTag.DEVICE_ICON_TYPE).toUpperCase()).getIcon();
         }
         
-        if (StringUtils.isNotBlank(classname)) {
-            JspWriter out = getJspContext().getOut();
-            out.print("<span class=\"icon "+classname+"\"></span>");
+        if (StringUtils.isNotBlank(var)) {
+            getJspContext().setAttribute(var, classname);
         } else {
-            log.debug("no icon for device type: " + paoType);
+            if (StringUtils.isNotBlank(classname)) {
+                getJspContext().getOut().print("<i class=\"icon " + classname + "\"></i>");
+            }
         }
         
     }
@@ -45,8 +46,9 @@ public class PaoTypeIconTag extends YukonTagSupport {
     public void setYukonPao(YukonPao yukonPao) {
         this.yukonPao = yukonPao;
     }
-
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
+    
+    public void setVar(String var) {
+        this.var = var;
     }
+    
 }

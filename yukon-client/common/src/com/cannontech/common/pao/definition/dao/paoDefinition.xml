@@ -5021,6 +5021,11 @@
                 <basicLookup point="Comm Status" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>transmitter</value>
+            </tag>
+        </tags>
     </pao>
 
     <pao id="TRANSMITTER_BASE" abstract="true" inherits="SIGNAL_TRANSMITTER_BASE">
