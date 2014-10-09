@@ -139,6 +139,18 @@ yukon.tools.commander = (function () {
         }
     },
     
+    /** Load a menu with devices close to the selected one. */
+    _loadNearby = function (paoId) {
+        $('.js-nearby-btn').remove();
+        $('.js-nearby-menu').remove();
+        $.ajax({ url: yukon.url('/tools/commander/' + paoId + '/nearby') })
+        .done(function (nearby, status, xhr) {
+            if (status !== 'nocontent') {
+                $('.page-actions').prepend(nearby);
+            }
+        });
+    },
+    
     /** 
      * Log a new request to the console window.  If not complete, add the message id to the pending bucket.
      * @param {object} req - The JSON object representing the request. 
@@ -398,6 +410,7 @@ yukon.tools.commander = (function () {
                 if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
                     paoId = yukon.cookie.get('commander', 'lastPaoId', '');
                     _updateCommandsForPao(paoId);
+                    if (target === _targetTypes.device) _loadNearby(paoId);
                 } else {
                     category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
                     url = 'commander/type-commands?' + $.param({ type: category });
@@ -423,24 +436,36 @@ yukon.tools.commander = (function () {
                     serialNumber = option.data('serialNumber');
                 
                 if (type === _targetTypes.device) {
-                    $('#target-device-btn').trigger('click');
                     $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
                         commanderDevicePicker.select({ type: pao.paoType, paoId: paoId, paoName: pao.paoName });
+                        $('#target-device-btn').trigger('click');
                     });
                 } else if (type === _targetTypes.lmGroup) {
-                    $('#target-lm-group-btn').trigger('click');
                     $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
                         lmGroupPicker.select({ type: pao.paoType, paoId: paoId, paoName: pao.paoName });
+                        $('#target-lm-group-btn').trigger('click');
                     });
                 } else if (type === _targetTypes.ecom) {
+                    $('#serial-number').val(serialNumber);
+                    $('#route-id').val(routeId);
                     $('#target-expresscom-btn').trigger('click');
-                    $('#serial-number').val(serialNumber);
-                    $('#route-id').val(routeId);
                 } else if (type === _targetTypes.vcom) {
-                    $('#target-versacom-btn').trigger('click');
                     $('#serial-number').val(serialNumber);
                     $('#route-id').val(routeId);
+                    $('#target-versacom-btn').trigger('click');
                 }
+            });
+            
+            /** User clicked a target from the nearby targets menu. */
+            $(document).on('click', '.js-nearby-menu a', function (ev) {
+                
+                var option = $(this).parent(),
+                paoId = option.data('paoId');
+                
+                $('#target-device-btn').trigger('click');
+                $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
+                    commanderDevicePicker.select({ type: pao.paoType, paoId: paoId, paoName: pao.paoName });
+                });
             });
             
             /** 
@@ -459,6 +484,7 @@ yukon.tools.commander = (function () {
                     _updateCommonCommands(commands);
                 });
                 $('#command-text').val('');
+                $('.js-nearby-btn').hide();
             });
             
             /** User clicked the device target buttons, update the common commands. */
@@ -468,6 +494,7 @@ yukon.tools.commander = (function () {
                 if (paoId) {
                     // We have picked a device previously.
                     _updateCommandsForPao(paoId);
+                    $('.js-nearby-btn').show();
                 } else {
                     // No device selected yet, just nuke any commands in there.
                     select.find('option:first-child').siblings().remove();
@@ -489,6 +516,7 @@ yukon.tools.commander = (function () {
                     select.trigger('chosen:updated').siblings('.chosen-container').css('width', select.css('width'));
                 }
                 $('#command-text').val('');
+                $('.js-nearby-btn').hide();
             });
             
             /** User clicked the execute button. */
@@ -586,6 +614,8 @@ yukon.tools.commander = (function () {
             }).fail(function () {
                 $('.js-on-route').hide();
             });
+            
+            _loadNearby(paoId);
         },
         
         getPending: function () { return _pending; }

@@ -1,8 +1,9 @@
 package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 
-public class PaoLocation {
+public class PaoLocation implements YukonPao {
 
     private PaoIdentifier paoIdentifier;
     private double latitude;

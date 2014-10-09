@@ -11,15 +11,17 @@
 <%@ attribute name="disabled" %>
 <%@ attribute name="href" description="Href attribute applied to the 'a' element." %>
 <%@ attribute name="key" description="Required when 'label' or 'displayable' attributes are not used." %>
-<%@ attribute name="label" description="Text for the criteria name, ie'RFN-420 FL'" %>
+<%@ attribute name="label" description="Text for the option." %>
+<%@ attribute name="newTab" type="java.lang.Boolean" description="If true, the link will open in a new browser tab. Default: false." %>
 
 <cti:default var="icon" value="icon-blank"/>
+<cti:default var="newTab" value="${false}"/>
 <c:set var="classes" value="clearfix ${pageScope.classes}"/>
 <c:set var="labelClasses" value="dropdown-option-label dib"/>
 <c:set var="disabled" value="${not empty pageScope.disabled && disabled == 'true' ? 'disabled' : ''}"/>
 
 <li class="dropdown-option" <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
-    <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> class="${classes}">
+    <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> <c:if test="${newTab}">target="_blank"</c:if> class="${classes}">
         <c:choose>
             <c:when test="${not empty pageScope.displayable}">
                 <cti:icon icon="${icon}" classes="${disabled}"/>

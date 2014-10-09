@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -179,10 +180,10 @@ public interface PaoDefinitionDao {
     public abstract Set<PaoDefinition> getPaosThatPaoCanChangeTo(PaoDefinition paoDefinition);
 
     /**
-     * Takes an iterable of type T and returns a new Iterable of items that support
+     * Takes an iterable of type T and returns a new List of items that support
      * the provided PaoTag.
      */
-    public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, PaoTag feature);
+    public <T extends YukonPao> List<T> filterPaosForTag(Iterable<T> paos, PaoTag feature);
 
     /**
      * Takes an Set of type T and returns a new Set of items that support

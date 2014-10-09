@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -119,7 +120,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
-    public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, PaoTag feature) {
+    public <T extends YukonPao> List<T> filterPaosForTag(Iterable<T> paos, PaoTag feature) {
         throw new UnsupportedOperationException("not implemented");
     }
 

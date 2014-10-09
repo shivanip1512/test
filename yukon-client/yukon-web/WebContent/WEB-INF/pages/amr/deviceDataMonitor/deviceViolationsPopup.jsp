@@ -1,1 +1,1 @@
-<jsp:include page="../../common/device/deviceListPopup.jsp" />
+<jsp:include page="../../common/pao/deviceListPopup.jsp" />

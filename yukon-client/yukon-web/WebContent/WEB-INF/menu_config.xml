@@ -210,7 +210,7 @@
         <permissions>
           <roleProperty name="ENABLE_WEB_COMMANDER" />
         </permissions>
-        <link>/commander/select</link>
+        <link>/tools/commander</link>
       </option>
       <option name="dataExport">
         <permissions>

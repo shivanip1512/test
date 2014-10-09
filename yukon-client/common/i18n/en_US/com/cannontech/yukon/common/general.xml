@@ -181,4 +181,8 @@
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroup.more">and {0} more</entry>
 
+<entry key="yukon.common.distance.MILES">mi.</entry>
+<entry key="yukon.common.distance.KILOMETERS">km</entry>
+<entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
+
 </properties>

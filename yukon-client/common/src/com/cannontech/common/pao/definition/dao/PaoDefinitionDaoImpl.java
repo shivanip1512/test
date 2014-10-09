@@ -369,15 +369,16 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     @Override
-    public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, final PaoTag tag) {
+    public <T extends YukonPao> List<T> filterPaosForTag(Iterable<T> paos, final PaoTag tag) {
+        
         Predicate<YukonPao> supportsTagPredicate = new Predicate<YukonPao>() {
             @Override
             public boolean apply(YukonPao input) {
                 return isTagSupported(input.getPaoIdentifier().getPaoType(), tag);
             }
         };
-
-        return Iterables.filter(paos, supportsTagPredicate);
+        
+        return Lists.newArrayList(Iterables.filter(paos, supportsTagPredicate));
     }
 
     @Override

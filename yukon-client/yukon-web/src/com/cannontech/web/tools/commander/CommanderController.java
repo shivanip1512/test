@@ -11,9 +11,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.geojson.FeatureCollection;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -26,12 +26,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.device.search.service.DeviceSearchService;
+import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.DistanceUnit;
+import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CommandDao;
@@ -70,6 +74,7 @@ public class CommanderController {
     
     @Autowired private ServerDatabaseCache cache;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private DBPersistentDao dbPersistentDao;
@@ -78,6 +83,7 @@ public class CommanderController {
     @Autowired private DeviceSearchService deviceSearchService;
     @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     
     private static final TypeReference<List<RecentTarget>> recentTargetsType = new TypeReference<List<RecentTarget>>() {};
     private static final String keyBase = "yukon.web.modules.tools.commander";
@@ -281,17 +287,27 @@ public class CommanderController {
     }
     
     /** Get paos nearby */
-    @RequestMapping(value="/commander/{paoId}/nearby", method=RequestMethod.POST)
-    public @ResponseBody FeatureCollection nearby(HttpServletResponse resp, @PathVariable int paoId) {
+    @RequestMapping(value="/commander/{paoId}/nearby")
+    public String nearby(HttpServletResponse resp, ModelMap model, @PathVariable int paoId) {
         
         PaoLocation location = paoLocationDao.getLocation(paoId);
         if (location == null) {
             resp.setStatus(HttpStatus.NO_CONTENT.value());
             return null;
         }
-        List<PaoLocation> locations = paoLocationService.getNearbyLocations(location, 5, DistanceUnit.MILES);
         
-        return paoLocationService.getFeatureCollection(locations);
+        List<PaoDistance> nearby = paoLocationService.getNearbyLocations(location, 5, DistanceUnit.MILES, 
+                PaoTag.COMMANDER_REQUESTS);
+        nearby = nearby.subList(0, 10);
+        if (nearby.isEmpty()) {
+            resp.setStatus(HttpStatus.NO_CONTENT.value());
+            return null;
+        } else {
+            model.addAttribute("nearby", nearby);
+            model.addAttribute("nearbyCollection", dcProducer.createDeviceCollection(PaoUtils.asPaoIdList(nearby), null));
+            return "commander/nearby.jsp";
+        }
+        
     }
     
     /** Get all visible commands, sorted by display order, that this user has permission to use. */

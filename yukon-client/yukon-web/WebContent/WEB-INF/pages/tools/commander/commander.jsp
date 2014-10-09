@@ -170,7 +170,7 @@
 
 <div id="page-buttons" class="dn">
 <c:set var="clazz" value="${empty recentTargets ? 'js-recent-btn dn' : 'js-recent-btn'}"/>
-<cm:dropdown key=".recent" type="button" triggerClasses="${clazz}" showIcon="false" menuClasses="js-recent-menu">
+<cm:dropdown key=".recent" type="button" triggerClasses="${clazz}" icon="icon-time" menuClasses="js-recent-menu">
     <c:if test="${not empty recentTargets}">
         <c:forEach var="target" items="${recentTargets}">
             <c:set var="label" value="${fn:escapeXml(target.label)}"/>
