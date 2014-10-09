@@ -27,7 +27,11 @@
             newRow.find('[data-database]').text(_shortenString(previouslySent.database));
             newRow.find('[data-category]').text(_shortenString(previouslySent.category));
             newRow.find('[data-type]').text(previouslySent.type);
-             return newRow;
+            newRow.find('[data-resubmit-button]').data("itemId", previouslySent.itemId);
+            newRow.find('[data-resubmit-button]').data("database", previouslySent.database);
+            newRow.find('[data-resubmit-button]').data("category", previouslySent.category);
+            newRow.find('[data-resubmit-button]').data("type", previouslySent.type);
+            return newRow;
         },
         
         _updatePreviouslySent = function() {
@@ -46,25 +50,29 @@
                 newMsgDiv.remove();
             }, 10000);
         };
+
         _submitButtonClick = function() {
             var form = $('#dbChangeForm');
-            var sentItem = {
+            var sendData = {
                     itemId : form.find('[name="itemId"]').val(),
                     database : form.find('[name="databaseField"]').val(),
                     type : form.find('[name="type"]').val(),
                     category : form.find('[name="categoryField"]').val()
             };
-            var formData = form.serialize();
+            _submitDbChangeMessage(sendData);
+        },
+
+        _submitDbChangeMessage = function(sendData) {
             $.ajax({
                 url: yukon.url('do-db-change'),
                 type: 'post',
-                data: formData
+                data: sendData
             }).done(function(data) {
                 if (data.error) {
-                    sentItem.error = true;
-                    sentItem.resultMessage = data.errorMessage;
+                    sendData.error = true;
+                    sendData.resultMessage = data.errorMessage;
                 } else {
-                    sentItem.resultMessage = 'Success';
+                    sendData.resultMessage = 'Success';
                 }
             }).fail(function(data) {
                 sentItem.error = true;
@@ -72,7 +80,7 @@
                 _showTempError('Failed to submit DbChangeMessage. Due to ' + data.statusText + '.');
             }).always(function() {
                 var previouslySent = JSON.parse(localStorage['previouslySent']);
-                previouslySent.unshift(sentItem);
+                previouslySent.unshift(sendData);
                 previouslySent = previouslySent.slice(0, 10);
                 localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
                 _updatePreviouslySent();
@@ -93,7 +101,13 @@
                     yukon.cookie.set('devDbChange', input.attr('name'), input.val());
                 });
                 $(document).on('click', '.js-re-submit', function() {
-                    console.log('clicked');
+                    var sendData = {
+                            itemId : $(this).data('itemId'),
+                            database : $(this).data('database'),
+                            type : $(this).data('type'),
+                            category : $(this).data('category')
+                    };
+                    _submitDbChangeMessage(sendData);
                 });
                 _updatePreviouslySent();
                 _initialized = true;
@@ -173,7 +187,7 @@
         </div>
         <div class="stacked clearfix">
             <span class="fl">Result: <span data-result>Success</Span></span>
-            <i class="icon icon-arrow-rotate-clockwise js-re-submit"></i>
+            <i data-resubmit-button class="icon icon-arrow-rotate-clockwise js-re-submit"></i>
         </div>
     </div>
 </cti:standardPage>

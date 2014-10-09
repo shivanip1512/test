@@ -72,12 +72,12 @@ public class DeveloperController {
 
     @RequestMapping("/do-db-change")
     @ResponseBody
-    public Map<String, Object> doDbChangePage(Integer itemId, String databaseField, String categoryField, DbChangeType type) {
-        Integer database = databaseFields.get(databaseField);
-        String category = categoryFields.get(categoryField);
+    public Map<String, Object> doDbChangePage(Integer itemId, String database, String category, DbChangeType type) {
+        Integer databaseValue = databaseFields.get(database);
+        String categoryValue = categoryFields.get(category);
         Map<String, Object> returnJson = Maps.newHashMapWithExpectedSize(2);
         try {
-            dbChangeManager.processDbChange(itemId, database, category, category, type);
+            dbChangeManager.processDbChange(itemId, databaseValue, categoryValue, categoryValue, type);
         } catch (Exception e) {
             returnJson.put("error", true);
             returnJson.put("errorMessage", "Exception Thrown: " + e.getMessage());
