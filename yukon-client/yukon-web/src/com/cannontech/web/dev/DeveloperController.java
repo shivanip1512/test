@@ -1,8 +1,8 @@
 package com.cannontech.web.dev;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,8 @@ public class DeveloperController {
 
     @Autowired
     public DeveloperController(ConfigurationSource configurationSource) {
-        Map<String, Integer> mutableDatabaseFields = new HashMap<>();
-        Map<String, String> mutableCategoryFields = new HashMap<>();
+        Map<String, Integer> mutableDatabaseFields = new TreeMap<>();
+        Map<String, String> mutableCategoryFields = new TreeMap<>();
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
             try {
                 DBChangeMsg obj = new DBChangeMsg();
