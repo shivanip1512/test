@@ -61,7 +61,9 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport {
         if (nodeCallback != null) {
             allCallbacks.add(nodeCallback);
         }
-        allCallbacks.addAll(callbacks);
+        if (callbacks != null) {
+            allCallbacks.addAll(callbacks);
+        }
 
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, allCallbacks);
         
