@@ -601,7 +601,10 @@ public class AttributeServiceImpl implements AttributeService {
         return pis;
     }
     
-
+    /**
+     * Returns PaoMultiPointIdentifierWithUnsupported which contains supported devices and points and
+     * unsupported devices.
+     */
     private PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(
             Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean addUnsupported) {
 
@@ -624,7 +627,7 @@ public class AttributeServiceImpl implements AttributeService {
                 try {
                     AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(type, attribute);
                     for (YukonPao pao : typeToDevice.get(type)) {
-                        PaoPointIdentifier paoPointIdentifier = attributeDefinition.findActualPointIdentifier(pao);
+                        PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPaoPointIdentifier(pao);
                         if (paoPointIdentifier != null) {
                             paoToPoint.put(pao, paoPointIdentifier);
                         }
@@ -632,7 +635,7 @@ public class AttributeServiceImpl implements AttributeService {
                 } catch (IllegalUseOfAttribute e) {
                     if (addUnsupported) {
                         for (YukonPao pao : typeToDevice.get(type)) {
-                            // meters do not have a point for the attribute
+                            // meters that do not support the attribute 
                             devicesWithoutPoint.add(pao);
                         }
                     }
