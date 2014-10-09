@@ -986,6 +986,7 @@
     <session-config>
         <!-- 24 hours in minutes -->
         <session-timeout>1440</session-timeout>
+        <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
     <mime-mapping>
