@@ -39,6 +39,7 @@ import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.SCADA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 
@@ -479,6 +480,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
             objects = port.pingURL();
+        } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
+            SCADA_ServerSoap_BindingStub port = MultispeakPortFactory.getSCADA_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor, endpointUrl);
             objects = port.pingURL();
@@ -529,6 +533,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
             objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
+        } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
+            SCADA_ServerSoap_BindingStub port = MultispeakPortFactory.getSCADA_ServerPort(mspVendor, endpointUrl);
             objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor, endpointUrl);

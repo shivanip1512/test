@@ -27,6 +27,7 @@ public class MultispeakDefines
     public static final String CD_Server_STR = "CD_Server";
     public static final String OD_Server_STR = "OD_Server";
     public static final String LM_Server_STR = "LM_Server";
+    public static final String SCADA_Server_STR = "SCADA_Server";
 
     //CLIENT BUS Interfaces
     public static final String CB_Server_STR = "CB_Server";
@@ -39,7 +40,7 @@ public class MultispeakDefines
      * Other systems may call these servers in Yukon
      */
     public static final String[] MSP_SERVER_INTERFACE_ARRAY = new String[]{
-    	MR_Server_STR, OD_Server_STR, CD_Server_STR, LM_Server_STR 
+    	MR_Server_STR, OD_Server_STR, CD_Server_STR, LM_Server_STR, SCADA_Server_STR 
     };
     
     /** These are the Client side interface, the ones that Yukon may call

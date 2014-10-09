@@ -15,23 +15,19 @@
     </property>
   </bean>
 
-  <bean id="cd_server" class="com.cannontech.multispeak.deploy.service.impl.CD_ServerImpl">
-  </bean>
+  <bean id="cd_server" class="com.cannontech.multispeak.deploy.service.impl.CD_ServerImpl"/>
   
-  <bean id="od_server" class="com.cannontech.multispeak.deploy.service.impl.OD_ServerImpl">
-  </bean>
+  <bean id="od_server" class="com.cannontech.multispeak.deploy.service.impl.OD_ServerImpl"/>
   
-  <bean id="lm_server" class="com.cannontech.multispeak.deploy.service.impl.LM_ServerImpl">
-  </bean>
+  <bean id="lm_server" class="com.cannontech.multispeak.deploy.service.impl.LM_ServerImpl"/>
+  
+  <bean id="scada_server" class="com.cannontech.multispeak.deploy.service.impl.SCADA_ServerImpl"/>
 
-  <bean id="multispeakFuncs" class="com.cannontech.multispeak.client.MultispeakFuncs">
-  </bean>
+  <bean id="multispeakFuncs" class="com.cannontech.multispeak.client.MultispeakFuncs"/>
   
-  <bean id="mspLMInterfaceMappingDao" class="com.cannontech.multispeak.dao.impl.MspLMInterfaceMappingDaoImpl">
-  </bean>
+  <bean id="mspLMInterfaceMappingDao" class="com.cannontech.multispeak.dao.impl.MspLMInterfaceMappingDaoImpl"/>
 
-  <bean id="mspLMGroupDao" class="com.cannontech.multispeak.dao.impl.MspLMGroupDaoImpl">
-  </bean>
+  <bean id="mspLMGroupDao" class="com.cannontech.multispeak.dao.impl.MspLMGroupDaoImpl"/>
   
   <bean id="multispeakMeterService" class="com.cannontech.multispeak.service.impl.MultispeakMeterServiceImpl">
   	<property name="porterConnection" ref="porterConnection"/>

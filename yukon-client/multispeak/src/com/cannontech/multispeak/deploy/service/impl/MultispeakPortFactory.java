@@ -28,6 +28,9 @@ import com.cannontech.multispeak.deploy.service.OA_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.OD_ServerLocator;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_PortType;
+import com.cannontech.multispeak.deploy.service.SCADA_ServerLocator;
+import com.cannontech.multispeak.deploy.service.SCADA_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.SCADA_ServerSoap_PortType;
 
 public class MultispeakPortFactory {
 
@@ -256,4 +259,28 @@ public class MultispeakPortFactory {
 
         return port;
     }
+    
+    /**
+     * Returns a new SCADA_Server port instance for the endpointStr specified. 
+     */
+    public static SCADA_ServerSoap_BindingStub getSCADA_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
+
+        SCADA_ServerLocator service = new SCADA_ServerLocator();
+        service.setSCADA_ServerSoapEndpointAddress(endpointUrl);
+        
+        SCADA_ServerSoap_PortType port = null;
+        try {
+            port = service.getSCADA_ServerSoap();
+//            ((SCADA_ServerSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((SCADA_ServerSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+            ((SCADA_ServerSoap_BindingStub)port).setHeader(mspVendor.getHeader());
+            ((SCADA_ServerSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+        } catch (ServiceException e) {
+            CTILogger.error("SCADA_Server service is not defined for company(" + mspVendor.getCompanyName()+ ") - method failed.");
+            CTILogger.error("ServiceException Detail: " + e);
+        }
+        
+        return (SCADA_ServerSoap_BindingStub)port;
+    }
+
 }
