@@ -557,8 +557,8 @@ public class PointForm extends DBEditorForm {
 
         int i = 0;
         if (null != alarmTableEntries) {
-            for (i = 0; i < getAlarmTableEntries().size(); i++) {
-                AlarmTableEntry entry = getAlarmTableEntries().get(i);
+            for (i = 0; i < alarmTableEntries.size(); i++) {
+                AlarmTableEntry entry = alarmTableEntries.get(i);
                 alarmStates += (char) YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryId(entry.getGenerate());
                 exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
             }
