@@ -77,8 +77,9 @@ public class DeveloperController {
         String categoryValue = categoryFields.get(category);
         Map<String, Object> returnJson = Maps.newHashMapWithExpectedSize(2);
         try {
-            dbChangeManager.processDbChange(itemId, databaseValue, categoryValue, categoryValue, type);
+            dbChangeManager.processDbChange(itemId, databaseValue, categoryValue, type);
         } catch (Exception e) {
+            log.warn("Exception caught while sending manual DbChange message. ", e);
             returnJson.put("error", true);
             returnJson.put("errorMessage", "Exception Thrown: " + e.getMessage());
         }
