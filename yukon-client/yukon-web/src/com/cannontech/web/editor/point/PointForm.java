@@ -478,7 +478,8 @@ public class PointForm extends DBEditorForm {
         if( ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT ) {
             alarm_cats = IAlarmDefs.STATUS_ALARM_STATES;
         }
-        LiteStateGroup stateGroup = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup( getPointBase().getPoint().getStateGroupID().intValue() );
+        LiteStateGroup stateGroup = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup( getPointBase().
+                                                                     getPoint().getStateGroupID().intValue() );
 
         String[] stateNames = new String[stateGroup.getStatesList().size()];
         for( int j = 0; j < stateGroup.getStatesList().size(); j++ ) {
@@ -498,8 +499,9 @@ public class PointForm extends DBEditorForm {
 
             for( int j = 0; j < stateNames.length; j++, i++ ) {
                 if( i >= alarmStates.length() ) {
-                    throw new ArrayIndexOutOfBoundsException("Trying to get alarmStates["+i+"] while alarmStates.length()==" + alarmStates.length() +
-                    ", to many states for Status point " + getPointBase().getPoint().getPointName() + " defined.");
+                    throw new ArrayIndexOutOfBoundsException("Trying to get alarmStates["+i+"] while alarmStates.length()==" 
+                                                      + alarmStates.length() + ", to many states for Status point " +
+                                                             getPointBase().getPoint().getPointName() + " defined.");
                 }
                 AlarmTableEntry entry = new AlarmTableEntry();
                 setAlarmGenNotif( entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i) );
@@ -554,14 +556,16 @@ public class PointForm extends DBEditorForm {
         String exclNotify = "";
 
         int i = 0;
-        for( i = 0; i < getAlarmTableEntries().size(); i++ ) {
-            
-            AlarmTableEntry entry = getAlarmTableEntries().get(i);
-            
-            alarmStates += (char)YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryId( entry.getGenerate() );           
-            exclNotify += PointAlarming.getExcludeNotifyChar( entry.getExcludeNotify() );
-        }
+        if (null != getAlarmTableEntries()) {
+            for (i = 0; i < getAlarmTableEntries().size(); i++) {
 
+                AlarmTableEntry entry = getAlarmTableEntries().get(i);
+
+                alarmStates += (char) YukonSpringHook.getBean(AlarmCatDao.class)
+                                                     .getAlarmCategoryId(entry.getGenerate());
+                exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
+            }
+        }
         // fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
         alarmStates += PointAlarming.DEFAULT_ALARM_STATES.substring(i);
         exclNotify += PointAlarming.DEFAULT_EXCLUDE_NOTIFY.substring(i);
@@ -728,7 +732,7 @@ public class PointForm extends DBEditorForm {
     protected void checkForErrors() throws InvalidPointOffsetException, InvalidPointLimits {
         int offset = getPointBase().getPoint().getPointOffset().intValue();
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());
-        Integer paoId = getWizData().getParentId();
+        Integer paoId = getPointBase().getPoint().getPaoID();
         //make sure we are not erroring out because of the same offset
         LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(getPointBase().getPoint().getPointID().intValue());
         
@@ -737,7 +741,8 @@ public class PointForm extends DBEditorForm {
         if (litePoint.getPointOffset() == offset)
             return;
         if (!PointOffsetUtils.isValidPointOffset(offset, paoId, type)) {
-            throw new InvalidPointOffsetException("The point offset " + offset + " is already in use by another " + getPointBase().getPoint().getPointType() +  " point on this device.");
+            throw new InvalidPointOffsetException("The point offset " + offset + "" +
+             " is already in use by another " + getPointBase().getPoint().getPointType() +  " point on this device.");
         }
      }
 
