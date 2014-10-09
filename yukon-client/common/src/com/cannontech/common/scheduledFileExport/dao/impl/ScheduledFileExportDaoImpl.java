@@ -87,9 +87,9 @@ public class ScheduledFileExportDaoImpl implements ScheduledFileExportDao {
         Instant now = Instant.now();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT MIN(ChangeId)");
-        sql.append("FROM RawPointHistory");
-        sql.append("WHERE Timestamp").gte(xDaysAgo);
+        sql.append("select min(ChangeId)");
+        sql.append("from RawPointHistory");
+        sql.append("where Timestamp").gte(xDaysAgo);
         sql.append(  "and Timestamp").lt(now);
 
         long changeId = yukonJdbcTemplate.queryForLong(sql);
