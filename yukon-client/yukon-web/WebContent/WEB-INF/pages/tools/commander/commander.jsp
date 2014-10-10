@@ -52,7 +52,9 @@
     
     <c:set var="clazz" value="${target != 'DEVICE' ? 'dn' : ''}"/>
     <c:set var="deviceChosen" value="${target == 'DEVICE' and not empty paoId ? true : false}"/>
+    
     <tags:nameValue2 nameKey=".device" rowId="device-row" rowClass="${clazz}">
+    
         <input id="pao-id" type="hidden" name="paoId" value="${deviceChosen ? paoId : ''}">
         <tags:pickerDialog type="commanderDevicePicker" id="commanderDevicePicker"
             buttonStyleClass="js-device-picker"
@@ -61,6 +63,7 @@
             destinationFieldId="pao-id"
             immediateSelectMode="true"
             endAction="yukon.tools.commander.deviceChosen"/>
+            
         <c:set var="clazz" value="${empty route ? ' dn' : ''}"/>
         <span class="js-on-route${clazz}" <c:if test="${not empty route}">data-route-id="${route.liteID}"</c:if>>
             <span class="name"><i:inline key=".onRoute"/></span>
@@ -68,23 +71,27 @@
             <div data-dialog id="change-route-dialog" title="<cti:msg2 key=".changeRoute"/>" data-width="500" 
                     data-event="yukon.tools.commander.routeChange" class="dn"></div>
         </span>
-        <c:set var="clazz" value="${!deviceChosen ? 'dn' : ''}"/>
-        <cm:dropdown type="button" id="device-actions-menu" triggerClasses="js-device-actions-btn vab ${clazz}" showLabel="false">
+        
+        <cm:dropdown type="button" id="device-actions-menu" triggerClasses="js-device-actions-btn vab" showLabel="false">
             <c:set var="clazz" value="${!routable ? 'dn' : ''}"/>
             <cm:dropdownOption id="change-route-btn" key=".changeRoute" icon="icon-pencil" classes="${clazz}"/>
             <c:if test="${deviceChosen}">
+                <cti:url var="viewMeterUrl" value="/meter/home">
+                    <cti:param name="deviceId" value="${paoId}"/>
+                </cti:url>
                 <cti:url var="otherActionsUrl" value="/bulk/collectionActions">
                     <cti:param name="collectionType" value="idList"/>
                     <cti:param name="idList.ids" value="${paoId}"/>
                 </cti:url>
-                <cti:url var="viewMeterUrl" value="/meter/home">
-                    <cti:param name="deviceId" value="${paoId}"/>
-                </cti:url>
             </c:if>
+            <cm:dropdownOption id="readings-btn" key=".readings" icon="icon-table"/>
             <c:set var="clazz" value="${!meter ? 'dn' : ''}"/>
-            <cm:dropdownOption id="view-meter-detail-btn" key=".viewMeter" icon="icon-layout-go" href="${viewMeterUrl}" classes="${clazz}"/>
-            <cm:dropdownOption id="other-actions-btn" key=".otherActions" icon="icon-cog-go" href="${otherActionsUrl}"/>
+            <cm:dropdownOption id="view-meter-detail-btn" key=".viewMeter" icon="icon-layout-go" 
+                    href="${viewMeterUrl}" classes="${clazz}" newTab="true"/>
+            <cm:dropdownOption id="other-actions-btn" key=".otherActions" icon="icon-cog-go" 
+                    href="${otherActionsUrl}"  newTab="true"/>
         </cm:dropdown>
+        
     </tags:nameValue2>
     
     <c:set var="clazz" value="${!target.serialNumber ? 'dn' : ''}"/>
@@ -131,7 +138,7 @@
 <div id="commander-console" class="console lite-container stacked code">
     <div class="title-bar clearfix">
         <h2 class="title"><i:inline key="yukon.common.console"/></h2>
-        <cti:button id="scroll-lock-btn" icon="icon-lock" renderMode="buttonImage"/>
+        <cti:button id="scroll-lock-btn" icon="icon-lock" renderMode="buttonImage" classes="M0"/>
         <cti:button id="clear-console-btn" nameKey="clear" classes="right"/>
         <cti:button id="select-console-btn" nameKey="selectAll" classes="left"/>
     </div>
@@ -164,6 +171,8 @@
     <div class="cmd-pending clearfix"><cti:icon icon="icon-loading-bars"/></div>
     <cm:dropdownOption icon="icon-database-add">placeholder</cm:dropdownOption>
 </div>
+
+<div id="device-readings-popup" class="dn" data-height="400"></div>
 
 <div data-dialog id="prompt-dialog" class="dn"
         data-title="<cti:msg2 key=".prompt"/>"

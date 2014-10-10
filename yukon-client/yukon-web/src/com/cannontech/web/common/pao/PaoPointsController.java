@@ -73,6 +73,22 @@ public class PaoPointsController {
         return "pao/points.jsp";
     }
     
+    @RequestMapping("{paoId}/points-simple")
+    public String pointsSimple(ModelMap model, @PathVariable int paoId, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.asc, sort = "POINTNAME") SortingParameters sorting) {
+        
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(pao, sorting, accessor);
+        
+        model.addAttribute("points", liteYukonPoints);
+        model.addAttribute("pao", pao);
+        
+        buildColumn(model, accessor, PointSortField.POINTNAME, sorting);
+        
+        return "pao/points-simple.jsp";
+    }
+    
     private void buildColumn(ModelMap model, MessageSourceAccessor accessor, PointSortField field, 
             SortingParameters sorting) {
         

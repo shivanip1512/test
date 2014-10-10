@@ -117,28 +117,27 @@ function ${widgetParameters.widgetId}_updateDifference() {
 </div>
 
 <%--TODO make this into a tag --%>
-<i:simplePopup id="poinvalues-quickview" titleKey="yukon.web.components.dialog.devicePoints.title" arguments="${deviceName}" on="#readings_quick_view" options="{'modal' : false, 'width' : 600, 'height' : 500}">
+<i:simplePopup id="poinvalues-quickview" titleKey="components.dialog.devicePoints.title" arguments="${deviceName}" on="#readings_quick_view" options="{'modal' : false, 'width' : 600, 'height' : 500}">
     <table class="compact-results-table row-highlighting">
         <thead>
             <tr>
-                <th><i:inline key="yukon.web.components.dialog.devicePoints.pointName"/></th>
-                <th class="state-indicator tar"></th>
-                <th><i:inline key="yukon.web.components.dialog.devicePoints.value"/></th>
-                <th><i:inline key="yukon.web.components.dialog.devicePoints.timestamp"/></th>
+                <th colspan="2"><i:inline key="components.dialog.devicePoints.pointName"/></th>
+                <th><i:inline key="components.dialog.devicePoints.value"/></th>
+                <th><i:inline key="components.dialog.devicePoints.timestamp"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
-        <c:forEach var="pointResultRow" items="${points}">
+        <c:forEach var="point" items="${points}">
              <tr>
-                 <td>${fn:escapeXml(pointResultRow.pointName)}</td>
+                 <td>${fn:escapeXml(point.pointName)}</td>
                  <td class="state-indicator tar">
-                    <c:if test="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType.status}">
-                        <cti:pointStatus pointId="${pointResultRow.pointId}"/>
+                    <c:if test="${point.paoPointIdentifier.pointIdentifier.pointType.status}">
+                        <cti:pointStatus pointId="${point.pointId}"/>
                     </c:if>
                  </td>
-                 <td class="wsnw"><cti:pointValue pointId="${pointResultRow.pointId}" format="SHORT"/></td>
-                 <td class="wsnw"><tags:historicalValue pao="${device}" pointId="${pointResultRow.pointId}"/></td>
+                 <td class="wsnw"><cti:pointValue pointId="${point.pointId}" format="SHORT"/></td>
+                 <td class="wsnw"><tags:historicalValue pao="${device}" pointId="${point.pointId}"/></td>
              </tr>
          </c:forEach>
         </tbody>

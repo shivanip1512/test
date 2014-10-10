@@ -21,6 +21,8 @@
     <entry key="yukon.web.modules.tools.commander.pageTitle">Tools: Commander</entry>
     <entry key="yukon.web.modules.tools.commander.pageHeading">Commander</entry>
     <entry key="yukon.web.modules.tools.commander.crumbTitle">Commander</entry>
+    <entry key="yukon.web.modules.tools.commander.readings">Readings</entry>
+    <entry key="yukon.web.modules.tools.commander.readings.title">Readings: </entry>
     <entry key="yukon.web.modules.tools.commander.recent">Recent</entry>
     <entry key="yukon.web.modules.tools.commander.nearby">Nearby</entry>
     <entry key="yukon.web.modules.tools.commander.prompt">User Input Required</entry>

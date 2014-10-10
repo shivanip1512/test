@@ -128,15 +128,18 @@ public class CommanderController {
                     model.addAttribute("route", route);
                 }
             } else {
-                model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null, JsonUtils.stringType));
-                model.addAttribute("routeId", webUtil.getYukonCookieValue(req, "commander", "lastRouteId", null, JsonUtils.intType));
+                model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null, 
+                        JsonUtils.stringType));
+                model.addAttribute("routeId", webUtil.getYukonCookieValue(req, "commander", "lastRouteId", null, 
+                        JsonUtils.intType));
             }
         } else {
             // Default to device target
             model.addAttribute("target", CommandTarget.DEVICE);
         }
         
-        List<RecentTarget> recentTargets = webUtil.getYukonCookieValue(req, "commander", "recentTargets", null, recentTargetsType);
+        List<RecentTarget> recentTargets = webUtil.getYukonCookieValue(req, "commander", "recentTargets", null, 
+                recentTargetsType);
         if (recentTargets != null) {
             model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
         }
@@ -153,12 +156,12 @@ public class CommanderController {
         data.put("pao", pao);
         
         PaoType type = pao.getPaoType();
+        data.put("isMeter", type.isMeter());
+        data.put("isRoutable", type.isRoutable());
         if (type.isRoutable()) {
-            data.put("isRoutable", true);
             LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
             data.put("route", route);
         }
-        data.put("isMeter", type.isMeter());
         
         return data;
     }
@@ -354,7 +357,8 @@ public class CommanderController {
             if (type == CommandTarget.DEVICE || type == CommandTarget.LOAD_GROUP) {
                 viewable.setLabel(cache.getAllPaosMap().get(recent.getPaoId()).getPaoName());
             } else {
-                viewable.setLabel(recent.getSerialNumber() + " - " + cache.getAllPaosMap().get(recent.getRouteId()).getPaoName());
+                viewable.setLabel(recent.getSerialNumber() + " - " 
+                        + cache.getAllPaosMap().get(recent.getRouteId()).getPaoName());
             }
             viewables.add(viewable);
         }
