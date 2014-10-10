@@ -51,6 +51,6 @@ ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
 
 <script type="text/javascript">
 $(function () {
-    ${id}.init.bind(${id}))();
+    ${id}.init.bind(${id})();
 });
 </script>
