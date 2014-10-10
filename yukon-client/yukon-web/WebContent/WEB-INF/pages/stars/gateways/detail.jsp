@@ -141,7 +141,17 @@
                         <i:inline key=".connectionStatus.${gateway.data.connectionStatus}"/>
     	            </tags:nameValue2>
     	            <tags:nameValue2 nameKey=".lastComms">
-    	                <span class="${clazz}"><i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/></span>
+    	                <c:set var="clazz" value="green"/>
+                        <c:if test="${gateway.lastCommFailed}">
+                            <c:set var="clazz" value="red"/>
+                        </c:if>
+                        <c:if test="${gateway.lastCommMissed}">
+                            <c:set var="clazz" value="orange"/>
+                        </c:if>
+                        <c:if test="${gateway.lastCommUnknown}">
+                            <c:set var="clazz" value="gray"/>
+                        </c:if>
+                        <span class="${clazz}"><i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/></span>
                         (<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>)
     	            </tags:nameValue2>
     	        </tags:nameValueContainer2>
@@ -194,25 +204,35 @@
                 <tfoot></tfoot>
                 <tbody>
                     <c:forEach var="sequence" items="${gateway.data.sequences}">
-                        <tr>
-                            <td><i:inline key=".sequenceType.${sequence.type}"/></td>
-                            <%-- TODO: Probably need to modify DataSequence & SequenceBlock to make this work - NM will have to update too --%>
-                            <td><%--${sequence.start}--%></td>
-                            <td><%--${sequence.end}--%></td>
-                            
-                            <td>
-                                <div class="dib progress">
-                                    <c:set var="clazz" value="progress-bar-success"/>
-                                    <c:if test="${sequence.completionPercentage < 90 and sequence.completionPercentage >= 75}">
-                                        <c:set var="clazz" value="progress-bar-warning"/>
-                                    </c:if>
-                                    <c:if test="${sequence.completionPercentage <= 75}">
-                                        <c:set var="clazz" value="progress-bar-danger"/>
-                                    </c:if>
-                                    <div class="progress-bar ${clazz}" style="width: ${sequence.completionPercentage}%"></div>
-                                </div>&nbsp;${sequence.completionPercentage}%
-                            </td>
-                        </tr>
+                        <c:forEach var="block" items="${sequence.blocks}" varStatus="status">
+                            <tr>
+                                <c:if test="${status.first}">
+                                    <td><i:inline key=".sequenceType.${sequence.type}"/></td>
+                                </c:if>
+                                <c:if test="${not status.first}">
+                                    <td></td>
+                                </c:if>
+                                <td>${block.start}</td>
+                                <td>${block.end}</td>
+                                <c:if test="${status.first}">
+                                    <td>
+                                        <div class="dib progress">
+                                            <c:set var="clazz" value="progress-bar-success"/>
+                                            <c:if test="${sequence.completionPercentage < 90 and sequence.completionPercentage >= 75}">
+                                                <c:set var="clazz" value="progress-bar-warning"/>
+                                            </c:if>
+                                            <c:if test="${sequence.completionPercentage <= 75}">
+                                                <c:set var="clazz" value="progress-bar-danger"/>
+                                            </c:if>
+                                            <div class="progress-bar ${clazz}" style="width: ${sequence.completionPercentage}%"></div>
+                                        </div>&nbsp;${sequence.completionPercentage}%
+                                    </td>
+                                </c:if>
+                                <c:if test="${not status.first}">
+                                    <td></td>
+                                </c:if>
+                            </tr>
+                        </c:forEach>
                     </c:forEach>
                 </tbody>
             </table>
