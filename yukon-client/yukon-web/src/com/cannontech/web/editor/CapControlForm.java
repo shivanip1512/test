@@ -1074,7 +1074,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 
         /* Sets the navigation history so the return buttons work */
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-        CBCNavigationUtil.redirect(url, session);
+        ExternalContext externalcontext=facesContext.getExternalContext();
+        CBCNavigationUtil.redirect(externalcontext.getRequestContextPath()+url, session);
 
         /* Does the actually redirection to the editor url */
         JSFUtil.redirect(url);
