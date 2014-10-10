@@ -13,6 +13,8 @@ yukon.tools.commander = (function () {
     var
     mod = {},
     
+    _scrollLock = false,
+    
     /** {object} - Map of target button id's to CommandType enum entries. */
     _targetTypes = {
         device: 'DEVICE',
@@ -161,14 +163,16 @@ yukon.tools.commander = (function () {
         var timestamp = moment(req.timezone).tz(_tz).format(_timeFormat),
             result = $('<div>'), 
             resultReq = $('<div>'),
-            pending = $('#cmdr-templates .cmd-pending').clone();
+            pending = $('#cmdr-templates .cmd-pending').clone(),
+            console = $('#commander-results');
         
         result.addClass('cmd-req-resp').data('requestId', req.id).attr('data-request-id', req.id);
         resultReq.addClass('cmd-req').text('[' + timestamp + '] - ' + req.requestText).appendTo(result);
         result.append(pending);
         _pending[req.id] = [];
         
-        $('#commander-results').append(result).scrollTo(result);
+        console.append(result);
+        if (!_scrollLock) console.scrollTo(result); 
         
         return result;
     },
@@ -182,8 +186,8 @@ yukon.tools.commander = (function () {
         
         var
         clazz = _responseTypes[resp.type],
-        results = $('#commander-results'),
-        result = results.find('[data-request-id="' + req.id + '"]'),
+        console = $('#commander-results'),
+        result = console.find('[data-request-id="' + req.id + '"]'),
         throbber = result.find('.cmd-pending'),
         response = $('<div>').addClass(clazz).data('responseId', resp.id);
         
@@ -200,7 +204,7 @@ yukon.tools.commander = (function () {
             result.append(response);
         }
         
-        results.scrollTo(response);
+        if (!_scrollLock) console.scrollTo(response);
         
         return result;
     },
@@ -214,12 +218,13 @@ yukon.tools.commander = (function () {
     _logError = function (reqId, text) {
         
         var 
-        results = $('#commander-results'),
-        result = results.find('[data-request-id="' + reqId + '"]'),
+        console = $('#commander-results'),
+        result = console.find('[data-request-id="' + reqId + '"]'),
         response = $('<div>').addClass('cmd-resp-fail').text(text);
         
         result.append(response);
-        results.scrollTo(response);
+        
+        if (!_scrollLock) console.scrollTo(response);
         
         return result;
     },
@@ -404,8 +409,10 @@ yukon.tools.commander = (function () {
             
             if (_initialized) return;
             
+            var target, paoId, category, url, lastReq;
+            
             /** Load common commands if we came in with a previous target from the cookie */
-            var target = yukon.cookie.get('commander', 'lastTarget', ''), paoId, category, url;
+            target = yukon.cookie.get('commander', 'lastTarget', '');
             if (target) {
                 if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
                     paoId = yukon.cookie.get('commander', 'lastPaoId', '');
@@ -421,10 +428,20 @@ yukon.tools.commander = (function () {
             }
             
             /** Scroll the console to the bottom incase there are previous commands */
-            var lastReq = $('#commander-results .cmd-req-resp:last-child');
+            lastReq = $('#commander-results .cmd-req-resp:last-child');
             if (lastReq.length) $('#commander-results').scrollTo(lastReq);
             
+            _scrollLock = yukon.cookie.get('commander', 'scrollLock', false);
+            $('#scroll-lock-btn').toggleClass('on', _scrollLock);
+            
             /** EVENT HANDLERS **/
+            
+            /** User clicked scroll lock button on console. */
+            $('#scroll-lock-btn').on('click', function (ev) {
+                var on = $(this).toggleClass('on').is('.on');
+                yukon.cookie.set('commander', 'scrollLock', on);
+                _scrollLock = on;
+            });
             
             /** User clicked a recent target from the recent targets menu. */
             $(document).on('click', '.js-recent-menu a', function (ev) {

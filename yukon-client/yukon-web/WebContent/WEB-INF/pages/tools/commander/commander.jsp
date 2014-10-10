@@ -22,7 +22,6 @@
 }
 .console .title-bar .button {
     float: right;
-    margin: 0;
 }
 .cmd-req-resp { margin: 10px 0; }
 .cmd-req { color: #222; }
@@ -132,6 +131,7 @@
 <div id="commander-console" class="console lite-container stacked code">
     <div class="title-bar clearfix">
         <h2 class="title"><i:inline key="yukon.common.console"/></h2>
+        <cti:button id="scroll-lock-btn" icon="icon-lock" renderMode="buttonImage"/>
         <cti:button id="clear-console-btn" nameKey="clear" classes="right"/>
         <cti:button id="select-console-btn" nameKey="selectAll" classes="left"/>
     </div>

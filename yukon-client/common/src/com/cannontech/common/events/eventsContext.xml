@@ -14,6 +14,10 @@
     <bean id="eventLogFilterFactory" class="com.cannontech.common.events.service.impl.EventLogFilterFactoryImpl"/>
 
     <!-- Event Logger Beans -->
+    <bean id="commanderEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.CommanderEventLogService"/>
+    </bean>
+    
     <bean id="accountEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.AccountEventLogService"/>
     </bean>

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.device.search.service.DeviceSearchService;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.events.loggers.CommanderEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -80,6 +81,7 @@ public class CommanderController {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private CommandDao commandDao;
     @Autowired private CommanderService commanderService;
+    @Autowired private CommanderEventLogService eventLogger;
     @Autowired private DeviceSearchService deviceSearchService;
     @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -206,9 +208,12 @@ public class CommanderController {
             CarrierBase db = (CarrierBase) dbPersistentDao.retrieveDBPersistent(pao);
             db.getDeviceRoutes().setRouteID(routeId);
             dbPersistentDao.performDBChange(db, TransactionType.UPDATE);
+            
             Log.debug("User: " + user.getUsername() + " changed route on " + pao.getPaoName() + " from " 
                 + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
-            // TODO Log change in event log
+            
+            eventLogger.changeRoute(user.getUsername(), pao.getPaoName(), oldRoute.getPaoName(), newRoute.getPaoName(), 
+                    pao.getLiteID(), oldRoute.getLiteID(), newRoute.getLiteID());
         } catch (RuntimeException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
         }
@@ -248,7 +253,17 @@ public class CommanderController {
         List<CommandRequest> commands = null;
         try {
             commands = commanderService.sendCommand(userContext, params);
-            // TODO Log command sent in event log
+            
+            if (params.getTarget() == CommandTarget.DEVICE || params.getTarget() == CommandTarget.LOAD_GROUP) {
+                LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
+                eventLogger.executeOnPao(userContext.getYukonUser().getUsername(), params.getCommand(), 
+                        pao.getPaoName(), pao.getLiteID());
+            } else {
+                LiteYukonPAObject route = cache.getAllPaosMap().get(params.getRouteId());
+                eventLogger.executeOnSerial(userContext.getYukonUser().getUsername(), params.getCommand(), 
+                        params.getSerialNumber(), route.getPaoName(), route.getLiteID());
+            }
+            
         } catch (CommandRequestException e) {
             commands = e.getRequests();
             if (e.getType() == CommandRequestExceptionType.PORTER_CONNECTION_INVALID) {

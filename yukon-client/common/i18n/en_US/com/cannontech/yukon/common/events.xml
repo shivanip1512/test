@@ -2,7 +2,6 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
@@ -70,6 +69,11 @@
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
 
 <!-- Event log message text and column names -->
+
+    <entry key="yukon.common.events.commander.executeOnPao">User {1} executed command ''{2}'' on device {3}.</entry>
+    <entry key="yukon.common.events.commander.executeOnSerial">User {1} executed command ''{2}'' on serial number {3} and route {4}.</entry>
+    <entry key="yukon.common.events.commander.changeRoute">User {1} changed route for {2} from {3} to {4}.</entry>
+
 <!-- Account -->
     <!-- Account -->
     <entry key="yukon.common.events.stars.account.accountCreationAttempted">User {1} attempted to create a new account {2}. Source: {3}</entry>
