@@ -32,8 +32,8 @@ public class WebUtilityService {
         return ServletUtil.createSafeUrl(request, homeUrl);
     }
     
-    public <T> T getYukonCookieValue(HttpServletRequest req, String scope, String id, T defaultValue, TypeReference<T> expected) 
-            throws IOException {
+    public <T> T getYukonCookieValue(HttpServletRequest req, String scope, String id, T defaultValue, 
+            TypeReference<T> expected) throws IOException {
         
         T result = defaultValue;
         

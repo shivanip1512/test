@@ -1,13 +1,16 @@
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="meterDetail.electric">
+    
+    <cti:includeScript link="/JavaScript/yukon.ami.meter.details.js"/>
+    
+    <input id="device-id" type="hidden" value="${deviceId}">
     
     <dt:pickerIncludes/>
     
@@ -65,10 +68,7 @@
 
             <!-- Actions: Manual Commander -->
             <cti:checkRolesAndProperties value="ENABLE_WEB_COMMANDER">
-                    <cti:url var="commanderUrl" value="/amr/manualCommand/home">
-                        <cti:param name="deviceId" value="${deviceId}"/>
-                    </cti:url>
-                    <cm:dropdownOption key=".manualCommander" href="${commanderUrl}"/>
+                <cm:dropdownOption key=".commander" id="commander-menu-option"/>
             </cti:checkRolesAndProperties>
 
             <!-- Actions: Locate Route -->
