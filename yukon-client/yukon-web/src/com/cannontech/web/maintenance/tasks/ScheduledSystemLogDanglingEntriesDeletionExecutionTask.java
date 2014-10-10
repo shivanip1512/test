@@ -1,4 +1,4 @@
-package com.cannontech.amr.scheduledSystemLogDanglingEntriesDeletionExecutionTask.tasks;
+package com.cannontech.web.maintenance.tasks;
 
 
 import org.joda.time.Instant;

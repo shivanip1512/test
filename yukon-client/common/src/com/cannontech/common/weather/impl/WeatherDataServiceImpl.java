@@ -1,4 +1,4 @@
-package com.cannontech.loadcontrol.weather.impl;
+package com.cannontech.common.weather.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,6 +21,13 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.weather.GeographicCoordinate;
+import com.cannontech.common.weather.NoaaWeatherDataService;
+import com.cannontech.common.weather.NoaaWeatherDataServiceException;
+import com.cannontech.common.weather.WeatherDataService;
+import com.cannontech.common.weather.WeatherLocation;
+import com.cannontech.common.weather.WeatherObservation;
+import com.cannontech.common.weather.WeatherStation;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
@@ -29,13 +36,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
-import com.cannontech.loadcontrol.weather.GeographicCoordinate;
-import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
-import com.cannontech.loadcontrol.weather.NoaaWeatherDataServiceException;
-import com.cannontech.loadcontrol.weather.WeatherDataService;
-import com.cannontech.loadcontrol.weather.WeatherLocation;
-import com.cannontech.loadcontrol.weather.WeatherObservation;
-import com.cannontech.loadcontrol.weather.WeatherStation;
 
 public class WeatherDataServiceImpl implements WeatherDataService {
 

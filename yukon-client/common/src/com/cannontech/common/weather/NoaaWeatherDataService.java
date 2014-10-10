@@ -1,4 +1,4 @@
-package com.cannontech.loadcontrol.weather;
+package com.cannontech.common.weather;
 
 import java.util.List;
 import java.util.Map;

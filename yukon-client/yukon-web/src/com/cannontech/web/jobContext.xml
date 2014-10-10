@@ -491,19 +491,19 @@
 
     <!-- Scheduled Rph Duplicate Deletion Execution Task -->
     <bean id="scheduledRphDuplicateDeletionExecutionTask"
-        class="com.cannontech.amr.scheduledRphDuplicateDeletionExecution.tasks.ScheduledRphDuplicateDeletionExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledRphDuplicateDeletionExecutionTask"
         scope="prototype">
     </bean>
 
     <!-- Scheduled Rph Dangling Entries Deletion Execution Task -->
     <bean id="scheduledRphDanglingEntriesDeletionExecutionTask"
-        class="com.cannontech.amr.scheduledRphDanglingEntriesDeletionExecutionTask.tasks.ScheduledRphDanglingEntriesDeletionExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledRphDanglingEntriesDeletionExecutionTask"
         scope="prototype">
     </bean>
 
     <!-- Scheduled System Log Dangling Entries Deletion Execution Task -->
     <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionTask"
-        class="com.cannontech.amr.scheduledSystemLogDanglingEntriesDeletionExecutionTask.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask"
         scope="prototype">
     </bean>
 
@@ -513,7 +513,7 @@
     </bean>
 
    <!-- Scheduled Weather Data Update Execution task -->
-    <bean id="repeatingWeatherDataTask" class="com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask"
+    <bean id="repeatingWeatherDataTask" class="com.cannontech.web.maintenance.tasks.RepeatingWeatherDataTask"
         scope="prototype">
     </bean>
 

@@ -1,4 +1,4 @@
-package com.cannontech.loadcontrol.weather;
+package com.cannontech.common.weather;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.database.data.lite.LitePoint;

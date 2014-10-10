@@ -69,7 +69,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
-import com.cannontech.web.loadcontrol.tasks.RepeatingWeatherDataTask;
+import com.cannontech.web.maintenance.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;

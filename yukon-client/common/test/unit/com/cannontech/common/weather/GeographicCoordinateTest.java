@@ -1,10 +1,12 @@
-package com.cannontech.loadcontrol.weather;
+package com.cannontech.common.weather;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.cannontech.common.weather.GeographicCoordinate;
 
 public class GeographicCoordinateTest {
 

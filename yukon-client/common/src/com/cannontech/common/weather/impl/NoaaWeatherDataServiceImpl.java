@@ -1,4 +1,4 @@
-package com.cannontech.loadcontrol.weather.impl;
+package com.cannontech.common.weather.impl;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -37,13 +37,13 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.xml.YukonXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
+import com.cannontech.common.weather.GeographicCoordinate;
+import com.cannontech.common.weather.NoaaWeatherDataService;
+import com.cannontech.common.weather.NoaaWeatherDataServiceException;
+import com.cannontech.common.weather.WeatherObservation;
+import com.cannontech.common.weather.WeatherStation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
-import com.cannontech.loadcontrol.weather.GeographicCoordinate;
-import com.cannontech.loadcontrol.weather.NoaaWeatherDataService;
-import com.cannontech.loadcontrol.weather.NoaaWeatherDataServiceException;
-import com.cannontech.loadcontrol.weather.WeatherObservation;
-import com.cannontech.loadcontrol.weather.WeatherStation;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 

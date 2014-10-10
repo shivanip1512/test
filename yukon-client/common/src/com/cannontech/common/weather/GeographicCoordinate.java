@@ -1,4 +1,4 @@
-package com.cannontech.loadcontrol.weather;
+package com.cannontech.common.weather;
 
 public final class GeographicCoordinate {
 

@@ -1,4 +1,4 @@
-package com.cannontech.amr.scheduledRphDanglingEntriesDeletionExecutionTask.tasks;
+package com.cannontech.web.maintenance.tasks;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
