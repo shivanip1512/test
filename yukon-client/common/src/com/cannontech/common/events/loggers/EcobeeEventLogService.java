@@ -21,8 +21,8 @@ public interface EcobeeEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee")
     public void dataDownloaded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                               @Arg(ArgEnum.startReportDate) Instant startReportDate,
-                               @Arg(ArgEnum.endReportDate) Instant endReportDate,
+                               @Arg(ArgEnum.startDate) Instant startReportDate,
+                               @Arg(ArgEnum.endDate) Instant endReportDate,
                                @Arg(ArgEnum.loadGroupIds) String loadGroupIds,
                                @Arg(ArgEnum.eventSource) EventSource source);
 }

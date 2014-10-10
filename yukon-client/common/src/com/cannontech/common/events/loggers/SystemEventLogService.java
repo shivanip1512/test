@@ -65,16 +65,16 @@ public interface SystemEventLogService {
     /* System Admin */
     /* Maintenance */
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
-    public void rphDeleteDuplicates(int rowsDeleted, Instant start, Instant finish);
+    public void rphDeleteDuplicates(int rowsDeleted, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
-    public void rphDeleteDanglingEntries(int rowsDeleted, Instant start, Instant finish);
+    public void rphDeleteDanglingEntries(int rowsDeleted, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
-    public void systemLogDeleteDanglingEntries(int rowsDeleted, Instant start, Instant finish);
+    public void systemLogDeleteDanglingEntries(int rowsDeleted, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
-    public void systemLogWeatherDataUpdate(int weatherLocationsUpdated, Instant start, Instant finish);
+    public void systemLogWeatherDataUpdate(int weatherLocationsUpdated, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
     
     /* System Admin */
     /* Configuration */

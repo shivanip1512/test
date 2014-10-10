@@ -16,7 +16,7 @@
     <entry key="yukon.common.events.deviceGroup">Device Group</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
     <entry key="yukon.common.events.email">Email</entry>
-    <entry key="yukon.common.events.endReportDate">End Date</entry>
+    <entry key="yukon.common.events.endDate">End Date</entry>
     <entry key="yukon.common.events.energyCompanyId">Energy Company Id</entry>
     <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
     <entry key="yukon.common.events.energyCompanySettingType">Energy Company Setting</entry>
@@ -57,6 +57,7 @@
     <entry key="yukon.common.events.scheduleName">Schedule Name</entry>
     <entry key="yukon.common.events.serialNumber">Serial Number</entry>
     <entry key="yukon.common.events.shedDuration">Shed Duration</entry>
+    <entry key="yukon.common.events.startDate">Start Date</entry>
     <entry key="yukon.common.events.substationName">Substation Name</entry>
     <entry key="yukon.common.events.successRequests">Success Requests</entry>
     <entry key="yukon.common.events.syncIssueType">Sync Type</entry>
@@ -421,9 +422,13 @@
     <!--  System Administration -->
     <!-- Maintenance -->
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates.7">Number Deleted</entry>
     <entry key="yukon.common.events.system.maintenance.systemLogDeleteDanglingEntries">Deleted {7} dangling SystemLog rows from database. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.systemLogDeleteDanglingEntries.7">Number Deleted</entry>
     <entry key="yukon.common.events.system.maintenance.rphDeleteDanglingEntries">Deleted {7} dangling RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.rphDeleteDanglingEntries.7">Number Deleted</entry>
     <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate">Updated {7} weather stations. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate.7">Number Updated</entry>
     
     <!--  System Administration -->
     <!-- Configuration -->
