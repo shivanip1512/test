@@ -11,12 +11,12 @@ public enum CssLibrary {
     BOOTSTRAP("/resources/css/lib/bootstrap.css"), // built subset from www.getbootstrap.com
     NORMALIZE("/resources/css/lib/normalize.css"), // http://necolas.github.io/normalize.css/
     
-    OVERRIDES("/WebConfig/yukon/styles/overrides.css"), // compilied internally
-    LAYOUT("/WebConfig/yukon/styles/layout.css"), // compilied internally
-    YUKON("/WebConfig/yukon/styles/yukon.css"), // compilied internally
-    YUKON_DEFAULT("/WebConfig/yukon/styles/yukon.default.css"), // compilied internally, unaffected by theming
-    BUTTONS("/WebConfig/yukon/styles/buttons.css"), // compilied internally
-    BUTTONS_DEFAULT("/WebConfig/yukon/styles/buttons.default.css"), // compilied internally, unaffected by theming
+    OVERRIDES("/WebConfig/yukon/styles/overrides.css"), // compiled internally
+    LAYOUT("/WebConfig/yukon/styles/layout.css"), // compiled internally
+    YUKON("/WebConfig/yukon/styles/yukon.css"), // compiled internally
+    YUKON_DEFAULT("/WebConfig/yukon/styles/yukon.default.css"), // compiled internally, unaffected by theming
+    BUTTONS("/WebConfig/yukon/styles/buttons.css"), // compiled internally
+    BUTTONS_DEFAULT("/WebConfig/yukon/styles/buttons.default.css"), // compiled internally, unaffected by theming
     ICONS("/WebConfig/yukon/styles/icons.css"), // internal
     
     TIPSY("/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"), // see JsLibrary.JQUERY_TIPSY
