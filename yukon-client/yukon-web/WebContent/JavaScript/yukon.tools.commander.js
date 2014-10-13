@@ -323,7 +323,7 @@ yukon.tools.commander = (function () {
             }
             
             $('.js-recent-menu').prepend(option);
-            $('.js-recent-btn').show();
+            $('.js-recent-btn').removeClass('dn');
         }
     },
     
@@ -501,7 +501,7 @@ yukon.tools.commander = (function () {
                         $('#device-row').hide();
                         $('#serial-number-row').hide();
                         $('#route-row').hide();
-                        $('.js-nearby-btn').hide();
+                        $('.js-nearby-btn').addClass('dn');
                     });
                 } else if (type === _targetTypes.ecom) {
                     $('#serial-number').val(serialNumber);
@@ -511,7 +511,7 @@ yukon.tools.commander = (function () {
                     $('#device-row').hide();
                     $('#serial-number-row').show();
                     $('#route-row').show();
-                    $('.js-nearby-btn').hide();
+                    $('.js-nearby-btn').addClass('dn');
                 } else if (type === _targetTypes.vcom) {
                     $('#serial-number').val(serialNumber);
                     $('#route-id').val(routeId);
@@ -520,7 +520,7 @@ yukon.tools.commander = (function () {
                     $('#device-row').hide();
                     $('#serial-number-row').show();
                     $('#route-row').show();
-                    $('.js-nearby-btn').hide();
+                    $('.js-nearby-btn').addClass('dn');
                 }
             });
             
@@ -551,7 +551,7 @@ yukon.tools.commander = (function () {
                     _updateCommonCommands(commands);
                 });
                 $('#command-text').val('');
-                $('.js-nearby-btn').hide();
+                $('.js-nearby-btn').addClass('dn');
             });
             
             /** User clicked the device target buttons, update the common commands. */
@@ -584,7 +584,7 @@ yukon.tools.commander = (function () {
                     select.trigger('chosen:updated').siblings('.chosen-container').css('width', select.css('width'));
                 }
                 $('#command-text').val('');
-                $('.js-nearby-btn').hide();
+                $('.js-nearby-btn').addClass('dn');
             });
             
             /** User clicked the execute button. */
