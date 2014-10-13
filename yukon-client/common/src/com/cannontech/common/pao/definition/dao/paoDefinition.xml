@@ -4489,6 +4489,7 @@
    
     <pao id="ECOBEE_SMART_SI" inherits="ECOBEE"/>
     <pao id="ECOBEE_3" inherits="ECOBEE"/>
+    <pao id="ECOBEE_SMART" inherits="ECOBEE"/>
     
     <!-- RF Gateway -->
     <pao id="RFN_GATEWAY">

@@ -44,6 +44,7 @@ public class PaoPersistenceDaoImplTest {
     private static final int cbc7020PaoId_update = nextPaoId++;
     private static final int cbc7020PaoId_delete = nextPaoId++;
     private static final int ecobee3PaoId_create = nextPaoId++;
+    private static final int ecobeeSmartPaoId_create = nextPaoId++;
 
     private PaoPersistenceDaoImpl paoPersistenceDao;
     private PaoDao paoDao;
@@ -86,7 +87,7 @@ public class PaoPersistenceDaoImplTest {
     @Test
     public void testCreateAndRetreive_ECOBEE_SMART_SI() {
         CompleteDevice pao = new CompleteDevice();
-        pao.setPaoName("awesomely cool PAO");
+        pao.setPaoName("ecobeeSmartSi");
         pao.setDescription("I'm a little description, short and stout.");
         pao.setAlarmInhibit(true);
         pao.setControlInhibit(true);
@@ -117,6 +118,26 @@ public class PaoPersistenceDaoImplTest {
         expect(paoDao.getNextPaoId()).andReturn(expectedPaoIdentifier.getPaoId());
         replay(paoDao);
         paoPersistenceDao.createPao(pao, PaoType.ECOBEE_3);
+
+        CompleteDevice fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteDevice.class);
+        assertFalse(fromDb == pao);
+        assertEquals("retreived PAO differs from saved one", pao, fromDb);
+    }
+    
+    @Test
+    public void testCreateAndRetreive_ECOBEE_SMART() {
+        CompleteDevice pao = new CompleteDevice();
+        pao.setPaoName("ecobeeSmart");
+        pao.setDescription("I'm a little description, short and stout.");
+        pao.setAlarmInhibit(true);
+        pao.setControlInhibit(true);
+        pao.setStatistics("some stats");
+
+        PaoIdentifier expectedPaoIdentifier = new PaoIdentifier(ecobeeSmartPaoId_create, PaoType.ECOBEE_SMART);
+
+        expect(paoDao.getNextPaoId()).andReturn(expectedPaoIdentifier.getPaoId());
+        replay(paoDao);
+        paoPersistenceDao.createPao(pao, PaoType.ECOBEE_SMART);
 
         CompleteDevice fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteDevice.class);
         assertFalse(fromDb == pao);

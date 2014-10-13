@@ -240,6 +240,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "ecobee Smart Si", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ECOBEE_3(DeviceTypes.ECOBEE_3, "ecobee3", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    ECOBEE_SMART(DeviceTypes.ECOBEE_SMART, "ecobee Smart", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ;
     
     private final int deviceTypeId;
@@ -560,7 +561,7 @@ public enum PaoType implements DatabaseRepresentationSource {
         b.addAll(repeaterTypes);
         routableTypes = b.build();
         
-        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3);
+        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART);
     }
     
     /**

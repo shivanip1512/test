@@ -391,6 +391,7 @@ public class PaoTypeTest {
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
+                        PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
@@ -510,6 +511,7 @@ public class PaoTypeTest {
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
+                        PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
@@ -675,6 +677,7 @@ public class PaoTypeTest {
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
+                        PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
@@ -851,6 +854,7 @@ public class PaoTypeTest {
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
+                        PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
@@ -1043,6 +1047,7 @@ public class PaoTypeTest {
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
+                        PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
@@ -1228,6 +1233,7 @@ public class PaoTypeTest {
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
+                        PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY);
     
     @Test

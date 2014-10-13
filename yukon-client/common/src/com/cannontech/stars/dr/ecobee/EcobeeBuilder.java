@@ -28,14 +28,11 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
-    
-
-    private static final ImmutableSet<HardwareType> supportedType = ImmutableSet.of(HardwareType.ECOBEE_SMART_SI,
-        HardwareType.ECOBEE_3);
-    
+        
     private static final ImmutableMap<HardwareType, PaoType> hardwareTypeToPaoType = ImmutableMap.<HardwareType, PaoType> builder()
             .put(HardwareType.ECOBEE_SMART_SI, PaoType.ECOBEE_SMART_SI)
-            .put( HardwareType.ECOBEE_3, PaoType.ECOBEE_3)
+            .put(HardwareType.ECOBEE_3, PaoType.ECOBEE_3)
+            .put(HardwareType.ECOBEE_SMART, PaoType.ECOBEE_SMART)
             .build();
     
     @Override
@@ -64,7 +61,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public ImmutableSet<HardwareType> getTypes() {
-        return supportedType;
+        return hardwareTypeToPaoType.keySet();
     }
 
     @Override
