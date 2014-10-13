@@ -108,7 +108,7 @@ public class CommanderController {
         model.addAttribute("requests", requests);
         
         // Check cookie for last target of command execution
-        String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null, JsonUtils.stringType);
+        String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null, JsonUtils.STRING_TYPE);
         if (lastTarget != null) {
             
             CommandTarget target = CommandTarget.valueOf(lastTarget);
@@ -116,7 +116,7 @@ public class CommanderController {
             
             if (target.isPao()) {
                 // Device or load group
-                Integer paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.intType);
+                Integer paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.INT_TYPE);
                 if (paoId != null) {
                     model.addAttribute("paoId", paoId);
                     // Add route info if available
@@ -131,9 +131,9 @@ public class CommanderController {
                 }
             } else {
                 model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null, 
-                        JsonUtils.stringType));
+                        JsonUtils.STRING_TYPE));
                 model.addAttribute("routeId", webUtil.getYukonCookieValue(req, "commander", "lastRouteId", null, 
-                        JsonUtils.intType));
+                        JsonUtils.INT_TYPE));
             }
         } else {
             // Default to device target
