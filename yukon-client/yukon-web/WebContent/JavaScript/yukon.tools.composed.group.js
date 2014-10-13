@@ -3,10 +3,17 @@ yukon.namespace('yukon.tools.composedGroup');
 /**
  * This module handles behavior on the device configuration pages.
  * @module yukon.tools.composedGroup
+ *
+ * @requires JQUERY
+ * @requires yukon
  */
 yukon.tools.composedGroup = (function () {
 
-    var _numberInputs = function () {
+    var
+        /**
+         * Sets the square bracket indexing notation for Spring binding.
+         */
+        _indexForSpring = function () {
             $('.js-rules-list').children('.js-rule').each(function (index) {
                 $(this).find(':input[name]').each(function () {
                     var input = $(this),
@@ -26,12 +33,12 @@ yukon.tools.composedGroup = (function () {
                     var template = $('.js-template').clone().removeClass('js-template');
 
                     $('.js-rules-list').append(template.show());
-                    _numberInputs();
+                    _indexForSpring();
                 });
 
                 $(document).on('click', '.js-remove-rule', function () {
                     $(this).closest('.js-rule').remove();
-                    _numberInputs();
+                    _indexForSpring();
                 });
             },
 
