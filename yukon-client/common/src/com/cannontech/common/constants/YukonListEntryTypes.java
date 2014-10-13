@@ -58,6 +58,7 @@ public interface YukonListEntryTypes
     public static final int YUK_DEF_ID_DEV_TYPE_LCR_4600      = 1327;
     public static final int YUK_DEF_ID_DEV_TYPE_LCR_4700      = 1328;
     public static final int YUK_DEF_ID_DEV_TYPE_ECOBEE_SMART_SI = 1329;
+    public static final int YUK_DEF_ID_DEV_TYPE_ECOBEE_3        = 1330;
     
     public static final int YUK_DEF_ID_APP_CAT_DEFAULT                = 1400;
     public static final int YUK_DEF_ID_APP_CAT_AIR_CONDITIONER        = 1401;

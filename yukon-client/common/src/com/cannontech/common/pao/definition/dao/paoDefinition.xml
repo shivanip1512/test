@@ -4411,7 +4411,7 @@
         </points>
     </pao>
 
-    <pao id="ECOBEE_SMART_SI">
+    <pao id="ECOBEE" abstract="true">
         <points>
             <!-- ANALOG POINTS -->
             <point type="Analog" offset="1">
@@ -4486,6 +4486,9 @@
             <tag name="DB_EDITOR_INCOMPATIBLE" />
         </tags>
     </pao>
+   
+    <pao id="ECOBEE_SMART_SI" inherits="ECOBEE"/>
+    <pao id="ECOBEE_3" inherits="ECOBEE"/>
     
     <!-- RF Gateway -->
     <pao id="RFN_GATEWAY">

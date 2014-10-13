@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -390,6 +390,7 @@ public class PaoTypeTest {
                         PaoType.VIRTUAL_SYSTEM,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
+                        PaoType.ECOBEE_3,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
@@ -508,6 +509,7 @@ public class PaoTypeTest {
                         PaoType.VIRTUAL_SYSTEM,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
+                        PaoType.ECOBEE_3,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
@@ -672,6 +674,7 @@ public class PaoTypeTest {
                         PaoType.VIRTUAL_SYSTEM,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
+                        PaoType.ECOBEE_3,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
@@ -847,6 +850,7 @@ public class PaoTypeTest {
                         PaoType.VIRTUAL_SYSTEM,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
+                        PaoType.ECOBEE_3,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
@@ -1038,6 +1042,7 @@ public class PaoTypeTest {
                         PaoType.VIRTUAL_SYSTEM,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
+                        PaoType.ECOBEE_3,
                         PaoType.RFN_GATEWAY);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
@@ -1222,6 +1227,7 @@ public class PaoTypeTest {
                         PaoType.VIRTUAL_SYSTEM,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
+                        PaoType.ECOBEE_3,
                         PaoType.RFN_GATEWAY);
     
     @Test

@@ -239,6 +239,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     RFN_1200(DeviceTypes.RFN_1200, "RFN-1200", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "ecobee Smart Si", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    ECOBEE_3(DeviceTypes.ECOBEE_3, "ecobee3", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ;
     
     private final int deviceTypeId;
@@ -268,6 +269,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> lcuTypes;
     private final static ImmutableSet<PaoType> repeaterTypes;
     private final static ImmutableSet<PaoType> routableTypes;
+    private final static ImmutableSet<PaoType> ecobeeTypes;
     
     public final static int INVALID = -1;
     
@@ -557,6 +559,8 @@ public enum PaoType implements DatabaseRepresentationSource {
         b.addAll(mctTypes);
         b.addAll(repeaterTypes);
         routableTypes = b.build();
+        
+        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3);
     }
     
     /**
@@ -616,7 +620,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     }
     
     public boolean isEcobee() {
-        return this == PaoType.ECOBEE_SMART_SI;
+        return ecobeeTypes.contains(this);
     }
     
     public boolean isMeter() {
@@ -792,6 +796,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRoutableTypes() {
         return routableTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getEcobeeTypes() {
+        return ecobeeTypes;
     }
     
     /**

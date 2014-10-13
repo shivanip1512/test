@@ -68,6 +68,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     UTILITY_PRO_G3(YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G3, ONE_WAY_RECEIVER, THERMOSTAT, EXPRESSCOM, true, true, true),
     UTILITY_PRO_ZIGBEE(YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO, TWO_WAY_RECEIVER, THERMOSTAT, SEP, true, false, true),
     ECOBEE_SMART_SI(YUK_DEF_ID_DEV_TYPE_ECOBEE_SMART_SI, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
+    ECOBEE_3(YUK_DEF_ID_DEV_TYPE_ECOBEE_3, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
     
     /* Gateways*/
     DIGI_GATEWAY(YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, TWO_WAY_RECEIVER, GATEWAY, EXPRESSCOM, false, false, false);
@@ -80,6 +81,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
     private final static ImmutableSet<HardwareType> utilityProTypes;
     private final static ImmutableSet<HardwareType> autoModeEnableTypes;
+    private final static ImmutableSet<HardwareType> ecobeeTypes;
     
     private final static ImmutableSet<HardwareType> supportsChangeType;
     private final static ImmutableSet<HardwareType> supportsAddByRange;
@@ -150,6 +152,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         }
         schedulableTypes = schedulableBuilder.build();
         manualAdjustmentTypes = manualAdjustmentBuilder.build();
+        
+        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3);
     }
     
     // this key prefix can be found in the following file:
@@ -276,7 +280,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      * Returns true if this hardware type is an Ecobee thermostat.
      */
     public boolean isEcobee() {
-        return this == ECOBEE_SMART_SI;
+        return ecobeeTypes.contains(this);
     }
     
     /**

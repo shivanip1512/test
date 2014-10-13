@@ -19,6 +19,7 @@ import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class EcobeeBuilder implements HardwareTypeExtensionProvider {
@@ -27,9 +28,16 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+    
 
-    private static final ImmutableSet<HardwareType> supportedType = ImmutableSet.of(HardwareType.ECOBEE_SMART_SI);
-
+    private static final ImmutableSet<HardwareType> supportedType = ImmutableSet.of(HardwareType.ECOBEE_SMART_SI,
+        HardwareType.ECOBEE_3);
+    
+    private static final ImmutableMap<HardwareType, PaoType> hardwareTypeToPaoType = ImmutableMap.<HardwareType, PaoType> builder()
+            .put(HardwareType.ECOBEE_SMART_SI, PaoType.ECOBEE_SMART_SI)
+            .put( HardwareType.ECOBEE_3, PaoType.ECOBEE_3)
+            .build();
+    
     @Override
     public void createDevice(Hardware hardware) {
         try {
@@ -37,12 +45,12 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
 
             CompleteDevice ecobeePao = new CompleteDevice();
             ecobeePao.setPaoName(hardware.getSerialNumber());
-            paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, PaoType.ECOBEE_SMART_SI);
+            paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardware.getHardwareType()));
 
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
             ecobeeCommunicationService.moveDeviceToSet(hardware.getSerialNumber(),
-                                   EcobeeCommunicationService.UNENROLLED_SET);
+                EcobeeCommunicationService.UNENROLLED_SET);
         } catch (EcobeeCommunicationException | EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException e) {
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), e);

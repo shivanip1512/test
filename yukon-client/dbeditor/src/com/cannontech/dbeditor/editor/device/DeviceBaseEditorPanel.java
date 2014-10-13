@@ -80,7 +80,6 @@ import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
@@ -170,7 +169,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JLabel manufacturerLabel;
     private JLabel modelLabel;
 
-    private DlcAddressRangeService dlcAddressRangeService =
+    private final DlcAddressRangeService dlcAddressRangeService =
         YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
 
     class EventHandler implements ActionListener, CaretListener, JCValueListener {
@@ -2826,7 +2825,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         } else {
             if (paoType.getPaoClass() == PaoClass.VIRTUAL ||
                     paoType.getPaoClass() == PaoClass.RFMESH ||
-                    paoType == PaoType.ECOBEE_SMART_SI) {
+                    paoType.isEcobee()) {
                 getCommunicationPanel().setVisible(false);
             }
 

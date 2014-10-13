@@ -44,7 +44,7 @@ public class EcobeeGroupDeviceMappingDaoImpl implements EcobeeGroupDeviceMapping
         sql.append("from LmHardwareBase lmhb");
         sql.append("join InventoryBase ib on lmhb.InventoryId = ib.InventoryId");
         sql.append("join YukonPaObject ypo on ib.DeviceId = ypo.PaObjectId");
-        sql.append("where ypo.Type").eq_k(PaoType.ECOBEE_SMART_SI);
+        sql.append("where ypo.Type").in(PaoType.getEcobeeTypes());
         
         return jdbcTemplate.query(sql, RowMapper.STRING);
     }

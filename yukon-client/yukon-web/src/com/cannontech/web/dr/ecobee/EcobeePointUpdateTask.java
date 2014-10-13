@@ -25,7 +25,7 @@ import com.google.common.collect.Maps;
 
 public class EcobeePointUpdateTask extends YukonTaskBase {
 
-    private Logger log = YukonLogManager.getLogger(EcobeePointUpdateTask.class);
+    private final Logger log = YukonLogManager.getLogger(EcobeePointUpdateTask.class);
 
     @Autowired private PaoDao paoDao;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
@@ -35,35 +35,40 @@ public class EcobeePointUpdateTask extends YukonTaskBase {
     @Override
     public void start() {
         log.info("Starting ecobee daily reads.");
-        
-        List<LiteYukonPAObject> ecobeeDevices = paoDao.getLiteYukonPAObjectByType(PaoType.ECOBEE_SMART_SI);
 
-        Map<String, PaoIdentifier> ecobeeDevicesBySerialNumber = Maps.newHashMapWithExpectedSize(ecobeeDevices.size());
+        for (PaoType type : PaoType.getEcobeeTypes()) {
+            List<LiteYukonPAObject> ecobeeDevices = paoDao.getLiteYukonPAObjectByType(type);
 
-        for (LiteYukonPAObject ecobeePao : ecobeeDevices) {
-            PaoIdentifier pao = ecobeePao.getPaoIdentifier();
-            String ecobeeSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(pao.getPaoId());
-            ecobeeDevicesBySerialNumber.put(ecobeeSerialNumber, pao);
-        }
+            Map<String, PaoIdentifier> ecobeeDevicesBySerialNumber =
+                Maps.newHashMapWithExpectedSize(ecobeeDevices.size());
 
-        MutableDateTime startDate = new MutableDateTime();
-        startDate.addDays(-1);
-        startDate.setMillisOfDay(0);
-        Instant start = startDate.toInstant();
-        Instant end = start.plus(Duration.standardDays(1));
-        Range<Instant> dateRange = Range.inclusive(start,end);
+            for (LiteYukonPAObject ecobeePao : ecobeeDevices) {
+                PaoIdentifier pao = ecobeePao.getPaoIdentifier();
+                String ecobeeSerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(pao.getPaoId());
+                ecobeeDevicesBySerialNumber.put(ecobeeSerialNumber, pao);
+            }
 
-        log.info("Reading device data for " + ecobeeDevices.size() + " ecobee devices. Time range: " + dateRange);
+            MutableDateTime startDate = new MutableDateTime();
+            startDate.addDays(-1);
+            startDate.setMillisOfDay(0);
+            Instant start = startDate.toInstant();
+            Instant end = start.plus(Duration.standardDays(1));
+            Range<Instant> dateRange = Range.inclusive(start, end);
 
-        for (List<String> serialNumbers : Iterables.partition(ecobeeDevicesBySerialNumber.keySet(), 25)) {
-            List<EcobeeDeviceReadings> allDeviceReadings =
+            log.info("Reading device data for " + ecobeeDevices.size() + " ecobee devices. Time range: " + dateRange);
+
+            for (List<String> serialNumbers : Iterables.partition(ecobeeDevicesBySerialNumber.keySet(), 25)) {
+                List<EcobeeDeviceReadings> allDeviceReadings =
                     ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
-            for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
-                ecobeePointUpdateServiceImpl.
-                    updatePointData(ecobeeDevicesBySerialNumber.get(deviceReadings.getSerialNumber()), deviceReadings);
+                for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
+                    ecobeePointUpdateServiceImpl.updatePointData(
+                        ecobeeDevicesBySerialNumber.get(deviceReadings.getSerialNumber()), deviceReadings);
+                }
+            }
+
+            if (log.isInfoEnabled()) {
+                log.info(type + " daily reads complete.");
             }
         }
-        
-        log.info("Ecobee daily reads complete.");
     }
 }
