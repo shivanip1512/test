@@ -55,14 +55,17 @@ public class EcobeePointUpdateTask extends YukonTaskBase {
             Instant end = start.plus(Duration.standardDays(1));
             Range<Instant> dateRange = Range.inclusive(start, end);
 
-            log.info("Reading device data for " + ecobeeDevices.size() + " ecobee devices. Time range: " + dateRange);
+            if (log.isInfoEnabled()) {
+                log.info("Reading device data for " + type + " " + ecobeeDevices.size()
+                    + " ecobee devices. Time range: " + dateRange);
+            }
 
             for (List<String> serialNumbers : Iterables.partition(ecobeeDevicesBySerialNumber.keySet(), 25)) {
                 List<EcobeeDeviceReadings> allDeviceReadings =
                     ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
                 for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
-                    ecobeePointUpdateServiceImpl.updatePointData(
-                        ecobeeDevicesBySerialNumber.get(deviceReadings.getSerialNumber()), deviceReadings);
+                    ecobeePointUpdateServiceImpl.
+                        updatePointData(ecobeeDevicesBySerialNumber.get(deviceReadings.getSerialNumber()), deviceReadings);
                 }
             }
 
