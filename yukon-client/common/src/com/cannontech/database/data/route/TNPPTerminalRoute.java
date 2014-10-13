@@ -5,6 +5,6 @@ import com.cannontech.common.pao.PaoType;
 public class TNPPTerminalRoute extends RouteBase {
 
     public TNPPTerminalRoute() {
-        super(PaoType.TNPP_TERMINAL);
+        super(PaoType.ROUTE_TNPP_TERMINAL);
     }
 }
