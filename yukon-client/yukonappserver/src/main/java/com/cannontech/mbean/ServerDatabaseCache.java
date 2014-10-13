@@ -250,7 +250,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     }
     
     @Override
-    public Map<Integer, SimpleMeter> getAllMeters() {
+    public synchronized Map<Integer, SimpleMeter> getAllMeters() {
         
         if (allMeters != null) {
             return allMeters;

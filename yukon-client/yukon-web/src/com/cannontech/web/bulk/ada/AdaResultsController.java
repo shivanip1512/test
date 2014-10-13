@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.openexi.util.MessageResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -52,7 +51,7 @@ public class AdaResultsController {
     private final static int TABULAR_SIZE_LIMIT = 5000; //maximum number of data points before tabular link is disabled
     private final static int BAR_WIDTH = 400;
     
-    public enum Column implements DisplayableEnum {
+    private static enum Column implements DisplayableEnum {
         
         NAME, 
         TYPE, 
@@ -65,35 +64,35 @@ public class AdaResultsController {
         }
     };
     
-    Comparator<AdaDevice> nameCompare = new Comparator<AdaDevice>() {
+    private static final Comparator<AdaDevice> nameCompare = new Comparator<AdaDevice>() {
         @Override
         public int compare(AdaDevice o1, AdaDevice o2) {
             return o1.getName().compareToIgnoreCase(o2.getName());
         }
     };
     
-    Comparator<AdaDevice> typeCompare = new Comparator<AdaDevice>() {
+    private static final Comparator<AdaDevice> typeCompare = new Comparator<AdaDevice>() {
         @Override
         public int compare(AdaDevice o1, AdaDevice o2) {
             return o1.getPaoIdentifier().getPaoType().name().compareTo(o2.getPaoIdentifier().getPaoType().name());
         }
     };
     
-    Comparator<AdaDevice> meterNumberCompare = new Comparator<AdaDevice>() {
+    private static final Comparator<AdaDevice> meterNumberCompare = new Comparator<AdaDevice>() {
         @Override
         public int compare(AdaDevice o1, AdaDevice o2) {
             return o1.getMeterNumber().compareTo(o2.getMeterNumber());
         }
     };
     
-    Comparator<AdaDevice> intervalCompare = new Comparator<AdaDevice>() {
+    private static final Comparator<AdaDevice> intervalCompare = new Comparator<AdaDevice>() {
         @Override
         public int compare(AdaDevice o1, AdaDevice o2) {
             return Integer.compare(o1.getMissingIntervals(), o2.getMissingIntervals());
         }
     };
     
-    Map<Column, Comparator<AdaDevice>> sorters = ImmutableMap.of(Column.NAME, nameCompare,
+    private static final Map<Column, Comparator<AdaDevice>> sorters = ImmutableMap.of(Column.NAME, nameCompare,
                                                                  Column.TYPE, typeCompare,
                                                                  Column.METER_NUMBER, meterNumberCompare,
                                                                  Column.MISSING, intervalCompare);
