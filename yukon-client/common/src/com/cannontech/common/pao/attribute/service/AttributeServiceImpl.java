@@ -124,10 +124,10 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         try {
+            
             PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
-
             LitePoint litePoint = pointService.getPointForPao(paoPointIdentifier);
-
+            
             return litePoint;
         } catch (NotFoundException nfe) {
             throw new IllegalUseOfAttribute("Illegal use of attribute (no point): " + attribute);
