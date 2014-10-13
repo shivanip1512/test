@@ -22,18 +22,10 @@
 
 <link rel="shortcut icon" href="<cti:url value="/favicon.ico"/>" type="image/x-icon">
 
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>">
-<link rel="stylesheet" href="<cti:url value="/resources/css/lib/bootstrap.css"/>">
-<link rel="stylesheet" href="<cti:url value="/resources/css/lib/animate.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/layout.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/buttons.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/icons.css"/>">
-<link rel="stylesheet" href="<cti:url value="/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.min.css"/>">
-<link rel="stylesheet" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>">
-<link rel="stylesheet" href="<cti:url value="/JavaScript/lib/jQuery/plugins/spectrum/spectrum.css"/>">
-<link rel="stylesheet" href="<cti:url value="/resources/js/lib/chosen/chosen.min.css"/>">
-
+<!-- Standard CSS Files -->
+<c:forEach items="${standardCssFiles}" var="file">
+    <link rel="stylesheet" href="<cti:url value="${file}"/>">
+</c:forEach>
 
 <!-- Module CSS files from module_config.xml -->
 <c:forEach items="${moduleConfigCss}" var="file">
@@ -46,9 +38,9 @@
 </c:forEach>
 
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>">
+<cti:includeCss link="OVERRIDES" force="true"/>
 
-<tags:jsGlobals />
+<tags:jsGlobals/>
 
 <!-- Consolidated Script Files -->
 <c:forEach items="${javaScriptFiles}" var="file">
@@ -61,7 +53,7 @@
 </head>
 <body>
     <cti:msgScope paths="layout.standard">
-
+        
         <div id="modal-glass" style="display: none;">
             <div class="tint"></div>
             <div class="loading">
@@ -70,7 +62,7 @@
                 </div>
             </div>
         </div>
-
+        
         <div id="page">
             <header class="yukon-header">
                 <div class="outer">
@@ -140,13 +132,13 @@
                     </div>
                 </div>
             </header>
-
+            
             <section id="content" role="main" <c:if test="${widePage}">class="wide"</c:if>>
-
+                
                 <c:set var="layout" value="${showContextualNavigation ? 'column-4-20' : 'column-24'}"/>
                 <c:set var="columnNum" value="${showContextualNavigation ? 'two nogutter' : 'one nogutter'}"/>
                 <div class="${layout} clearfix" style="margin-bottom: 10px;">
-
+                    
                     <!-- Start Contextual Nav -->
                     <c:if test="${showContextualNavigation}">
                         <div id="LeftColumn" class="column one">
@@ -158,9 +150,9 @@
                         </div>
                     </c:if>
                     <!-- End Contextual Nav -->
-
+                    
                     <div class="column ${columnNum} main-container">
-
+                        
                         <%-- FLASH SCOPE MESSAGES --%>
                         <cti:flashScopeMessages />
                         <noscript>
@@ -168,11 +160,11 @@
                                 <cti:msg2 key="yukon.web.error.noJs"/>
                             </div>
                         </noscript>
-
+                        
                         <cti:outputContent writable="${bodyContent}"/>
                     </div>
                 </div>
-
+                
                 <cti:msg2 key="yukon.web.alerts.heading" var="alertTitle"/>
                 <tags:simplePopup title="${alertTitle}" id="yukon_alert_popup">
                     <div id="alert_body" class="scroll-lg"></div>
@@ -185,11 +177,11 @@
                 <tags:dataUpdateEnabler />
                 <cti:dataUpdaterCallback function="yukon.alerts.countUpdated" initialize="true" count="ALERT/COUNT"
                     lastId="ALERT/LASTID"/>
-
+                
                 <tags:analyticsTrackPage />
                 <%-- <tags:feedback/> TODO: uncomment when ready for feedback --%>
             </section>
-
+            
             <footer id="yukon-footer" class="yukon-footer">
                 <div class="utility">
                     <nav>
@@ -218,7 +210,7 @@
                         </ul>
                     </nav>
                 </div>
-
+                
                 <div class="footer">
                     <div class="content clearfix">
                         <div class="left">
@@ -256,7 +248,7 @@
                     </div>
                 </div>
             </footer>
-
+            
         </div>
     </cti:msgScope>
 </body>

@@ -13,7 +13,7 @@
         <!-- Layout CSS files -->
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/CannonStyle.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/PurpleHeaderBar.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>">
+        <cti:includeCss link="YUKON" force="true"/>
 
         <cti:url var="webClientRoleStyleSheet">
           <jsp:attribute name="value" trim="true">/WebConfig/<cti:getProperty property="STYLE_SHEET" /></jsp:attribute>

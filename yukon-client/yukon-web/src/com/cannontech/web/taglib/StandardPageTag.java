@@ -22,10 +22,11 @@ import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
  * module, layout customization via role property, and the page title.
  */
 public class StandardPageTag extends BodyTagSupport {
+    
     public static final String STANDARD_PAGE_INFO_ATTR = StandardPageTag.class.getName() + ".stdPageInfo";
     public static final String MAIN_CONTENT_ATTR = StandardPageTag.class.getName() + ".mainContent";
     public static final String STANDARD_PAGE_INSTANCE_ATTR = StandardPageTag.class.getName() + ".standardPageInstance";
-
+    
     private String title = "";
     private HtmlLevel htmlLevel = HtmlLevel.transitional;
     private List<String> cssFiles;
@@ -37,41 +38,42 @@ public class StandardPageTag extends BodyTagSupport {
     private String menuSelection = null;
     private boolean skipPage;
     private StandardPageInfo model;
-
+    
     @Override
     public int doStartTag() throws JspException {
+        
         skipPage = false;
-
+        
         cssFiles = new ArrayList<String>();
         scriptFiles = new ArrayList<String>();
         model = new StandardPageInfo();
-
+        
         model.setTitle(getTitle());
         model.setCssFiles(cssFiles);
         model.setScriptFiles(scriptFiles);
         model.setHtmlLevel(getHtmlLevel());
         model.setModuleName(getModule());
         model.setPageName(getPage());
-
+        
         pageContext.setAttribute(STANDARD_PAGE_INFO_ATTR, model, PageContext.REQUEST_SCOPE);
-
+        
         pageContext.setAttribute(STANDARD_PAGE_INSTANCE_ATTR, this, PageContext.REQUEST_SCOPE);
-
+        
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-
+        
         model.setServletPath(request.getServletPath());
-        // push the scope of paths (list - page name split on the period)
+        // Push the scope of paths (list - page name split on the period).
         MessageScope messageScope = MessageScopeHelper.forRequest(request);
-
+        
         if (StringUtils.isNotBlank(model.getPageName())) {
             String baseSearchPath = "modules." + model.getModuleName();
-
+            
             String[] pageNameParts = StringUtils.split(model.getPageName(), ".");
             String[] finalPaths = new String[pageNameParts.length + 1];
-
-            finalPaths[finalPaths.length - 1] = baseSearchPath; // the last path should just be the module
-                                                                // name
-
+            
+            // The last path should just be the module name.
+            finalPaths[finalPaths.length - 1] = baseSearchPath;
+            
             for (int i = 0; i < pageNameParts.length; i++) {
                 baseSearchPath = baseSearchPath + "." + pageNameParts[i];
                 finalPaths[finalPaths.length - i - 2] = baseSearchPath;
@@ -79,40 +81,40 @@ public class StandardPageTag extends BodyTagSupport {
 
             messageScope.pushScope(finalPaths);
         }
-        // the above scope won't be popped so that it is available for the layout
-
+        // The above scope won't be popped so that it is available for the layout
+        
         return EVAL_BODY_BUFFERED;
     }
-
+    
     @Override
     public int doAfterBody() throws JspException {
         return SKIP_BODY;
     }
-
+    
     @Override
     public int doEndTag() throws JspException {
         try {
             if (skipPage) {
                 return SKIP_PAGE;
             }
-
+            
             model.setShowMenu(isShowMenu());
             model.setMenuSelection(menuSelection);
             model.setBreadCrumbs(getBreadCrumb());
-
-            // the following could really be a field and replace all the other fields...
+            
+            // The following could really be a field and replace all the other fields...
             pageContext.setAttribute(MAIN_CONTENT_ATTR, getBodyContent(), PageContext.REQUEST_SCOPE);
-
+            
             try {
-                // set the content type
+                // Set the content type.
                 pageContext.getResponse().setContentType("text/html;charset=UTF-8");
-                // Now use the RequestDispatcher to process the wrapper page (the wrapper page
-                // has a tag to include the content in the middle of itself). We don't use
-                // pageContext.include() here because that flushes the output which makes error
-                // handling very difficult.
+                /* Now use the RequestDispatcher to process the wrapper page (the wrapper page
+                 * has a tag to include the content in the middle of itself). We don't use
+                 * pageContext.include() here because that flushes the output which makes error
+                 * handling very difficult. */
                 RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher("/layout/");
-
-                // forward the contents to the LayoutController
+                
+                // Forward the contents to the LayoutController.
                 requestDispatcher.forward(pageContext.getRequest(), pageContext.getResponse());
                 return EVAL_PAGE;
             } catch (Exception e) {
@@ -122,99 +124,100 @@ public class StandardPageTag extends BodyTagSupport {
             cleanup();
         }
     }
-
+    
     // Reference to the instance of this standard page tag.
     public static StandardPageTag find(JspContext context) {
         Object attribute = context.getAttribute(STANDARD_PAGE_INSTANCE_ATTR, PageContext.REQUEST_SCOPE);
         return (StandardPageTag) attribute;
     }
-
+    
     public static BodyContent getBodyContent(ServletRequest request) {
         BodyContent result = (BodyContent) request.getAttribute(MAIN_CONTENT_ATTR);
         return result;
     }
-
+    
     public static StandardPageInfo getStandardPageInfo(ServletRequest request) {
         StandardPageInfo result = (StandardPageInfo) request.getAttribute(STANDARD_PAGE_INFO_ATTR);
         return result;
     }
-
+    
     private void cleanup() {
-        // we have no need for the body anymore
+        // We have no need for the body anymore.
         setBodyContent(null);
-
+        
         title = "";
         htmlLevel = HtmlLevel.transitional;
         module = "";
         breadCrumbData = null;
         showMenu = false;
     }
-
+    
     public String getTitle() {
         return title;
     }
-
+    
     public void setTitle(String title) {
         this.title = title;
     }
-
+    
     public void addCSSFile(String path) {
         cssFiles.add(path);
     }
-
+    
     public void addScriptFile(String link) {
         scriptFiles.add(link);
     }
-
+    
     public String getHtmlLevel() {
         return htmlLevel.toString();
     }
-
+    
     public void setHtmlLevel(String htmlLevel) {
         this.htmlLevel = HtmlLevel.valueOf(htmlLevel);
     }
-
+    
     private String getModule() {
         return module;
     }
-
+    
     public void setModule(String module) {
         this.module = module;
     }
-
+    
     public String getPage() {
         return page;
     }
-
+    
     public void setPage(String page) {
         this.page = page;
     }
-
+    
     public void setBreadCrumbs(String breadCrumbData) {
         this.breadCrumbData = breadCrumbData;
     }
-
+    
     public String getBreadCrumb() {
         return breadCrumbData;
     }
-
+    
     public boolean isShowMenu() {
         return showMenu;
     }
-
+    
     public void setShowMenu(boolean showMenu) {
         this.showMenu = showMenu;
     }
-
+    
     public void setMenuSelection(String menuSelection) {
         this.menuSelection = menuSelection;
     }
-
+    
     public List<String> getCssFiles() {
         return cssFiles;
     }
-
+    
     public List<String> getScriptFiles() {
         return scriptFiles;
     }
+    
 }

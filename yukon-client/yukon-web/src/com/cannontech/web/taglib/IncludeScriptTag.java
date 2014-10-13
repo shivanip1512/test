@@ -12,6 +12,7 @@ import com.cannontech.web.JsLibrary;
 
 
 public class IncludeScriptTag extends SimpleTagSupport {
+    
     private String link;
     private boolean force = false; // force a <script> tag to be written to the output
 

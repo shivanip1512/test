@@ -1333,7 +1333,6 @@
   
   <module name="userlm">
     <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/yukon.css" />
   </module>
 
   <module name="visualDisplays">

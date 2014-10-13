@@ -102,8 +102,10 @@ public class LeftSideMenuRenderer implements MenuRenderer {
         List<Element> menuOptionList = new ArrayList<Element>();
         
         String expandImgSrc = messageSource.getMessage("yukon.web.menu.config.consumer.leftMenu.expandIcon");
+        expandImgSrc = ServletUtil.createSafeUrl(httpServletRequest, expandImgSrc);
         String collapseImgSrc = messageSource.getMessage("yukon.web.menu.config.consumer.leftMenu.collapseIcon");
-
+        collapseImgSrc = ServletUtil.createSafeUrl(httpServletRequest, collapseImgSrc);
+        
         // Loop over options for this producer - mostly for dynamic option
         // producers which may produce multiple options
         for (MenuOption option : producer.getMenuOptions(userContext)) {

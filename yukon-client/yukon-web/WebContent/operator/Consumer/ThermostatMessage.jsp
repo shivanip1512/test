@@ -8,8 +8,8 @@
       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
       <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
       <link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-      <link rel="stylesheet" href="../../WebConfig/yukon/styles/normalize.css" type="text/css">
-      <link rel="stylesheet" href="../../WebConfig/yukon/styles/yukon.css" type="text/css">
+      <cti:includeCss link="NORMALIZE" force="true"/>
+      <cti:includeCss link="YUKON" force="true"/>
       <link rel="stylesheet" href="../../WebConfig/yukon/styles/consumer/StarsConsumerStyles.css" type="text/css">
   </head>
 

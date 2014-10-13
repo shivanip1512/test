@@ -41,6 +41,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.CssLibrary;
 import com.cannontech.web.JsLibrary;
 import com.cannontech.web.Writable;
 import com.cannontech.web.menu.CommonModuleBuilder;
@@ -75,50 +76,65 @@ public class LayoutController {
     @Autowired private WebUtilityService webUtilService;
     
     private List<String> layoutScriptFiles;
+    private List<String> standardCssFiles;
     
     @PostConstruct
     public void initialize() {
         
         boolean dev = configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
         
-        Builder<String> builder = ImmutableList.builder();
+        Builder<String> b = ImmutableList.builder();
         
-        builder.add(JsLibrary.DEBUGGER.getPath());
-        builder.add(JsLibrary.MODERNIZR.getPath());
-        builder.add(JsLibrary.JS_TIMEZONE_DETECT.getPath());
-        builder.add(JsLibrary.MOMENT.getPath());
-        builder.add(JsLibrary.MOMENT_TZ.getPath());
+        b.add(JsLibrary.DEBUGGER.getPath());
+        b.add(JsLibrary.MODERNIZR.getPath());
+        b.add(JsLibrary.JS_TIMEZONE_DETECT.getPath());
+        b.add(JsLibrary.MOMENT.getPath());
+        b.add(JsLibrary.MOMENT_TZ.getPath());
         
-        builder.add(dev ? JsLibrary.JQUERY.getPath() : JsLibrary.JQUERY_MIN.getPath());
-        builder.add(dev ? JsLibrary.JQUERY_UI.getPath() : JsLibrary.JQUERY_UI_MIN.getPath());
-        builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
-        builder.add(JsLibrary.JQUERY_CHECK_ALL.getPath());
-        builder.add(JsLibrary.JQUERY_FORM.getPath());
-        builder.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
-        builder.add(JsLibrary.JQUERY_TIPSY.getPath());
-        builder.add(JsLibrary.JQUERY_SPECTRUM.getPath());
-        builder.add(JsLibrary.JQUERY_CHOSEN.getPath());
-        builder.add(JsLibrary.JQUERY_SCROLLTO.getPath());
-        builder.add(JsLibrary.JQUERY_COOKIE.getPath());
+        b.add(dev ? JsLibrary.JQUERY.getPath() : JsLibrary.JQUERY_MIN.getPath());
+        b.add(dev ? JsLibrary.JQUERY_UI.getPath() : JsLibrary.JQUERY_UI_MIN.getPath());
+        b.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
+        b.add(JsLibrary.JQUERY_CHECK_ALL.getPath());
+        b.add(JsLibrary.JQUERY_FORM.getPath());
+        b.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
+        b.add(JsLibrary.JQUERY_TIPSY.getPath());
+        b.add(JsLibrary.JQUERY_SPECTRUM.getPath());
+        b.add(JsLibrary.JQUERY_CHOSEN.getPath());
+        b.add(JsLibrary.JQUERY_SCROLLTO.getPath());
+        b.add(JsLibrary.JQUERY_COOKIE.getPath());
         
         // Add Yukon common libraries
-        builder.add(JsLibrary.YUKON.getPath());
-        builder.add(JsLibrary.YUKON_COOKIE.getPath());
-        builder.add(JsLibrary.YUKON_ALERTS.getPath());
-        builder.add(JsLibrary.YUKON_CONFIRM.getPath());
-        builder.add("/JavaScript/yukon.ui.util.js");
-        builder.add("/JavaScript/yukon.data.updater.js");
-        builder.add("/JavaScript/yukon.dropdown.js");
-        builder.add("/JavaScript/yukon.analytics.js");
-        builder.add(JsLibrary.YUKON_FAVORITES.getPath());
-        builder.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath());
-        builder.add(JsLibrary.YUKON_PICKER.getPath());
-        builder.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath());
+        b.add(JsLibrary.YUKON.getPath());
+        b.add(JsLibrary.YUKON_COOKIE.getPath());
+        b.add(JsLibrary.YUKON_ALERTS.getPath());
+        b.add(JsLibrary.YUKON_CONFIRM.getPath());
+        b.add("/JavaScript/yukon.ui.util.js");
+        b.add("/JavaScript/yukon.data.updater.js");
+        b.add("/JavaScript/yukon.dropdown.js");
+        b.add("/JavaScript/yukon.analytics.js");
+        b.add(JsLibrary.YUKON_FAVORITES.getPath());
+        b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath());
+        b.add(JsLibrary.YUKON_PICKER.getPath());
+        b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath());
+        layoutScriptFiles = b.build();
         
-        layoutScriptFiles = builder.build();
+        /** CSS ORDER MATTERS! **/
+        b = ImmutableList.builder();
+        b.add(CssLibrary.NORMALIZE.getPath());
+        b.add(CssLibrary.BOOTSTRAP.getPath());
+        b.add(CssLibrary.ANIMATE.getPath());
+        b.add(CssLibrary.LAYOUT.getPath());
+        b.add(CssLibrary.YUKON.getPath());
+        b.add(CssLibrary.BUTTONS.getPath());
+        b.add(CssLibrary.ICONS.getPath());
+        b.add(dev ? CssLibrary.JQUERY_UI.getPath() : CssLibrary.JQUERY_UI_MIN.getPath());
+        b.add(CssLibrary.TIPSY.getPath());
+        b.add(CssLibrary.SPECTRUM.getPath());
+        b.add(CssLibrary.CHOSEN.getPath());
+        standardCssFiles = b.build();
     }
 
-    // StandardPageTag forwards to here!
+    /** StandardPageTag forwards to here! */
     @RequestMapping("/")
     public String display(final HttpServletRequest request, HttpServletResponse response, 
             ModelMap model, YukonUserContext userContext) {
@@ -182,6 +198,8 @@ public class LayoutController {
         model.addAttribute("pageDetail", pageDetail);
         
         model.addAttribute("servletPath", tagInfo.getServletPath());
+        
+        model.addAttribute("standardCssFiles", standardCssFiles);
         
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);

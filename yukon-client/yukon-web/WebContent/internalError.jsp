@@ -66,8 +66,8 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
 <html>
 <head>
 <title>Yukon Error Page</title>
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>" type="text/css">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>" type="text/css">
+<cti:includeCss link="NORMALIZE" force="true"/>
+<cti:includeCss link="YUKON" force="true"/>
 <c:if test="${loggedIn}">
     <cti:css key="yukon.web.error.errorStyles"/>
 </c:if>

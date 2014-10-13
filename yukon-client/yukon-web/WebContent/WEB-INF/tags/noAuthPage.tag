@@ -20,16 +20,18 @@
 <title><cti:msg2 key=".pageTitle"/></title>
 
 <link rel="shortcut icon" href="<cti:url value="/favicon.ico"/>" type="image/x-icon">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/layout.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/buttons.css"/>">
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/icons.css"/>">
-<link rel="stylesheet" href="<cti:url value="/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.min.css"/>">
-<link rel="stylesheet" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>">
+
+<cti:includeCss link="NORMALIZE" force="true"/>
+<cti:includeCss link="LAYOUT" force="true"/>
+<cti:includeCss link="YUKON" force="true"/>
+<cti:includeCss link="BUTTONS" force="true"/>
+<cti:includeCss link="ICONS" force="true"/>
+<cti:includeCss link="JQUERY_UI_MIN" force="true"/>
+<cti:includeCss link="TIPSY" force="true"/>
+
 
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>">
+<cti:includeCss link="OVERRIDES" force="true"/>
 
 <cti:includeScript link="MODERNIZR" force="true"/>
 

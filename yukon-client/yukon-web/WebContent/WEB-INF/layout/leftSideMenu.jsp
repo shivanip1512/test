@@ -18,16 +18,16 @@
 <title>${fn:escapeXml(title)}</title>
 
 <!-- Layout CSS files -->
-<link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>">
-<link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.default.css"/>">
-<link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/icons.css"/>">
-<link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/buttons.default.css"/>">
+<cti:includeCss link="NORMALIZE" force="true"/>
+<cti:includeCss link="YUKON_DEFAULT" force="true"/>
+<cti:includeCss link="ICONS" force="true"/>
+<cti:includeCss link="BUTTONS_DEFAULT" force="true"/>
 <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/CannonStyle.css"/>">
 <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/consumer/LeftMenuStyles.css"/>">
-<link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.min.css"/>">
+<cti:includeCss link="JQUERY_UI_MIN" force="true"/>
 
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
-<link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>">
+<cti:includeCss link="OVERRIDES" force="true"/>
 
 <!-- Module CSS files from module_config.xml -->
 <c:forEach items="${moduleConfigCss}" var="file">
@@ -51,6 +51,59 @@
     <script type="text/javascript" src="<cti:url value="${file}"/>"></script>
 </c:forEach>
 
+<script>
+function hideRevealSectionSetup(showElement, hideElement, clickableElement,
+        section, showInitially, persistId) {
+
+    section = $(document.getElementById(section));
+    showElement = $(document.getElementById(showElement));
+    hideElement = $(document.getElementById(hideElement));
+    
+    var doShow = function(doSlide) {
+        section.show();
+        hideElement.show();
+        showElement.hide();
+        
+        if (persistId != '') {
+            yukon.cookie.set('hideReveal', persistId, 'show');
+        }
+    };
+    
+    var doHide = function() {
+        section.hide();
+        hideElement.hide();
+        showElement.show();
+        if (persistId != '') {
+            yukon.cookie.set('hideReveal', persistId, 'hide');
+        }
+    };
+    
+    var lastState = null;
+    if (persistId != '') {
+        lastState = yukon.cookie.get('hideReveal', persistId);
+    }
+    
+    if (lastState) {
+        if (lastState == 'show') {
+            doShow();
+        } else {
+            doHide();
+        }
+    } else if (showInitially) {
+        doShow();
+    } else {
+        doHide();
+    }
+    
+    $(document.getElementById(clickableElement)).click(function(event) {
+        if (section.is(":visible")) {
+            doHide();
+        } else {
+            doShow();
+        }
+    });
+}
+</script>
 </head>
 
 <body class="<c:out value="${module.moduleName}"/>_module">
