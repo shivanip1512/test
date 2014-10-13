@@ -53,10 +53,9 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
-    private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
-
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private DispatchClientConnection dispatchClientConnection;
+    
+    @Autowired private ConfigurationSource configSource;
+    @Autowired private DispatchClientConnection dispatch;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private EnrollmentDao enrollmentService;
@@ -68,29 +67,33 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private PointDao pointDao;
     @Autowired private RfnLcrDataMappingService rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
-
+    
+    private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
-
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
 
     public class Worker extends ConverterBase {
+        
         public Worker(int workerNumber, int queueSize) {
             super("LcrReadingArchive", workerNumber, queueSize);
         }
-
+        
         @Override
-        public void processData(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
+        public void processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
+            
             Instant startTime = new Instant();
-
+            
             // Make sure dispatch message handling isn't blocked up.
-            if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.PAUSE_FOR_DISPATCH_MESSAGE_BACKUP, true)
-                    && dispatchClientConnection.isBehind()) {
+            boolean pausingEnabled = configSource.getBoolean(MasterConfigBooleanKeysEnum.PAUSE_FOR_DISPATCH_MESSAGE_BACKUP, true);
+            if (pausingEnabled && dispatch.isBehind()) {
+                
                 numPausedQueues.incrementAndGet();
                 log.warn("dispatch message handling is behind...sleeping");
+                
                 int msSlept = 0;
-                while (dispatchClientConnection.isBehind()) {
+                while (dispatch.isBehind()) {
                     try {
                         Thread.sleep(250);
                         msSlept += 250;
@@ -98,15 +101,16 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                         log.warn("Interrupted waiting for dispatch message handling to catch up.");
                     }
                 }
-                log.warn("slept for " + msSlept + "ms waiting for dispatch message handling to catch up");
+                log.warn("slept for " + msSlept + "ms waiting for dispatch message handling to catch up.");
                 numPausedQueues.decrementAndGet();
             }
-
-            if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
-                RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
+            
+            if (request instanceof RfnLcrReadingArchiveRequest) {
+                
+                RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
                 SimpleXPathTemplate decodedPayload = null;
-
-                byte[] payload = readingArchiveRequest.getData().getPayload();
+                
+                byte[] payload = reading.getData().getPayload();
                 try {
                     if (log.isTraceEnabled()) {
                         log.trace(rfnDevice + " payload: 0x" + DatatypeConverter.printHexBinary(payload));
@@ -114,44 +118,44 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                         log.debug("decoding: " + rfnDevice);
                     }
                     decodedPayload = exiParsingService.parseRfLcrReading(payload);
+                    
                 } catch (ParseExiException e) {
-                    // Acknowledge the request to prevent NM from sending back that data which can't be
-                    // parsed.
-                    sendAcknowledgement(archiveRequest);
+                    // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
+                    sendAcknowledgement(request);
                     log.error(
                         "Can't parse incoming RF LCR payload data for " + rfnDevice + 
                         ". Payload: 0x" + DatatypeConverter.printHexBinary(payload) + 
                         ". Payload may be corrupt or not schema compliant.");
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
                 }
-
-                // Handle Broadcast Verification Messages
+                
+                // Handle broadcast verification messages
                 Schema schema = exiParsingService.getSchema(payload);
                 if (schema.supportsBroadcastVerificationMessages()) {
-                    // Verification Messages should be processed even if there is no connection to dispatch
+                    // Verification Messages should be processed even if there is no connection to dispatch.
                     Map<Long, Instant> verificationMsgs =
                         rfnLcrDataMappingService.mapBroadcastVerificationMessages(decodedPayload);
                     Range<Instant> range =
                         rfnLcrDataMappingService.mapBroadcastVerificationUnsuccessRange(decodedPayload, rfnDevice);
                     rfnPerformanceVerificationService.processVerificationMessages(rfnDevice, verificationMsgs, range);
                 }
-
+                
                 // Discard all the data before 1/1/2001
                 if (rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)) {
                     // Handle point data
                     List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
-                    messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
+                    messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
                     dynamicDataSource.putValues(messagesToSend);
                     archivedReadings.addAndGet(messagesToSend.size());
                     if (log.isDebugEnabled()) {
                         log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
                     }
-
+                    
                     // Handle addressing data
                     rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
                 }
                 incrementProcessedArchiveRequest();
-
+                
             } else {
                 // Just an LCR archive request, these happen when devices join the network
                 InventoryIdentifier inventory =
@@ -159,6 +163,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 int inventoryId = inventory.getInventoryId();
                 List<ProgramEnrollment> activeEnrollments =
                     enrollmentService.getActiveEnrollmentsByInventory(inventoryId);
+                
                 if (!activeEnrollments.isEmpty()) {
                     // Send config if auto-config is enabled
                     EnergyCompany ec = ecDao.getEnergyCompanyByInventoryId(inventoryId);
@@ -170,7 +175,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                         lmhc.setDevice(lmhb);
                         lmhc.setType(LmHardwareCommandType.CONFIG);
                         lmhc.setUser(ec.getUser());
-
+                        
                         try {
                             commandService.sendConfigCommand(lmhc);
                             log.debug("Sent config command for RfnLcrArchiveRequest");
@@ -180,19 +185,19 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     }
                 }
             }
-
-            sendAcknowledgement(archiveRequest);
+            
+            sendAcknowledgement(request);
             if (log.isDebugEnabled()) {
                 Duration processingDuration = new Duration(startTime, new Instant());
                 log.debug("It took " + processingDuration + " to process a request");
             }
         }
     }
-
+    
     @Override
     @PostConstruct
     public void init() {
-        // setup as many workers as requested
+        // Setup as many workers as requested
         ImmutableList.Builder<Worker> workerBuilder = ImmutableList.builder();
         int workerCount = getWorkerCount();
         int queueSize = getQueueSize();
@@ -203,23 +208,24 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         }
         workers = workerBuilder.build();
     }
-
+    
     @PreDestroy
     @Override
     protected void shutdown() {
-        // should handle listener container here as well
+        // Should handle listener container here as well
         for (Worker worker : workers) {
             worker.shutdown();
         }
     }
-
+    
     @Override
     protected List<Worker> getConverters() {
         return workers;
     }
-
+    
     @Override
     protected Object getRfnArchiveResponse(RfnLcrArchiveRequest archiveRequest) {
+        
         if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
             RfnLcrReadingArchiveRequest readRequest = (RfnLcrReadingArchiveRequest) archiveRequest;
             RfnLcrReadingArchiveResponse response = new RfnLcrReadingArchiveResponse();
@@ -227,24 +233,25 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             response.setType(readRequest.getType());
             return response;
         }
-
+        
         RfnLcrArchiveResponse response = new RfnLcrArchiveResponse();
         response.setSensorId(archiveRequest.getSensorId());
         return response;
     }
-
+    
     @Override
     protected String getRfnArchiveResponseQueueName() {
         return archiveResponseQueueName;
     }
-
+    
     @ManagedAttribute
     public int getArchivedReadings() {
         return archivedReadings.get();
     }
-
+    
     @ManagedAttribute
     public int getNumPausedQueues() {
         return numPausedQueues.get();
     }
+    
 }
