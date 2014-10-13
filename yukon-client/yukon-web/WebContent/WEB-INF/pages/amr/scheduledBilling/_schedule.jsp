@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:verifyRolesAndProperties value="APPLICATION_BILLING"/>
 
@@ -20,7 +21,7 @@
                         <c:forEach var="group" items="${deviceGroups}">
                             <input type="hidden" name="deviceGroups" value="${fn:escapeXml(group)}">
                         </c:forEach>
-                        <input type="hidden" name="fileFormat" value="${fileFormat}">
+                        <input type="hidden" name="fileFormat" value="${fn:escapeXml(fileFormat)}">
                         <input type="hidden" name="demandDays" value="${demandDays}">
                         <input type="hidden" name="energyDays" value="${energyDays}">
                         <input type="hidden" name="removeMultiplier" value="${removeMultiplier}">
@@ -32,7 +33,7 @@
                             ${fn:escapeXml(groupNames)}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.billing.fileFormat">
-                            ${formatName}
+                            ${fn:escapeXml(formatName)}
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.billing.demandDaysPrevious">
                             ${demandDays}

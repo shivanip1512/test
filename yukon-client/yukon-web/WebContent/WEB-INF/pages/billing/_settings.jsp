@@ -6,6 +6,7 @@
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <input id="in_formatType_itronEvent" type="hidden" value="${TYPE_CURTAILMENT_EVENTS_ITRON}" />
 
@@ -32,7 +33,8 @@
                 <tags:nameValue name="${fileFormat}" nameColumnWidth="250px">
                     <select id="fileFormat" name="fileFormat">
                         <c:forEach var="format" items="${formatMap}">
-                            <option value="${format.value}" ${(format.value == BILLING_BEAN.fileFormat)?'selected':''}>${format.key}</option>
+                            <option value="${format.value}" ${(format.value == BILLING_BEAN.fileFormat)?'selected':''}>
+                            ${fn:escapeXml(format.key)}</option>
                         </c:forEach>
                     </select>
                 </tags:nameValue>
