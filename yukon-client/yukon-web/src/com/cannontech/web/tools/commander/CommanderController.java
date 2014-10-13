@@ -116,16 +116,18 @@ public class CommanderController {
             
             if (target.isPao()) {
                 // Device or load group
-                int paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.intType);
-                model.addAttribute("paoId", paoId);
-                // Add route info if available
-                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
-                PaoType type = pao.getPaoType();
-                model.addAttribute("routable", type.isRoutable());
-                model.addAttribute("meter", type.isMeter());
-                if (type.isRoutable()) {
-                    LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
-                    model.addAttribute("route", route);
+                Integer paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.intType);
+                if (paoId != null) {
+                    model.addAttribute("paoId", paoId);
+                    // Add route info if available
+                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+                    PaoType type = pao.getPaoType();
+                    model.addAttribute("routable", type.isRoutable());
+                    model.addAttribute("meter", type.isMeter());
+                    if (type.isRoutable()) {
+                        LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
+                        model.addAttribute("route", route);
+                    }
                 }
             } else {
                 model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null, 
