@@ -434,7 +434,7 @@ yukon.tools.commander = (function () {
             paoId = target === _targetTypes.device ? $('#pao-id').val() : $('#lm-group-id').val();
             
             if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
-                if (typeof paoId !== 'undefined') {
+                if (paoId) {
                     _updateCommandsForPao(paoId);
                     if (target === _targetTypes.device) {
                         $.ajax({ url: 'commander/' + paoId + '/data' })
