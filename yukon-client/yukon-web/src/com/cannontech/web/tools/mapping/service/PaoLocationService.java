@@ -33,7 +33,7 @@ public interface PaoLocationService {
         }
     }
     
-    public static final Comparator<PaoDistance> onDistance = new Comparator<PaoDistance>() {
+    public static final Comparator<PaoDistance> ON_DISTANCE = new Comparator<PaoDistance>() {
         @Override
         public int compare(PaoDistance o1, PaoDistance o2) {
             return Double.compare(o1.getDistance(), o2.getDistance());

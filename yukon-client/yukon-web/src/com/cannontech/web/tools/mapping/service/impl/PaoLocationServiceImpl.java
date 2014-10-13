@@ -91,7 +91,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
             }
         }
         
-        Collections.sort(nearby, onDistance);
+        Collections.sort(nearby, ON_DISTANCE);
         
         return nearby;
     }
