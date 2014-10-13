@@ -300,7 +300,7 @@ yukon.tools.commander = (function () {
         if (newTarget) {
             
             recent.unshift(targetStore);
-            if (recent.length > 10) for (var i = recent.length; i > 10; i--) recent.pop();
+            recent.slice(0, 10);
             yukon.cookie.set('commander', 'recentTargets', recent);
             
             option = $('#cmdr-templates .dropdown-option').clone()
