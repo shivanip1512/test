@@ -555,17 +555,16 @@ public class PointForm extends DBEditorForm {
         String alarmStates = "";
         String exclNotify = "";
 
-        int i = 0;
-        if (null != alarmTableEntries) {
-            for (i = 0; i < alarmTableEntries.size(); i++) {
-                AlarmTableEntry entry = alarmTableEntries.get(i);
-                alarmStates += (char) YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryId(entry.getGenerate());
-                exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
-            }
+        AlarmCatDao alarmCatDao = YukonSpringHook.getBean(AlarmCatDao.class);
+        for (AlarmTableEntry entry : getAlarmTableEntries()) {
+            alarmStates += (char) alarmCatDao.getAlarmCategoryId(entry.getGenerate());
+            exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
         }
+        
+        int numberAlarms = getAlarmTableEntries().size();
         // fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
-        alarmStates += PointAlarming.DEFAULT_ALARM_STATES.substring(i);
-        exclNotify += PointAlarming.DEFAULT_EXCLUDE_NOTIFY.substring(i);
+        alarmStates += PointAlarming.DEFAULT_ALARM_STATES.substring(numberAlarms);
+        exclNotify += PointAlarming.DEFAULT_EXCLUDE_NOTIFY.substring(numberAlarms);
 
         getPointBase().getPointAlarming().setAlarmStates( alarmStates );
         getPointBase().getPointAlarming().setExcludeNotifyStates( exclNotify );
