@@ -538,8 +538,7 @@ yukon.ami.billing = (function() {
         do_schedules_job_list_button : function(event) {
             var btn = $(this),
                 isEdit = btn.is('.js-edit-job'),
-                jobId = btn.parent().data('jobId');
-            
+                jobId = btn.data('jobId');
             if (isEdit) {
                 _STOP_EVENT(event);
                 _show_edit_schedule_job({jobId: jobId});

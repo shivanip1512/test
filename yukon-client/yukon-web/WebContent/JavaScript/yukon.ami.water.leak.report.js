@@ -54,7 +54,7 @@ yukon.ami.waterLeakReport = (function () {
             
             /** Edit a schedule */
             $(document).on('click', '.js-edit-job', function (ev) {
-                var jobId = $(this).parent().data('jobId');
+                var jobId = $(this).data('jobId');
                 yukon.ui.dialog('#schedule-report-popup', 'schedule?jobId=' + jobId);
             });
             
