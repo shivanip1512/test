@@ -63,6 +63,10 @@
                     <x:panelTab id="physicalAnaTab" label="Physical Setup" rendered="#{ptEditorForm.visibleTabs['PointAnalog']}">
                         <jsp:include page="/WEB-INF/pages/point/pointAnalogEditor.jsp"/>
                     </x:panelTab>
+                    
+                    <x:panelTab id="physicalAccmuTab" label="Physical Setup" rendered="#{ptEditorForm.visibleTabs['PointAccum']}">
+                        <jsp:include page="/WEB-INF/pages/point/pointAccumulatorEditor.jsp"/>
+                    </x:panelTab>
 
                     <x:panelTab id="physicalStatTab" label="Physical Setup" rendered="#{ptEditorForm.visibleTabs['PointStatus']}">
                         <jsp:include page="/WEB-INF/pages/point/pointStatusEditor.jsp"/>
