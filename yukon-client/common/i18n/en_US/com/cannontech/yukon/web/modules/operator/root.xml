@@ -13,8 +13,8 @@
     <entry key="yukon.web.modules.operator.create.device">Create Device</entry>
     
     <!-- Gateway Dashboard -->
-    <entry key="yukon.web.modules.operator.gateways.dashboard.pageName">Gateways</entry>
-    <entry key="yukon.web.modules.operator.gateways.dashboard.connected">Connected</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.pageName">Gateways</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.connected">Connected</entry>
 	
     <!-- Gateway Details -->
     <entry key="yukon.web.modules.operator.gateways.detail.pageName">Gateway</entry>

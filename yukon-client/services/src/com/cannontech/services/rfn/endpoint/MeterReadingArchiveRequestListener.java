@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnMeterReadingArchiveRequest> {
+    
     private static final Logger log = YukonLogManager.getLogger(MeterReadingArchiveRequestListener.class);
     
     @Autowired private RfnChannelDataConverter converter;

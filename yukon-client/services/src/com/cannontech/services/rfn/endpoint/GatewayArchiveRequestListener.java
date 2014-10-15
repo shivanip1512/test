@@ -7,6 +7,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -102,4 +103,11 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     protected String getRfnArchiveResponseQueueName() {
         return null;
     }
+    
+    @Override
+    @ManagedAttribute
+    public int getWorkerCount() {
+        return 2;
+    }
+    
 }

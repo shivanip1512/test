@@ -1026,7 +1026,7 @@
         <skin name="STANDARD" />
         <search bean="operatorAccountSearchProducer" />
         <pages>
-            <page name="gateways.dashboard" type="BASIC" hideSearch="true">
+            <page name="gateways.list" type="BASIC" hideSearch="true">
                 <link>/stars/gateways</link>
                 <pages>
                     <page name="gateways.detail" type="DETAIL">

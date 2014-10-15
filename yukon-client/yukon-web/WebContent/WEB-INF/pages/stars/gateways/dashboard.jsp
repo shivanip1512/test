@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="operator" page="gateways.dashboard">
+<cti:standardPage module="operator" page="gateways.list">
 
     <div id="page-buttons" class="dn">
         <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>

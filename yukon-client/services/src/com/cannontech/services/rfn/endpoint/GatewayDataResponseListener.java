@@ -25,6 +25,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
     private List<Worker> workers;
     
     private class Worker extends ConverterBase {
+        
         public Worker(int workerNumber, int queueSize) {
             super("GatewayDataArchive", workerNumber, queueSize);
         }
