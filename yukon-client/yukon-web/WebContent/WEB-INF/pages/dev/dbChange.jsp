@@ -21,8 +21,8 @@
         _createPreviouslySentDiv = function(previouslySent) {
             var resultClass = previouslySent.error ? 'error' : 'success';
             var newRow = $('#previouslySentTemplate').clone().removeAttr("id");
-            newRow.show();
             newRow.find('[data-result]').text(previouslySent.resultMessage).addClass(resultClass);
+            newRow.find('[data-num-times]').text(previouslySent.numTimes);
             newRow.find('[data-itemId]').html(previouslySent.itemId);
             newRow.find('[data-database]').text(_shortenString(previouslySent.database));
             newRow.find('[data-category]').text(_shortenString(previouslySent.category));
@@ -31,6 +31,7 @@
             newRow.find('[data-resubmit-button]').data("database", previouslySent.database);
             newRow.find('[data-resubmit-button]').data("category", previouslySent.category);
             newRow.find('[data-resubmit-button]').data("type", previouslySent.type);
+            newRow.show();
             return newRow;
         },
         
@@ -62,6 +63,14 @@
             _submitDbChangeMessage(sendData);
         },
 
+        _isEqual = function(sendDataA, sendDataB) {
+            return sendDataA.resultMessage == sendDataB.resultMessage &&
+            sendDataA.itemId == sendDataB.itemId &&
+            sendDataA.database == sendDataB.database &&
+            sendDataA.category == sendDataB.category &&
+            sendDataA.type == sendDataB.type;
+        },
+
         _submitDbChangeMessage = function(sendData) {
             $.ajax({
                 url: yukon.url('do-db-change'),
@@ -80,9 +89,15 @@
                 _showTempError('Failed to submit DbChangeMessage. Due to ' + data.statusText + '.');
             }).always(function() {
                 var previouslySent = JSON.parse(localStorage['previouslySent']);
-                previouslySent.unshift(sendData);
-                previouslySent = previouslySent.slice(0, 10);
-                localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
+                if (!_isEqual(sendData, previouslySent[0])) {
+                    sendData.numTimes = 1;
+                    previouslySent.unshift(sendData);
+                    previouslySent = previouslySent.slice(0, 10);
+                    localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
+                } else {
+                    previouslySent[0].numTimes++;
+                    localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
+                }
                 _updatePreviouslySent();
             });
         },
@@ -168,25 +183,25 @@
         <div class="column one">
             <div class="column-12-12">
                 <div class="column one">
-                    Type: <span class="la4bel l4abel-default" data-type>ADD</span>
+                    Type: <span data-type>ADD</span>
                 </div>
                 <div class="column two nogutter">
-                    Item: <span class="lab4el label-default4" data-itemId>1232</span>
+                    Item: <span data-itemId>1232</span>
                 </div>
             </div>
         </div>
         <div class="column two nogutter">
             <div class="column-12-12">
                 <div class="column one">
-                    Database: <span class="labsel la4bel-default" data-database>CHANGE_U_USER_ID</span>
+                    Database: <span data-database>CHANGE_U_USER_ID</span>
                 </div>
                 <div class="column two nogutter">
-                    Category: <span class="labsel la4bel-default" data-category>CHANGE_U_USER_ID</span>
+                    Category: <span data-category>CHANGE_U_USER_ID</span>
                 </div>
             </div>
         </div>
         <div class="stacked clearfix">
-            <span class="fl">Result: <span data-result>Success</Span></span>
+            <span class="fl">Result: <span data-result>Success</Span> x<span data-num-times></span></span>
             <i data-resubmit-button class="icon icon-arrow-rotate-clockwise js-re-submit"></i>
         </div>
     </div>
