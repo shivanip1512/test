@@ -46,7 +46,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
     @Autowired
     public RfnGatewayDataCacheImpl(ConnectionFactory connectionFactory, ConfigurationSource configurationSource, 
-                                final RfnDeviceDao rfnDeviceDao, @Qualifier("estimatedLoad") Executor executor) {
+                                final RfnDeviceDao rfnDeviceDao, @Qualifier("gatewayCache") Executor executor) {
         
         this.connectionFactory = connectionFactory;
         this.configurationSource = configurationSource;
