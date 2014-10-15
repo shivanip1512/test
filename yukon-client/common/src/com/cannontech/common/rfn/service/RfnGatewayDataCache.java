@@ -15,10 +15,17 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 public interface RfnGatewayDataCache {
     
     /**
-     * Gets RfnGatewayData for a single id.
+     * Gets RfnGatewayData for a single id. If no data is present for that id, execution blocks while the cache requests
+     * an update from Network Manager.
      * @throws NetworkManagerCommunicationException if an error occurs retrieving data from Network Manager.
      */
     public RfnGatewayData get(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    
+    /**
+     * Gets RfnGatewayData for a single id. This is a non-blocking call - if no data is present for that id, returns 
+     * null immediately and updates the cache in a separate thread.
+     */
+    public RfnGatewayData getIfPresent(PaoIdentifier paoIdentifier);
     
     /**
      * Gets all RfnGatewayData for the specified ids.

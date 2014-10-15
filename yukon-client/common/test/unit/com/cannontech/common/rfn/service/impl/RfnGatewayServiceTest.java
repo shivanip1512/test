@@ -128,8 +128,8 @@ public class RfnGatewayServiceTest {
 
         RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
         // Expecting a call to retrieve gateway data for each RFN_GATEWAY rfnDevice.
-        EasyMock.expect(gatewayDataCache.get(gatewayPaoId)).andReturn(createEmptyRfnGatewayData(gatewayRfnId));
-        EasyMock.expect(gatewayDataCache.get(paoIdentifier)).andReturn(createEmptyRfnGatewayData(gateway2RfnId));
+        EasyMock.expect(gatewayDataCache.getIfPresent(gatewayPaoId)).andReturn(createEmptyRfnGatewayData(gatewayRfnId));
+        EasyMock.expect(gatewayDataCache.getIfPresent(paoIdentifier)).andReturn(createEmptyRfnGatewayData(gateway2RfnId));
         EasyMock.replay(gatewayDataCache);
 
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);

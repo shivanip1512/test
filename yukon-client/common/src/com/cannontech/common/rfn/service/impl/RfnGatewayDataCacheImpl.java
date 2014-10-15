@@ -8,9 +8,11 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -27,6 +29,7 @@ import com.google.common.cache.LoadingCache;
 
 public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
+    private static final Logger log = YukonLogManager.getLogger(RfnGatewayDataCacheImpl.class);
     private static final String gatewayDataRequestCparm = "RFN_GATEWAY_DATA_REQUEST";
     private static final String gatewayDataRequestQueue = "yukon.qr.obj.common.rfn.GatewayDataRequest";
     
@@ -60,6 +63,27 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
         } catch (ExecutionException e) {
             throw new NetworkManagerCommunicationException("Failed to retrieve gateway data from Network Manager.", e);
         }
+    }
+    
+    @Override
+    public RfnGatewayData getIfPresent(final PaoIdentifier paoIdentifier) {
+        RfnGatewayData data = cache.getIfPresent(paoIdentifier);
+        
+        //spin off new thread to update the cache for this value
+        if (data == null) {
+            (new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        cache.get(paoIdentifier);
+                    } catch (ExecutionException e) {
+                        log.error("Asynchronous rfn gateway cache update failed", e);
+                    }
+                }
+            }).run();
+        }
+        
+        return data;
     }
     
     @Override

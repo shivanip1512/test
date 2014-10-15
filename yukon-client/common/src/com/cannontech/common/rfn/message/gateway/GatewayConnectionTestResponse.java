@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
-public class GatewayConnectionTestReponse implements RfnIdentifyingMessage, Serializable {
+public class GatewayConnectionTestResponse implements RfnIdentifyingMessage, Serializable {
     
     private static final long serialVersionUID = 1L;
     
@@ -56,7 +56,7 @@ public class GatewayConnectionTestReponse implements RfnIdentifyingMessage, Seri
             return false;
         if (getClass() != obj.getClass())
             return false;
-        GatewayConnectionTestReponse other = (GatewayConnectionTestReponse) obj;
+        GatewayConnectionTestResponse other = (GatewayConnectionTestResponse) obj;
         if (ipAddress == null) {
             if (other.ipAddress != null)
                 return false;

@@ -8,6 +8,7 @@ import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.core.dao.NotFoundException;
 
 /**
  * Handles most work relating to RFN gateways.
@@ -22,9 +23,7 @@ public interface RfnGatewayService {
     
     /**
      * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not
-     * cached, a request will be sent to Network Manager. The request for gateway data from Network
-     * Manager is a blocking request. Any failure to retrieve gateway data from Network Manager will
-     * cause a NetworkManagerCommunicationException to be thrown.
+     * cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate thread.
      * 
      * @throws NetworkManagerCommunicationException if there is a communication error betweek Yukon
      *             and Network Manager.
@@ -61,7 +60,6 @@ public interface RfnGatewayService {
      * updated. This is a blocking operation.
      * 
      * @return true if the gateway was updated successfully.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon
      *             and Network Manager.
      */
@@ -71,7 +69,7 @@ public interface RfnGatewayService {
      * Delete the gateway. This will attempt to delete the gateway in Network Manager as well as Yukon.
      * 
      * @return true if the gateway was deleted successfully.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
     public boolean deleteGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
@@ -80,54 +78,63 @@ public interface RfnGatewayService {
      * Test the gateway's connection to Network Manager.
      * 
      * @return true if the gateway is connected, false if the connection failed.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean testConnection(PaoIdentifier paoIdentifier);
+    public boolean testConnection(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    
+    /**
+     * Test a gateway connection, without requiring the gateway to already exist in Yukon.
+     * @return true if the connection succeeded, false if the connection failed.
+     * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
+     */
+    boolean testConnection(String ipAddress, Authentication user, Authentication admin,
+                           Authentication superAdmin) throws NetworkManagerCommunicationException;
     
     /**
      * Initiates a gateway "connect" action in Network Manager.
      * 
      * @return true if the gateway was connected successfully.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean connectGateway(PaoIdentifier paoIdentifier);
+    public boolean connectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Initiates a gateway "disconnect" action in Network Manager.
      * 
      * @return true if the gateway was disconnected successfully.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean disconnectGateway(PaoIdentifier paoIdentifier);
+    public boolean disconnectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Initiates gateway data collection in Network Manager.
      * 
      * @return true if the data collection action succeeded.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean collectData(PaoIdentifier paoIdentifier);
+    public boolean collectData(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Sets the data collection schedule for the specified gateway.
      * 
      * @return true if the schedule was set successfully.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean setCollectionSchedule(PaoIdentifier paoIdentifier, String cronExpression);
+    public boolean setCollectionSchedule(PaoIdentifier paoIdentifier, String cronExpression) 
+            throws NetworkManagerCommunicationException;
     
     /**
      * Delete the data collection schedule for the specified gateway, preventing any subsequent data collection.
      * 
      * @return true if the data collection schedule was deleted successfully.
-     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier);
+    public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
 }
