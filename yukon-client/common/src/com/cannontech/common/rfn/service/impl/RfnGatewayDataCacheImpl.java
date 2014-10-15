@@ -4,12 +4,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -37,16 +39,18 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     private ConnectionFactory connectionFactory;
     private ConfigurationSource configurationSource;
     private LoadingCache<PaoIdentifier, RfnGatewayData> cache;
+    private Executor executor;
     
     //Created in post-construct
     private RequestReplyTemplate<GatewayDataResponse> requestTemplate;
     
     @Autowired
     public RfnGatewayDataCacheImpl(ConnectionFactory connectionFactory, ConfigurationSource configurationSource, 
-                                final RfnDeviceDao rfnDeviceDao) {
+                                final RfnDeviceDao rfnDeviceDao, @Qualifier("estimatedLoad") Executor executor) {
         
         this.connectionFactory = connectionFactory;
         this.configurationSource = configurationSource;
+        this.executor = executor;
         cache = new InternalGatewayDataCache(rfnDeviceDao);
     }
     
@@ -81,7 +85,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
                     }
                 }
             };
-            thread.start();
+            executor.execute(thread);
         }
         
         return data;
