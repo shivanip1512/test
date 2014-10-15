@@ -1,13 +1,18 @@
 package com.cannontech.web.stars.gateway;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
@@ -44,6 +49,15 @@ public class GatewayListController {
         //PaoIdentifier gatewayId = rfnGatewayService.createGateway(name, ipAddress, location, user, admin, superAdmin)
         
         return "gateways/list.jsp";
+    }
+    
+    @RequestMapping("/gateways/data")
+    public @ResponseBody Map<String, Object> data(@RequestBody Map<String, ArrayList<Integer>> pending) {
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("hello", "world");
+        
+        return data;
     }
     
     @RequestMapping("/gateways/create")

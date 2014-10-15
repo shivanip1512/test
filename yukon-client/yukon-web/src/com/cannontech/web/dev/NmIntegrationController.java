@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -295,12 +300,25 @@ public class NmIntegrationController {
         rfnEventTestingService.calculationStressTest();
     }
     
-    /** TODO This doesn't actually work. Message is sent but it probably needs to come from YSM instead of web server. */
+    /** TODO This doesn't actually work.  
+     * javax.jms.JMSException: Failed to build body from content. 
+     * Serializable class not available to broker. 
+     * Reason: java.lang.ClassNotFoundException: com.cannontech.common.rfn.message.RfnArchiveStartupNotification
+     * Should just use a text message instead.
+     */
     @RequestMapping("resend-startup")
     public void startup(HttpServletResponse resp) {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
         try {
             jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
+            
+            // Send a text message for startup notification
+//            jmsTemplate.send(new MessageCreator() {
+//                public Message createMessage(Session session) throws JMSException {
+//                    TextMessage message = session.createTextMessage("sync all the things!");
+//                    return message;
+//                }
+//            });
             resp.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

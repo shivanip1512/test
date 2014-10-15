@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -17,7 +16,6 @@ import org.jdom.Namespace;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
@@ -56,9 +54,6 @@ public class SendTextMessageEndpoint {
     @Autowired private YukonTextMessageDao yukonTextMessageDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
-
-    // @Autowired by setter
-    private JmsTemplate jmsTemplate;
 
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(SendTextMessageEndpoint.class);
@@ -265,12 +260,6 @@ public class SendTextMessageEndpoint {
         }
         invalidMessageElem.addContent(serialNumbers);
         parent.addContent(invalidMessageElem);
-    }
-
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setPubSubDomain(false);
     }
 
 }

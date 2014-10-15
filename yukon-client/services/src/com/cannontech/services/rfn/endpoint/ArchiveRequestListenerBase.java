@@ -29,6 +29,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
+    
     private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
 
     @Autowired protected DynamicDataSource dynamicDataSource;

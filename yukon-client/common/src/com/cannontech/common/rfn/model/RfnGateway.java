@@ -11,6 +11,7 @@ import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 
 public class RfnGateway extends RfnDevice implements Locatable {
+    
     private RfnGatewayData gatewayData;
     private PaoLocation paoLocation;
     private String name;

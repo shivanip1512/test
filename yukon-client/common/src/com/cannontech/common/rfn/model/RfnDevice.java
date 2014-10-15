@@ -7,6 +7,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public class RfnDevice implements YukonRfn, YukonDevice, DisplayablePao {
+    
     private final RfnIdentifier rfnIdentifier;
     private final PaoIdentifier paoIdentifier;
 
