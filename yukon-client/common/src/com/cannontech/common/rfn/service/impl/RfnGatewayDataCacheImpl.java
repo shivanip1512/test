@@ -71,7 +71,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
         
         //spin off new thread to update the cache for this value
         if (data == null) {
-            (new Runnable() {
+            Thread thread = new Thread() {
                 @Override
                 public void run() {
                     try {
@@ -80,7 +80,8 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
                         log.error("Asynchronous rfn gateway cache update failed", e);
                     }
                 }
-            }).run();
+            };
+            thread.start();
         }
         
         return data;
