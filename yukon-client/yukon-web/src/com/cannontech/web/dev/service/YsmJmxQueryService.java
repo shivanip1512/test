@@ -38,7 +38,7 @@ public class YsmJmxQueryService {
                 
                 return object;
             } catch (Exception e2) {
-                log.error("Could retrieve value.", e2);
+                log.error("Could not retrieve value.", e2);
                 throw e;
             }
         }
