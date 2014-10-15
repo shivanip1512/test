@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.1.xsd">
 
-    <bean id="meterReadingArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.MeterReadingArchiveRequestListener" />
+    <bean id="meterReadingArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.MeterReadingArchiveRequestListener"/>
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -15,7 +15,7 @@
         <jms:listener destination="yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 
-    <bean id="eventArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.EventArchiveRequestListener" />
+    <bean id="eventArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.EventArchiveRequestListener"/>
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -25,7 +25,7 @@
         <jms:listener destination="yukon.qr.obj.amr.rfn.EventArchiveRequest" ref="eventArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 
-    <bean id="alarmArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.AlarmArchiveRequestListener" />
+    <bean id="alarmArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.AlarmArchiveRequestListener"/>
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -35,7 +35,7 @@
         <jms:listener destination="yukon.qr.obj.amr.rfn.AlarmArchiveRequest" ref="alarmArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 
-    <bean id="lcrReadingArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.LcrReadingArchiveRequestListener" />
+    <bean id="lcrReadingArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.LcrReadingArchiveRequestListener"/>
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -45,7 +45,7 @@
         <jms:listener destination="yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest" ref="lcrReadingArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 
-    <bean id="rfDaArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfDaArchiveRequestListener" />
+    <bean id="rfDaArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfDaArchiveRequestListener"/>
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -76,44 +76,44 @@
     </jms:listener-container>
     
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
-        <property name="basedOn" value="DELIVERED_KWH" />
-        <property name="perInterval" value="DELIVERED_KWH_PER_INTERVAL" />
-        <property name="loadProfile" value="DELIVERED_KW_LOAD_PROFILE" />
+        <property name="basedOn" value="DELIVERED_KWH"/>
+        <property name="perInterval" value="DELIVERED_KWH_PER_INTERVAL"/>
+        <property name="loadProfile" value="DELIVERED_KW_LOAD_PROFILE"/>
         <qualifier value="DeliveredKwh"/>
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
-        <property name="basedOn" value="RECEIVED_KWH" />
-        <property name="perInterval" value="RECEIVED_KWH_PER_INTERVAL" />
-        <property name="loadProfile" value="RECEIVED_KW_LOAD_PROFILE" />
+        <property name="basedOn" value="RECEIVED_KWH"/>
+        <property name="perInterval" value="RECEIVED_KWH_PER_INTERVAL"/>
+        <property name="loadProfile" value="RECEIVED_KW_LOAD_PROFILE"/>
         <qualifier value="ReceivedKwh"/>
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
-        <property name="basedOn" value="SUM_KWH" />
-        <property name="perInterval" value="SUM_KWH_PER_INTERVAL" />
-        <property name="loadProfile" value="SUM_KW_LOAD_PROFILE" />
+        <property name="basedOn" value="SUM_KWH"/>
+        <property name="perInterval" value="SUM_KWH_PER_INTERVAL"/>
+        <property name="loadProfile" value="SUM_KW_LOAD_PROFILE"/>
         <qualifier value="SumKwh"/>
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
-        <property name="basedOn" value="NET_KWH" />
-        <property name="perInterval" value="NET_KWH_PER_INTERVAL" />
-        <property name="loadProfile" value="NET_KW_LOAD_PROFILE" />
+        <property name="basedOn" value="NET_KWH"/>
+        <property name="perInterval" value="NET_KWH_PER_INTERVAL"/>
+        <property name="loadProfile" value="NET_KW_LOAD_PROFILE"/>
         <qualifier value="NetKwh"/>
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
-        <property name="basedOn" value="SUM_KVAH" />
-        <property name="perInterval" value="SUM_KVAH_PER_INTERVAL" />
-        <property name="loadProfile" value="SUM_KVA_LOAD_PROFILE" />
+        <property name="basedOn" value="SUM_KVAH"/>
+        <property name="perInterval" value="SUM_KVAH_PER_INTERVAL"/>
+        <property name="loadProfile" value="SUM_KVA_LOAD_PROFILE"/>
         <qualifier value="SumKvah"/>
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
-        <property name="basedOn" value="SUM_KVARH" />
-        <property name="perInterval" value="SUM_KVARH_PER_INTERVAL" />
-        <property name="loadProfile" value="SUM_KVAR_LOAD_PROFILE" />
+        <property name="basedOn" value="SUM_KVARH"/>
+        <property name="perInterval" value="SUM_KVARH_PER_INTERVAL"/>
+        <property name="loadProfile" value="SUM_KVAR_LOAD_PROFILE"/>
         <qualifier value="SumKvarh"/>
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
-        <property name="basedOn" value="USAGE_WATER" />
-        <property name="perInterval" value="WATER_USAGE_PER_INTERVAL" />
+        <property name="basedOn" value="USAGE_WATER"/>
+        <property name="perInterval" value="WATER_USAGE_PER_INTERVAL"/>
         <property name="loadProfile"><null/></property>
         <qualifier value="WaterUsage"/>
     </bean>

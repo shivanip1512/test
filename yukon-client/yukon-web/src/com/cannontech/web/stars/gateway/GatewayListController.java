@@ -22,9 +22,9 @@ import com.cannontech.web.stars.gateway.model.LastComm;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
-public class GatewayDashboardController {
+public class GatewayListController {
     
-    private static final Logger log = YukonLogManager.getLogger(GatewayDashboardController.class);
+    private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
     @Autowired private RfnGatewayService rfnGatewayService;
     
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
@@ -34,7 +34,7 @@ public class GatewayDashboardController {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         model.addAttribute("gateways", gateways);
         
-        return "gateways/dashboard.jsp";
+        return "gateways/list.jsp";
     }
     
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.POST)
@@ -43,7 +43,7 @@ public class GatewayDashboardController {
         //TODO
         //PaoIdentifier gatewayId = rfnGatewayService.createGateway(name, ipAddress, location, user, admin, superAdmin)
         
-        return "gateways/dashboard.jsp";
+        return "gateways/list.jsp";
     }
     
     @RequestMapping("/gateways/create")

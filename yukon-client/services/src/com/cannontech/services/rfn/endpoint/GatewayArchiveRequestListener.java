@@ -23,7 +23,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     
     private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestListener.class);
     
-    @Autowired RfnGatewayDataCache rfnGatewayDataCache;
+    private @Autowired RfnGatewayDataCache rfnGatewayDataCache;
     
     private List<Worker> workers;
     
