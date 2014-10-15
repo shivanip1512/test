@@ -4292,7 +4292,7 @@ void analyzePortQueue(CtiPortSPtr Port, bool timesyncPreference, CtiDeviceManage
 
 YukonError_t GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, bool timesyncPreference)
 {
-    YukonError_t status;
+    YukonError_t status = ClientErrors::None;
     ULONG ReadLength;
     BYTE ReadPriority;
 
