@@ -11,6 +11,12 @@ INSERT INTO YukonRoleProperty VALUES (-90047, -900, 'Allow DR Enable/Disable', '
 INSERT INTO YukonRoleProperty VALUES (-90048, -900, 'Allow Change Gears', 'true', 'Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.');
 /* End YUK-13709 */
 
+/* Start YUK-13354 */
+UPDATE CommandRequestExec 
+SET    CommandRequestExecType = 'METER_CONNECT_DISCONNECT_WIDGET'
+WHERE  CommandRequestExecType = 'CONTROL_CONNECT_DISCONNECT_COMAMND';
+/* End YUK-13354 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
