@@ -106,19 +106,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             
         }
         /*
-         * At this point we get all the supporting Authentication 
+         * At this point we get all the supporting Authentication
          */
-        AuthType supportingAuthType = AuthenticationCategory.getByAuthType(authType).getSupportingAuthType(); 
+        AuthType supportingAuthType = AuthenticationCategory.getByAuthType(authType).getSupportingAuthType();
         if (authType != supportingAuthType) {
             isPasswordMatchedWithOldAuthType = verifyPasswordWithOldAuthType(user, password, authType);
-            if (!isPasswordMatchedWithOldAuthType) {
-                log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
-                throw new BadAuthenticationException();
-            }
+            checkExpirationAndAuthentication(isPasswordMatchedWithOldAuthType, user, username);
         }
         AuthenticationProvider provider = providerMap.get(supportingAuthType);
         if (provider == null) {
-            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID() + ", authtype=" + supportingAuthType);
+            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID() + ", authtype="
+                + supportingAuthType);
         }
         if (isPasswordMatchedWithOldAuthType) {
             PasswordEncrypter passwordEncrypter = (PasswordEncrypter) providerMap.get(supportingAuthType);
@@ -126,25 +124,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             yukonUserPasswordDao.setPassword(user, supportingAuthType, newDigest);
         } else {
             isPasswordMatched = provider.login(user, password);
+            checkExpirationAndAuthentication(isPasswordMatched, user, username);
         }
+        return user;
+    }
 
-        // Attempt login; remove throttle if login successful.
-        if (isPasswordMatched || isPasswordMatchedWithOldAuthType) {
-            log.debug("Authentication succeeded: username=" + username);
-            authenticationThrottleService.loginSucceeded(username);
-            
-            // Check to see if the user's password is expired.
-            boolean passwordExpired = isPasswordExpired(user);
-            if (passwordExpired) {
-                throw new PasswordExpiredException("The user's password is expired.  Please login to the web " +
-                        "interface to reset it. (" + user.getUsername() + ")" );
-            }
-
-           return user;
-        } else {
+    /*
+     * Method is used for checking password expiration and also authenticating the user.
+     * @param isPasswordMatched - this Parameter is used for authentication.
+     * @throws BadAuthenticationException - This exception will be thrown if authentication fails.
+     * @throws PasswordExpiredException - This exception will be thrown if password has expired.
+     */
+    private void checkExpirationAndAuthentication(boolean isPasswordMatched, LiteYukonUser user, String username)
+            throws BadAuthenticationException, PasswordExpiredException {
+        // Check to see if the user's password is expired.
+        boolean passwordExpired = isPasswordExpired(user);
+        if (!isPasswordMatched) {
             // login must have failed
             log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
             throw new BadAuthenticationException();
+        } else if (passwordExpired) {
+            log.debug("Authentication succeeded: username=" + username);
+            authenticationThrottleService.loginSucceeded(username);
+            throw new PasswordExpiredException("The user's password is expired.  Please login to the web "
+                + "interface to reset it. (" + user.getUsername() + ")");
         }
     }
 
